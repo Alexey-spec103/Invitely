@@ -1,0 +1,69 @@
+.section {
+  padding: 3rem 1.25rem;
+  color: var(--theme-text);
+  text-align: center;
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.9rem;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.75rem;
+}
+
+.description {
+  font-family: var(--theme-font-body);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 34rem;
+  margin: 0 auto 2rem;
+}
+
+.list {
+  max-width: 32rem;
+  margin: 0 auto;
+  text-align: left;
+  border-top: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent);
+}
+
+.rowText {
+  min-width: 0;
+}
+
+.rowTitle {
+  font-family: var(--theme-font-heading);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.rowDescription {
+  font-family: var(--theme-font-body);
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin: 0.2rem 0 0;
+}
+
+.rowLink {
+  flex: none;
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  color: var(--theme-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 2.4rem;
+  }
+}

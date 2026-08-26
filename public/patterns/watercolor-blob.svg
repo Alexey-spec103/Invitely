@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <!-- Soft irregular watercolor-style blob, single fill via currentColor
+       substitute (actual color set by the consumer through CSS mask/fill
+       override since this is used as a background-image, not inline). -->
+  <path
+    d="M300 60c72 0 118 54 162 96 46 44 96 84 96 150 0 68-52 112-102 156-48 42-96 88-162 88-64 0-110-46-158-90-50-46-98-92-98-154 0-64 50-108 100-152 46-42 90-94 162-94Z"
+    fill="#000000"
+  />
+</svg>

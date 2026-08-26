@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- Seamless 48x48 tile: a diamond/cross folk-embroidery motif for a
+       repeating border strip. -->
+  <g fill="#7A2E2E">
+    <path d="M24 4 L32 12 L24 20 L16 12 Z" />
+    <path d="M24 28 L32 36 L24 44 L16 36 Z" />
+    <rect x="22" y="22" width="4" height="4" transform="rotate(45 24 24)" />
+  </g>
+</svg>

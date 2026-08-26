@@ -1,0 +1,61 @@
+.section {
+  padding: 3rem 1rem;
+  color: var(--theme-text);
+  text-align: center;
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.9rem;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.75rem;
+}
+
+.description {
+  font-family: var(--theme-font-body);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 30rem;
+  margin: 0 auto 2rem;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--theme-text) 15%, transparent);
+}
+
+.label {
+  font-family: var(--theme-font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  opacity: 0.75;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 2.4rem;
+  }
+
+  .chip {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}

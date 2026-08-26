@@ -1,0 +1,144 @@
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 3rem 1rem;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 38rem;
+  padding: 2rem 1.5rem;
+  border-radius: 0.25rem;
+  text-align: center;
+  color: var(--theme-text);
+  background: color-mix(in srgb, var(--theme-bg) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.flourishTopLeft,
+.flourishBottomRight {
+  position: absolute;
+  width: 2.75rem;
+  height: 2.75rem;
+  background-color: var(--theme-accent);
+  opacity: 0.6;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+
+.flourishTopLeft {
+  top: 0.75rem;
+  left: 0.75rem;
+}
+
+.flourishBottomRight {
+  bottom: 0.75rem;
+  right: 0.75rem;
+  transform: rotate(180deg);
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.75rem;
+  letter-spacing: 0.03em;
+  margin: 0 0 1.25rem;
+}
+
+.body {
+  font-family: var(--theme-font-body);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  white-space: pre-line;
+  margin: 0 0 1.5rem;
+}
+
+.quote {
+  font-family: var(--theme-font-script);
+  font-size: 1.6rem;
+  line-height: 1.4;
+  color: var(--theme-accent);
+  margin: 0;
+}
+
+.note {
+  font-family: var(--theme-font-body);
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.6;
+  opacity: 0.8;
+  margin: 1.5rem 0 0;
+}
+
+.deadline {
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--theme-accent);
+  margin: 1rem 0 0;
+}
+
+.closingLine {
+  font-family: var(--theme-font-script);
+  font-size: 1.3rem;
+  line-height: 1.4;
+  color: var(--theme-text);
+  margin: 1.5rem 0 0;
+}
+
+@media (min-width: 640px) {
+  .section {
+    padding: 3.5rem 1.5rem;
+  }
+
+  .card {
+    padding: 2.5rem 2rem;
+  }
+
+  .title {
+    font-size: 2.1rem;
+    margin: 0 0 1.5rem;
+  }
+
+  .body {
+    font-size: 1rem;
+    margin: 0 0 1.75rem;
+  }
+
+  .quote {
+    font-size: 1.85rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding: 4rem 1.5rem;
+  }
+
+  .card {
+    padding: 3rem 2.5rem;
+  }
+
+  .title {
+    font-size: 2.4rem;
+    margin: 0 0 1.75rem;
+  }
+
+  .body {
+    margin: 0 0 2rem;
+  }
+
+  .quote {
+    font-size: 2.1rem;
+  }
+}

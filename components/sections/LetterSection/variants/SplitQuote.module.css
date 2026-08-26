@@ -1,0 +1,137 @@
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 3rem 1.25rem;
+  color: var(--theme-text);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: 56rem;
+}
+
+.text {
+  text-align: left;
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.75rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 1.25rem;
+}
+
+.body {
+  font-family: var(--theme-font-body);
+  font-size: 0.95rem;
+  line-height: 1.75;
+  white-space: pre-line;
+  margin: 0 0 1.25rem;
+}
+
+.note {
+  font-family: var(--theme-font-body);
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.6;
+  opacity: 0.75;
+  margin: 0 0 1rem;
+}
+
+.deadline {
+  font-family: var(--theme-font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--theme-accent);
+  margin: 0 0 1rem;
+}
+
+.closingLine {
+  font-family: var(--theme-font-script);
+  font-size: 1.3rem;
+  line-height: 1.4;
+  color: var(--theme-accent);
+  margin: 1rem 0 0;
+}
+
+.quotePanel {
+  position: relative;
+  padding: 2rem 1.5rem;
+  background-color: color-mix(in srgb, var(--theme-accent) 10%, var(--theme-bg));
+  border-radius: 0.25rem;
+}
+
+.quoteMark {
+  display: block;
+  font-family: var(--theme-font-script);
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--theme-accent);
+  opacity: 0.6;
+  margin-bottom: 0.5rem;
+}
+
+.quote {
+  font-family: var(--theme-font-script);
+  font-size: 1.6rem;
+  line-height: 1.35;
+  color: var(--theme-accent);
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 2.1rem;
+  }
+
+  .body {
+    font-size: 1rem;
+  }
+
+  .quotePanel {
+    padding: 2.5rem 2rem;
+  }
+
+  .quote {
+    font-size: 1.85rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 3rem;
+  }
+
+  .text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .title {
+    font-size: 2.4rem;
+  }
+
+  .quotePanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 2.5rem;
+  }
+
+  .quote {
+    font-size: 2.1rem;
+  }
+}

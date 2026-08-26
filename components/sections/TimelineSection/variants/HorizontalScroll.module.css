@@ -1,0 +1,110 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 3rem 0;
+  color: var(--theme-text);
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 2rem;
+  letter-spacing: 0.03em;
+  text-align: center;
+  margin: 0 0 2rem;
+  padding: 0 1.25rem;
+}
+
+.track {
+  display: flex;
+  gap: 1.25rem;
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 0.5rem 1.25rem 1rem;
+  scrollbar-width: thin;
+}
+
+.card {
+  flex: 0 0 14rem;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.1rem;
+  border-top: 2px solid var(--theme-accent);
+  background: color-mix(in srgb, var(--theme-bg) 55%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--theme-accent) 15%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--theme-accent) 15%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 15%, transparent);
+}
+
+.time {
+  display: block;
+  font-family: var(--theme-font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.35rem;
+}
+
+.eventTitle {
+  display: block;
+  font-family: var(--theme-font-script);
+  font-size: 1.4rem;
+  line-height: 1.2;
+  margin-bottom: 0.35rem;
+}
+
+.description {
+  display: block;
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 2.4rem;
+    margin: 0 0 2.75rem;
+  }
+
+  .track {
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 0.5rem 1.5rem 1.25rem;
+  }
+
+  .card {
+    flex-basis: 16rem;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .time {
+    font-size: 1.2rem;
+  }
+
+  .eventTitle {
+    font-size: 1.6rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .title {
+    font-size: 2.75rem;
+    margin: 0 0 3.5rem;
+  }
+
+  .card {
+    flex-basis: 17.5rem;
+    padding: 1.75rem 1.5rem;
+  }
+
+  .description {
+    font-size: 0.85rem;
+  }
+}

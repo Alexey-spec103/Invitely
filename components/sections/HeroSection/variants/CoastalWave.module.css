@@ -1,0 +1,82 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  color: var(--theme-text);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  text-align: center;
+}
+
+.names {
+  font-family: var(--theme-font-body);
+  font-weight: 400;
+  font-size: 1.9rem;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.75rem;
+}
+
+.date {
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.horizon {
+  position: relative;
+  flex: none;
+  height: 6rem;
+  background-color: color-mix(in srgb, var(--theme-accent) 12%, var(--theme-bg));
+}
+
+.horizon::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1.25rem;
+  background-color: var(--theme-accent);
+  opacity: 0.6;
+  mask-image: url("/patterns/wave-line.svg");
+  mask-repeat: repeat-x;
+  mask-size: 90px 30px;
+  -webkit-mask-image: url("/patterns/wave-line.svg");
+  -webkit-mask-repeat: repeat-x;
+  -webkit-mask-size: 90px 30px;
+}
+
+@media (min-width: 640px) {
+  .names {
+    font-size: 2.5rem;
+  }
+
+  .date {
+    font-size: 0.9rem;
+  }
+
+  .horizon {
+    height: 8rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .names {
+    font-size: 3rem;
+  }
+
+  .horizon {
+    height: 10rem;
+  }
+}

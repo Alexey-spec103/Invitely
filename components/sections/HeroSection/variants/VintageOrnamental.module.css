@@ -1,0 +1,103 @@
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 2.5rem 1.25rem;
+  color: var(--theme-text);
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+  padding: 1.5rem;
+  border: 1px solid var(--theme-accent);
+}
+
+.inner {
+  padding: 2rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, transparent);
+  text-align: center;
+}
+
+.flourish {
+  position: absolute;
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--theme-accent);
+  opacity: 0.7;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  z-index: 1;
+}
+
+.flourish[data-pos="tl"] {
+  top: -1.25rem;
+  left: -1.25rem;
+}
+
+.flourish[data-pos="tr"] {
+  top: -1.25rem;
+  right: -1.25rem;
+  transform: scaleX(-1);
+}
+
+.flourish[data-pos="bl"] {
+  bottom: -1.25rem;
+  left: -1.25rem;
+  transform: scaleY(-1);
+}
+
+.flourish[data-pos="br"] {
+  bottom: -1.25rem;
+  right: -1.25rem;
+  transform: rotate(180deg);
+}
+
+.names {
+  font-family: var(--theme-font-heading);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 1.75rem;
+  margin: 0 0 0.75rem;
+}
+
+.date {
+  font-family: var(--theme-font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .frame {
+    padding: 2rem;
+    max-width: 32rem;
+  }
+
+  .inner {
+    padding: 2.75rem 2rem;
+  }
+
+  .names {
+    font-size: 2.25rem;
+  }
+
+  .date {
+    font-size: 0.85rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .names {
+    font-size: 2.6rem;
+  }
+}

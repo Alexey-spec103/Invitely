@@ -1,0 +1,5 @@
+.wrapper {
+  background-color: var(--theme-bg);
+  background-image: var(--theme-bg-texture, none);
+  background-repeat: repeat;
+}

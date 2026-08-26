@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 120 40">
+  <!-- Seamless 120x40 tile: gentle horizontal wave lines for coastal
+       themes -- each path repeats its curve exactly across the tile width. -->
+  <g fill="none" stroke="#1f3b3e" stroke-width="1" opacity="0.07">
+    <path d="M0 10 Q 15 2, 30 10 T 60 10 T 90 10 T 120 10" />
+    <path d="M0 26 Q 15 18, 30 26 T 60 26 T 90 26 T 120 26" />
+  </g>
+</svg>

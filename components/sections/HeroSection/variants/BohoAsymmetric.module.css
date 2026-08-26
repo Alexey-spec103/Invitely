@@ -1,0 +1,70 @@
+.section {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 3rem 1.5rem;
+  overflow: hidden;
+  color: var(--theme-text);
+}
+
+.sprig {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 8rem;
+  height: 12rem;
+  background-color: var(--theme-accent);
+  opacity: 0.55;
+  mask-image: url("/patterns/leaves.svg");
+  mask-repeat: repeat;
+  mask-size: 70px 70px;
+  -webkit-mask-image: url("/patterns/leaves.svg");
+  -webkit-mask-repeat: repeat;
+  -webkit-mask-size: 70px 70px;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 20rem;
+  text-align: left;
+}
+
+.names {
+  font-family: var(--theme-font-heading);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
+}
+
+.date {
+  font-family: var(--theme-font-script);
+  color: var(--theme-accent);
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .sprig {
+    width: 10rem;
+    height: 15rem;
+  }
+
+  .names {
+    font-size: 2.6rem;
+  }
+
+  .date {
+    font-size: 1.6rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .names {
+    font-size: 3.1rem;
+  }
+}

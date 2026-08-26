@@ -1,0 +1,112 @@
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 2.5rem 1.25rem;
+  color: var(--theme-text);
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  max-width: 30rem;
+  aspect-ratio: 4 / 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flourish {
+  position: absolute;
+  width: 5rem;
+  height: 5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.75;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+
+.flourish[data-pos="tl"] {
+  top: 0;
+  left: 0;
+}
+
+.flourish[data-pos="tr"] {
+  top: 0;
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.flourish[data-pos="bl"] {
+  bottom: 0;
+  left: 0;
+  transform: scaleY(-1);
+}
+
+.flourish[data-pos="br"] {
+  bottom: 0;
+  right: 0;
+  transform: rotate(180deg);
+}
+
+.content {
+  text-align: center;
+  padding: 2rem;
+}
+
+.names {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.9rem;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.divider {
+  display: block;
+  width: 2rem;
+  height: 1px;
+  background-color: var(--theme-accent);
+  margin: 1.25rem auto;
+}
+
+.date {
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .flourish {
+    width: 6.5rem;
+    height: 6.5rem;
+  }
+
+  .names {
+    font-size: 2.4rem;
+  }
+
+  .date {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .flourish {
+    width: 8rem;
+    height: 8rem;
+  }
+
+  .names {
+    font-size: 2.9rem;
+  }
+}

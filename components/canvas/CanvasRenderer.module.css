@@ -1,0 +1,24 @@
+.frameOuter {
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.frameInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+.element {
+  position: absolute;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .desktopOnly {
+    display: none;
+  }
+}

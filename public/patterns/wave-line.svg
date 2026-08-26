@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 120 40">
+  <!-- Seamless 120x40 tile: a single bold wave line, meant for use as a
+       CSS mask (not a low-opacity background-image) so it reads clearly as
+       a decorative horizon line rather than a faint texture. -->
+  <path
+    d="M0 20 Q 15 4, 30 20 T 60 20 T 90 20 T 120 20 V40 H0 Z"
+    fill="#000000"
+  />
+</svg>

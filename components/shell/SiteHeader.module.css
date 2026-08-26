@@ -1,0 +1,119 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  font-family: var(--theme-font-body);
+  color: var(--theme-text);
+  background: color-mix(in srgb, var(--theme-bg) 85%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 20%, transparent);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  background: transparent;
+  color: var(--theme-text);
+  cursor: pointer;
+}
+
+.menuIcon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 35%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--theme-text);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.shareWrap {
+  position: relative;
+}
+
+.sharePanel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 9.5rem;
+  padding: 0.35rem;
+  border-radius: 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent);
+  background: var(--theme-bg);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+  z-index: 50;
+}
+
+.shareItem {
+  padding: 0.5rem 0.6rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--theme-text);
+  font-size: 0.85rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.shareItem:hover {
+  background: color-mix(in srgb, var(--theme-accent) 12%, transparent);
+}
+
+.calendarButton {
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: var(--theme-accent);
+  color: var(--theme-bg);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 1rem 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--theme-accent) 20%, transparent);
+}
+
+.menuLink {
+  padding: 0.6rem 0;
+  color: var(--theme-text);
+  text-decoration: none;
+  font-size: 0.95rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 12%, transparent);
+}
+
+.menuLink:last-child {
+  border-bottom: none;
+}

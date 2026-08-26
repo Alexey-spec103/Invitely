@@ -1,0 +1,139 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 3rem 1.25rem;
+  color: var(--theme-text);
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 2rem;
+  letter-spacing: 0.03em;
+  text-align: center;
+  margin: 0 0 2rem;
+}
+
+.list {
+  position: relative;
+  list-style: none;
+  width: 100%;
+  max-width: 30rem;
+  margin: 0;
+  padding: 0;
+}
+
+.list::before {
+  content: "";
+  position: absolute;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  left: 0.3125rem;
+  width: 1px;
+  background: color-mix(in srgb, var(--theme-accent) 40%, transparent);
+}
+
+.item {
+  position: relative;
+  padding-left: 1.75rem;
+  padding-bottom: 1.75rem;
+}
+
+.item:last-child {
+  padding-bottom: 0;
+}
+
+.dot {
+  position: absolute;
+  top: 0.4rem;
+  left: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--theme-accent);
+}
+
+.time {
+  display: block;
+  font-family: var(--theme-font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.eventTitle {
+  display: block;
+  font-family: var(--theme-font-script);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin-bottom: 0.15rem;
+}
+
+.description {
+  display: block;
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+@media (min-width: 640px) {
+  .section {
+    padding: 4rem 1.5rem;
+  }
+
+  .title {
+    font-size: 2.4rem;
+    margin: 0 0 2.75rem;
+  }
+
+  .item {
+    padding-left: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .time {
+    font-size: 1.35rem;
+  }
+
+  .eventTitle {
+    font-size: 1.75rem;
+  }
+
+  .description {
+    font-size: 0.85rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding: 5rem 1.5rem;
+  }
+
+  .title {
+    font-size: 2.75rem;
+    margin: 0 0 3.5rem;
+  }
+
+  .item {
+    padding-left: 2.25rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .time {
+    font-size: 1.5rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .eventTitle {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+}

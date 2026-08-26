@@ -1,0 +1,105 @@
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 3rem 1rem;
+  color: var(--theme-text);
+}
+
+.stack {
+  width: 100%;
+  max-width: 64rem;
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.75rem;
+  letter-spacing: 0.03em;
+  text-align: center;
+  margin: 0 0 2rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.venueName {
+  font-family: var(--theme-font-heading);
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+
+.venueAddress {
+  font-family: var(--theme-font-body);
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin: 0 0 1rem;
+}
+
+.mapWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 20%, transparent);
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (min-width: 640px) {
+  .section {
+    padding: 3.5rem 1.5rem;
+  }
+
+  .title {
+    font-size: 2.1rem;
+    margin: 0 0 2.5rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  .venueName {
+    font-size: 1.05rem;
+  }
+
+  .venueAddress {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding: 4rem 1.5rem;
+  }
+
+  .title {
+    font-size: 2.4rem;
+  }
+
+  .venueName {
+    font-size: 1.1rem;
+  }
+
+  .venueAddress {
+    font-size: 0.95rem;
+  }
+}

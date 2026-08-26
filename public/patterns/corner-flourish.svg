@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72" fill="none">
+  <!-- Delicate corner flourish (single sprig curling from the corner),
+       colored via currentColor so it can be tinted per theme via CSS mask.
+       Matches the thin gold and line art corner ornaments common on real
+       wedding invitation designs, absent from our cards until now. -->
+  <path
+    d="M4 4 C 20 6, 34 14, 40 30 C 44 40, 42 50, 34 56"
+    stroke="currentColor"
+    stroke-width="1"
+    stroke-linecap="round"
+  />
+  <path
+    d="M10 4 C 22 8, 30 16, 33 26"
+    stroke="currentColor"
+    stroke-width="0.75"
+    stroke-linecap="round"
+    opacity="0.7"
+  />
+  <path d="M14 18 C 10 14, 9 9, 12 5 C 15 9, 15 14, 14 18 Z" fill="currentColor" opacity="0.8" />
+  <path d="M26 34 C 21 32, 17 33, 14 37 C 18 39, 23 39, 26 34 Z" fill="currentColor" opacity="0.7" />
+  <path d="M36 46 C 31 45, 27 47, 25 51 C 29 52, 34 51, 36 46 Z" fill="currentColor" opacity="0.6" />
+</svg>

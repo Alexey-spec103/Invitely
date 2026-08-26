@@ -1,0 +1,49 @@
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.25rem;
+  color: var(--theme-text);
+}
+
+.polaroid {
+  width: 100%;
+  max-width: 30rem;
+  padding: 1rem 1rem 1.5rem;
+  background-color: color-mix(in srgb, var(--theme-bg) 60%, white);
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 20%, transparent);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.caption {
+  font-family: var(--theme-font-script);
+  font-size: 1.4rem;
+  color: var(--theme-text);
+  text-align: center;
+  margin: 1rem 0 0;
+}
+
+@media (min-width: 640px) {
+  .polaroid {
+    padding: 1.25rem 1.25rem 1.75rem;
+  }
+
+  .caption {
+    font-size: 1.6rem;
+  }
+}

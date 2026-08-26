@@ -1,0 +1,339 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(17, 17, 17, 0.55);
+}
+
+.modal {
+  width: 100%;
+  max-width: 40rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin: 0 0 0.15rem;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1c1917;
+  margin: 0;
+}
+
+.closeBtn {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: none;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: #e5e7eb;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.25rem 0 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab,
+.tabActive {
+  padding: 0.5rem 0.25rem;
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.tabActive {
+  color: #e11d48;
+  border-bottom-color: #e11d48;
+}
+
+.materialsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+/* Suggests a table surface behind the banquet cards -- a warm linen-toned
+ * gradient, not a photo, in keeping with this whole modal's screenshot-free
+ * approach; just enough context that the cards don't read as floating on
+ * plain white. */
+.banquetSurface {
+  border-radius: 12px;
+  padding: 2rem 1rem;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.015) 0px,
+      rgba(0, 0, 0, 0.015) 2px,
+      transparent 2px,
+      transparent 6px
+    ),
+    linear-gradient(180deg, #ede7de 0%, #e4ddd0 100%);
+}
+
+.caption {
+  margin: 0.6rem 0 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* Phone mockup */
+
+.phone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.phone > .phoneNotch,
+.phone > .phoneScreen {
+  width: 11rem;
+}
+
+.phoneNotch {
+  height: 10px;
+  border-radius: 999px 999px 0 0;
+  background-color: var(--theme-text);
+  opacity: 0.7;
+}
+
+.phoneScreen {
+  aspect-ratio: 9 / 17;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  background-color: var(--theme-bg);
+  border: 3px solid color-mix(in srgb, var(--theme-text) 75%, transparent);
+  border-top: none;
+}
+
+.phoneCalendarBtn {
+  font-family: var(--theme-font-body);
+  font-size: 0.55rem;
+  letter-spacing: 0.03em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background-color: var(--theme-accent);
+  color: var(--theme-bg);
+}
+
+.phoneNames {
+  font-family: var(--theme-font-script);
+  color: var(--theme-accent);
+  font-size: 1.1rem;
+  line-height: 1.1;
+}
+
+.phoneDate {
+  font-family: var(--theme-font-body);
+  color: var(--theme-text);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.phoneRsvp {
+  margin-top: 0.5rem;
+  font-family: var(--theme-font-body);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--theme-accent);
+  color: var(--theme-accent);
+}
+
+/* Paper invitation mockup */
+
+.paperWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.paper {
+  width: 11rem;
+  aspect-ratio: 4 / 5.5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  background-color: var(--theme-bg);
+  background-image: var(--theme-bg-texture, none);
+  background-repeat: repeat;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  border: 1px solid color-mix(in srgb, var(--theme-text) 12%, transparent);
+}
+
+.paperEyebrow {
+  font-family: var(--theme-font-accent, var(--theme-font-body));
+  color: var(--theme-text);
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.paperNames {
+  font-family: var(--theme-font-heading);
+  color: var(--theme-text);
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.paperDivider {
+  display: block;
+  width: 1.75rem;
+  height: 1px;
+  background-color: var(--theme-accent);
+}
+
+.paperDate {
+  font-family: var(--theme-font-body);
+  color: var(--theme-text);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* Banquet: table number card */
+
+.tableCardWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tableCard {
+  width: 9rem;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background-color: var(--theme-bg);
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 40%, transparent);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.tableCardLabel {
+  font-family: var(--theme-font-body);
+  color: var(--theme-text);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.tableCardNumber {
+  font-family: var(--theme-font-heading);
+  color: var(--theme-accent);
+  font-size: 2.75rem;
+  line-height: 1;
+}
+
+/* Banquet: place card */
+
+.placeCardWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.placeCard {
+  width: 10rem;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: var(--theme-bg);
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 40%, transparent);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.placeCardInitials {
+  font-family: var(--theme-font-heading);
+  color: var(--theme-accent);
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+}
+
+.placeCardName {
+  font-family: var(--theme-font-script);
+  color: var(--theme-text);
+  font-size: 1.3rem;
+}
+
+.placeCardTable {
+  font-family: var(--theme-font-body);
+  color: var(--theme-text);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.footerNote {
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f3f4f6;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+}

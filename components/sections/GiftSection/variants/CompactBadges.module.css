@@ -1,0 +1,52 @@
+.section {
+  padding: 3rem 1.25rem;
+  color: var(--theme-text);
+  text-align: center;
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.9rem;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.75rem;
+}
+
+.description {
+  font-family: var(--theme-font-body);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 34rem;
+  margin: 0 auto 2rem;
+}
+
+.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+.badge {
+  display: inline-block;
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, transparent);
+  color: var(--theme-text);
+  text-decoration: none;
+}
+
+a.badge:hover {
+  background: color-mix(in srgb, var(--theme-accent) 12%, transparent);
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 2.4rem;
+  }
+}

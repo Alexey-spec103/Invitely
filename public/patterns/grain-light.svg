@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <!-- Fine diagonal crosshatch, seamless 40x40 tile — a neutral paper-grain
+       texture for themes where the botanical leaf pattern doesn't fit. -->
+  <g stroke="#2a2a2a" stroke-width="0.5" opacity="0.05">
+    <path d="M0 40 L40 0" />
+    <path d="M-10 30 L10 10" />
+    <path d="M30 50 L50 30" />
+  </g>
+</svg>

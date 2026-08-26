@@ -1,0 +1,79 @@
+.face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10%;
+  background: var(--theme-bg);
+  background-image: var(--theme-bg-texture, none);
+  color: var(--theme-text);
+  overflow: hidden;
+}
+
+.border {
+  position: absolute;
+  inset: 5%;
+  border: 1px solid var(--theme-accent);
+  pointer-events: none;
+}
+
+.names {
+  margin: 0;
+  font-family: var(--theme-font-heading);
+  font-weight: 600;
+  font-size: clamp(1.1rem, 8cqw, 2rem);
+  text-align: center;
+  line-height: 1.15;
+}
+
+.ampersand {
+  margin: 0.35em 0;
+  font-family: var(--theme-font-heading);
+  font-size: clamp(0.7rem, 4.5cqw, 1.1rem);
+  color: var(--theme-accent);
+  text-align: center;
+}
+
+.date {
+  margin: 1.1em 0 0;
+  font-family: var(--theme-font-body);
+  font-size: clamp(0.55rem, 2.6cqw, 0.75rem);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.venue {
+  margin: 0.5em 0 0;
+  font-family: var(--theme-font-body);
+  font-size: clamp(0.5rem, 2.2cqw, 0.65rem);
+  text-align: center;
+  opacity: 0.9;
+}
+
+.backAmpersand {
+  margin: 0 0 0.9em;
+  font-family: var(--theme-font-heading);
+  font-size: clamp(0.9rem, 5.5cqw, 1.3rem);
+  color: var(--theme-accent);
+  text-align: center;
+}
+
+.backMessage {
+  margin: 0;
+  max-width: 80%;
+  font-family: var(--theme-font-body);
+  font-size: clamp(0.6rem, 2.8cqw, 0.85rem);
+  line-height: 1.6;
+  text-align: center;
+  white-space: pre-wrap;
+}
+
+.backMessagePlaceholder {
+  composes: backMessage;
+  opacity: 0.5;
+  font-style: italic;
+}
