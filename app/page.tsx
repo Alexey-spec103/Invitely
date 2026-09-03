@@ -19,8 +19,9 @@ import { themes } from "@/lib/themes";
 import { CANVAS_FONTS } from "@/lib/canvas/fonts";
 import { plans } from "@/lib/plans";
 import { EVENT_TYPE_LIST } from "@/lib/eventTypes";
-import LandingThemeGallery from "@/components/marketing/LandingThemeGallery";
+import LandingThemeShowcase from "@/components/marketing/LandingThemeShowcase";
 import ConstructorMockup from "@/components/marketing/ConstructorMockup";
+import HeroPhoneShowcase from "@/components/marketing/HeroPhoneShowcase";
 
 const themeCount = Object.keys(themes).length;
 const fontCount = CANVAS_FONTS.length;
@@ -79,7 +80,16 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   const ctaHref = user ? "/dashboard" : "/onboarding";
-  const ctaLabel = user ? "Go to dashboard" : "Start for free";
+  // One primary-button style everywhere (see globals.css's shared
+  // --dash-accent), but a distinct verb-led label per section for a
+  // logged-out visitor -- matches weddingpost.ru's own pattern of a
+  // different imperative per section instead of the same generic label
+  // repeated. A returning logged-in user always sees "Go to dashboard"
+  // instead -- accurate for them, and not the target of this pass (that's
+  // a separate header/logo rework, not done yet).
+  const ctaLabel = user ? "Go to dashboard" : "Create your invitations";
+  const constructorCtaLabel = user ? "Go to dashboard" : "Start building";
+  const finalCtaLabel = user ? "Go to dashboard" : "Create your website";
 
   const showcaseThemes = Object.values(themes);
 
@@ -112,7 +122,7 @@ export default async function Home() {
             )}
             <Link
               href={ctaHref}
-              className="rounded-full bg-gradient-to-r from-rose-500 to-pink-500 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:from-rose-600 hover:to-pink-600"
+              className="rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-5 py-2 text-sm font-extrabold uppercase tracking-wide text-white shadow-sm transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
             >
               {ctaLabel}
             </Link>
@@ -120,17 +130,17 @@ export default async function Home() {
         </div>
       </header>
 
-      <section className="overflow-hidden bg-gradient-to-b from-rose-50 via-rose-50 to-white">
+      <section className="overflow-hidden bg-gradient-to-b from-orange-50 via-orange-50 to-white">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 sm:py-20 lg:grid-cols-2 lg:py-24">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-rose-500">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
               An event platform, not just an invitation
             </p>
             <h1 className="mt-3 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
               Your event, styled exactly how you imagined it
             </h1>
             <p
-              className="mt-2 text-3xl text-rose-500"
+              className="mt-2 text-3xl text-[var(--dash-accent-text)]"
               style={{ fontFamily: "var(--font-alex-brush), cursive" }}
             >
               with a wow effect
@@ -147,7 +157,7 @@ export default async function Home() {
             <ul className="mt-8 space-y-3">
               {heroChecklist.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-center gap-3 text-stone-700">
-                  <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                  <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-orange-50 text-[var(--dash-accent-text)]">
                     <Icon className="h-4 w-4" strokeWidth={2.25} />
                   </span>
                   {text}
@@ -158,33 +168,23 @@ export default async function Home() {
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
                 href={ctaHref}
-                className="inline-block rounded-full bg-gradient-to-r from-rose-500 to-pink-500 px-8 py-3.5 text-base font-semibold text-white shadow-md transition hover:from-rose-600 hover:to-pink-600"
+                className="inline-block rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-8 py-3.5 text-base font-extrabold uppercase tracking-wide text-white shadow-md transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
               >
                 {ctaLabel}
               </Link>
-              <a href="#constructor" className="text-sm font-semibold text-stone-600 hover:text-stone-900">
+              <a
+                href="#constructor"
+                className="text-sm font-bold uppercase tracking-wide text-[var(--dash-accent-text)] hover:text-red-700"
+              >
                 See the constructor →
               </a>
             </div>
           </div>
 
-          <div className="relative">
-            <div className="overflow-hidden rounded-2xl shadow-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://images.unsplash.com/photo-1519741497674-611481863552?w=1000&q=80"
-                alt="Elegant invitation details"
-                className="aspect-[4/5] w-full object-cover"
-              />
-            </div>
-            <div className="absolute -bottom-5 -left-5 rounded-xl bg-white px-5 py-3 shadow-lg">
-              <p className="text-sm font-medium text-stone-900">Anna &amp; Igor</p>
-              <p className="text-xs text-stone-500">Site · Invitations · Banquet — one style</p>
-            </div>
-          </div>
+          <HeroPhoneShowcase />
         </div>
 
-        <div className="border-t border-rose-100/80 bg-white/60">
+        <div className="border-t border-orange-100/80 bg-white/60">
           <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 px-6 py-8 sm:grid-cols-4">
             {statBar.map((stat) => (
               <div key={stat.label} className="text-center">
@@ -204,7 +204,7 @@ export default async function Home() {
           <div className="mt-16 grid gap-12 sm:grid-cols-3">
             {steps.map((step) => (
               <div key={step.number} className="text-center">
-                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-pink-500 text-sm font-semibold text-white">
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--dash-accent)] to-red-600 text-sm font-semibold text-white">
                   {step.number}
                 </div>
                 <h3 className="mt-5 text-lg font-semibold text-stone-900">{step.title}</h3>
@@ -218,7 +218,7 @@ export default async function Home() {
       <section id="constructor" className="py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-rose-500">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
               The real constructor
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
@@ -239,9 +239,9 @@ export default async function Home() {
             <div className="mt-8">
               <Link
                 href={ctaHref}
-                className="inline-block rounded-full bg-stone-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800"
+                className="inline-block rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-6 py-3 text-sm font-extrabold uppercase tracking-wide text-white transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
               >
-                Try the constructor
+                {constructorCtaLabel}
               </Link>
             </div>
           </div>
@@ -259,11 +259,8 @@ export default async function Home() {
             skip it entirely and design from scratch in the constructor.
           </p>
           <div className="mt-16">
-            <LandingThemeGallery themes={showcaseThemes} />
+            <LandingThemeShowcase themes={showcaseThemes} />
           </div>
-          <p className="mt-8 text-center text-sm text-stone-500">
-            {themeCount} designer themes, more added regularly
-          </p>
         </div>
       </section>
 
@@ -278,7 +275,7 @@ export default async function Home() {
           <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {modules.map(({ icon: Icon, title, description }) => (
               <div key={title} className="rounded-xl border border-stone-200 bg-white p-6">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-50 text-[var(--dash-accent-text)]">
                   <Icon className="h-5 w-5" strokeWidth={2} />
                 </span>
                 <h3 className="mt-4 text-base font-semibold text-stone-900">{title}</h3>
@@ -316,7 +313,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-t border-stone-100 bg-gradient-to-b from-white to-rose-50 py-24 text-center">
+      <section className="border-t border-stone-100 bg-gradient-to-b from-white to-orange-50 py-24 text-center">
         <div className="mx-auto max-w-2xl px-6">
           <h2 className="text-3xl font-semibold tracking-tight text-stone-900">Free to start</h2>
           <p className="mt-4 text-lg text-stone-600">
@@ -325,9 +322,9 @@ export default async function Home() {
           <div className="mt-8">
             <Link
               href={ctaHref}
-              className="inline-block rounded-full bg-gradient-to-r from-rose-500 to-pink-500 px-8 py-3 text-base font-semibold text-white shadow-md transition hover:from-rose-600 hover:to-pink-600"
+              className="inline-block rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-8 py-3 text-base font-extrabold uppercase tracking-wide text-white shadow-md transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
             >
-              {ctaLabel}
+              {finalCtaLabel}
             </Link>
           </div>
         </div>

@@ -1,0 +1,64 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.75rem;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tile {
+  position: relative;
+}
+
+/* The 6th tile's "see more" overlay -- weddingpost.ru's own version of this
+   is a permanently-visible dimmed plaque, not hover-gated; we go with hover
+   instead (a plain always-dimmed card reads as broken/locked rather than
+   inviting). A sibling <Link>, not a click handler on the card itself, so
+   it can send people to the full picker instead of selecting this one
+   theme -- it just sits on top and intercepts the click. */
+.moreOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(28, 25, 23, 0);
+  opacity: 0;
+  transition: opacity 0.18s ease, background 0.18s ease;
+}
+
+.tile:hover .moreOverlay,
+.moreOverlay:focus-visible {
+  opacity: 1;
+  background: rgba(28, 25, 23, 0.55);
+}
+
+.moreOverlayBtn {
+  transform: translateY(6px);
+  transition: transform 0.18s ease;
+  background: var(--dash-accent, #ff6b45);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.tile:hover .moreOverlayBtn,
+.moreOverlay:focus-visible .moreOverlayBtn {
+  transform: translateY(0);
+}

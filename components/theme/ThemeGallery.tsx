@@ -4,6 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import { THEME_CATEGORIES, THEME_SEASONS, THEME_LAYOUTS, layoutLabelFor } from "@/lib/themes";
 import type { Theme, ThemeCategory, ThemeSeason } from "@/lib/themes";
+import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
+import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
+import type { HeroVariant } from "@/components/sections/HeroSection";
 import {
   previewPhotoFor,
   previewNamesFor,
@@ -12,7 +15,26 @@ import {
   previewDomainFor,
   formatPreviewDate,
 } from "@/lib/themes/previewMedia";
+import { getCountdownParts, type CountdownParts } from "@/lib/countdown";
 import styles from "./ThemeGallery.module.css";
+
+/** Where a Hero variant's real content sits inside its min-height:100vh
+ * section -- decides how far the phone-mockup's crop window has to shift to
+ * bring that content into view instead of showing empty top-of-page padding
+ * (see `.phoneScaleInner` in the CSS module). Most variants center their
+ * content; a few anchor it to the bottom by design (PhotoFullBleed's caption
+ * over the foot of the photo, EditorialMinimal/BohoAsymmetric's bottom-
+ * weighted composition); Stacked Grid spreads two names across the full page
+ * height (Priority 5) and can't be fixed by any single crop. */
+const BOTTOM_ANCHORED_VARIANTS = new Set<HeroVariant>(["editorial-minimal", "boho-asymmetric", "photo-full-bleed"]);
+const SPREAD_VARIANTS = new Set<HeroVariant>(["stacked-grid"]);
+
+function anchorFor(variant: HeroVariant): "center" | "bottom" | "spread" {
+  if (SPREAD_VARIANTS.has(variant)) return "spread";
+  if (BOTTOM_ANCHORED_VARIANTS.has(variant)) return "bottom";
+  return "center";
+}
+
 
 const PAGE_SIZE = 24;
 
@@ -41,6 +63,12 @@ interface ThemeGalleryProps {
   selectedId?: string;
   onSelect: (themeId: string) => void;
   disabled?: boolean;
+  /** Adds the decorative site-chrome overlay (hamburger + "Add to calendar"
+   * pill, countdown timer, "yourname.com" placeholder domain) that mirrors
+   * weddingpost.ru's own gallery preview. Only for the public marketing
+   * landing page -- in the dashboard/onboarding a real user is picking
+   * their own theme, and fake chrome there would just read as broken UI. */
+  isMarketingPreview?: boolean;
 }
 
 /** Category/season sidebar + search + a live, screenshot-free dual mockup
@@ -50,25 +78,18 @@ interface ThemeGalleryProps {
  * the public landing page: this component only ever reports an id via
  * `onSelect`, the caller decides what that means (save, form field, or a
  * `?theme=` link). */
-export default function ThemeGallery({ themes, selectedId, onSelect, disabled }: ThemeGalleryProps) {
+export default function ThemeGallery({
+  themes,
+  selectedId,
+  onSelect,
+  disabled,
+  isMarketingPreview = false,
+}: ThemeGalleryProps) {
   const [category, setCategory] = useState<ThemeCategory | "all">("all");
   const [season, setSeason] = useState<ThemeSeason | "all">("all");
   const [layout, setLayout] = useState<string | "all">("all");
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-
-  // One shared ticking clock for every card's countdown, instead of each of
-  // up to 24 visible cards running its own setInterval.
-  const [now, setNow] = useState<number | null>(null);
-  useEffect(() => {
-    const tick = () => setNow(Date.now());
-    const immediate = setTimeout(tick, 0);
-    const interval = setInterval(tick, 1000);
-    return () => {
-      clearTimeout(immediate);
-      clearInterval(interval);
-    };
-  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -206,7 +227,7 @@ export default function ThemeGallery({ themes, selectedId, onSelect, disabled }:
               selected={theme.id === selectedId}
               disabled={disabled}
               onSelect={onSelect}
-              now={now}
+              isMarketingPreview={isMarketingPreview}
             />
           ))}
         </div>
@@ -228,41 +249,48 @@ export default function ThemeGallery({ themes, selectedId, onSelect, disabled }:
   );
 }
 
-interface ThemeGalleryCardProps {
+export interface ThemeGalleryCardProps {
   theme: Theme;
   selected: boolean;
   disabled?: boolean;
   onSelect: (themeId: string) => void;
-  now: number | null;
+  isMarketingPreview?: boolean;
 }
 
-interface CountdownParts {
-  d: number;
-  h: number;
-  m: number;
-  s: number;
-}
-
-function countdownPartsFor(target: Date, now: number): CountdownParts {
-  const diff = Math.max(0, target.getTime() - now);
-  return {
-    d: Math.floor(diff / 86400000),
-    h: Math.floor((diff / 3600000) % 24),
-    m: Math.floor((diff / 60000) % 60),
-    s: Math.floor((diff / 1000) % 60),
-  };
-}
-
-function ThemeGalleryCard({ theme, selected, disabled, onSelect, now }: ThemeGalleryCardProps) {
+/** Exported so `LandingThemeShowcase` (the trimmed, no-filters 6-card
+ * teaser on the public landing page) can reuse the exact same card --
+ * phone-mockup rendering, crop-fix, marketing chrome, all of it -- instead
+ * of forking a second copy that would drift out of sync. */
+export function ThemeGalleryCard({ theme, selected, disabled, onSelect, isMarketingPreview }: ThemeGalleryCardProps) {
   const [name1, name2] = previewNamesFor(theme.id);
-  const initials = `${name1[0]}${name2[0]}`;
   const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
-  const targetDate = useMemo(() => previewTargetDateFor(theme.id), [theme.id]);
+  const targetDate = useMemo(() => previewTargetDateFor(theme.id, theme.season), [theme.id, theme.season]);
   const dateLabel = formatPreviewDate(targetDate, previewDateStyleFor(theme.category));
   const domain = previewDomainFor(name1, name2);
   const layoutLabel = layoutLabelFor(theme.id, theme.category);
   const tags = [layoutLabel, ...theme.tags.filter((tag) => tag !== layoutLabel)].slice(0, 4);
-  const countdown = now === null ? null : countdownPartsFor(targetDate, now);
+  const recommendedVariant = recommendedHeroVariantFor(theme.id, theme.category);
+  const heroVariant: HeroVariant = HERO_VARIANTS.includes(recommendedVariant as HeroVariant)
+    ? (recommendedVariant as HeroVariant)
+    : DEFAULT_HERO_VARIANT;
+  const anchor = anchorFor(heroVariant);
+
+  // A static snapshot, not a live tick: this is a decorative marketing
+  // thumbnail, not a real countdown, and up to ~24 cards on screen each
+  // running their own setInterval(1000ms) re-render (as the real Countdown
+  // section's SimpleDigits.tsx does for a single instance) made the whole
+  // grid janky. Null until mount, since a Date.now()-based value computed
+  // during the server render would almost always mismatch the client's
+  // hydration-time value; deferred via setTimeout rather than called
+  // directly in the effect body so the first paint isn't a synchronous
+  // cascading render.
+  const [countdown, setCountdown] = useState<CountdownParts | null>(null);
+  useEffect(() => {
+    if (!isMarketingPreview) return;
+    const eventDateTime = targetDate.toISOString();
+    const timeout = setTimeout(() => setCountdown(getCountdownParts(eventDateTime)), 0);
+    return () => clearTimeout(timeout);
+  }, [isMarketingPreview, targetDate]);
 
   return (
     <button
@@ -287,30 +315,46 @@ function ThemeGalleryCard({ theme, selected, disabled, onSelect, now }: ThemeGal
             </div>
           </div>
 
+          {!selected && (
+            <div className={styles.hoverReveal} aria-hidden="true">
+              <span className={styles.hoverRevealBtn}>Choose this style</span>
+            </div>
+          )}
+
           <div className={styles.phoneMockup}>
             <span className={styles.phoneNotch} aria-hidden="true" />
-            <div className={styles.phoneScreen}>
-              <span className={styles.phoneCalendarBtn}>+ Calendar</span>
-              <span className={styles.phoneMonogram}>{initials}</span>
-              <span className={styles.phoneNames}>
-                {name1} &amp; {name2}
-              </span>
-              <div className={styles.phoneCountdown}>
-                {(["d", "h", "m", "s"] as const).map((unit) => (
-                  <div key={unit} className={styles.phoneCountdownDigit}>
-                    <span className={styles.phoneCountdownNumber}>
-                      {countdown ? String(countdown[unit]).padStart(2, "0") : "--"}
-                    </span>
-                    <span className={styles.phoneCountdownLabel}>{unit.toUpperCase()}</span>
+            {isMarketingPreview && (
+              <div className={styles.phoneChrome} aria-hidden="true">
+                <span className={styles.phoneMenuIcon} />
+                <span className={styles.phoneCalendarPill}>Add to calendar</span>
+              </div>
+            )}
+            <div className={styles.phoneScaleWrap}>
+              <div className={styles.phoneScaleInner} data-anchor={anchor}>
+                <HeroSection variant={heroVariant} names={[name1, name2]} eventDate={dateLabel} photoUrl={photoUrl} />
+              </div>
+            </div>
+            {isMarketingPreview && countdown && !countdown.reached && (
+              <div className={styles.phoneTimer} aria-hidden="true">
+                {[
+                  { value: countdown.weeks, label: "weeks" },
+                  { value: countdown.days, label: "days" },
+                  { value: countdown.hours, label: "hours" },
+                  { value: countdown.minutes, label: "minutes" },
+                  { value: countdown.seconds, label: "seconds" },
+                ].map((unit) => (
+                  <div key={unit.label} className={styles.timerUnit}>
+                    <span className={styles.timerValue}>{String(unit.value).padStart(2, "0")}</span>
+                    <span className={styles.timerLabel}>{unit.label}</span>
                   </div>
                 ))}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </ThemeProvider>
 
-      <p className={styles.domainCaption}>{domain}</p>
+      <p className={styles.domainCaption}>{isMarketingPreview ? "yourname.com" : domain}</p>
 
       {tags.length > 0 && (
         <div className={styles.tagRow}>

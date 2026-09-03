@@ -1,0 +1,119 @@
+.frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+}
+
+.bgPhoto {
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Positioned to match the phone's screen in the specific background photo
+   -- tuned by eye against that photo, not a generic guess. */
+.screen {
+  position: absolute;
+  left: 31.5%;
+  right: 30%;
+  top: 25%;
+  bottom: 21%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  container-type: inline-size;
+}
+
+.urlBar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.18rem 0.3rem;
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.urlDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: #b8b0a8;
+  flex: none;
+}
+
+.urlText {
+  font-size: 0.5rem;
+  color: #8a8078;
+  letter-spacing: 0.01em;
+  font-family: system-ui, sans-serif;
+}
+
+/* Same container-query scale-to-fit technique as ThemeGallery's phone
+   mockup: render the real HeroSection at its natural mobile width, then
+   scale it down to whatever width this screen box actually has. Cropping
+   from the top (not squeezing to fit) shows the top of the real page, the
+   same way weddingpost.ru's own phone screen does. */
+.screenScaleWrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.screenScaleInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 375px;
+  transform-origin: top left;
+  /* The real HeroSection centers its content inside a min-height:100vh
+     section. Our screen box only shows a small window, so without this
+     shift we'd crop the vertically-centered names/date cluster out
+     entirely -- this brings it into view instead of showing empty
+     top-of-page padding. Tuned against common desktop viewport heights,
+     same as the screen-position percentages above. */
+  transform: scale(calc(100cqw / 375px)) translateY(-40vh);
+}
+
+.topCaption {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  top: 1rem;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.bottomCaption {
+  position: absolute;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  max-width: 65%;
+  font-size: 1.15rem;
+  font-style: italic;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.4);
+  font-family: var(--font-cormorant-garamond), Georgia, serif;
+}
+
+@media (min-width: 640px) {
+  .topCaption {
+    font-size: 1.3rem;
+  }
+
+  .bottomCaption {
+    font-size: 1.4rem;
+  }
+}

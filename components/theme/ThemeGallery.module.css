@@ -95,8 +95,8 @@
 }
 
 .filterActive {
-  background: #fdf2f8;
-  color: #be123c;
+  background: color-mix(in srgb, var(--dash-accent, #ff6b45) 12%, white);
+  color: var(--dash-accent, #ff6b45);
   font-weight: 600;
 }
 
@@ -106,7 +106,7 @@
 }
 
 .filterActive .count {
-  color: #be123c;
+  color: var(--dash-accent, #ff6b45);
 }
 
 .resultsCount {
@@ -117,13 +117,18 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.75rem;
 }
 
 @container theme-gallery (min-width: 700px) {
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    /* Deliberately wide -- weddingpost.ru's own gallery runs 2 large cards
+       per row rather than a dense grid of thumbnails, so each preview reads
+       as "here's what your site looks like" instead of a small swatch.
+       auto-fill still lets a very wide viewport fit 3 rather than hardcoding
+       a column count. */
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   }
 }
 
@@ -177,11 +182,12 @@
 
 .cardSelected {
   composes: card;
-  border-color: #e11d48;
+  border-color: var(--dash-accent, #ff6b45);
   border-width: 2px;
 }
 
 .duoMockup {
+  position: relative;
   display: flex;
   align-items: stretch;
   gap: 0.5rem;
@@ -189,12 +195,59 @@
   background-color: var(--theme-bg);
 }
 
+/* Hover reveal -- weddingpost.ru's own gallery pops a clear "customize"
+   button over the preview on hover instead of our previous silent
+   translateY+shadow, so it's obvious the card is clickable. An overlay
+   (not weddingpost's push-the-layout-down button) so nothing reflows in a
+   grid of up to 100 cards. Suppressed on the already-selected card -- its
+   coral border + "Selected" footer label already say so. */
+.hoverReveal {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--theme-text) 55%, transparent),
+    transparent 65%
+  );
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+.card:hover .hoverReveal,
+.card:focus-visible .hoverReveal {
+  opacity: 1;
+}
+
+.hoverRevealBtn {
+  transform: translateY(6px);
+  transition: transform 0.18s ease;
+  background: var(--dash-accent, #ff6b45);
+  color: #fff;
+  font-family: var(--dash-font-body, inherit);
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.55rem 1.2rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.card:hover .hoverRevealBtn,
+.card:focus-visible .hoverRevealBtn {
+  transform: translateY(0);
+}
+
 .desktopPanel {
   position: relative;
   flex: 1.3;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: 10px;
+  border: 3px solid color-mix(in srgb, var(--theme-text) 75%, transparent);
 }
 
 .invitePhoto {
@@ -265,6 +318,7 @@
 
 .phoneMockup {
   flex: 1;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -273,6 +327,7 @@
   border: 3px solid color-mix(in srgb, var(--theme-text) 75%, transparent);
   background-color: color-mix(in srgb, var(--theme-bg) 88%, var(--theme-text) 12%);
   overflow: hidden;
+  container-type: inline-size;
 }
 
 .phoneNotch {
@@ -284,70 +339,133 @@
   background-color: color-mix(in srgb, var(--theme-text) 75%, transparent);
 }
 
-.phoneScreen {
-  flex: 1;
+/* Marketing-preview-only chrome overlaid on the phone screen, mirroring
+   weddingpost.ru's own gallery mockup (hamburger + "Add to calendar" pill up
+   top, a countdown pinned to the bottom) -- gated behind isMarketingPreview
+   in ThemeGallery.tsx so it only ever renders on the public landing page,
+   never in the dashboard/onboarding where a real user is picking their own
+   theme and fake chrome would just read as broken UI. Decorative only
+   (pointer-events: none), same convention as the rest of this mockup. */
+.phoneChrome {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  width: 100%;
-  padding: 0.4rem 0.3rem;
-  text-align: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  padding: 0.4rem 0.5rem;
+  pointer-events: none;
 }
 
-.phoneCalendarBtn {
+.phoneMenuIcon {
+  flex: none;
+  width: 14px;
+  height: 10px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--theme-text) 0,
+    var(--theme-text) 1.5px,
+    transparent 1.5px,
+    transparent 4.5px
+  );
+  opacity: 0.8;
+}
+
+.phoneCalendarPill {
   font-family: var(--theme-font-body);
-  font-size: 0.45rem;
-  letter-spacing: 0.03em;
-  padding: 0.15rem 0.4rem;
+  font-size: 0.5rem;
+  letter-spacing: 0.02em;
+  color: var(--theme-text);
+  background-color: color-mix(in srgb, var(--theme-bg) 92%, white);
   border-radius: 999px;
-  background-color: var(--theme-accent);
-  color: var(--theme-bg);
+  padding: 0.2rem 0.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   white-space: nowrap;
 }
 
-.phoneMonogram {
-  font-family: var(--theme-font-heading);
-  color: var(--theme-text);
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-top: 0.3rem;
-}
-
-.phoneNames {
-  font-family: var(--theme-font-script);
-  color: var(--theme-accent);
-  font-size: 0.85rem;
-  line-height: 1.1;
-}
-
-.phoneCountdown {
+.phoneTimer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
   display: flex;
-  gap: 0.3rem;
-  margin-top: 0.3rem;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.3rem 0.5rem;
+  background: linear-gradient(to top, color-mix(in srgb, var(--theme-bg) 88%, white) 60%, transparent);
+  pointer-events: none;
 }
 
-.phoneCountdownDigit {
+.timerUnit {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.05rem;
 }
 
-.phoneCountdownNumber {
+.timerValue {
   font-family: var(--theme-font-heading);
-  color: var(--theme-text);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  color: var(--theme-text);
   line-height: 1;
 }
 
-.phoneCountdownLabel {
+.timerLabel {
   font-family: var(--theme-font-body);
-  color: var(--theme-text);
   font-size: 0.4rem;
-  letter-spacing: 0.05em;
-  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--theme-text);
+  opacity: 0.6;
+}
+
+/* Renders the theme's own recommended Hero variant -- the exact same
+   component the public site and the dashboard's SiteInlineEditor use -- at
+   its natural mobile width (375px), then scales it down by a container-
+   query-relative factor so it always fills the phone frame's actual pixel
+   width, whatever that happens to be at the grid's current column count.
+   `.phoneScaleWrap`'s overflow:hidden crops rather than fitting the full
+   (min-height:100vh) section -- matches weddingpost.ru's own phone mockup,
+   which shows the top of the real page, not a squeezed-to-fit view.
+
+   Almost every Hero variant vertically centers its content in that
+   min-height:100vh section, so a plain top-of-page crop shows empty padding
+   instead of the actual names/date -- data-anchor (set in ThemeGallery.tsx
+   via anchorFor()) picks the right shift for each variant's real layout:
+   "center" (the default, no attribute needed) covers the vast majority,
+   "bottom" covers the few variants that anchor content to the bottom of the
+   section by design (PhotoFullBleed's caption, EditorialMinimal/
+   BohoAsymmetric's bottom-weighted composition), and "spread" (Stacked Grid)
+   is left unshifted since its two names sit at opposite ends of the page and
+   no single crop window can show both at once. */
+.phoneScaleWrap {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.phoneScaleInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 375px;
+  transform-origin: top left;
+  transform: scale(calc(100cqw / 375px)) translateY(-38vh);
+}
+
+.phoneScaleInner[data-anchor="bottom"] {
+  transform: scale(calc(100cqw / 375px)) translateY(-68vh);
+}
+
+.phoneScaleInner[data-anchor="spread"] {
+  transform: scale(calc(100cqw / 375px));
 }
 
 .domainCaption {
@@ -391,17 +509,19 @@
 .cardFooter {
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   background: #fff;
-  padding: 0.5rem 0.75rem;
+  padding: 0.65rem 0.9rem;
 }
 
 .cardName {
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-family: var(--dash-font-heading, inherit);
+  font-size: 1.05rem;
+  font-weight: 600;
   color: #1c1917;
 }
 
 .cardSelectedLabel {
   font-size: 0.65rem;
-  color: #e11d48;
+  font-weight: 600;
+  color: var(--dash-accent, #ff6b45);
   margin-top: 0.1rem;
 }
