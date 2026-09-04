@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="220" viewBox="0 0 140 220" fill="none">
+  <!-- Single asymmetric botanical branch (not a repeating tile): alternating
+       leaves along one curving stem, an illustrated sprig rather than a
+       tiled micro-texture. -->
+  <path d="M20 210 C 40 170, 55 130, 60 90 C 64 55, 75 25, 100 5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" />
+  <path d="M46 158 C 36 152, 30 143, 31 132 C 40 135, 47 143, 46 158 Z" fill="currentColor" opacity="0.75" />
+  <path d="M56 158 C 66 152, 71 142, 69 131 C 60 135, 54 143, 56 158 Z" fill="currentColor" opacity="0.7" />
+  <path d="M56 112 C 46 107, 40 98, 41 87 C 50 90, 57 98, 56 112 Z" fill="currentColor" opacity="0.7" />
+  <path d="M64 108 C 74 103, 79 94, 77 84 C 68 87, 62 95, 64 108 Z" fill="currentColor" opacity="0.65" />
+  <path d="M68 66 C 59 62, 54 54, 55 44 C 63 47, 69 54, 68 66 Z" fill="currentColor" opacity="0.65" />
+  <path d="M76 60 C 85 56, 89 47, 87 38 C 79 41, 74 48, 76 60 Z" fill="currentColor" opacity="0.6" />
+  <path d="M88 30 C 80 27, 76 20, 78 12 C 85 15, 90 21, 88 30 Z" fill="currentColor" opacity="0.55" />
+</svg>

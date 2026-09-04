@@ -28,8 +28,8 @@ export default function DeleteEventSection({ eventId, eventTitle }: DeleteEventS
   };
 
   return (
-    <div className="mt-10 rounded-lg border border-red-200 bg-red-50 p-6">
-      <h2 className="text-sm font-semibold text-red-900">Danger zone</h2>
+    <div className="mt-10 rounded-2xl border border-red-200 bg-red-50 p-6">
+      <h2 className="dash-h2 text-sm text-red-900">Danger zone</h2>
       <p className="mt-1 text-sm text-red-700">
         Permanently delete &ldquo;{eventTitle}&rdquo; and everything in it &mdash; guests, RSVPs,
         gift wishes, banquet tables, and site content. This cannot be undone.
@@ -39,7 +39,7 @@ export default function DeleteEventSection({ eventId, eventTitle }: DeleteEventS
         <button
           type="button"
           onClick={() => setConfirming(true)}
-          className="mt-4 rounded-md border border-red-300 bg-white px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100"
+          className="mt-4 rounded-full border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100"
         >
           Delete this event
         </button>
@@ -61,7 +61,7 @@ export default function DeleteEventSection({ eventId, eventTitle }: DeleteEventS
               type="button"
               onClick={handleDelete}
               disabled={!canDelete || isDeleting}
-              className="rounded-md bg-red-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-full bg-red-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isDeleting ? "Deleting..." : "Permanently delete"}
             </button>
@@ -73,7 +73,7 @@ export default function DeleteEventSection({ eventId, eventTitle }: DeleteEventS
                 setError(null);
               }}
               disabled={isDeleting}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+              className="rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
             >
               Cancel
             </button>

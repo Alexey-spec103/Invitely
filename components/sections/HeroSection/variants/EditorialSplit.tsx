@@ -1,4 +1,5 @@
 import type { HeroSectionVariantProps } from "../types";
+import EditableText from "@/components/site-editor/EditableText";
 import styles from "./EditorialSplit.module.css";
 
 function getInitials(names: string[]): [string, string] {
@@ -12,6 +13,7 @@ export default function EditorialSplit({
   eventDate,
   photoUrl,
   monogramInitials,
+  styleOverrides,
 }: HeroSectionVariantProps) {
   const [initialA, initialB] = monogramInitials?.trim()
     ? [monogramInitials.trim().charAt(0).toUpperCase(), monogramInitials.trim().charAt(1)?.toUpperCase() ?? ""]
@@ -24,11 +26,12 @@ export default function EditorialSplit({
           {initialA}
         </span>
         <p className={styles.names}>
-          {names[0]}
+          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
           {names[1] && <span className={styles.ampersand}>&amp;</span>}
-          {names[1]}
+          {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
         </p>
         <p className={styles.date}>{eventDate}</p>
+        <span className={styles.sprig} aria-hidden="true" />
         <span className={`${styles.bigLetter} ${styles.bigLetterSecond}`} aria-hidden="true">
           {initialB}
         </span>

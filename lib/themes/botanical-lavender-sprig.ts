@@ -1,8 +1,8 @@
 import type { Theme } from "./types";
 
 // A lavender-and-leaf botanical theme -- purple accent instead of the
-// green/sage tones most botanical themes use, filed botanical for the leaf
-// texture and Cormorant heading.
+// green/sage tones most botanical themes use, filed botanical for the
+// Cormorant heading.
 export const botanicalLavenderSprig: Theme = {
   id: "botanical-lavender-sprig",
   name: "Lavender Sprig",
@@ -15,7 +15,6 @@ export const botanicalLavenderSprig: Theme = {
     "--theme-accent": "#8C7CB0",
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/leaves.svg')",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },
 };

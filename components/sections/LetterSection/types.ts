@@ -1,3 +1,5 @@
+import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+
 export type LetterVariant = "centered-card" | "minimal-line" | "ornate-border" | "split-quote";
 
 export interface LetterSectionVariantProps {
@@ -7,6 +9,8 @@ export interface LetterSectionVariantProps {
   note?: string;
   rsvpDeadline?: string;
   closingLine?: string;
+  /** See HeroSection/types.ts's identical field for the convention. */
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export interface LetterSectionProps extends LetterSectionVariantProps {

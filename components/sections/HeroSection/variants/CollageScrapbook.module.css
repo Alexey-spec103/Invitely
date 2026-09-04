@@ -39,10 +39,25 @@
   object-fit: cover;
 }
 
-.placeholder {
-  width: 100%;
-  aspect-ratio: 1;
-  background-color: color-mix(in srgb, var(--theme-accent) 20%, var(--theme-bg));
+/* A pressed lavender sprig tucked behind the print's bottom corner, like
+   a keepsake slipped under the photo on the page. */
+.sprig {
+  position: absolute;
+  bottom: -0.75rem;
+  right: -1rem;
+  width: 3.5rem;
+  height: 5rem;
+  transform: rotate(12deg);
+  background-color: var(--theme-accent);
+  opacity: 0.65;
+  mask-image: url("/patterns/rustic-lavender-sprig.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/rustic-lavender-sprig.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
 }
 
 .note {

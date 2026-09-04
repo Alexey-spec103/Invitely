@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
   min-height: 100vh;
   min-height: 100svh;
   padding: 2rem 1rem;
@@ -11,78 +11,109 @@
   color: var(--theme-text);
 }
 
+/* The decorative tier: genuine script/cursive, sized as the section's one
+   dominant display moment -- no circular badge/border chrome around it,
+   just the letters on the flat background (weddingpost's own monogram
+   treatment has no frame either; a border here would read as "app chip"
+   rather than "editorial typography"). */
 .monogram {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 5.5rem;
-  height: 5.5rem;
-  border: 1px solid var(--theme-accent);
-  border-radius: 50%;
-  font-family: var(--theme-font-heading);
-  font-weight: 300;
-  font-size: 1.75rem;
-  letter-spacing: 0.1em;
+  font-family: var(--theme-font-script);
+  font-weight: 400;
+  font-size: 4rem;
+  line-height: 1;
   color: var(--theme-accent);
 }
 
+/* The functional tier: plain/legible, small, wide-tracked -- a caption
+   under the monogram rather than a second competing headline. */
 .names {
-  font-family: var(--theme-font-heading);
-  font-weight: 300;
-  font-size: 2rem;
-  letter-spacing: 0.06em;
+  font-family: var(--theme-font-body);
+  font-weight: 400;
+  font-size: 0.95rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1.6;
   margin: 0;
 }
 
 .date {
   font-family: var(--theme-font-body);
-  font-size: 0.85rem;
-  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   opacity: 0.7;
+  line-height: 1.6;
   margin: 0;
+}
+
+/* A small closing flourish under the whole text block, not framing the
+   monogram itself -- deliberately not a badge/border around the letters
+   (see the .monogram comment above for why). */
+.wreath {
+  display: block;
+  width: 5rem;
+  height: 2.1rem;
+  margin-top: 0.25rem;
+  background-color: var(--theme-accent);
+  opacity: 0.8;
+  mask-image: url("/patterns/laurel-wreath.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/laurel-wreath.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
 }
 
 @media (min-width: 640px) {
   .section {
-    gap: 1.25rem;
+    gap: 1.75rem;
     padding: 2.5rem 1.5rem;
   }
 
   .monogram {
-    width: 7rem;
-    height: 7rem;
-    font-size: 2.1rem;
+    font-size: 5.5rem;
   }
 
   .names {
-    font-size: 2.5rem;
+    font-size: 1.05rem;
+    letter-spacing: 0.24em;
   }
 
   .date {
-    font-size: 0.9rem;
-    letter-spacing: 0.22em;
+    font-size: 0.85rem;
+    letter-spacing: 0.27em;
+  }
+
+  .wreath {
+    width: 6rem;
+    height: 2.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .section {
-    gap: 1.5rem;
+    gap: 2rem;
     padding: 3rem 1.5rem;
   }
 
   .monogram {
-    width: 8rem;
-    height: 8rem;
-    font-size: 2.4rem;
+    font-size: 7rem;
   }
 
   .names {
-    font-size: 3rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.25em;
+  }
+
+  .wreath {
+    width: 7rem;
+    height: 2.9rem;
   }
 
   .date {
-    font-size: 1rem;
-    letter-spacing: 0.25em;
+    font-size: 0.9rem;
+    letter-spacing: 0.28em;
   }
 }

@@ -14,7 +14,6 @@ export const rusticWheatfield: Theme = {
     "--theme-accent": "#B8862E",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

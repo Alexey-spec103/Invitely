@@ -62,24 +62,24 @@ export default function FontPicker({ value, onChange }: FontPickerProps) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         style={{ fontFamily: value }}
-        className="min-w-[10rem] rounded-md border border-gray-300 px-2 py-1.5 text-left text-sm"
+        className="min-w-[10rem] rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-left text-sm text-[var(--dash-text)]"
       >
         {value}
       </button>
       {open && (
-        <div className="absolute z-20 mt-1 w-64 rounded-md border border-gray-200 bg-white shadow-lg">
+        <div className="absolute z-20 mt-1 w-64 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface)] shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
           <input
             autoFocus
             type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search fonts..."
-            className="w-full border-b border-gray-200 px-3 py-2 text-sm outline-none"
+            className="w-full border-b border-[var(--dash-border)] bg-transparent px-3 py-2 text-sm text-[var(--dash-text)] outline-none placeholder:text-[var(--dash-text-muted)]"
           />
           <div className="max-h-72 overflow-auto py-1">
             {Object.entries(grouped).map(([category, fonts]) => (
               <div key={category}>
-                <div className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                <div className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
                   {CATEGORY_LABELS[category] ?? category}
                 </div>
                 {fonts.map((font) => (
@@ -94,8 +94,8 @@ export default function FontPicker({ value, onChange }: FontPickerProps) {
                     }}
                     className={
                       font.family === value
-                        ? "block w-full px-3 py-1.5 text-left text-sm bg-rose-50 text-rose-700"
-                        : "block w-full px-3 py-1.5 text-left text-sm hover:bg-gray-50"
+                        ? "block w-full px-3 py-1.5 text-left text-sm bg-[var(--dash-accent)]/15 text-[var(--dash-accent)]"
+                        : "block w-full px-3 py-1.5 text-left text-sm text-[var(--dash-text)] hover:bg-white/5"
                     }
                   >
                     {font.family}
@@ -104,7 +104,7 @@ export default function FontPicker({ value, onChange }: FontPickerProps) {
               </div>
             ))}
             {filtered.length === 0 && (
-              <div className="px-3 py-4 text-center text-sm text-gray-400">No fonts found</div>
+              <div className="px-3 py-4 text-center text-sm text-[var(--dash-text-muted)]">No fonts found</div>
             )}
           </div>
         </div>

@@ -14,7 +14,6 @@ export const minimalTaupe: Theme = {
     "--theme-accent": "#8A7F72",
     "--theme-font-heading": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/dot-grid.svg')",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },
 };

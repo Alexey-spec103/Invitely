@@ -14,7 +14,6 @@ export const rusticCranberryHarvest: Theme = {
     "--theme-accent": "#9E4A3A",
     "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

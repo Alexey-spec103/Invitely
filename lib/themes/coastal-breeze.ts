@@ -12,7 +12,6 @@ export const coastalBreeze: Theme = {
     "--theme-accent": "#3B7A8C",
     "--theme-font-heading": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },
 };

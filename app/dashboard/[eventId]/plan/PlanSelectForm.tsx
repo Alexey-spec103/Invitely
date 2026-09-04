@@ -31,7 +31,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-gray-900">Plan</h1>
+      <h1 className="dash-h1 text-gray-900">Plan</h1>
       <p className="mt-1 text-sm text-gray-500">
         No payment is collected yet — this just sets your plan.
       </p>
@@ -44,12 +44,18 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
               key={plan.id}
               className={
                 isSelected
-                  ? "rounded-xl border-2 border-rose-600 p-5"
-                  : "rounded-xl border border-gray-200 p-5"
+                  ? "rounded-2xl border-2 border-[var(--dash-accent)] bg-white p-5 shadow-sm"
+                  : "rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
               }
             >
               <p className="text-sm font-semibold text-gray-900">{plan.name}</p>
-              <p className="mt-1 text-2xl font-semibold text-gray-900">
+              <p
+                className={
+                  isSelected
+                    ? "mt-1 text-2xl font-semibold text-[var(--dash-accent-text)]"
+                    : "mt-1 text-2xl font-semibold text-gray-900"
+                }
+              >
                 {plan.priceEur === 0 ? "Free" : `€${plan.priceEur}`}
               </p>
               <ul className="mt-4 space-y-2 text-xs text-gray-600">
@@ -63,8 +69,8 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                 onClick={() => handleSelect(plan.id)}
                 className={
                   isSelected
-                    ? "mt-5 w-full rounded-md bg-rose-100 px-3 py-2 text-sm font-medium text-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
-                    : "mt-5 w-full rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    ? "dash-btn dash-btn-secondary mt-5 w-full"
+                    : "dash-btn dash-btn-primary mt-5 w-full"
                 }
               >
                 {isSelected ? "Selected" : "Select"}

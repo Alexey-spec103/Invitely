@@ -3,7 +3,10 @@
 import { useState } from "react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import type { Theme } from "@/lib/themes";
-import { formatPreviewDate, previewDateStyleFor } from "@/lib/themes/previewMedia";
+import { formatPreviewDate } from "@/lib/themes/previewMedia";
+import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
+import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
+import type { HeroVariant } from "@/components/sections/HeroSection";
 import styles from "./MaterialsPreviewModal.module.css";
 
 interface MaterialsPreviewModalProps {
@@ -32,8 +35,12 @@ export default function MaterialsPreviewModal({
   const names = name2 ? `${name1} & ${name2}` : name1;
   const initials = `${name1.charAt(0)}${(name2 ?? "").charAt(0)}`.toUpperCase();
   const dateLabel = eventDate
-    ? formatPreviewDate(new Date(`${eventDate}T00:00:00`), previewDateStyleFor(theme.category))
+    ? formatPreviewDate(new Date(`${eventDate}T00:00:00`))
     : "Your event date";
+  const recommendedVariant = recommendedHeroVariantFor(theme.id, theme.category);
+  const heroVariant: HeroVariant = HERO_VARIANTS.includes(recommendedVariant as HeroVariant)
+    ? (recommendedVariant as HeroVariant)
+    : DEFAULT_HERO_VARIANT;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -71,10 +78,13 @@ export default function MaterialsPreviewModal({
               <div className={styles.phone}>
                 <span className={styles.phoneNotch} aria-hidden="true" />
                 <div className={styles.phoneScreen}>
-                  <span className={styles.phoneCalendarBtn}>+ Calendar</span>
-                  <span className={styles.phoneNames}>{names}</span>
-                  <span className={styles.phoneDate}>{dateLabel}</span>
-                  <span className={styles.phoneRsvp}>RSVP</span>
+                  <div className={styles.phoneScaleInner}>
+                    <HeroSection
+                      variant={heroVariant}
+                      names={name2 ? [name1, name2] : [name1]}
+                      eventDate={dateLabel}
+                    />
+                  </div>
                 </div>
                 <p className={styles.caption}>Website</p>
               </div>

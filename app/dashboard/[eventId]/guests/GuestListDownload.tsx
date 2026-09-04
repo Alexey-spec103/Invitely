@@ -48,7 +48,7 @@ export default function GuestListDownload({ theme, eventTitle, rows }: GuestList
         type="button"
         onClick={handleDownload}
         disabled={pending || rows.length === 0}
-        className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+        className="dash-btn dash-btn-neutral"
       >
         {pending ? "Generating..." : "Download printable guest list (PDF)"}
       </button>

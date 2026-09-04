@@ -13,7 +13,6 @@ export const minimalPorcelain: Theme = {
     "--theme-accent": "#C7C1B8",
     "--theme-font-heading": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/dot-grid.svg')",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },
 };

@@ -14,7 +14,6 @@ export const botanicalWildflower: Theme = {
     "--theme-accent": "#C9974F",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/leaves.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

@@ -1,3 +1,5 @@
+import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+
 export type BanquetNavigatorVariant = "simple-lookup";
 
 export interface BanquetTableLookupResult {
@@ -13,6 +15,7 @@ export interface BanquetNavigatorSectionVariantProps {
    * has a table assigned -- skips the search entirely and just states it. */
   assignedTableName?: string;
   onLookup: (fullName: string) => Promise<BanquetTableLookupResult>;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export interface BanquetNavigatorSectionProps extends BanquetNavigatorSectionVariantProps {

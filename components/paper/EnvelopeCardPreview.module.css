@@ -7,7 +7,6 @@
   flex-direction: column;
   padding: 6%;
   background: var(--theme-bg);
-  background-image: var(--theme-bg-texture, none);
   color: var(--theme-text);
   overflow: hidden;
 }

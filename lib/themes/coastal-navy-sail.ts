@@ -15,7 +15,6 @@ export const coastalNavySail: Theme = {
     "--theme-accent": "#2E6E8E",
     "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/waves.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

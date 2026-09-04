@@ -12,7 +12,6 @@ export const botanicalSage: Theme = {
     "--theme-accent": "#8B9D77",
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/leaves.svg')",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },

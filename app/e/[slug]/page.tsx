@@ -5,7 +5,6 @@ import { getTheme } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { parseSections, parseContent, renderSection, sectionWillRender, SECTION_LABELS } from "@/components/sections/registry";
 import ThemeProvider from "@/components/theme/ThemeProvider";
-import SectionEditableOverlay from "@/components/site/SectionEditableOverlay";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import SiteHeader from "@/components/shell/SiteHeader";
 import ScrollToNextSection from "@/components/shell/ScrollToNextSection";
@@ -49,7 +48,7 @@ export async function generateMetadata({
 
 export default async function Page({ params, searchParams }: PageProps<"/e/[slug]">) {
   const { slug } = await params;
-  const { invite, preview } = await searchParams;
+  const { invite } = await searchParams;
   const supabase = await createClient();
 
   const { data: event } = await supabase
@@ -167,17 +166,11 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           if (!element) {
             return null;
           }
-          const inner = <div id={`section-${section.type}`}>{element}</div>;
-          const wrapped =
-            preview === "1" ? (
-              <SectionEditableOverlay key={section.type} sectionType={section.type}>
-                {inner}
-              </SectionEditableOverlay>
-            ) : (
-              <div key={section.type} id={`section-${section.type}`}>
-                {element}
-              </div>
-            );
+          const wrapped = (
+            <div key={section.type} id={`section-${section.type}`}>
+              {element}
+            </div>
+          );
           // The first section normally skips the reveal-on-scroll animation
           // since it's already visible on load — but in canvas mode the
           // canvas frames sit above it, so even the first functional

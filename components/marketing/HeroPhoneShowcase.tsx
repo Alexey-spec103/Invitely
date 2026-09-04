@@ -3,7 +3,7 @@ import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/s
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import { getTheme } from "@/lib/themes";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
-import { previewPhotoFor, previewTargetDateFor, previewDateStyleFor, formatPreviewDate } from "@/lib/themes/previewMedia";
+import { previewPhotoFor, previewTargetDateFor, formatPreviewDate } from "@/lib/themes/previewMedia";
 import styles from "./HeroPhoneShowcase.module.css";
 
 const SHOWCASE_THEME_ID = "romantic-blush";
@@ -22,7 +22,7 @@ export default function HeroPhoneShowcase() {
     : DEFAULT_HERO_VARIANT;
   const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
   const targetDate = previewTargetDateFor(theme.id, theme.season);
-  const dateLabel = formatPreviewDate(targetDate, previewDateStyleFor(theme.category));
+  const dateLabel = formatPreviewDate(targetDate);
 
   return (
     <div className={styles.frame}>

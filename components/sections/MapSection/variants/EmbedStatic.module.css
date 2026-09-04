@@ -16,55 +16,28 @@
   max-width: 44rem;
 }
 
+/* No card chrome at all here -- the reference's Map section sits directly
+   on the page background, full-bleed, the most "undressed" section of the
+   four (no panel, no border, no radius, not even the Letter/Timeline
+   sections' flat sheet). */
 .card {
-  position: relative;
   width: 100%;
-  padding: 2rem 1.5rem;
-  border-radius: 0.25rem;
   text-align: center;
   color: var(--theme-text);
-  background: color-mix(in srgb, var(--theme-bg) 55%, transparent);
-  border: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent);
-  backdrop-filter: blur(6px);
-}
-
-.flourishTopLeft,
-.flourishBottomRight {
-  position: absolute;
-  width: 2.75rem;
-  height: 2.75rem;
-  background-color: var(--theme-accent);
-  opacity: 0.6;
-  mask-image: url("/patterns/corner-flourish.svg");
-  mask-repeat: no-repeat;
-  mask-size: contain;
-  -webkit-mask-image: url("/patterns/corner-flourish.svg");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-}
-
-.flourishTopLeft {
-  top: 0.75rem;
-  left: 0.75rem;
-}
-
-.flourishBottomRight {
-  bottom: 0.75rem;
-  right: 0.75rem;
-  transform: rotate(180deg);
 }
 
 .title {
-  font-family: var(--theme-font-heading);
-  font-weight: 300;
-  font-size: 1.75rem;
-  letter-spacing: 0.03em;
+  font-family: var(--theme-font-script);
+  font-weight: 400;
+  font-size: 1.9rem;
+  line-height: 1.5;
+  letter-spacing: 0;
   margin: 0 0 1rem;
 }
 
 .venueName {
-  font-family: var(--theme-font-heading);
-  font-size: 1rem;
+  font-family: var(--theme-font-script);
+  font-size: 1.3rem;
   margin: 0 0 0.25rem;
 }
 
@@ -79,9 +52,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
-  border-radius: 0.25rem;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--theme-accent) 20%, transparent);
 }
 
 .map {
@@ -97,17 +68,13 @@
     padding: 3.5rem 1.5rem;
   }
 
-  .card {
-    padding: 2.5rem 2rem;
-  }
-
   .title {
-    font-size: 2.1rem;
+    font-size: 2.3rem;
     margin: 0 0 1.25rem;
   }
 
   .venueName {
-    font-size: 1.05rem;
+    font-size: 1.4rem;
   }
 
   .venueAddress {
@@ -125,17 +92,13 @@
     padding: 4rem 1.5rem;
   }
 
-  .card {
-    padding: 3rem 2.5rem;
-  }
-
   .title {
-    font-size: 2.4rem;
+    font-size: 2.6rem;
     margin: 0 0 1.5rem;
   }
 
   .venueName {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
   }
 
   .venueAddress {

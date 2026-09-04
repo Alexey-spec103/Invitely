@@ -51,14 +51,14 @@ export default function ThemeSelectForm({
   return (
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-semibold text-gray-900">Style</h1>
+        <div className="border-l-4 border-[var(--dash-accent)] pl-4">
+          <h1 className="dash-h1 text-gray-900">Style</h1>
           <p className="mt-1 text-sm text-gray-500">Pick a theme for your site.</p>
         </div>
         <button
           type="button"
           onClick={() => setPreviewOpen(true)}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-50"
+          className="dash-btn dash-btn-neutral"
         >
           Preview full material set
         </button>

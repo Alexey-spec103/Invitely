@@ -6,8 +6,11 @@ import { getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { parseContent } from "@/components/sections/registry";
 import { parseCanvasFrames } from "@/lib/canvas/parse";
+import { getWeddingDataCompleteness } from "@/lib/weddingData";
+import { plans, DEFAULT_PLAN_ID } from "@/lib/plans";
 import InvitationDownloads from "./InvitationDownloads";
 import PaperEditor from "./PaperEditor";
+import HubOverviewStrip from "../HubOverviewStrip";
 
 export default async function InvitationsPage({
   params,
@@ -98,12 +101,26 @@ export default async function InvitationsPage({
   const backMessage =
     typeof invitationsContent.backMessage === "string" ? invitationsContent.backMessage : "";
 
+  const { percent: weddingDataPercent } = getWeddingDataCompleteness(event);
+  const plan = plans[event.plan_id ?? DEFAULT_PLAN_ID] ?? plans[DEFAULT_PLAN_ID];
+
   return (
-    <div>
-      <h1 className="text-xl font-semibold text-gray-900">Invitations</h1>
+    <div className="max-w-3xl">
+      <h1 className="dash-h1 text-gray-900">Invitations</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Download a print-ready PDF invitation, on-brand with your chosen theme.
+        Design your paper card, then download a print-ready PDF invitation, on-brand with your
+        chosen theme.
       </p>
+
+      <div className="mt-6">
+        <HubOverviewStrip
+          eventId={event.id}
+          themeName={theme.name}
+          weddingDataPercent={weddingDataPercent}
+          planName={plan.name}
+          planPriceEur={plan.priceEur}
+        />
+      </div>
 
       <PaperEditor
         eventId={event.id}

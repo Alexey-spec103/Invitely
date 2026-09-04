@@ -13,15 +13,22 @@ import {
   Wand2,
   MessagesSquare,
   Video,
+  Type,
+  Pencil,
+  Sliders,
+  Heart,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { themes } from "@/lib/themes";
 import { CANVAS_FONTS } from "@/lib/canvas/fonts";
 import { plans } from "@/lib/plans";
-import { EVENT_TYPE_LIST } from "@/lib/eventTypes";
 import LandingThemeShowcase from "@/components/marketing/LandingThemeShowcase";
-import ConstructorMockup from "@/components/marketing/ConstructorMockup";
+import ConstructorScreenshot from "@/components/marketing/ConstructorScreenshot";
 import HeroPhoneShowcase from "@/components/marketing/HeroPhoneShowcase";
+import PlatformFanSection from "@/components/marketing/PlatformFanSection";
+import HowItWorksSection from "@/components/marketing/HowItWorksSection";
+import GuestTrackingSection from "@/components/marketing/GuestTrackingSection";
+import SiteOrPaperSection from "@/components/marketing/SiteOrPaperSection";
 
 const themeCount = Object.keys(themes).length;
 const fontCount = CANVAS_FONTS.length;
@@ -40,21 +47,36 @@ const statBar = [
   { value: "1", label: "link for everything" },
 ];
 
-const steps = [
+const constructorFeatures = [
   {
-    number: "1",
-    title: "Create your site",
-    description: "Sign up, tell us what you're celebrating, and we'll set up your page in seconds.",
+    icon: Type,
+    title: `${fontCount}+ curated fonts`,
+    description: "Script, serif, bold, or thin — swap the whole look with one click.",
   },
   {
-    number: "2",
-    title: "Design it your way",
-    description: "Start from a designer theme or drag your own layout together on a blank canvas.",
+    icon: Palette,
+    title: "Any color you like",
+    description: "Build your own palette to match your exact wedding colors.",
   },
   {
-    number: "3",
-    title: "Share the link with guests",
-    description: "Publish and send your guests one link to everything they need to know.",
+    icon: Wand2,
+    title: "Designer-curated variations",
+    description: "Or start from color and pattern combinations, hand-picked by our designers.",
+  },
+  {
+    icon: Pencil,
+    title: "Flexible text, anywhere",
+    description: "Edit, resize, add, and move any text on your chosen design.",
+  },
+  {
+    icon: Printer,
+    title: "Paper add-ons & banquet cards",
+    description: "Design the front and back of your invitation, plus matching banquet cards.",
+  },
+  {
+    icon: Sliders,
+    title: "Toggle site modules on and off",
+    description: "Turn the countdown, schedule, RSVP, map, and more on or off, per site.",
   },
 ];
 
@@ -72,6 +94,25 @@ const modules = [
   { icon: Users2, title: "Banquet seating", description: "Assign tables — by name, not just headcount — and generate table & place cards to print." },
   { icon: Globe, title: "Custom domain", description: "Point your own domain at your site, or keep the readable link we give you free." },
 ];
+
+// Factual, not promotional -- the free tier really is unlimited to use, and
+// paper invitations are the one thing only Premium unlocks. No fabricated
+// "-20%"-style discount badges: unlike weddingpost.ru's pricing section,
+// nothing here is ever actually discounted, so a strikethrough price would
+// be a fake one.
+const planBadges: Record<string, string> = {
+  free: "Always free",
+  premium: "Includes paper invitations",
+};
+
+// Each paid tier's own `features` array starts with "Everything in ..." for
+// the /dashboard/[eventId]/plan page's cumulative comparison -- on the
+// landing page that reads as the generic "SaaS grid" the audit flagged, so
+// this shows only what a tier newly adds. Derived from the same `plans`
+// data (not a second copy) so it can't drift out of sync.
+const planHighlights: Record<string, string[]> = Object.fromEntries(
+  Object.values(plans).map((plan) => [plan.id, plan.features.filter((feature) => !feature.startsWith("Everything in"))])
+);
 
 export default async function Home() {
   const supabase = await createClient();
@@ -95,40 +136,61 @@ export default async function Home() {
 
   return (
     <div className="bg-white font-sans">
-      <header className="sticky top-0 z-40 border-b border-stone-100 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="text-lg font-semibold tracking-tight text-stone-900">
-            Invitely
-          </Link>
-          <nav className="hidden items-center gap-8 text-sm font-medium text-stone-600 sm:flex">
-            <a href="#constructor" className="hover:text-stone-900">
-              Constructor
-            </a>
-            <a href="#themes" className="hover:text-stone-900">
-              Themes
-            </a>
-            <a href="#whats-included" className="hover:text-stone-900">
-              What&apos;s included
-            </a>
-            <a href="#pricing" className="hover:text-stone-900">
-              Pricing
-            </a>
-          </nav>
-          <div className="flex items-center gap-4">
-            {!user && (
-              <Link href="/login" className="text-sm font-medium text-stone-600 hover:text-stone-900">
-                Login
-              </Link>
-            )}
-            <Link
-              href={ctaHref}
-              className="rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-5 py-2 text-sm font-extrabold uppercase tracking-wide text-white shadow-sm transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
-            >
-              {ctaLabel}
-            </Link>
-          </div>
+      {/* landing-audit.md priority 19: weddingpost.ru's own site opens with a
+          gradient bar above the header, on every screen, pre-empting the
+          "can I even pay from here" objection before the visitor reaches the
+          hero. Same lilac-to-pink pair as the "with a wow effect" accent
+          (priority 18) -- one recognizable decorative accent reused in the
+          two spots that call for it, not a third color. Sticky together with
+          the header (one shared sticky wrapper) so it stays pinned exactly
+          like the original while scrolling, instead of scrolling away. */}
+      <div className="sticky top-0 z-40">
+        <div className="bg-gradient-to-r from-violet-300 to-pink-300 py-2 text-center text-xs font-medium text-white sm:text-sm">
+          Visa / Mastercard / PayPal accepted · Instant delivery — send your invite link anywhere
+          in the world
         </div>
-      </header>
+        <header className="border-b border-stone-100 bg-white/80 backdrop-blur">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+            {/* landing-audit.md priority 20: a bare wordmark gives no
+                "wedding" signal and doesn't stick in memory. weddingpost.ru's
+                own mark is a two-tone split heart -- their specific authored
+                execution of it, not an industry-standard shape, so this is a
+                solid-color heart in our one brand accent instead of a copy
+                of theirs. */}
+            <Link href="/" className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-stone-900">
+              <Heart className="h-5 w-5 text-[var(--dash-accent)]" fill="currentColor" strokeWidth={0} />
+              Invitely
+            </Link>
+            <nav className="hidden items-center gap-8 text-sm font-medium text-stone-600 sm:flex">
+              <a href="#constructor" className="hover:text-stone-900">
+                Constructor
+              </a>
+              <a href="#themes" className="hover:text-stone-900">
+                Themes
+              </a>
+              <a href="#whats-included" className="hover:text-stone-900">
+                What&apos;s included
+              </a>
+              <a href="#pricing" className="hover:text-stone-900">
+                Pricing
+              </a>
+            </nav>
+            <div className="flex items-center gap-4">
+              {!user && (
+                <Link href="/login" className="text-sm font-medium text-stone-600 hover:text-stone-900">
+                  Login
+                </Link>
+              )}
+              <Link
+                href={ctaHref}
+                className="rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-5 py-2 text-sm font-extrabold uppercase tracking-wide text-white shadow-sm transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
+              >
+                {ctaLabel}
+              </Link>
+            </div>
+          </div>
+        </header>
+      </div>
 
       <section className="overflow-hidden bg-gradient-to-b from-orange-50 via-orange-50 to-white">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 sm:py-20 lg:grid-cols-2 lg:py-24">
@@ -139,8 +201,13 @@ export default async function Home() {
             <h1 className="mt-3 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
               Your event, styled exactly how you imagined it
             </h1>
+            {/* landing-audit.md priority 18: the one deliberately "fancy"
+                element on the screen, matching weddingpost.ru's own pink→
+                purple→blue script accent -- a narrow, scoped exception to
+                the single-CTA-color cleanup above (this is decorative text,
+                not a button/interactive element). */}
             <p
-              className="mt-2 text-3xl text-[var(--dash-accent-text)]"
+              className="mt-2 inline-block bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-4xl text-transparent"
               style={{ fontFamily: "var(--font-alex-brush), cursive" }}
             >
               with a wow effect
@@ -150,10 +217,6 @@ export default async function Home() {
               style, everywhere your guests see it. Start from a designer theme, or drag your own
               together from a blank canvas.
             </p>
-            <p className="mt-4 max-w-md text-sm text-stone-500">
-              {EVENT_TYPE_LIST.map((type) => type.label).join(" · ")}
-            </p>
-
             <ul className="mt-8 space-y-3">
               {heroChecklist.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-center gap-3 text-stone-700">
@@ -196,22 +259,9 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="how-it-works" className="border-t border-stone-100 bg-stone-50 py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
-            How it works
-          </h2>
-          <div className="mt-16 grid gap-12 sm:grid-cols-3">
-            {steps.map((step) => (
-              <div key={step.number} className="text-center">
-                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--dash-accent)] to-red-600 text-sm font-semibold text-white">
-                  {step.number}
-                </div>
-                <h3 className="mt-5 text-lg font-semibold text-stone-900">{step.title}</h3>
-                <p className="mt-2 text-sm text-stone-600">{step.description}</p>
-              </div>
-            ))}
-          </div>
+      <section className="border-t border-stone-100 py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <PlatformFanSection />
         </div>
       </section>
 
@@ -230,12 +280,6 @@ export default async function Home() {
               elements front to back, and undo your way back if you change your mind. The exact
               design you build carries over to your printed invitations too.
             </p>
-            <ul className="mt-6 space-y-2 text-sm text-stone-600">
-              <li>• Free-form drag, resize, and rotate for text and photos</li>
-              <li>• {fontCount}+ curated fonts, searchable, live-previewed as you type</li>
-              <li>• Multiple pages per site — a cover, a story, however many you like</li>
-              <li>• The same design becomes your paper invitation PDF automatically</li>
-            </ul>
             <div className="mt-8">
               <Link
                 href={ctaHref}
@@ -245,7 +289,29 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-          <ConstructorMockup />
+          <ConstructorScreenshot />
+        </div>
+
+        <div className="mx-auto mt-20 grid max-w-6xl gap-8 px-6 sm:grid-cols-2">
+          {constructorFeatures.map(({ icon: Icon, title, description }) => (
+            <div key={title} className="flex gap-4">
+              <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-orange-50 text-[var(--dash-accent-text)]">
+                <Icon className="h-5 w-5" strokeWidth={2} />
+              </span>
+              <div>
+                <h3 className="text-base font-semibold text-stone-900">{title}</h3>
+                <p className="mt-1 text-sm text-stone-600">{description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <HowItWorksSection ctaHref={ctaHref} ctaLabel={constructorCtaLabel} />
+
+      <section className="border-t border-stone-100 py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <SiteOrPaperSection />
         </div>
       </section>
 
@@ -286,24 +352,38 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="border-t border-stone-100 py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <GuestTrackingSection />
+        </div>
+      </section>
+
       <section id="pricing" className="border-t border-stone-100 bg-stone-50 py-24">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
-            Simple pricing
+            The constructor is always free
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">
-            Start free. Upgrade when you&apos;re ready for a custom domain, paper invitations, or
-            banquet seating.
+            Design your site, invite guests, and track RSVPs at no cost. Pay only when you want a
+            custom domain, paper invitations, or banquet seating.
           </p>
           <div className="mt-16 grid gap-6 sm:grid-cols-3">
             {Object.values(plans).map((plan) => (
-              <div key={plan.id} className="rounded-xl border border-stone-200 bg-white p-6">
+              <div key={plan.id} className="relative rounded-xl border border-stone-200 bg-white p-6">
+                {planBadges[plan.id] && (
+                  <span className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+                    {planBadges[plan.id]}
+                  </span>
+                )}
                 <p className="text-sm font-semibold text-stone-900">{plan.name}</p>
                 <p className="mt-2 text-3xl font-semibold text-stone-900">
                   {plan.priceEur === 0 ? "Free" : `€${plan.priceEur}`}
                 </p>
-                <ul className="mt-6 space-y-2 text-sm text-stone-600">
-                  {plan.features.map((feature) => (
+                <p className="mt-2 text-xs uppercase tracking-wide text-stone-400">
+                  {plan.id === "free" ? "What you get" : "What this adds"}
+                </p>
+                <ul className="mt-3 space-y-2 text-sm text-stone-600">
+                  {planHighlights[plan.id].map((feature) => (
                     <li key={feature}>{feature}</li>
                   ))}
                 </ul>
@@ -330,55 +410,91 @@ export default async function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-stone-200 py-16">
+      {/* landing-audit.md priority 16/9: dark footer with real contact info,
+          payment trust badges, and terms/privacy links -- the audit's
+          concrete complaint was that a visitor about to pay hits a footer
+          with no address, phone, or legal docs at all. We adapt rather than
+          copy: weddingpost.ru's footer lists real RU business-registration
+          numbers (ИНН/ОГРН/ОКВЭД) for their actual legal entity, which we
+          don't have (no registered company behind this project) -- inventing
+          fake registration numbers would be worse than having none, so this
+          keeps only what's real (a support address) plus the payment badges
+          and legal-doc links the audit's own "what to do" asks for. bg-stone-900
+          reuses the one dark accent already used elsewhere (error/not-found
+          pages) instead of introducing a new color. */}
+      <footer className="bg-stone-900 py-16 text-stone-300">
         <div className="mx-auto max-w-5xl px-6">
           <div className="grid gap-10 sm:grid-cols-3">
             <div>
-              <p className="text-lg font-semibold tracking-tight text-stone-900">Invitely</p>
-              <p className="mt-2 text-sm text-stone-500">Event websites, live in minutes.</p>
+              <p className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-white">
+                <Heart className="h-5 w-5 text-[var(--dash-accent)]" fill="currentColor" strokeWidth={0} />
+                Invitely
+              </p>
+              <p className="mt-2 text-sm text-stone-400">Event websites, live in minutes.</p>
+              <div className="mt-6 flex items-center gap-3 text-xs font-semibold tracking-wide text-stone-400">
+                <span className="rounded border border-stone-700 px-2 py-1">VISA</span>
+                <span className="rounded border border-stone-700 px-2 py-1">MASTERCARD</span>
+                <span className="rounded border border-stone-700 px-2 py-1">PAYPAL</span>
+              </div>
+              <p className="mt-2 text-xs text-stone-500">Visa / Mastercard / PayPal accepted</p>
             </div>
             <div>
-              <p className="text-sm font-semibold text-stone-900">Product</p>
-              <ul className="mt-3 space-y-2 text-sm text-stone-500">
+              <p className="text-sm font-semibold text-white">Product</p>
+              <ul className="mt-3 space-y-2 text-sm text-stone-400">
                 <li>
-                  <a href="#constructor" className="hover:text-stone-900">
+                  <a href="#constructor" className="hover:text-white">
                     Constructor
                   </a>
                 </li>
                 <li>
-                  <a href="#themes" className="hover:text-stone-900">
+                  <a href="#themes" className="hover:text-white">
                     Themes
                   </a>
                 </li>
                 <li>
-                  <a href="#whats-included" className="hover:text-stone-900">
+                  <a href="#whats-included" className="hover:text-white">
                     What&apos;s included
                   </a>
                 </li>
                 <li>
-                  <a href="#pricing" className="hover:text-stone-900">
+                  <a href="#pricing" className="hover:text-white">
                     Pricing
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <p className="text-sm font-semibold text-stone-900">Account</p>
-              <ul className="mt-3 space-y-2 text-sm text-stone-500">
+              <p className="text-sm font-semibold text-white">Legal & account</p>
+              <ul className="mt-3 space-y-2 text-sm text-stone-400">
                 <li>
-                  <Link href="/login" className="hover:text-stone-900">
+                  <Link href="/terms" className="hover:text-white">
+                    Terms of service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="hover:text-white">
+                    Privacy policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/login" className="hover:text-white">
                     Login
                   </Link>
                 </li>
                 <li>
-                  <Link href="/signup" className="hover:text-stone-900">
+                  <Link href="/signup" className="hover:text-white">
                     Sign up
                   </Link>
                 </li>
               </ul>
             </div>
           </div>
-          <p className="mt-12 text-sm text-stone-400">© 2026 Invitely. All rights reserved.</p>
+          <div className="mt-12 flex flex-col gap-2 border-t border-stone-800 pt-6 text-sm text-stone-500 sm:flex-row sm:items-center sm:justify-between">
+            <p>© 2026 Invitely. All rights reserved.</p>
+            <a href="mailto:support@invitely.app" className="hover:text-stone-300">
+              support@invitely.app
+            </a>
+          </div>
         </div>
       </footer>
     </div>

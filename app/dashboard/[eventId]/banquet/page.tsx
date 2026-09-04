@@ -5,9 +5,12 @@ import { createClient } from "@/lib/supabase/server";
 import { getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { getEventType } from "@/lib/eventTypes";
+import { getWeddingDataCompleteness } from "@/lib/weddingData";
+import { plans, DEFAULT_PLAN_ID } from "@/lib/plans";
 import BanquetTablesManager from "./BanquetTablesManager";
 import GuestTableAssignments from "./GuestTableAssignments";
 import BanquetCardDownloads from "./BanquetCardDownloads";
+import HubOverviewStrip from "../HubOverviewStrip";
 
 export default async function BanquetPage({ params }: PageProps<"/dashboard/[eventId]/banquet">) {
   const { eventId } = await params;
@@ -96,16 +99,27 @@ export default async function BanquetPage({ params }: PageProps<"/dashboard/[eve
     : 0;
   const seatedOfConfirmedPercent = confirmedCount > 0 ? Math.round((seatedOfConfirmedCount / confirmedCount) * 100) : 0;
 
+  const { percent: weddingDataPercent } = getWeddingDataCompleteness(event);
+  const plan = plans[event.plan_id ?? DEFAULT_PLAN_ID] ?? plans[DEFAULT_PLAN_ID];
+
   return (
     <div>
+      <HubOverviewStrip
+        eventId={event.id}
+        themeName={theme.name}
+        weddingDataPercent={weddingDataPercent}
+        planName={plan.name}
+        planPriceEur={plan.priceEur}
+      />
+
       {guestList.length > 0 && (
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm">
+          <div className="rounded-2xl bg-white px-4 py-3 text-sm shadow-sm">
             <p className="text-gray-500">Without a table</p>
             <p className="mt-1 text-2xl font-semibold text-gray-900">{withoutTableCount}</p>
           </div>
           {hasRsvpData ? (
-            <div className="rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm">
+            <div className="rounded-2xl bg-white px-4 py-3 text-sm shadow-sm">
               <p className="text-gray-500">
                 Confirmations <span className="font-semibold text-emerald-700">{confirmedCount}/{guestList.length}</span>
               </p>
@@ -118,12 +132,12 @@ export default async function BanquetPage({ params }: PageProps<"/dashboard/[eve
               <p className="mt-1 text-xs text-gray-400">{confirmedPercent}% confirmed attending</p>
             </div>
           ) : (
-            <div className="rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm">
+            <div className="rounded-2xl bg-white px-4 py-3 text-sm shadow-sm">
               <p className="text-gray-500">Confirmations</p>
               <p className="mt-1 text-2xl font-semibold text-gray-900">—</p>
             </div>
           )}
-          <div className="rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm">
+          <div className="rounded-2xl bg-white px-4 py-3 text-sm shadow-sm">
             {hasRsvpData ? (
               <>
                 <p className="text-gray-500">
@@ -131,7 +145,7 @@ export default async function BanquetPage({ params }: PageProps<"/dashboard/[eve
                 </p>
                 <div className="mt-2 h-1.5 w-full rounded-full bg-gray-200">
                   <div
-                    className="h-1.5 rounded-full bg-gray-900"
+                    className="h-1.5 rounded-full bg-[var(--dash-accent)]"
                     style={{ width: `${seatedOfConfirmedPercent}%` }}
                   />
                 </div>

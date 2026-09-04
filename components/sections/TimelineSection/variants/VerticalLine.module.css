@@ -8,30 +8,38 @@
   color: var(--theme-text);
 }
 
+/* Very open leading (~1.75x) on the heading -- the single most generous
+   line-height ratio in the reference, reserved for this one big script
+   moment. */
 .title {
-  font-family: var(--theme-font-heading);
-  font-weight: 300;
-  font-size: 2rem;
-  letter-spacing: 0.03em;
+  font-family: var(--theme-font-script);
+  font-weight: 400;
+  font-size: 2.1rem;
+  line-height: 1.75;
+  letter-spacing: 0;
   text-align: center;
   margin: 0 0 2rem;
 }
 
+/* A lighter, more translucent flat panel than the Letter card (no
+   radius/shadow either) -- same "paper sheet" language, just a fainter
+   sheet, per the reference's Timeline capture. */
 .list {
   position: relative;
   list-style: none;
   width: 100%;
   max-width: 30rem;
   margin: 0;
-  padding: 0;
+  padding: 2.5rem 1.5rem 1rem;
+  background: color-mix(in srgb, var(--theme-bg) 50%, transparent);
 }
 
 .list::before {
   content: "";
   position: absolute;
-  top: 0.35rem;
-  bottom: 0.35rem;
-  left: 0.3125rem;
+  top: 2.85rem;
+  bottom: 1.35rem;
+  left: 1.8125rem;
   width: 1px;
   background: color-mix(in srgb, var(--theme-accent) 40%, transparent);
 }
@@ -56,13 +64,20 @@
   background: var(--theme-accent);
 }
 
+/* Functional tier -- small, tracked, plain, same role as the Hero's date
+   label. Kept out of the script font deliberately: the event title below
+   is this row's one decorative moment, and doubling up on script (as the
+   reference does with two *different* cursive typefaces we don't have)
+   would just make both lines look identical with only one script variable. */
 .time {
   display: block;
-  font-family: var(--theme-font-heading);
-  font-size: 1.2rem;
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  margin-bottom: 0.25rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 0.35rem;
 }
 
 .eventTitle {
@@ -96,7 +111,7 @@
   }
 
   .time {
-    font-size: 1.35rem;
+    font-size: 0.85rem;
   }
 
   .eventTitle {
@@ -124,8 +139,8 @@
   }
 
   .time {
-    font-size: 1.5rem;
-    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
   }
 
   .eventTitle {

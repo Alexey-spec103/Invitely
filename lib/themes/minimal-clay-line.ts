@@ -14,7 +14,6 @@ export const minimalClayLine: Theme = {
     "--theme-accent": "#B98A6A",
     "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/dot-grid.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

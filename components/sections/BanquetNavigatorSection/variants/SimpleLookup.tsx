@@ -3,6 +3,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import type { BanquetNavigatorSectionVariantProps } from "../types";
+import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./SimpleLookup.module.css";
 
 export default function SimpleLookup({
@@ -10,7 +12,9 @@ export default function SimpleLookup({
   description,
   assignedTableName,
   onLookup,
+  styleOverrides,
 }: BanquetNavigatorSectionVariantProps) {
+  const { editable } = useEditableField();
   const [name, setName] = useState("");
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<{ tableName: string | null; searchedFor: string } | null>(null);
@@ -39,8 +43,14 @@ export default function SimpleLookup({
       <div className={styles.card}>
         <span className={styles.flourishTopLeft} aria-hidden="true" />
         <span className={styles.flourishBottomRight} aria-hidden="true" />
-        <h2 className={styles.title}>{title}</h2>
-        {description && <p className={styles.description}>{description}</p>}
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+        </h2>
+        {(description || editable) && (
+          <p className={styles.description}>
+            <EditableText field="description" value={description ?? ""} style={styleOverrides?.["description"]} />
+          </p>
+        )}
 
         {assignedTableName ? (
           <p className={styles.tableAnswer}>

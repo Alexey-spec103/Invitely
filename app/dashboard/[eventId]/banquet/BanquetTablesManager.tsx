@@ -90,43 +90,26 @@ export default function BanquetTablesManager({ eventId, tables, label }: Banquet
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-gray-900">{label}</h1>
+      <h1 className="dash-h1 text-gray-900">{label}</h1>
       <p className="mt-1 text-sm text-gray-500">
         Set up tables, then assign guests to seats below.
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex items-end gap-3" noValidate>
         <div className="flex-1">
-          <label htmlFor="tableName" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="tableName" className="block text-sm font-semibold text-gray-900">
             Table name
           </label>
-          <input
-            id="tableName"
-            type="text"
-            placeholder="Table 1"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-            {...register("name")}
-          />
+          <input id="tableName" type="text" placeholder="Table 1" className="dash-input mt-1" {...register("name")} />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
         </div>
         <div className="w-24">
-          <label htmlFor="tableCapacity" className="block text-sm font-medium text-gray-700">
-            Seats <span className="text-gray-400">(optional)</span>
+          <label htmlFor="tableCapacity" className="block text-sm font-semibold text-gray-900">
+            Seats <span className="font-normal text-gray-400">(optional)</span>
           </label>
-          <input
-            id="tableCapacity"
-            type="number"
-            min={1}
-            placeholder="8"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-            {...register("capacity")}
-          />
+          <input id="tableCapacity" type="number" min={1} placeholder="8" className="dash-input mt-1" {...register("capacity")} />
         </div>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary">
           {isSubmitting ? "Adding..." : "Add table"}
         </button>
       </form>
@@ -154,7 +137,7 @@ export default function BanquetTablesManager({ eventId, tables, label }: Banquet
                     }
                   }}
                   autoFocus
-                  className="w-full max-w-xs rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  className="dash-input max-w-xs"
                 />
                 <input
                   type="number"
@@ -168,7 +151,7 @@ export default function BanquetTablesManager({ eventId, tables, label }: Banquet
                       void handleRename(table.id);
                     }
                   }}
-                  className="w-20 rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  className="dash-input w-20"
                 />
                 <button
                   type="button"

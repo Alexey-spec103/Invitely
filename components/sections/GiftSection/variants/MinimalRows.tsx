@@ -1,11 +1,24 @@
+"use client";
+
 import type { GiftSectionVariantProps } from "../types";
+import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./MinimalRows.module.css";
 
-export default function MinimalRows({ title, description, preferences }: GiftSectionVariantProps) {
+export default function MinimalRows({ title, description, preferences, styleOverrides }: GiftSectionVariantProps) {
+  const { editable } = useEditableField();
   return (
     <section className={styles.section}>
-      {title && <h2 className={styles.title}>{title}</h2>}
-      {description && <p className={styles.description}>{description}</p>}
+      {(title || editable) && (
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
+        </h2>
+      )}
+      {(description || editable) && (
+        <p className={styles.description}>
+          <EditableText field="description" value={description ?? ""} style={styleOverrides?.["description"]} />
+        </p>
+      )}
 
       {preferences.length > 0 && (
         <div className={styles.list}>

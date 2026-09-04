@@ -15,7 +15,6 @@ export const rusticBarnwood: Theme = {
     "--theme-accent": "#8B5E34",
     "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

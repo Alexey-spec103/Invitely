@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="40" viewBox="0 0 220 40" fill="none">
+  <!-- Calligraphic underline flourish for hand-lettered names: a single
+       confident swash with a small terminal curl, evoking a pen stroke
+       rather than a plain rule line. -->
+  <path
+    d="M6 14 C 50 2, 120 2, 170 16 C 190 21, 205 20, 214 10"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+  <path
+    d="M214 10 C 210 16, 210 24, 216 30"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+  />
+</svg>

@@ -1,0 +1,191 @@
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 3rem;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
+  }
+}
+
+.text {
+  max-width: 30rem;
+}
+
+.heading {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: #1c1917;
+}
+
+@media (min-width: 640px) {
+  .heading {
+    font-size: 2.25rem;
+  }
+}
+
+.subtext {
+  margin: 1rem 0 0;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: #57534e;
+}
+
+/* The scattered "one design, every physical/digital piece" composition --
+   percentages tuned by eye against weddingpost.ru's own layout (same
+   process as the phone-mockup crop fixes elsewhere on this landing page),
+   not a precise grid. Each .item is a real themed preview component, sized
+   only by width% + its own aspect-ratio; internal text scales via each
+   card's own container query, so this stays legible at any width. */
+.fanWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 6 / 5;
+  min-height: 340px;
+}
+
+.item {
+  /* grid, not block: InvitationCardPreview's FlipCard renders its faces
+     `position: absolute`, which contributes zero height to a block-level
+     parent's normal flow and collapses the whole ThemeProvider/FlipCard
+     chain to 0px. `display: grid` makes this the single grid item stretch
+     to fill 100% of the (aspect-ratio-derived) box by default -- the same
+     fix PaperEditor.tsx already relies on for the identical component. */
+  display: grid;
+  position: absolute;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow:
+    0 18px 36px -14px rgba(58, 46, 44, 0.32),
+    0 4px 10px rgba(58, 46, 44, 0.14);
+}
+
+.envelope {
+  top: 1%;
+  left: 20%;
+  width: 15%;
+  aspect-ratio: 649 / 459;
+  transform: rotate(-9deg);
+  z-index: 1;
+}
+
+.table {
+  top: 12%;
+  left: 74%;
+  width: 22%;
+  aspect-ratio: 420 / 595;
+  transform: rotate(7deg);
+  z-index: 2;
+}
+
+.program {
+  top: 22%;
+  left: 49%;
+  width: 18%;
+  aspect-ratio: 420 / 595;
+  transform: rotate(5deg);
+  z-index: 3;
+}
+
+.dressCode {
+  top: 60%;
+  left: 55%;
+  width: 15%;
+  aspect-ratio: 420 / 595;
+  transform: rotate(-6deg);
+  z-index: 4;
+}
+
+.phone {
+  top: 20%;
+  left: 0%;
+  width: 20%;
+  aspect-ratio: 375 / 750;
+  transform: rotate(-8deg);
+  z-index: 5;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.invitation {
+  top: 16%;
+  left: 30%;
+  width: 22%;
+  aspect-ratio: 420 / 595;
+  transform: rotate(-3deg);
+  z-index: 6;
+}
+
+.place {
+  top: 68%;
+  left: 82%;
+  width: 15%;
+  aspect-ratio: 252 / 144;
+  transform: rotate(6deg);
+  z-index: 7;
+}
+
+/* Phone frame -- a plain CSS bezel (no product photo behind it, unlike the
+   hero's HeroPhoneShowcase) since this section's phone is one item among
+   several, not the sole focal point. */
+.phoneBezel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  background: #171412;
+  padding: 3.5% 2.5%;
+  box-shadow:
+    0 18px 36px -14px rgba(58, 46, 44, 0.32),
+    0 4px 10px rgba(58, 46, 44, 0.14);
+}
+
+.phoneNotch {
+  position: absolute;
+  top: 1.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26%;
+  height: 2.2%;
+  border-radius: 999px;
+  background: #000;
+  z-index: 1;
+}
+
+.phoneScreen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  container-type: inline-size;
+}
+
+.phoneScaleWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.phoneScaleInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 375px;
+  transform-origin: top left;
+  /* Same container-query scale-to-fit + vertical crop-compensation as
+     HeroPhoneShowcase's .screenScaleInner, for the same theme/variant --
+     see that file's comment for why the translateY offset exists. */
+  transform: scale(calc(100cqw / 375px)) translateY(-40vh);
+}

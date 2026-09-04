@@ -14,7 +14,6 @@ export const vintageMintParlor: Theme = {
     "--theme-accent": "#7C9885",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },
 };

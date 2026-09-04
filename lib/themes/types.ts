@@ -4,8 +4,6 @@ export interface ThemeVars {
   "--theme-accent": string;
   "--theme-font-heading": string;
   "--theme-font-body": string;
-  /** url() of a seamless SVG background pattern. Omit for themes with no texture. */
-  "--theme-bg-texture"?: string;
   /** Handwritten/italic font for pull quotes. Omit for themes with no accent font. */
   "--theme-font-accent"?: string;
   /** Genuine cursive/handwriting font for signature-style flourishes (quotes, timeline event titles). */

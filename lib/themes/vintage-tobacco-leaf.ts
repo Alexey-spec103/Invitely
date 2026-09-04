@@ -14,7 +14,6 @@ export const vintageTobaccoLeaf: Theme = {
     "--theme-accent": "#8A6B3D",
     "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

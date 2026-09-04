@@ -1,3 +1,5 @@
+import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+
 export type RsvpVariant = "simple-form";
 
 export interface RsvpQuestion {
@@ -36,6 +38,7 @@ export interface RsvpSectionVariantProps {
   maxPartySize?: number;
   questions?: RsvpQuestion[];
   onSubmit: (input: RsvpFormInput) => Promise<void>;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export interface RsvpSectionProps extends RsvpSectionVariantProps {

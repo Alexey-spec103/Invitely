@@ -11,7 +11,6 @@ import {
   previewPhotoFor,
   previewNamesFor,
   previewTargetDateFor,
-  previewDateStyleFor,
   previewDomainFor,
   formatPreviewDate,
 } from "@/lib/themes/previewMedia";
@@ -265,7 +264,7 @@ export function ThemeGalleryCard({ theme, selected, disabled, onSelect, isMarket
   const [name1, name2] = previewNamesFor(theme.id);
   const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
   const targetDate = useMemo(() => previewTargetDateFor(theme.id, theme.season), [theme.id, theme.season]);
-  const dateLabel = formatPreviewDate(targetDate, previewDateStyleFor(theme.category));
+  const dateLabel = formatPreviewDate(targetDate);
   const domain = previewDomainFor(name1, name2);
   const layoutLabel = layoutLabelFor(theme.id, theme.category);
   const tags = [layoutLabel, ...theme.tags.filter((tag) => tag !== layoutLabel)].slice(0, 4);

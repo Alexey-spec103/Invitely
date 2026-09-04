@@ -142,55 +142,27 @@
 }
 
 .phoneScreen {
+  position: relative;
   aspect-ratio: 9 / 17;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  text-align: center;
+  overflow: hidden;
   background-color: var(--theme-bg);
   border: 3px solid color-mix(in srgb, var(--theme-text) 75%, transparent);
   border-top: none;
+  pointer-events: none;
 }
 
-.phoneCalendarBtn {
-  font-family: var(--theme-font-body);
-  font-size: 0.55rem;
-  letter-spacing: 0.03em;
-  padding: 0.2rem 0.5rem;
-  border-radius: 999px;
-  background-color: var(--theme-accent);
-  color: var(--theme-bg);
-}
-
-.phoneNames {
-  font-family: var(--theme-font-script);
-  color: var(--theme-accent);
-  font-size: 1.1rem;
-  line-height: 1.1;
-}
-
-.phoneDate {
-  font-family: var(--theme-font-body);
-  color: var(--theme-text);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-
-.phoneRsvp {
-  margin-top: 0.5rem;
-  font-family: var(--theme-font-body);
-  font-size: 0.55rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.3rem 0.9rem;
-  border-radius: 999px;
-  border: 1px solid var(--theme-accent);
-  color: var(--theme-accent);
+/* Renders the theme's own recommended Hero variant -- the same component
+   the public site and dashboard editor use -- at its natural mobile width
+   (375px), scaled down to this fixed 11rem-wide frame. Cropped from the
+   top (`.phoneScreen`'s overflow:hidden) rather than fitting the full
+   (min-height:100vh) section -- matches weddingpost.ru's own phone mockup. */
+.phoneScaleInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 375px;
+  transform-origin: top left;
+  transform: scale(calc(11rem / 375px));
 }
 
 /* Paper invitation mockup */
@@ -212,8 +184,6 @@
   padding: 1.25rem 1rem;
   text-align: center;
   background-color: var(--theme-bg);
-  background-image: var(--theme-bg-texture, none);
-  background-repeat: repeat;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
   border: 1px solid color-mix(in srgb, var(--theme-text) 12%, transparent);
 }

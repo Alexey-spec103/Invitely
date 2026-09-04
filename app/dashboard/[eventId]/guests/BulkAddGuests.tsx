@@ -89,7 +89,7 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
               type="button"
               onClick={handleSubmit}
               disabled={submitting || parsed.length === 0}
-              className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="dash-btn dash-btn-primary"
             >
               {submitting
                 ? "Adding..."

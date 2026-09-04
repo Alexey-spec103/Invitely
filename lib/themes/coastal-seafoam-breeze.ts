@@ -14,7 +14,6 @@ export const coastalSeafoamBreeze: Theme = {
     "--theme-accent": "#5FA893",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/waves.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

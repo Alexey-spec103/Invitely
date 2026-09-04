@@ -15,7 +15,6 @@ export const vintageForestEmerald: Theme = {
     "--theme-accent": "#4F7259",
     "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

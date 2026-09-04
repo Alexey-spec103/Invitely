@@ -24,14 +24,14 @@ export default function EventSwitcher({ events, currentEventId }: EventSwitcherP
       router.push("/onboarding");
       return;
     }
-    router.push(`/dashboard/${value}`);
+    router.push(`/dashboard/${value}/site`);
   };
 
   return (
     <select
       value={currentEventId}
       onChange={(event) => handleChange(event.target.value)}
-      className="rounded-md border border-stone-200 bg-white px-2 py-1 text-sm font-medium text-stone-700 focus:border-stone-400 focus:outline-none"
+      className="rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1 text-sm font-medium text-[var(--dash-text)] focus:border-[var(--dash-accent)] focus:outline-none"
       aria-label="Switch event"
     >
       {events.map((event) => (

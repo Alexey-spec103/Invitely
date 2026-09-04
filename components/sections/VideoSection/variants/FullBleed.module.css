@@ -28,6 +28,19 @@
   border: 0;
 }
 
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: #fff;
+  opacity: 0.6;
+  font-family: var(--theme-font-body);
+  font-size: 0.9rem;
+}
+
 @media (min-width: 640px) {
   .title {
     font-size: 2.4rem;

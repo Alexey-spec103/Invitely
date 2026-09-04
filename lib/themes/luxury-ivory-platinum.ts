@@ -15,7 +15,6 @@ export const luxuryIvoryPlatinum: Theme = {
     "--theme-accent": "#9FA6AC",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

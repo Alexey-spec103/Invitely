@@ -16,6 +16,26 @@
   text-align: center;
 }
 
+/* A small circular emblem crowning the plate -- the "crest" the layout
+   name promises, in the same abstract-geometric register as the zigzag
+   bands (concentric contour lines, not an organic wreath). */
+.crest {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+  background-color: var(--theme-accent);
+  opacity: 0.8;
+  mask-image: url("/patterns/modern-concentric-arcs.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/modern-concentric-arcs.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
 .zigzag {
   display: block;
   height: 10px;

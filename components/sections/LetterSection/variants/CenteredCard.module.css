@@ -7,17 +7,17 @@
   padding: 3rem 1rem;
 }
 
+/* A flat "paper sheet" -- no border-radius, no border, no glass-blur.
+   weddingpost's own Letter card is a near-opaque rectangle floating over
+   the page background, not an app panel. */
 .card {
   position: relative;
   width: 100%;
   max-width: 38rem;
   padding: 2rem 1.5rem;
-  border-radius: 0.25rem;
   text-align: center;
   color: var(--theme-text);
-  background: color-mix(in srgb, var(--theme-bg) 55%, transparent);
-  border: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent);
-  backdrop-filter: blur(6px);
+  background: color-mix(in srgb, var(--theme-bg) 88%, white);
 }
 
 .flourishTopLeft,
@@ -46,11 +46,15 @@
   transform: rotate(180deg);
 }
 
+/* The decorative tier -- genuine script, generous line-height (headings in
+   the reference run ~1.5x font-size, an "airy" rhythm rather than tight
+   leading). */
 .title {
-  font-family: var(--theme-font-heading);
-  font-weight: 300;
-  font-size: 1.75rem;
-  letter-spacing: 0.03em;
+  font-family: var(--theme-font-script);
+  font-weight: 400;
+  font-size: 1.9rem;
+  line-height: 1.5;
+  letter-spacing: 0;
   margin: 0 0 1.25rem;
 }
 
@@ -62,10 +66,12 @@
   margin: 0 0 1.5rem;
 }
 
+/* Pull-quote: tight leading (~1x font-size), unlike headings -- reads as
+   one confident script line rather than a wrapped paragraph. */
 .quote {
   font-family: var(--theme-font-script);
   font-size: 1.6rem;
-  line-height: 1.4;
+  line-height: 1.1;
   color: var(--theme-accent);
   margin: 0;
 }
@@ -91,7 +97,7 @@
 .closingLine {
   font-family: var(--theme-font-script);
   font-size: 1.3rem;
-  line-height: 1.4;
+  line-height: 1.45;
   color: var(--theme-text);
   margin: 1.5rem 0 0;
 }

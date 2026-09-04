@@ -67,7 +67,7 @@ export default function BanquetCardDownloads({
 
   return (
     <div className="mt-12 border-t border-gray-200 pt-8">
-      <h2 className="text-lg font-semibold text-gray-900">Print cards</h2>
+      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Print cards</h2>
       <p className="mt-1 text-sm text-gray-500">
         Table cards list who&apos;s seated where; place cards are one per guest, ready to cut.
         {placeCardsFilteredByRsvp && " Place cards only include guests who've RSVP'd attending."}
@@ -78,7 +78,7 @@ export default function BanquetCardDownloads({
           type="button"
           onClick={downloadTableCards}
           disabled={pending !== null || tables.length === 0}
-          className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="dash-btn dash-btn-primary"
         >
           {pending === "tables" ? "Generating..." : "Download table cards"}
         </button>
@@ -86,7 +86,7 @@ export default function BanquetCardDownloads({
           type="button"
           onClick={downloadPlaceCards}
           disabled={pending !== null || allGuestNames.length === 0}
-          className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="dash-btn dash-btn-primary"
         >
           {pending === "places" ? "Generating..." : "Download all place cards"}
         </button>

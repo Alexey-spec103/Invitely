@@ -472,24 +472,24 @@ export default function CanvasEditor({ eventId, initialFrames }: CanvasEditorPro
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col">
-      <div className="flex flex-none flex-wrap items-center gap-2 border-b border-gray-200 bg-white px-4 py-2">
+      <div className="flex flex-none flex-wrap items-center gap-2 border-b border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-2">
         <button
           type="button"
           onClick={() => setAddModalOpen(true)}
           disabled={uploadingImage}
-          className="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-md bg-[var(--dash-accent)] px-3 py-1.5 text-sm font-medium text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent-hover)] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {uploadingImage ? "Uploading..." : "+ Add element"}
         </button>
 
-        <span className="mx-2 h-5 w-px bg-gray-200" />
+        <span className="mx-2 h-5 w-px bg-[var(--dash-border)]" />
 
         <button
           type="button"
           onClick={undo}
           disabled={historyIndex === 0}
           title="Undo"
-          className="rounded-md border border-gray-300 p-1.5 text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Undo2 className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -498,7 +498,7 @@ export default function CanvasEditor({ eventId, initialFrames }: CanvasEditorPro
           onClick={redo}
           disabled={historyIndex >= history.length - 1}
           title="Redo"
-          className="rounded-md border border-gray-300 p-1.5 text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Redo2 className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -528,19 +528,19 @@ export default function CanvasEditor({ eventId, initialFrames }: CanvasEditorPro
         <span className="flex-1" />
 
         {saving && (
-          <span className="flex items-center gap-1 text-xs text-gray-400">
+          <span className="flex items-center gap-1 text-xs text-[var(--dash-text-muted)]">
             <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
             Saving...
           </span>
         )}
         {!saving && showSavedTick && (
-          <span className="flex items-center gap-1 text-xs text-emerald-600">
+          <span className="flex items-center gap-1 text-xs text-emerald-400">
             <Check className="h-3.5 w-3.5" aria-hidden="true" />
             Saved
           </span>
         )}
         {saveError && (
-          <span className="flex items-center gap-1 text-xs text-red-600">
+          <span className="flex items-center gap-1 text-xs text-red-400">
             <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
             {saveError}
           </span>
@@ -549,20 +549,20 @@ export default function CanvasEditor({ eventId, initialFrames }: CanvasEditorPro
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="rounded-md bg-rose-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-md bg-[var(--dash-accent)] px-4 py-1.5 text-sm font-semibold text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent-hover)] disabled:cursor-not-allowed disabled:opacity-60"
         >
           Save
         </button>
       </div>
 
-      <div className="flex flex-none flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-2">
+      <div className="flex flex-none flex-wrap items-center gap-2 border-b border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-2">
         {frames.map((f, index) => (
           <div
             key={f.id}
             className={
               f.id === activeFrameId
-                ? "flex items-center gap-1 rounded-md bg-gray-900 pl-3 pr-1.5 py-1 text-sm text-white"
-                : "flex items-center gap-1 rounded-md border border-gray-300 bg-white pl-3 pr-1.5 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                ? "flex items-center gap-1 rounded-md bg-[var(--dash-accent)] pl-3 pr-1.5 py-1 text-sm text-[var(--dash-accent-contrast)]"
+                : "flex items-center gap-1 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] pl-3 pr-1.5 py-1 text-sm text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)]"
             }
           >
             <button type="button" onClick={() => selectFrame(f.id)} className="max-w-[10rem] truncate">
@@ -572,7 +572,7 @@ export default function CanvasEditor({ eventId, initialFrames }: CanvasEditorPro
               type="button"
               title="Rename page"
               onClick={() => renameFrame(f.id)}
-              className={f.id === activeFrameId ? "px-1 text-white/70 hover:text-white" : "px-1 text-gray-400 hover:text-gray-700"}
+              className={f.id === activeFrameId ? "px-1 text-[var(--dash-accent-contrast)]/70 hover:text-[var(--dash-accent-contrast)]" : "px-1 text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"}
             >
               ✎
             </button>
@@ -582,7 +582,7 @@ export default function CanvasEditor({ eventId, initialFrames }: CanvasEditorPro
               disabled={index === 0}
               onClick={() => moveFrame(f.id, "left")}
               className={
-                (f.id === activeFrameId ? "text-white/70 hover:text-white" : "text-gray-400 hover:text-gray-700") +
+                (f.id === activeFrameId ? "text-[var(--dash-accent-contrast)]/70 hover:text-[var(--dash-accent-contrast)]" : "text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]") +
                 " px-1 disabled:opacity-30"
               }
             >
@@ -594,7 +594,7 @@ export default function CanvasEditor({ eventId, initialFrames }: CanvasEditorPro
               disabled={index === frames.length - 1}
               onClick={() => moveFrame(f.id, "right")}
               className={
-                (f.id === activeFrameId ? "text-white/70 hover:text-white" : "text-gray-400 hover:text-gray-700") +
+                (f.id === activeFrameId ? "text-[var(--dash-accent-contrast)]/70 hover:text-[var(--dash-accent-contrast)]" : "text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]") +
                 " px-1 disabled:opacity-30"
               }
             >
@@ -605,7 +605,7 @@ export default function CanvasEditor({ eventId, initialFrames }: CanvasEditorPro
                 type="button"
                 title="Delete page"
                 onClick={() => deleteFrame(f.id)}
-                className={f.id === activeFrameId ? "px-1 text-white/70 hover:text-red-300" : "px-1 text-gray-400 hover:text-red-600"}
+                className={f.id === activeFrameId ? "px-1 text-[var(--dash-accent-contrast)]/70 hover:text-red-300" : "px-1 text-[var(--dash-text-muted)] hover:text-red-400"}
               >
                 ×
               </button>
@@ -615,14 +615,14 @@ export default function CanvasEditor({ eventId, initialFrames }: CanvasEditorPro
         <button
           type="button"
           onClick={addFrame}
-          className="rounded-md border border-dashed border-gray-300 px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100"
+          className="rounded-md border border-dashed border-[var(--dash-border)] px-3 py-1 text-sm font-medium text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
         >
           + Page
         </button>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-      <div ref={setScrollAreaEl} className="relative flex-1 overflow-auto bg-gray-100 p-8">
+      <div ref={setScrollAreaEl} className="relative flex-1 overflow-auto bg-[var(--dash-bg)] p-8">
         {selectedElement && selectedTarget && toolbarPos && editingId !== selectedId && (
           <ElementToolbar
             measureRef={setToolbarEl}

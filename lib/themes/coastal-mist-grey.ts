@@ -15,7 +15,6 @@ export const coastalMistGrey: Theme = {
     "--theme-accent": "#8FA69C",
     "--theme-font-heading": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/waves.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

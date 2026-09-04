@@ -13,7 +13,6 @@ export const editorialNoir: Theme = {
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/grain-dark.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

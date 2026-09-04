@@ -15,5 +15,5 @@ export default async function DashboardRootPage() {
     redirect("/onboarding");
   }
 
-  redirect(`/dashboard/${events[0].id}`);
+  redirect(`/dashboard/${events[0].id}/site`);
 }

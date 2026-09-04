@@ -14,7 +14,6 @@ export const modernGraphiteTeal: Theme = {
     "--theme-accent": "#2F8C82",
     "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/dot-grid.svg')",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },
 };

@@ -50,12 +50,12 @@ export default function LayersPanel({
   const sorted = [...elements].sort((a, b) => b.zIndex - a.zIndex);
 
   return (
-    <div className="w-64 flex-none overflow-y-auto border-l border-gray-200 bg-white">
-      <p className="border-b border-gray-200 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+    <div className="w-64 flex-none overflow-y-auto border-l border-[var(--dash-border)] bg-[var(--dash-surface)]">
+      <p className="border-b border-[var(--dash-border)] px-3 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
         Layers
       </p>
       {sorted.length === 0 && (
-        <p className="px-3 py-4 text-xs text-gray-400">Nothing on this page yet.</p>
+        <p className="px-3 py-4 text-xs text-[var(--dash-text-muted)]">Nothing on this page yet.</p>
       )}
       <ul>
         {sorted.map((element) => {
@@ -73,8 +73,8 @@ export default function LayersPanel({
             <li
               key={element.id}
               className={
-                "group flex items-center gap-2 border-b border-gray-100 px-3 py-2 text-sm " +
-                (isSelected ? "bg-rose-50" : "hover:bg-gray-50")
+                "group flex items-center gap-2 border-b border-[var(--dash-border)] px-3 py-2 text-sm " +
+                (isSelected ? "bg-[var(--dash-accent)]/10" : "hover:bg-white/5")
               }
             >
               <button
@@ -83,8 +83,8 @@ export default function LayersPanel({
                 className="flex min-w-0 flex-1 items-center gap-2 text-left"
                 title={elementLabel(element)}
               >
-                <span className="shrink-0 text-gray-400">{elementIcon(element)}</span>
-                <span className="truncate text-gray-800">{elementLabel(element)}</span>
+                <span className="shrink-0 text-[var(--dash-text-muted)]">{elementIcon(element)}</span>
+                <span className="truncate text-[var(--dash-text)]">{elementLabel(element)}</span>
               </button>
               <button
                 type="button"
@@ -92,7 +92,7 @@ export default function LayersPanel({
                 title={element.desktopOnly ? "Shown on desktop only — click to show everywhere" : "Show on desktop only"}
                 className={
                   "shrink-0 rounded px-1 text-[10px] font-semibold uppercase transition-opacity " +
-                  (element.desktopOnly ? "bg-gray-900 text-white opacity-100" : `text-gray-300 hover:text-gray-600 ${revealClass}`)
+                  (element.desktopOnly ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)] opacity-100" : `text-[var(--dash-text-muted)] hover:text-[var(--dash-text)] ${revealClass}`)
                 }
               >
                 D
@@ -102,7 +102,7 @@ export default function LayersPanel({
                 onClick={() => onToggleHidden(element.id)}
                 title={element.hidden ? "Hidden from your site — click to show" : "Hide from your site"}
                 className={
-                  "shrink-0 text-gray-400 hover:text-gray-700 transition-opacity " +
+                  "shrink-0 text-[var(--dash-text-muted)] hover:text-[var(--dash-text)] transition-opacity " +
                   (element.hidden ? "opacity-100" : revealClass)
                 }
               >
@@ -112,7 +112,7 @@ export default function LayersPanel({
                 type="button"
                 onClick={() => onDelete(element.id)}
                 title="Delete"
-                className={"shrink-0 text-gray-300 hover:text-red-600 transition-opacity " + revealClass}
+                className={"shrink-0 text-[var(--dash-text-muted)] hover:text-red-400 transition-opacity " + revealClass}
               >
                 🗑
               </button>
@@ -125,21 +125,21 @@ export default function LayersPanel({
        * right below the element list -- matches weddingpost.ru's own layers
        * panel, where a block's background/visibility settings sit under its
        * element list rather than in a separate always-visible toolbar. */}
-      <div className="border-t border-gray-200 px-3 py-3">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Background</p>
+      <div className="border-t border-[var(--dash-border)] px-3 py-3">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">Background</p>
         <div className="flex items-center gap-2">
           <input
             type="color"
             value={background.color ?? "#ffffff"}
             onChange={(event) => onBackgroundColorChange(event.target.value)}
-            className="h-8 w-10 shrink-0 rounded border border-gray-300"
+            className="h-8 w-10 shrink-0 rounded border border-[var(--dash-border)]"
             title="Background color"
           />
           <button
             type="button"
             onClick={onBackgroundImagePick}
             disabled={uploadingBackground}
-            className="flex-1 rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex-1 rounded-md border border-[var(--dash-border)] px-2.5 py-1.5 text-xs font-medium text-[var(--dash-text)] hover:border-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {uploadingBackground ? "Uploading..." : background.imageUrl ? "Change image" : "Add image"}
           </button>
@@ -148,12 +148,12 @@ export default function LayersPanel({
           <button
             type="button"
             onClick={onBackgroundImageRemove}
-            className="mt-2 w-full rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+            className="mt-2 w-full rounded-md border border-[var(--dash-border)] px-2.5 py-1.5 text-xs font-medium text-[var(--dash-text)] hover:border-[var(--dash-accent)]"
           >
             Remove image
           </button>
         )}
-        {uploadError && <p className="mt-2 text-xs text-red-600">{uploadError}</p>}
+        {uploadError && <p className="mt-2 text-xs text-red-400">{uploadError}</p>}
       </div>
     </div>
   );

@@ -8,7 +8,6 @@
   align-items: center;
   padding: 10% 10% 6%;
   background: var(--theme-bg);
-  background-image: var(--theme-bg-texture, none);
   color: var(--theme-text);
   overflow: hidden;
 }

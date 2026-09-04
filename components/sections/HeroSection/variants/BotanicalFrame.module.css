@@ -61,10 +61,10 @@
 }
 
 .names {
-  font-family: var(--theme-font-heading);
-  font-weight: 300;
-  font-size: 1.9rem;
-  letter-spacing: 0.03em;
+  font-family: var(--theme-font-script);
+  font-weight: 400;
+  font-size: 2.75rem;
+  line-height: 1.1;
   margin: 0;
 }
 
@@ -92,7 +92,7 @@
   }
 
   .names {
-    font-size: 2.4rem;
+    font-size: 3.5rem;
   }
 
   .date {
@@ -107,6 +107,6 @@
   }
 
   .names {
-    font-size: 2.9rem;
+    font-size: 4.25rem;
   }
 }

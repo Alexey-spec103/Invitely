@@ -3,6 +3,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import type { RsvpSectionVariantProps } from "../types";
+import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./SimpleForm.module.css";
 
 export default function SimpleForm({
@@ -12,7 +14,9 @@ export default function SimpleForm({
   maxPartySize,
   questions,
   onSubmit,
+  styleOverrides,
 }: RsvpSectionVariantProps) {
+  const { editable } = useEditableField();
   const [guestName, setGuestName] = useState(defaultGuestName ?? "");
   const [attending, setAttending] = useState<boolean | null>(null);
   const [partySize, setPartySize] = useState("1");
@@ -87,8 +91,14 @@ export default function SimpleForm({
       <div className={styles.card}>
         <span className={styles.flourishTopLeft} aria-hidden="true" />
         <span className={styles.flourishBottomRight} aria-hidden="true" />
-        <h2 className={styles.title}>{title}</h2>
-        {description && <p className={styles.description}>{description}</p>}
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+        </h2>
+        {(description || editable) && (
+          <p className={styles.description}>
+            <EditableText field="description" value={description ?? ""} style={styleOverrides?.["description"]} />
+          </p>
+        )}
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }} aria-hidden="true">
@@ -196,10 +206,10 @@ export default function SimpleForm({
             />
           </div>
 
-          {questions?.map((question) => (
+          {questions?.map((question, index) => (
             <div className={styles.field} key={question.id}>
               <label className={styles.label} htmlFor={`rsvp-question-${question.id}`}>
-                {question.label}
+                <EditableText field={`questions.${index}.label`} value={question.label} style={styleOverrides?.[`questions.${index}.label`]} />
               </label>
               {question.type === "choice" && question.options && question.options.length > 0 ? (
                 <select

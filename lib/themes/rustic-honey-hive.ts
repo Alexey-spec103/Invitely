@@ -14,7 +14,6 @@ export const rusticHoneyHive: Theme = {
     "--theme-accent": "#C88A2E",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

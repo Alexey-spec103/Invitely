@@ -1,11 +1,22 @@
+"use client";
+
 import type { DressCodeSectionVariantProps } from "../types";
+import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./MinimalStripe.module.css";
 
-export default function MinimalStripe({ title, description, colors }: DressCodeSectionVariantProps) {
+export default function MinimalStripe({ title, description, colors, styleOverrides }: DressCodeSectionVariantProps) {
+  const { editable } = useEditableField();
   return (
     <section className={styles.section}>
-      <h2 className={styles.title}>{title}</h2>
-      {description && <p className={styles.description}>{description}</p>}
+      <h2 className={styles.title}>
+        <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+      </h2>
+      {(description || editable) && (
+        <p className={styles.description}>
+          <EditableText field="description" value={description ?? ""} style={styleOverrides?.["description"]} />
+        </p>
+      )}
 
       <div className={styles.stripe} aria-hidden="true">
         {colors.map((color, index) => (

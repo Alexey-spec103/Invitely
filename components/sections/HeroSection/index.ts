@@ -21,5 +21,11 @@ export const HERO_VARIANTS: HeroVariant[] = [
   "monogram-crest",
   "folk-ornament",
   "collage-scrapbook",
+  "gothic-frame",
+  "bare-branch",
+  "postage-stamp",
+  "victorian-cameo",
+  "left-aligned",
+  "stacked-grid",
 ];
 export const DEFAULT_HERO_VARIANT: HeroVariant = "monogram-center";

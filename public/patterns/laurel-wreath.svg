@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="90" viewBox="0 0 220 90" fill="none">
+  <!-- Soft open laurel wreath: two mirrored leaf sprigs, same leaf-blob
+       technique as corner-flourish.svg. Colored via currentColor so it
+       tints with the theme accent through a CSS mask. -->
+  <g>
+    <path d="M110 88 C 90 80, 72 66, 60 48 C 52 36, 50 24, 54 14" stroke="currentColor" stroke-width="1" stroke-linecap="round" />
+    <path d="M100 78 C 92 74, 87 68, 86 60 C 91 62, 96 66, 100 78 Z" fill="currentColor" opacity="0.75" />
+    <path d="M84 62 C 76 59, 71 53, 71 45 C 77 47, 82 51, 84 62 Z" fill="currentColor" opacity="0.7" />
+    <path d="M68 44 C 61 42, 57 36, 57 28 C 63 30, 67 34, 68 44 Z" fill="currentColor" opacity="0.65" />
+    <path d="M57 24 C 51 23, 48 18, 49 11 C 54 13, 57 17, 57 24 Z" fill="currentColor" opacity="0.6" />
+  </g>
+  <g transform="translate(220,0) scale(-1,1)">
+    <path d="M110 88 C 90 80, 72 66, 60 48 C 52 36, 50 24, 54 14" stroke="currentColor" stroke-width="1" stroke-linecap="round" />
+    <path d="M100 78 C 92 74, 87 68, 86 60 C 91 62, 96 66, 100 78 Z" fill="currentColor" opacity="0.75" />
+    <path d="M84 62 C 76 59, 71 53, 71 45 C 77 47, 82 51, 84 62 Z" fill="currentColor" opacity="0.7" />
+    <path d="M68 44 C 61 42, 57 36, 57 28 C 63 30, 67 34, 68 44 Z" fill="currentColor" opacity="0.65" />
+    <path d="M57 24 C 51 23, 48 18, 49 11 C 54 13, 57 17, 57 24 Z" fill="currentColor" opacity="0.6" />
+  </g>
+</svg>

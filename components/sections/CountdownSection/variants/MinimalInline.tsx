@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import type { CountdownSectionVariantProps } from "../types";
+import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./MinimalInline.module.css";
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24;
@@ -25,7 +27,8 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export default function MinimalInline({ title, eventDateTime }: CountdownSectionVariantProps) {
+export default function MinimalInline({ title, eventDateTime, styleOverrides }: CountdownSectionVariantProps) {
+  const { editable } = useEditableField();
   const [parts, setParts] = useState<ReturnType<typeof getTimeParts> | null>(null);
 
   useEffect(() => {
@@ -41,14 +44,22 @@ export default function MinimalInline({ title, eventDateTime }: CountdownSection
   if (!parts) {
     return (
       <section className={styles.section}>
-        {title && <h2 className={styles.title}>{title}</h2>}
+        {(title || editable) && (
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
+        </h2>
+      )}
       </section>
     );
   }
 
   return (
     <section className={styles.section}>
-      {title && <h2 className={styles.title}>{title}</h2>}
+      {(title || editable) && (
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
+        </h2>
+      )}
 
       {parts.past ? (
         <p className={styles.reached}>Thank you for celebrating with us!</p>

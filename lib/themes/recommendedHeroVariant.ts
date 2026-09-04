@@ -16,11 +16,11 @@ const CATEGORY_HERO_VARIANTS: Record<ThemeCategory, string[]> = {
   botanical: ["botanical-frame", "boho-asymmetric", "signature"],
   boho: ["boho-asymmetric", "hand-lettering", "watercolor-bloom"],
   luxury: ["monogram-crest", "letterpress", "art-deco-crest", "vintage-ornamental"],
-  dark: ["photo-full-bleed", "monogram-crest", "art-deco-crest"],
+  dark: ["photo-full-bleed", "monogram-crest", "art-deco-crest", "gothic-frame", "bare-branch"],
   coastal: ["coastal-wave", "minimal-text", "editorial-minimal"],
-  rustic: ["collage-scrapbook", "letterpress", "boho-asymmetric"],
-  vintage: ["vintage-ornamental", "letterpress", "botanical-frame"],
-  minimal: ["minimal-text", "editorial-minimal", "monogram-center"],
+  rustic: ["collage-scrapbook", "letterpress", "boho-asymmetric", "folk-ornament"],
+  vintage: ["vintage-ornamental", "letterpress", "botanical-frame", "postage-stamp", "victorian-cameo"],
+  minimal: ["minimal-text", "editorial-minimal", "monogram-center", "left-aligned", "stacked-grid"],
 };
 
 function stableIndex(seed: string, length: number): number {
@@ -58,6 +58,12 @@ const HERO_VARIANT_LAYOUT_LABEL: Record<string, string> = {
   "monogram-crest": "Monogram",
   "folk-ornament": "Folk Ornament",
   "collage-scrapbook": "Collage",
+  "gothic-frame": "Gothic Frame",
+  "bare-branch": "Atmospheric",
+  "postage-stamp": "Postage Stamp",
+  "victorian-cameo": "Cameo Locket",
+  "left-aligned": "Typography",
+  "stacked-grid": "Grid",
 };
 
 export function layoutLabelFor(themeId: string, category: ThemeCategory): string {

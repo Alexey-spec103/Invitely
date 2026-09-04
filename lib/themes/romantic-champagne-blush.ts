@@ -14,7 +14,6 @@ export const romanticChampagneBlush: Theme = {
     "--theme-accent": "#D9B48F",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },
 };

@@ -7,20 +7,7 @@ import { getEventType } from "@/lib/eventTypes";
 import SectionOrderManager from "./SectionOrderManager";
 import FirstVisitTour from "@/components/ui/FirstVisitTour";
 import ModuleCard from "@/components/ui/ModuleCard";
-import { SectionFocusProvider } from "@/components/site/SectionFocusProvider";
-import { toggleSection } from "./actions";
-import HeroEditForm from "./HeroEditForm";
-import LetterEditForm from "./LetterEditForm";
-import TimelineEditForm from "./TimelineEditForm";
-import MapEditForm from "./MapEditForm";
-import RsvpEditForm from "./RsvpEditForm";
-import CountdownEditForm from "./CountdownEditForm";
-import GiftWishesEditForm from "./GiftWishesEditForm";
-import GiftWishesManager from "./GiftWishesManager";
-import DressCodeEditForm from "./DressCodeEditForm";
-import GuestbookEditForm from "./GuestbookEditForm";
-import VideoEditForm from "./VideoEditForm";
-import BanquetNavigatorEditForm from "./BanquetNavigatorEditForm";
+import SiteInlineEditor from "./SiteInlineEditor";
 import SiteSettingsEditForm from "./SiteSettingsEditForm";
 import DomainEditForm from "./DomainEditForm";
 import { HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
@@ -42,6 +29,16 @@ import type { GuestbookVariant } from "@/components/sections/GuestbookSection";
 import { VIDEO_VARIANTS, DEFAULT_VIDEO_VARIANT } from "@/components/sections/VideoSection";
 import type { VideoVariant } from "@/components/sections/VideoSection";
 import { getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
+import { getWeddingDataCompleteness } from "@/lib/weddingData";
+import WeddingDataForm from "../WeddingDataForm";
+import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+
+function extractStyleOverrides(content: Record<string, unknown>): Record<string, TextStyleOverride> | undefined {
+  const overrides = content.styleOverrides;
+  return typeof overrides === "object" && overrides !== null
+    ? (overrides as Record<string, TextStyleOverride>)
+    : undefined;
+}
 
 export default async function SitePage({ params }: PageProps<"/dashboard/[eventId]/site">) {
   const { eventId } = await params;
@@ -78,6 +75,7 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
       ? (content.hero as Record<string, unknown>)
       : {};
   const heroPhotoUrl = typeof heroContent.photoUrl === "string" ? heroContent.photoUrl : "";
+  const heroStyleOverrides = extractStyleOverrides(heroContent);
   const letterContent =
     typeof content.letter === "object" && content.letter !== null
       ? (content.letter as Record<string, unknown>)
@@ -97,9 +95,9 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
     rsvpDeadline: typeof letterContent.rsvpDeadline === "string" ? letterContent.rsvpDeadline : "",
     closingLine: typeof letterContent.closingLine === "string" ? letterContent.closingLine : "",
     letterVariant,
+    styleOverrides: extractStyleOverrides(letterContent),
   };
   const letterEnabled = letterSection?.enabled ?? false;
-  const letterConfigured = typeof content.letter === "object" && content.letter !== null;
 
   const timelineContent =
     typeof content.timeline === "object" && content.timeline !== null
@@ -127,9 +125,9 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
     title: typeof timelineContent.title === "string" ? timelineContent.title : "",
     events: timelineEvents,
     timelineVariant,
+    styleOverrides: extractStyleOverrides(timelineContent),
   };
   const timelineEnabled = timelineSection?.enabled ?? false;
-  const timelineConfigured = timelineEvents.length > 0;
 
   const mapContent =
     typeof content.map === "object" && content.map !== null
@@ -169,9 +167,9 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
         ? mapVenues
         : [{ name: event.venue_name ?? "", address: event.venue_address ?? "" }],
     mapVariant,
+    styleOverrides: extractStyleOverrides(mapContent),
   };
   const mapEnabled = mapSection?.enabled ?? false;
-  const mapConfigured = mapVenues.length > 0;
 
   const rsvpSection = siteConfig
     ? parseSections(siteConfig.sections).find((section) => section.type === "rsvp")
@@ -191,11 +189,11 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
         }))
     : [];
   const rsvpEnabled = rsvpSection?.enabled ?? false;
-  const rsvpConfigured = typeof content.rsvp === "object" && content.rsvp !== null;
   const rsvpDefaultValues = {
     title: typeof rsvpContent.title === "string" ? rsvpContent.title : "",
     description: typeof rsvpContent.description === "string" ? rsvpContent.description : "",
     questions: rsvpQuestions,
+    styleOverrides: extractStyleOverrides(rsvpContent),
   };
 
   const countdownSection = siteConfig
@@ -210,10 +208,10 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
       ? (countdownSection.variant as CountdownVariant)
       : DEFAULT_COUNTDOWN_VARIANT;
   const countdownEnabled = countdownSection?.enabled ?? false;
-  const countdownConfigured = typeof content.countdown === "object" && content.countdown !== null;
   const countdownDefaultValues = {
     title: typeof countdownContent.title === "string" ? countdownContent.title : "",
     countdownVariant,
+    styleOverrides: extractStyleOverrides(countdownContent),
   };
 
   const giftSection = siteConfig
@@ -228,11 +226,11 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
       ? (giftSection.variant as GiftVariant)
       : DEFAULT_GIFT_VARIANT;
   const giftEnabled = giftSection?.enabled ?? false;
-  const giftConfigured = typeof content.gift === "object" && content.gift !== null;
   const giftDefaultValues = {
     title: typeof giftContent.title === "string" ? giftContent.title : "",
     description: typeof giftContent.description === "string" ? giftContent.description : "",
     giftVariant,
+    styleOverrides: extractStyleOverrides(giftContent),
   };
   const { data: giftPreferences } = await supabase
     .from("gift_preferences")
@@ -262,13 +260,13 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
       ? (dressCodeSection.variant as DressCodeVariant)
       : DEFAULT_DRESS_CODE_VARIANT;
   const dressCodeEnabled = dressCodeSection?.enabled ?? false;
-  const dressCodeConfigured = dressCodeColors.length > 0;
   const dressCodeDefaultValues = {
     title: typeof dressCodeContent.title === "string" ? dressCodeContent.title : "",
     description:
       typeof dressCodeContent.description === "string" ? dressCodeContent.description : "",
     colors: dressCodeColors,
     dressCodeVariant,
+    styleOverrides: extractStyleOverrides(dressCodeContent),
   };
 
   const guestbookSection = siteConfig
@@ -283,11 +281,17 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
       ? (guestbookSection.variant as GuestbookVariant)
       : DEFAULT_GUESTBOOK_VARIANT;
   const guestbookEnabled = guestbookSection?.enabled ?? false;
-  const guestbookConfigured = typeof content.guestbook === "object" && content.guestbook !== null;
   const guestbookDefaultValues = {
     title: typeof guestbookContent.title === "string" ? guestbookContent.title : "",
     guestbookVariant,
+    styleOverrides: extractStyleOverrides(guestbookContent),
   };
+  const { data: guestbookRows } = await supabase.rpc("get_guestbook_messages", { p_event_id: event.id });
+  const guestbookMessages = (guestbookRows ?? []).map((row) => ({
+    guestName: row.guest_name,
+    comment: row.comment,
+    submittedAt: row.submitted_at,
+  }));
 
   const videoSection = siteConfig
     ? parseSections(siteConfig.sections).find((section) => section.type === "video")
@@ -301,11 +305,11 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
       ? (videoSection.variant as VideoVariant)
       : DEFAULT_VIDEO_VARIANT;
   const videoEnabled = videoSection?.enabled ?? false;
-  const videoConfigured = typeof videoContent.videoUrl === "string" && videoContent.videoUrl.length > 0;
   const videoDefaultValues = {
     title: typeof videoContent.title === "string" ? videoContent.title : "",
     videoUrl: typeof videoContent.videoUrl === "string" ? videoContent.videoUrl : "",
     videoVariant,
+    styleOverrides: extractStyleOverrides(videoContent),
   };
 
   const banquetNavigatorSection = siteConfig
@@ -316,13 +320,12 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
       ? (content.banquetNavigator as Record<string, unknown>)
       : {};
   const banquetNavigatorEnabled = banquetNavigatorSection?.enabled ?? false;
-  const banquetNavigatorConfigured =
-    typeof content.banquetNavigator === "object" && content.banquetNavigator !== null;
   const banquetNavigatorDefaultValues = {
     title:
       typeof banquetNavigatorContent.title === "string" ? banquetNavigatorContent.title : "Find your table",
     description:
       typeof banquetNavigatorContent.description === "string" ? banquetNavigatorContent.description : "",
+    styleOverrides: extractStyleOverrides(banquetNavigatorContent),
   };
 
   const settingsContent =
@@ -348,6 +351,20 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
   const onStatus = { label: "On", tone: "on" as const };
   const notSetStatus = { label: "Not set", tone: "off" as const };
 
+  // Wedding data has no separate hub screen anymore (matches weddingpost.ru --
+  // its own "Данные свадьбе" data lives behind a button surfaced from inside
+  // this same constructor screen, not a standalone tab). Lives as the first
+  // card in this grid instead.
+  const { percent: weddingDataPercent } = getWeddingDataCompleteness(event);
+  const weddingDataDefaultValues = {
+    name1: event.subtitle_names?.[0] ?? "",
+    name2: event.subtitle_names?.[1] ?? "",
+    eventDate: event.event_date,
+    venueName: event.venue_name ?? "",
+    venueCity: event.venue_city ?? "",
+    venueAddress: event.venue_address ?? "",
+  };
+
   // Forces the preview iframe to remount (and so reload its content) whenever
   // the saved data actually changes. site_config has no updated_at trigger to
   // key off of, so this hashes the fetched row itself -- a pure function of
@@ -356,8 +373,8 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
   const previewNonce = JSON.stringify(siteConfig);
 
   return (
-    <div className="max-w-6xl">
-      <h1 className="text-xl font-semibold text-gray-900">Site</h1>
+    <div className="-mx-4 -my-6 min-h-[calc(100vh-73px)] bg-[var(--dash-bg)] px-4 py-6 text-[var(--dash-text)] sm:-mx-10 sm:-my-10 sm:px-10 sm:py-10">
+      <h1 className="dash-h1 text-[var(--dash-text)]">Site</h1>
 
       <FirstVisitTour
         tourId="site-editor"
@@ -383,132 +400,70 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
 
       <SectionOrderManager eventId={event.id} sectionTypes={currentSectionTypes} />
 
-      <SectionFocusProvider>
-      <div className="mt-6 lg:grid lg:grid-cols-[1fr_300px] lg:items-start lg:gap-6">
-      <div className="grid gap-2 sm:grid-cols-2">
-        <ModuleCard icon="💌" title="The essentials" sectionType="hero">
-          <HeroEditForm
+      <div className="mt-6 lg:grid lg:grid-cols-[420px_1fr] lg:items-start lg:gap-6">
+      <div className="flex flex-col gap-2">
+        <ModuleCard
+          id="wedding-data-card"
+          icon="💍"
+          title="Wedding data"
+          status={{
+            label: `${weddingDataPercent}% complete`,
+            tone: weddingDataPercent === 100 ? "on" : "neutral",
+          }}
+          defaultOpen={weddingDataPercent < 100}
+          emphasized
+        >
+          <p className="mb-3 text-xs text-[var(--dash-text-muted)]">
+            Names, date & venue — used across your site and paper set.
+          </p>
+          <WeddingDataForm eventId={event.id} eventType={event.event_type} defaultValues={weddingDataDefaultValues} />
+        </ModuleCard>
+
+        <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg)]">
+          <p className="px-4 pt-4 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
+            Site editor — click any text to edit it in place
+          </p>
+          <SiteInlineEditor
             eventId={event.id}
             theme={theme}
-            names={event.subtitle_names ?? []}
-            eventDate={event.event_date}
-            defaultValues={{
-              heroVariant,
-              photoUrl: heroPhotoUrl,
+            heroVariant={heroVariant}
+            heroPhotoUrl={heroPhotoUrl}
+            heroStyleOverrides={heroStyleOverrides}
+            weddingData={{
+              eventType: event.event_type,
+              name1: weddingDataDefaultValues.name1,
+              name2: weddingDataDefaultValues.name2 || undefined,
+              eventDate: weddingDataDefaultValues.eventDate,
+              venueName: weddingDataDefaultValues.venueName || undefined,
+              venueCity: weddingDataDefaultValues.venueCity || undefined,
+              venueAddress: weddingDataDefaultValues.venueAddress || undefined,
+            }}
+            letter={{ enabled: letterEnabled, variant: letterVariant, values: letterDefaultValues }}
+            timeline={{ enabled: timelineEnabled, variant: timelineVariant, values: timelineDefaultValues }}
+            map={{ enabled: mapEnabled, variant: mapVariant, values: mapDefaultValues }}
+            rsvp={{ enabled: rsvpEnabled, values: rsvpDefaultValues }}
+            countdown={{ enabled: countdownEnabled, variant: countdownVariant, values: countdownDefaultValues }}
+            gift={{
+              enabled: giftEnabled,
+              variant: giftVariant,
+              values: giftDefaultValues,
+              preferences: giftPreferences ?? [],
+            }}
+            dressCode={{ enabled: dressCodeEnabled, variant: dressCodeVariant, values: dressCodeDefaultValues }}
+            guestbook={{
+              enabled: guestbookEnabled,
+              variant: guestbookVariant,
+              values: guestbookDefaultValues,
+              messages: guestbookMessages,
+            }}
+            video={{ enabled: videoEnabled, variant: videoVariant, values: videoDefaultValues }}
+            banquetNavigator={{
+              enabled: banquetNavigatorEnabled,
+              values: banquetNavigatorDefaultValues,
+              seatingLabel: getEventType(event.event_type).seatingLabel,
             }}
           />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="✉️"
-          title="Letter"
-          sectionType="letter"
-          enabled={letterEnabled}
-          configured={letterConfigured}
-          onToggle={toggleSection.bind(null, event.id, "letter")}
-        >
-          <LetterEditForm eventId={event.id} defaultValues={letterDefaultValues} />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="🕰️"
-          title="Timeline"
-          sectionType="timeline"
-          enabled={timelineEnabled}
-          configured={timelineConfigured}
-          onToggle={toggleSection.bind(null, event.id, "timeline")}
-        >
-          <TimelineEditForm eventId={event.id} defaultValues={timelineDefaultValues} />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="📍"
-          title="Map"
-          sectionType="map"
-          enabled={mapEnabled}
-          configured={mapConfigured}
-          onToggle={toggleSection.bind(null, event.id, "map")}
-        >
-          <MapEditForm eventId={event.id} defaultValues={mapDefaultValues} />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="✅"
-          title="RSVP"
-          sectionType="rsvp"
-          enabled={rsvpEnabled}
-          configured={rsvpConfigured}
-          onToggle={toggleSection.bind(null, event.id, "rsvp")}
-        >
-          <RsvpEditForm eventId={event.id} defaultValues={rsvpDefaultValues} />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="⏳"
-          title="Countdown"
-          sectionType="countdown"
-          enabled={countdownEnabled}
-          configured={countdownConfigured}
-          onToggle={toggleSection.bind(null, event.id, "countdown")}
-        >
-          <CountdownEditForm eventId={event.id} defaultValues={countdownDefaultValues} />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="🎁"
-          title="Gift wishes"
-          sectionType="gift"
-          enabled={giftEnabled}
-          configured={giftConfigured}
-          onToggle={toggleSection.bind(null, event.id, "gift")}
-        >
-          <GiftWishesEditForm eventId={event.id} defaultValues={giftDefaultValues} />
-          <GiftWishesManager eventId={event.id} preferences={giftPreferences ?? []} />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="👔"
-          title="Dress code"
-          sectionType="dressCode"
-          enabled={dressCodeEnabled}
-          configured={dressCodeConfigured}
-          onToggle={toggleSection.bind(null, event.id, "dressCode")}
-        >
-          <DressCodeEditForm eventId={event.id} defaultValues={dressCodeDefaultValues} />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="📖"
-          title="Guestbook"
-          sectionType="guestbook"
-          enabled={guestbookEnabled}
-          configured={guestbookConfigured}
-          onToggle={toggleSection.bind(null, event.id, "guestbook")}
-        >
-          <GuestbookEditForm eventId={event.id} defaultValues={guestbookDefaultValues} />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="🎬"
-          title="Video"
-          sectionType="video"
-          enabled={videoEnabled}
-          configured={videoConfigured}
-          onToggle={toggleSection.bind(null, event.id, "video")}
-        >
-          <VideoEditForm eventId={event.id} defaultValues={videoDefaultValues} />
-        </ModuleCard>
-
-        <ModuleCard
-          icon="🍽️"
-          title={`${getEventType(event.event_type).seatingLabel} navigator`}
-          sectionType="banquetNavigator"
-          enabled={banquetNavigatorEnabled}
-          configured={banquetNavigatorConfigured}
-          onToggle={toggleSection.bind(null, event.id, "banquetNavigator")}
-        >
-          <BanquetNavigatorEditForm eventId={event.id} defaultValues={banquetNavigatorDefaultValues} />
-        </ModuleCard>
+        </div>
 
         <ModuleCard icon="🎵" title="Music" status={siteSettingsDefaultValues.musicUrl ? onStatus : notSetStatus}>
           <SiteSettingsEditForm eventId={event.id} defaultValues={siteSettingsDefaultValues} />
@@ -536,10 +491,12 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
         </ModuleCard>
       </div>
 
-      <div className="mt-6 lg:sticky lg:top-6 lg:mt-0">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Live preview</p>
+      <div className="mt-6 flex flex-col items-center lg:sticky lg:top-6 lg:mt-0 lg:h-[calc(100vh-3rem)] lg:justify-center">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
+          Live preview
+        </p>
         <div
-          className="mx-auto w-full max-w-[280px] overflow-hidden rounded-[2rem] border-[6px] border-gray-900 bg-white shadow-lg"
+          className="mx-auto w-full max-w-[380px] overflow-hidden rounded-[2.5rem] border-[10px] border-[var(--dash-surface-2)] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
           style={{ aspectRatio: "9 / 19" }}
         >
           <iframe
@@ -553,13 +510,26 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
           href={`/e/${event.slug}`}
           target="_blank"
           rel="noreferrer"
-          className="mt-2 block text-center text-xs text-rose-700 underline underline-offset-2"
+          className="mt-3 block text-center text-xs text-[var(--dash-accent)] underline underline-offset-2"
         >
           Open full preview in a new tab
         </a>
       </div>
       </div>
-      </SectionFocusProvider>
+
+      {weddingDataPercent < 100 && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/10 px-5 py-4">
+          <p className="text-sm text-amber-200">
+            Fill in your wedding details to complete your site and paper set.
+          </p>
+          <a
+            href="#wedding-data-card"
+            className="shrink-0 rounded-full bg-[var(--dash-accent)] px-4 py-2 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
+          >
+            Wedding data
+          </a>
+        </div>
+      )}
     </div>
   );
 }

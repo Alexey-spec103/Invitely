@@ -14,7 +14,6 @@ export const bohoMarigoldFestival: Theme = {
     "--theme-accent": "#D68A2E",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/leaves.svg')",
     "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

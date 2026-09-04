@@ -37,18 +37,18 @@ export default function PublishToggle({ eventId, status }: PublishToggleProps) {
         disabled={isPending}
         className={
           isPublished
-            ? "rounded-full bg-stone-100 px-4 py-2.5 text-sm font-bold text-stone-700 shadow-sm transition hover:bg-stone-200 disabled:cursor-not-allowed disabled:opacity-60"
-            : "rounded-full bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-[0_1px_0_rgba(4,120,87,1),0_6px_12px_rgba(16,185,129,0.35)] transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+            ? "rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-4 py-2.5 text-sm font-bold text-[var(--dash-text)] transition hover:border-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
+            : "rounded-full bg-[var(--dash-accent)] px-4 py-2.5 text-sm font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)] disabled:cursor-not-allowed disabled:opacity-60"
         }
       >
         {isPending ? "Saving..." : isPublished ? "Unpublish" : "Publish site"}
       </button>
-      <p className="mt-1 text-xs text-stone-500">
+      <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
         {isPublished
           ? "Your site is visible to guests via the link"
           : "Guests can't see your site until it's published"}
       </p>
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
     </div>
   );
 }

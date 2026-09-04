@@ -16,7 +16,6 @@ export const sageAndClay: Theme = {
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-fraunces), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/leaves.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

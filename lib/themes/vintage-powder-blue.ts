@@ -14,7 +14,6 @@ export const vintagePowderBlue: Theme = {
     "--theme-accent": "#7FA3B0",
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

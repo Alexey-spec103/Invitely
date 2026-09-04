@@ -14,7 +14,6 @@ export const coastalAzureHorizon: Theme = {
     "--theme-accent": "#3E7FA3",
     "--theme-font-heading": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/waves.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

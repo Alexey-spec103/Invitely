@@ -14,7 +14,6 @@ export const darkForestNoir: Theme = {
     "--theme-accent": "#7FA07A",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-dark.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

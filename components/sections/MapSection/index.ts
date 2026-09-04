@@ -1,5 +1,5 @@
 export { default as MapSection } from "./MapSection";
-export type { MapSectionProps, MapSectionVariantProps, MapVariant } from "./types";
+export type { MapSectionProps, MapSectionVariantProps, MapVariant, MapVenue } from "./types";
 
 import type { MapVariant } from "./types";
 

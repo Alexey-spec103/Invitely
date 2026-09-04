@@ -15,7 +15,6 @@ export const darkPlumVelvet: Theme = {
     "--theme-accent": "#B27FB0",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-dark.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

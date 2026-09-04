@@ -53,19 +53,15 @@ function ShareLinkBanner({ eventSlug }: { eventSlug: string }) {
   };
 
   return (
-    <div className="mt-6 rounded-md border border-rose-100 bg-rose-50 px-4 py-3">
-      <p className="text-sm font-medium text-rose-900">
+    <div className="mt-6 rounded-2xl bg-[color-mix(in_srgb,var(--dash-accent)_10%,white)] px-4 py-3">
+      <p className="text-sm font-semibold text-gray-900">
         ✨ Short on time to add every guest by hand?
       </p>
-      <p className="mt-1 text-xs text-rose-700">
+      <p className="mt-1 text-xs text-gray-600">
         Share your site&apos;s one link with everyone — anyone who RSVPs from it is added to your
         guest list automatically, no invite codes needed.
       </p>
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="mt-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-rose-700 shadow-sm hover:bg-rose-100"
-      >
+      <button type="button" onClick={handleCopy} className="dash-btn dash-btn-secondary mt-2 px-3 py-1 text-xs">
         {copied ? "Link copied!" : "Copy site link"}
       </button>
     </div>
@@ -290,65 +286,45 @@ function EditGuestForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-2 grid gap-3 sm:grid-cols-2" noValidate>
       <div>
-        <label htmlFor={`edit-fullName-${guest.id}`} className="block text-xs font-medium text-gray-700">
+        <label htmlFor={`edit-fullName-${guest.id}`} className="block text-xs font-semibold text-gray-900">
           Full name
         </label>
-        <input
-          id={`edit-fullName-${guest.id}`}
-          type="text"
-          className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-          {...register("fullName")}
-        />
+        <input id={`edit-fullName-${guest.id}`} type="text" className="dash-input mt-1 text-sm" {...register("fullName")} />
         {errors.fullName && <p className="mt-1 text-xs text-red-600">{errors.fullName.message}</p>}
       </div>
 
       <div>
-        <label htmlFor={`edit-groupLabel-${guest.id}`} className="block text-xs font-medium text-gray-700">
+        <label htmlFor={`edit-groupLabel-${guest.id}`} className="block text-xs font-semibold text-gray-900">
           Group
         </label>
-        <input
-          id={`edit-groupLabel-${guest.id}`}
-          type="text"
-          className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-          {...register("groupLabel")}
-        />
+        <input id={`edit-groupLabel-${guest.id}`} type="text" className="dash-input mt-1 text-sm" {...register("groupLabel")} />
       </div>
 
       <div>
-        <label htmlFor={`edit-email-${guest.id}`} className="block text-xs font-medium text-gray-700">
+        <label htmlFor={`edit-email-${guest.id}`} className="block text-xs font-semibold text-gray-900">
           Email
         </label>
-        <input
-          id={`edit-email-${guest.id}`}
-          type="email"
-          className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-          {...register("email")}
-        />
+        <input id={`edit-email-${guest.id}`} type="email" className="dash-input mt-1 text-sm" {...register("email")} />
         {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
       </div>
 
       <div>
-        <label htmlFor={`edit-phone-${guest.id}`} className="block text-xs font-medium text-gray-700">
+        <label htmlFor={`edit-phone-${guest.id}`} className="block text-xs font-semibold text-gray-900">
           Phone
         </label>
-        <input
-          id={`edit-phone-${guest.id}`}
-          type="tel"
-          className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-          {...register("phone")}
-        />
+        <input id={`edit-phone-${guest.id}`} type="tel" className="dash-input mt-1 text-sm" {...register("phone")} />
         {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone.message}</p>}
       </div>
 
       <div>
-        <label htmlFor={`edit-maxPlusOnes-${guest.id}`} className="block text-xs font-medium text-gray-700">
+        <label htmlFor={`edit-maxPlusOnes-${guest.id}`} className="block text-xs font-semibold text-gray-900">
           Plus-ones allowed
         </label>
         <input
           id={`edit-maxPlusOnes-${guest.id}`}
           type="number"
           min={0}
-          className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+          className="dash-input mt-1 text-sm"
           {...register("maxPlusOnes")}
         />
       </div>
@@ -360,11 +336,7 @@ function EditGuestForm({
       )}
 
       <div className="flex items-center gap-3 sm:col-span-2">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary px-3 py-1.5 text-xs">
           {isSubmitting ? "Saving..." : "Save"}
         </button>
         <button
@@ -458,68 +430,53 @@ export default function GuestManager({
         noValidate
       >
         <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="fullName" className="block text-sm font-semibold text-gray-900">
             Full name
           </label>
-          <input
-            id="fullName"
-            type="text"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-            {...register("fullName")}
-          />
+          <input id="fullName" type="text" className="dash-input mt-1" {...register("fullName")} />
           {errors.fullName && (
             <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="groupLabel" className="block text-sm font-medium text-gray-700">
-            Group <span className="text-gray-400">(optional)</span>
+          <label htmlFor="groupLabel" className="block text-sm font-semibold text-gray-900">
+            Group <span className="font-normal text-gray-400">(optional)</span>
           </label>
           <input
             id="groupLabel"
             type="text"
             placeholder="Family, friends..."
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+            className="dash-input mt-1"
             {...register("groupLabel")}
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email <span className="text-gray-400">(optional)</span>
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-900">
+            Email <span className="font-normal text-gray-400">(optional)</span>
           </label>
-          <input
-            id="email"
-            type="email"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-            {...register("email")}
-          />
+          <input id="email" type="email" className="dash-input mt-1" {...register("email")} />
           {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-            Phone <span className="text-gray-400">(optional)</span>
+          <label htmlFor="phone" className="block text-sm font-semibold text-gray-900">
+            Phone <span className="font-normal text-gray-400">(optional)</span>
           </label>
-          <input
-            id="phone"
-            type="tel"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-            {...register("phone")}
-          />
+          <input id="phone" type="tel" className="dash-input mt-1" {...register("phone")} />
           {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="maxPlusOnes" className="block text-sm font-medium text-gray-700">
-            Plus-ones allowed <span className="text-gray-400">(optional)</span>
+          <label htmlFor="maxPlusOnes" className="block text-sm font-semibold text-gray-900">
+            Plus-ones allowed <span className="font-normal text-gray-400">(optional)</span>
           </label>
           <input
             id="maxPlusOnes"
             type="number"
             min={0}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+            className="dash-input mt-1"
             {...register("maxPlusOnes")}
           />
         </div>
@@ -531,11 +488,7 @@ export default function GuestManager({
         )}
 
         <div className="sm:col-span-2">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary">
             {isSubmitting ? "Adding..." : "Add guest"}
           </button>
         </div>
@@ -550,7 +503,7 @@ export default function GuestManager({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search guests by name, group, email, phone..."
-            className="w-full max-w-sm rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+            className="dash-input max-w-sm"
           />
           <span className="whitespace-nowrap text-xs text-gray-500">
             {filteredGuests.length} of {guests.length} guest{guests.length === 1 ? "" : "s"}

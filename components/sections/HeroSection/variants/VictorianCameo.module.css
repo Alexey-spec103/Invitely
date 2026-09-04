@@ -1,0 +1,100 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  color: var(--theme-text);
+}
+
+.locket {
+  position: relative;
+  width: 13rem;
+  height: 13rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The ornate scroll frame sits behind the round photo, its hollow center
+   just larger than the circle so a ring of scrollwork stays visible around
+   the edge -- the "locket" effect. */
+.ring {
+  position: absolute;
+  inset: 0;
+  background-color: var(--theme-accent);
+  opacity: 0.8;
+  mask-image: url("/patterns/vintage-victorian-scroll.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/vintage-victorian-scroll.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
+.photo {
+  position: relative;
+  width: 8.5rem;
+  height: 8.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.names {
+  font-family: var(--theme-font-script);
+  font-weight: 400;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.date {
+  font-family: var(--theme-font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .locket {
+    width: 15rem;
+    height: 15rem;
+  }
+
+  .photo {
+    width: 9.75rem;
+    height: 9.75rem;
+  }
+
+  .names {
+    font-size: 2.75rem;
+  }
+
+  .date {
+    font-size: 0.85rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .locket {
+    width: 16.5rem;
+    height: 16.5rem;
+  }
+
+  .photo {
+    width: 10.75rem;
+    height: 10.75rem;
+  }
+
+  .names {
+    font-size: 3.25rem;
+  }
+}

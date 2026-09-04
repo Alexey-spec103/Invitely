@@ -16,26 +16,84 @@
   object-fit: cover;
 }
 
-/* Затемнение строится из теми-текста, а не фиксированного чёрного,
-   чтобы работать и на светлых, и на тёмных темах. */
+/* Fixed black, not a theme color -- an uploaded photo's brightness has
+   nothing to do with the theme's palette, so darkening it enough for
+   overlaid text to read needs a scrim that's reliably dark regardless of
+   whether the theme itself is light or dark (a --theme-text-based tint
+   inverted to a *lightening* wash on dark themes, where theme-text is pale
+   -- confirmed live on editorial-noir/dark-crimson-noir/etc, all 10 "dark"
+   themes use the same light-text-on-dark-bg pairing). */
 .overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to top,
-    color-mix(in srgb, var(--theme-text) 65%, transparent),
-    color-mix(in srgb, var(--theme-text) 10%, transparent) 60%,
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0.1) 60%,
     transparent
   );
 }
 
+/* Fixed off-white to match .overlay -- same reasoning: legibility against
+   an arbitrary photo, not the theme's own bg/text pairing. */
 .content {
   position: relative;
   z-index: 1;
   width: 100%;
   padding: 2rem 1.25rem;
   text-align: center;
-  color: var(--theme-bg);
+  color: #f5f5f0;
+}
+
+/* Honest no-photo fallback -- centered typography on the plain theme
+   background, matching MinimalText's layout, instead of the overlay/moon
+   duo that's specifically composed to sit over a photo. */
+.sectionNoPhoto {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--theme-text);
+}
+
+.contentCentered {
+  width: 100%;
+  max-width: 32rem;
+}
+
+/* A small celestial accent in the top corner, over the photo -- a quiet
+   moody touch that reads against the dark scrim without competing with it.
+   Fixed off-white for the same reason as .content/.overlay above. */
+.moon {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1;
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: #f5f5f0;
+  opacity: 0.55;
+  mask-image: url("/patterns/dark-celestial-moon.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/dark-celestial-moon.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
+@media (min-width: 640px) {
+  .moon {
+    top: 2rem;
+    right: 2rem;
+    width: 4.5rem;
+    height: 4.5rem;
+  }
 }
 
 .names {

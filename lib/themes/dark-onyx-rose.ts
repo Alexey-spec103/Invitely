@@ -16,7 +16,6 @@ export const darkOnyxRose: Theme = {
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/grain-dark.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

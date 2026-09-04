@@ -11,7 +11,6 @@ export const modernMono: Theme = {
     "--theme-accent": "#111111",
     "--theme-font-heading": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

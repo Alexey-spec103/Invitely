@@ -97,7 +97,7 @@ export default function GuestTableAssignments({
 
   return (
     <div className="mt-12 border-t border-gray-200 pt-8">
-      <h2 className="text-lg font-semibold text-gray-900">Seat guests</h2>
+      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Seat guests</h2>
       <p className="mt-1 text-sm text-gray-500">Assign each guest to a table.</p>
 
       {tables.some((table) => table.capacity != null && (seatedCountByTable.get(table.id) ?? 0) > table.capacity) && (
@@ -122,7 +122,7 @@ export default function GuestTableAssignments({
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search guests..."
-              className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="dash-input max-w-xs"
             />
             <label className="flex items-center gap-1.5 text-xs text-gray-600">
               <input
@@ -168,7 +168,7 @@ export default function GuestTableAssignments({
                 type="button"
                 onClick={handleBulkAssign}
                 disabled={!bulkTableId || unassignedInView.length === 0 || bulkAssigning}
-                className="whitespace-nowrap rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                className="dash-btn dash-btn-neutral px-2 py-1 text-xs"
               >
                 {bulkAssigning
                   ? "Assigning..."

@@ -14,7 +14,6 @@ export const bohoIndigoDye: Theme = {
     "--theme-accent": "#4F5A9E",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/leaves.svg')",
     "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

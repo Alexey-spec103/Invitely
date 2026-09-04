@@ -26,6 +26,26 @@
   pointer-events: none;
 }
 
+/* A small ribbon stamp above the eyebrow, in the same monochrome ink
+   color as the rest of the plate -- reads as a letterpress impression,
+   not a colorful modern accent. */
+.stamp {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: 0 auto 0.75rem;
+  background-color: var(--theme-text);
+  opacity: 0.5;
+  mask-image: url("/patterns/vintage-etched-banner.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/vintage-etched-banner.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
 .eyebrow {
   display: block;
   font-family: var(--theme-font-body);

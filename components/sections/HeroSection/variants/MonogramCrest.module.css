@@ -29,6 +29,25 @@
   color: var(--theme-bg);
 }
 
+/* A small laurel divider between the seal and the names -- a quiet
+   luxury touch, independent of the seal shape itself. */
+.laurel {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  margin-top: -0.5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.6;
+  mask-image: url("/patterns/luxury-laurel-circle.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/luxury-laurel-circle.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
 .names {
   font-family: var(--theme-font-body);
   font-size: 1rem;

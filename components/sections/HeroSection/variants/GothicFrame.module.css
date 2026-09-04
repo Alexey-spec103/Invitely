@@ -1,0 +1,101 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  color: var(--theme-text);
+}
+
+.stage {
+  position: relative;
+  width: 14rem;
+  height: 17rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo {
+  display: block;
+  width: 9rem;
+  height: 11.5rem;
+  object-fit: cover;
+}
+
+/* The ornate pointed-arch ring sits above the photo with a hollow (alpha-
+   transparent) center -- the photo peeks through, the ring frames it. Same
+   overlay technique as VintageOrnamental's corner flourishes, just a single
+   full frame instead of four corner pieces. */
+.frame {
+  position: absolute;
+  inset: 0;
+  background-color: var(--theme-accent);
+  opacity: 0.85;
+  pointer-events: none;
+  mask-image: url("/patterns/dark-gothic-frame.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/dark-gothic-frame.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
+.names {
+  font-family: var(--theme-font-heading);
+  font-weight: 400;
+  font-size: 2.1rem;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.date {
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .stage {
+    width: 16rem;
+    height: 19.5rem;
+  }
+
+  .photo {
+    width: 10.5rem;
+    height: 13.5rem;
+  }
+
+  .names {
+    font-size: 2.75rem;
+  }
+
+  .date {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stage {
+    width: 18rem;
+    height: 22rem;
+  }
+
+  .photo {
+    width: 12rem;
+    height: 15.5rem;
+  }
+
+  .names {
+    font-size: 3.25rem;
+  }
+}

@@ -1,0 +1,112 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 14%;
+}
+
+/* The screenshot itself is a wide 3-panel layout (style rail + canvas +
+   layers panel), so the "laptop" is sized to its real aspect ratio rather
+   than forced into a standard 16:10 that would crop a panel away. */
+.laptop {
+  position: relative;
+  width: 100%;
+}
+
+.laptopScreen {
+  width: 100%;
+  aspect-ratio: 1568 / 460;
+  overflow: hidden;
+  border-radius: 10px 10px 0 0;
+  background: #000;
+  border: 10px solid #1a1a1a;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+}
+
+.laptopImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.laptopBase {
+  width: 108%;
+  margin-left: -4%;
+  height: 14px;
+  background: linear-gradient(#3a3a3a, #201f1f);
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.3);
+}
+
+/* Overlapping the laptop's bottom-right corner, same "device fan" idea as
+   weddingpost.ru's own laptop+phone composition. */
+.phone {
+  position: absolute;
+  right: -4%;
+  bottom: -14%;
+  width: 20%;
+  aspect-ratio: 375 / 750;
+  z-index: 5;
+}
+
+.phoneBezel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  background: #171412;
+  padding: 3.5% 2.5%;
+  box-shadow:
+    0 18px 36px -14px rgba(0, 0, 0, 0.4),
+    0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.phoneNotch {
+  position: absolute;
+  top: 1.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26%;
+  height: 2.2%;
+  border-radius: 999px;
+  background: #000;
+  z-index: 1;
+}
+
+.phoneScreen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  container-type: inline-size;
+}
+
+.phoneScaleWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.phoneScaleInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 375px;
+  transform-origin: top left;
+  /* Same crop-compensation technique/value as HeroPhoneShowcase and
+     PlatformFanSection -- same theme + Hero variant, so the same offset
+     brings the vertically-centered content into view here too. */
+  transform: scale(calc(100cqw / 375px)) translateY(-40vh);
+}
+
+@media (max-width: 640px) {
+  .wrap {
+    padding-bottom: 20%;
+  }
+  .phone {
+    width: 26%;
+  }
+}

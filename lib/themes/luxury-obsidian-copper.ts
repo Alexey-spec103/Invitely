@@ -15,7 +15,6 @@ export const luxuryObsidianCopper: Theme = {
     "--theme-accent": "#B8703F",
     "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-dark.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

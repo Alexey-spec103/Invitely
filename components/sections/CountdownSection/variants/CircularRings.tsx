@@ -3,9 +3,12 @@
 import { useEffect, useState } from "react";
 import type { CountdownSectionVariantProps } from "../types";
 import { getCountdownParts, type CountdownParts } from "@/lib/countdown";
+import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./CircularRings.module.css";
 
-export default function CircularRings({ title, eventDateTime }: CountdownSectionVariantProps) {
+export default function CircularRings({ title, eventDateTime, styleOverrides }: CountdownSectionVariantProps) {
+  const { editable } = useEditableField();
   const [parts, setParts] = useState<CountdownParts | null>(null);
 
   useEffect(() => {
@@ -21,14 +24,22 @@ export default function CircularRings({ title, eventDateTime }: CountdownSection
   if (!parts) {
     return (
       <section className={styles.section}>
-        {title && <h2 className={styles.title}>{title}</h2>}
+        {(title || editable) && (
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
+        </h2>
+      )}
       </section>
     );
   }
 
   return (
     <section className={styles.section}>
-      {title && <h2 className={styles.title}>{title}</h2>}
+      {(title || editable) && (
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
+        </h2>
+      )}
 
       {parts.past ? (
         <p className={styles.reached}>Thank you for celebrating with us!</p>

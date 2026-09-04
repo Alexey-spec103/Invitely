@@ -15,6 +15,12 @@ import BohoAsymmetric from "./variants/BohoAsymmetric";
 import MonogramCrest from "./variants/MonogramCrest";
 import FolkOrnament from "./variants/FolkOrnament";
 import CollageScrapbook from "./variants/CollageScrapbook";
+import GothicFrame from "./variants/GothicFrame";
+import BareBranch from "./variants/BareBranch";
+import PostageStamp from "./variants/PostageStamp";
+import VictorianCameo from "./variants/VictorianCameo";
+import LeftAligned from "./variants/LeftAligned";
+import StackedGrid from "./variants/StackedGrid";
 import type { HeroSectionProps } from "./types";
 
 export default function HeroSection({ variant, ...variantProps }: HeroSectionProps) {
@@ -53,5 +59,17 @@ export default function HeroSection({ variant, ...variantProps }: HeroSectionPro
       return <FolkOrnament {...variantProps} />;
     case "collage-scrapbook":
       return <CollageScrapbook {...variantProps} />;
+    case "gothic-frame":
+      return <GothicFrame {...variantProps} />;
+    case "bare-branch":
+      return <BareBranch {...variantProps} />;
+    case "postage-stamp":
+      return <PostageStamp {...variantProps} />;
+    case "victorian-cameo":
+      return <VictorianCameo {...variantProps} />;
+    case "left-aligned":
+      return <LeftAligned {...variantProps} />;
+    case "stacked-grid":
+      return <StackedGrid {...variantProps} />;
   }
 }

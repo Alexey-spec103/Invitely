@@ -14,7 +14,6 @@ export const coastalSandDune: Theme = {
     "--theme-accent": "#C9A86A",
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/waves.svg')",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },
 };

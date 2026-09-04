@@ -3,9 +3,12 @@
 import { useEffect, useState } from "react";
 import type { CountdownSectionVariantProps } from "../types";
 import { getCountdownParts, type CountdownParts } from "@/lib/countdown";
+import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./SimpleDigits.module.css";
 
-export default function SimpleDigits({ title, eventDateTime }: CountdownSectionVariantProps) {
+export default function SimpleDigits({ title, eventDateTime, styleOverrides }: CountdownSectionVariantProps) {
+  const { editable } = useEditableField();
   // Null until mount: computing this during the server render would embed a
   // Date.now() snapshot that won't match the client's hydration-time value,
   // triggering a hydration mismatch. Real numbers only ever appear client-side.
@@ -27,14 +30,22 @@ export default function SimpleDigits({ title, eventDateTime }: CountdownSectionV
   if (!parts) {
     return (
       <section className={styles.section}>
-        {title && <h2 className={styles.title}>{title}</h2>}
+        {(title || editable) && (
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
+        </h2>
+      )}
       </section>
     );
   }
 
   return (
     <section className={styles.section}>
-      {title && <h2 className={styles.title}>{title}</h2>}
+      {(title || editable) && (
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
+        </h2>
+      )}
 
       {parts.past ? (
         <p className={styles.reached}>Thank you for celebrating with us!</p>

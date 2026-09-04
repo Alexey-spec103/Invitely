@@ -20,7 +20,59 @@ import type { GuestbookVariant } from "@/components/sections/GuestbookSection";
 import type { VideoVariant } from "@/components/sections/VideoSection";
 import type { BanquetNavigatorVariant } from "@/components/sections/BanquetNavigatorSection";
 import type { Json } from "@/lib/supabase/database.types";
-import { DEFAULT_THEME_ID } from "@/lib/themes";
+import { DEFAULT_THEME_ID, getTheme } from "@/lib/themes";
+import {
+  recommendedCountdownVariantFor,
+  recommendedGiftVariantFor,
+  recommendedDressCodeVariantFor,
+  recommendedGuestbookVariantFor,
+  recommendedVideoVariantFor,
+} from "@/lib/themes/recommendedSectionVariants";
+import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+
+/** Countdown/Gift/DressCode/Guestbook/Video have no manual variant switcher
+ * any more (Phase 21's rule extended to them) -- the variant a section gets
+ * the first time it's toggled on must already be theme-appropriate, not
+ * whatever `DEFAULT_VARIANTS[type]` happens to be for every theme alike. */
+function recommendedVariantFor(type: SectionType, themeId: string): string {
+  let category;
+  try {
+    category = getTheme(themeId).category;
+  } catch {
+    return DEFAULT_VARIANTS[type];
+  }
+  switch (type) {
+    case "countdown":
+      return recommendedCountdownVariantFor(themeId, category);
+    case "gift":
+      return recommendedGiftVariantFor(themeId, category);
+    case "dressCode":
+      return recommendedDressCodeVariantFor(themeId, category);
+    case "guestbook":
+      return recommendedGuestbookVariantFor(themeId, category);
+    case "video":
+      return recommendedVideoVariantFor(themeId, category);
+    default:
+      return DEFAULT_VARIANTS[type];
+  }
+}
+
+/** `content[type]` comes back from `parseContent` as `unknown` -- this just
+ * narrows enough to read back a previously-saved `styleOverrides` bag when a
+ * save action isn't itself the one changing it (e.g. saving a text edit
+ * shouldn't wipe out a style override set moments earlier by a different
+ * commit, and vice versa). */
+function existingStyleOverrides(
+  content: Record<string, unknown>,
+  type: string
+): Record<string, TextStyleOverride> | undefined {
+  const section = content[type];
+  if (typeof section !== "object" || section === null) return undefined;
+  const overrides = (section as { styleOverrides?: unknown }).styleOverrides;
+  return typeof overrides === "object" && overrides !== null
+    ? (overrides as Record<string, TextStyleOverride>)
+    : undefined;
+}
 
 interface UpdateSiteSettingsInput {
   eventId: string;
@@ -104,7 +156,12 @@ export async function toggleSection(eventId: string, type: SectionType, enabled:
     ? existingSections.map((section) => (section.type === type ? { ...section, enabled } : section))
     : [
         ...existingSections,
-        { type, variant: DEFAULT_VARIANTS[type], order: SECTION_ORDER[type], enabled },
+        {
+          type,
+          variant: recommendedVariantFor(type, existingConfig?.theme_id ?? DEFAULT_THEME_ID),
+          order: SECTION_ORDER[type],
+          enabled,
+        },
       ];
 
   const { error } = existingConfig
@@ -130,6 +187,7 @@ interface UpdateHeroSectionInput {
   eventId: string;
   heroVariant: HeroVariant;
   photoUrl?: string;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 /** Names/date are no longer accepted here -- they're owned by the "Wedding
@@ -181,6 +239,7 @@ export async function updateHeroSection(input: UpdateHeroSectionInput) {
       names,
       eventDate: event.event_date,
       photoUrl: input.photoUrl ?? "",
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "hero"),
     },
   };
 
@@ -211,6 +270,7 @@ interface UpdateTimelineSectionInput {
   title: string;
   events: { time: string; title: string; description: string }[];
   timelineVariant: TimelineVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateTimelineSection(input: UpdateTimelineSectionInput) {
@@ -247,6 +307,7 @@ export async function updateTimelineSection(input: UpdateTimelineSectionInput) {
     timeline: {
       title: input.title,
       events: input.events,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "timeline"),
     },
   };
 
@@ -277,6 +338,7 @@ interface UpdateMapSectionInput {
   title: string;
   venues: { name: string; address: string }[];
   mapVariant: MapVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateMapSection(input: UpdateMapSectionInput) {
@@ -310,6 +372,7 @@ export async function updateMapSection(input: UpdateMapSectionInput) {
     map: {
       title: input.title,
       venues: input.venues,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "map"),
     },
   };
 
@@ -339,6 +402,7 @@ interface UpdateCountdownSectionInput {
   eventId: string;
   title?: string;
   countdownVariant: CountdownVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateCountdownSection(input: UpdateCountdownSectionInput) {
@@ -374,6 +438,7 @@ export async function updateCountdownSection(input: UpdateCountdownSectionInput)
     ...existingContent,
     countdown: {
       title: input.title || undefined,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "countdown"),
     },
   };
 
@@ -404,6 +469,7 @@ interface UpdateGiftWishesSectionInput {
   title?: string;
   description?: string;
   giftVariant: GiftVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateGiftWishesSection(input: UpdateGiftWishesSectionInput) {
@@ -440,6 +506,7 @@ export async function updateGiftWishesSection(input: UpdateGiftWishesSectionInpu
     gift: {
       title: input.title || undefined,
       description: input.description || undefined,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "gift"),
     },
   };
 
@@ -471,6 +538,7 @@ interface UpdateDressCodeSectionInput {
   description?: string;
   colors: { hex: string; label?: string }[];
   dressCodeVariant: DressCodeVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateDressCodeSection(input: UpdateDressCodeSectionInput) {
@@ -508,6 +576,7 @@ export async function updateDressCodeSection(input: UpdateDressCodeSectionInput)
       title: input.title,
       description: input.description || undefined,
       colors: input.colors,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "dressCode"),
     },
   };
 
@@ -538,6 +607,7 @@ interface UpdateVideoSectionInput {
   title?: string;
   videoUrl: string;
   videoVariant: VideoVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateVideoSection(input: UpdateVideoSectionInput) {
@@ -574,6 +644,7 @@ export async function updateVideoSection(input: UpdateVideoSectionInput) {
     video: {
       title: input.title || undefined,
       videoUrl: input.videoUrl,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "video"),
     },
   };
 
@@ -603,6 +674,7 @@ interface UpdateGuestbookSectionInput {
   eventId: string;
   title?: string;
   guestbookVariant: GuestbookVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateGuestbookSection(input: UpdateGuestbookSectionInput) {
@@ -638,6 +710,7 @@ export async function updateGuestbookSection(input: UpdateGuestbookSectionInput)
     ...existingContent,
     guestbook: {
       title: input.title || undefined,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "guestbook"),
     },
   };
 
@@ -668,6 +741,7 @@ interface UpdateRsvpSectionInput {
   title: string;
   description?: string;
   questions: { id: string; label: string; type: "text" | "choice"; options?: string }[];
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateRsvpSection(input: UpdateRsvpSectionInput) {
@@ -716,6 +790,7 @@ export async function updateRsvpSection(input: UpdateRsvpSectionInput) {
                   .filter(Boolean)
               : undefined,
         })),
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "rsvp"),
     },
   };
 
@@ -746,6 +821,7 @@ interface UpdateBanquetNavigatorSectionInput {
   title: string;
   description?: string;
   banquetNavigatorVariant: BanquetNavigatorVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigatorSectionInput) {
@@ -789,6 +865,7 @@ export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigato
     banquetNavigator: {
       title: input.title,
       description: input.description || undefined,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "banquetNavigator"),
     },
   };
 
@@ -872,6 +949,7 @@ interface UpdateLetterSectionInput {
   rsvpDeadline: string;
   closingLine: string;
   letterVariant: LetterVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export async function updateLetterSection(input: UpdateLetterSectionInput) {
@@ -912,6 +990,7 @@ export async function updateLetterSection(input: UpdateLetterSectionInput) {
       note: input.note || undefined,
       rsvpDeadline: input.rsvpDeadline || undefined,
       closingLine: input.closingLine || undefined,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "letter"),
     },
   };
 

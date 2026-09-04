@@ -91,7 +91,7 @@ export default function PaperEditor({
   };
 
   return (
-    <div className="mt-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:grid sm:grid-cols-[minmax(0,240px)_1fr] sm:items-start sm:gap-6">
+    <div className="mt-6 rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:grid sm:grid-cols-[minmax(0,240px)_1fr] sm:items-start sm:gap-6">
       <div>
         <div className="flex items-center justify-between">
           <button
@@ -99,23 +99,23 @@ export default function PaperEditor({
             onClick={() => goTo(-1)}
             disabled={slides.length < 2}
             aria-label="Previous card"
-            className="rounded-md border border-gray-300 p-1.5 text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
           >
             ‹
           </button>
-          <p className="text-sm font-medium text-gray-900">{activeSlide.label}</p>
+          <p className="text-sm font-medium text-[var(--dash-text)]">{activeSlide.label}</p>
           <button
             type="button"
             onClick={() => goTo(1)}
             disabled={slides.length < 2}
             aria-label="Next card"
-            className="rounded-md border border-gray-300 p-1.5 text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
           >
             ›
           </button>
         </div>
 
-        <div className="mt-3 flex justify-center overflow-hidden rounded-md bg-gray-50 p-4">
+        <div className="mt-3 flex justify-center overflow-hidden rounded-md bg-[var(--dash-surface-2)] p-4">
           <div
             className="grid overflow-hidden rounded-md shadow-md transition-[width] duration-200"
             style={{ aspectRatio: activeSlide.aspectRatio, width: `${200 * zoom}px` }}
@@ -153,7 +153,7 @@ export default function PaperEditor({
             type="button"
             onClick={() => setZoom((z) => Math.max(ZOOM_MIN, +(z - ZOOM_STEP).toFixed(2)))}
             aria-label="Zoom out"
-            className="rounded-md border border-gray-300 px-2.5 py-1 text-sm text-gray-600 transition hover:bg-gray-50"
+            className="rounded-md border border-[var(--dash-border)] px-2.5 py-1 text-sm text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
           >
             −
           </button>
@@ -161,7 +161,7 @@ export default function PaperEditor({
             type="button"
             onClick={() => setZoom((z) => Math.min(ZOOM_MAX, +(z + ZOOM_STEP).toFixed(2)))}
             aria-label="Zoom in"
-            className="rounded-md border border-gray-300 px-2.5 py-1 text-sm text-gray-600 transition hover:bg-gray-50"
+            className="rounded-md border border-[var(--dash-border)] px-2.5 py-1 text-sm text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
           >
             +
           </button>
@@ -169,7 +169,7 @@ export default function PaperEditor({
             <button
               type="button"
               onClick={() => setSide((s) => (s === "front" ? "back" : "front"))}
-              className="rounded-md border border-gray-300 px-2.5 py-1 text-sm text-gray-600 transition hover:bg-gray-50"
+              className="rounded-md border border-[var(--dash-border)] px-2.5 py-1 text-sm text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
             >
               ↺ Flip to {side === "front" ? "back" : "front"}
             </button>
@@ -180,17 +180,17 @@ export default function PaperEditor({
       <div className="mt-6 sm:mt-0">
         {activeSlide.id === "invitation" && (
           <div className="space-y-3">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[var(--dash-text-muted)]">
               Names, date &amp; venue come from your{" "}
-              <Link href={`/dashboard/${eventId}`} className="font-medium text-rose-700 underline underline-offset-2">
+              <Link href={`/dashboard/${eventId}/site#wedding-data-card`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
                 Wedding data
               </Link>
               . Edit them there and this card updates automatically.
             </p>
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="backMessage" className="block text-sm font-medium text-gray-700">
-                  Back of card message <span className="text-gray-400">(optional)</span>
+                <label htmlFor="backMessage" className="block text-sm font-medium text-[var(--dash-text)]">
+                  Back of card message <span className="text-[var(--dash-text-muted)]">(optional)</span>
                 </label>
                 <AutosaveStatus state={state} error={error} />
               </div>
@@ -200,29 +200,29 @@ export default function PaperEditor({
                 value={backMessage}
                 onChange={(e) => setBackMessage(e.target.value)}
                 placeholder="A note, a quote, or anything else for the back of your card..."
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="mt-1 w-full rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-3 py-2 text-sm text-[var(--dash-text)] placeholder:text-[var(--dash-text-muted)] focus:border-[var(--dash-accent)] focus:outline-none"
               />
             </div>
           </div>
         )}
         {activeSlide.id === "envelope" && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-[var(--dash-text-muted)]">
             The return address uses the same names &amp; date as your invitation — nothing else to set here.
           </p>
         )}
         {activeSlide.id === "program" && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-[var(--dash-text-muted)]">
             Edit your schedule in the{" "}
-            <Link href={`/dashboard/${eventId}/site`} className="font-medium text-rose-700 underline underline-offset-2">
+            <Link href={`/dashboard/${eventId}/site`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
               Site tab
             </Link>
             &apos;s Timeline card — changes show up here automatically.
           </p>
         )}
         {activeSlide.id === "dressCode" && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-[var(--dash-text-muted)]">
             Edit your palette in the{" "}
-            <Link href={`/dashboard/${eventId}/site`} className="font-medium text-rose-700 underline underline-offset-2">
+            <Link href={`/dashboard/${eventId}/site`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
               Site tab
             </Link>
             &apos;s Dress code card — changes show up here automatically.

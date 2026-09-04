@@ -1,15 +1,29 @@
+"use client";
+
 import type { VideoSectionVariantProps } from "../types";
 import { resolveVideoEmbed } from "../videoEmbed";
+import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./Embed.module.css";
 
-export default function Embed({ title, videoUrl }: VideoSectionVariantProps) {
-  const embed = resolveVideoEmbed(videoUrl);
+export default function Embed({ title, videoUrl, styleOverrides }: VideoSectionVariantProps) {
+  const { editable } = useEditableField();
+  if (!videoUrl && !editable) {
+    return null;
+  }
+  const embed = videoUrl ? resolveVideoEmbed(videoUrl) : null;
 
   return (
     <section className={styles.section}>
-      {title && <h2 className={styles.title}>{title}</h2>}
+      {(title || editable) && (
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
+        </h2>
+      )}
       <div className={styles.frame}>
-        {embed.kind === "iframe" ? (
+        {!embed ? (
+          <p className={styles.placeholder}>Paste a video URL below.</p>
+        ) : embed.kind === "iframe" ? (
           <iframe
             className={styles.media}
             src={embed.src}

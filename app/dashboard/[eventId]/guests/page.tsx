@@ -117,13 +117,13 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-xl font-semibold text-gray-900">Guests</h1>
+      <h1 className="dash-h1 text-gray-900">Guests</h1>
       <p className="mt-1 text-sm text-gray-500">
         Keep track of everyone you&apos;re inviting.
       </p>
 
       {allGuests.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-4 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm">
+        <div className="mt-4 flex flex-wrap gap-4 rounded-md border border-gray-200 border-l-4 border-l-[var(--dash-accent)] bg-gray-50 px-4 py-3 text-sm">
           <span className="text-emerald-700">
             <span className="font-semibold">{attendingCount}</span> attending
           </span>

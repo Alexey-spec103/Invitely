@@ -92,7 +92,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
 
   return (
     <div className="mt-12 border-t border-gray-200 pt-8">
-      <h2 className="text-lg font-semibold text-gray-900">RSVP responses</h2>
+      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">RSVP responses</h2>
       <p className="mt-1 text-sm text-gray-500">
         Match each response to someone on your guest list above, if you&apos;d like.
       </p>
@@ -129,7 +129,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search responses by name..."
-          className="mt-4 w-full max-w-xs rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+          className="dash-input mt-4 max-w-xs"
         />
       )}
 

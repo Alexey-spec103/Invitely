@@ -1,3 +1,5 @@
+import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+
 export type GuestbookVariant = "wall" | "quote-scroll" | "minimal-list";
 
 export interface GuestbookMessageItem {
@@ -9,6 +11,7 @@ export interface GuestbookMessageItem {
 export interface GuestbookSectionVariantProps {
   title?: string;
   messages: GuestbookMessageItem[];
+  styleOverrides?: Record<string, TextStyleOverride>;
 }
 
 export interface GuestbookSectionProps extends GuestbookSectionVariantProps {

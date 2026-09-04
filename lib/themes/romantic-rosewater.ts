@@ -14,7 +14,6 @@ export const romanticRosewater: Theme = {
     "--theme-accent": "#D89E8B",
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/leaves.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

@@ -14,7 +14,6 @@ export const romanticAntiqueRose: Theme = {
     "--theme-accent": "#B97C6E",
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-light.svg')",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },
 };

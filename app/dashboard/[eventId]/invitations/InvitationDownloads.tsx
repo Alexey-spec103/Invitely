@@ -228,13 +228,13 @@ export default function InvitationDownloads({
   };
 
   return (
-    <div className="mt-6">
+    <div className="mt-8 border-t border-gray-200 pt-6">
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
           onClick={hasCanvasDesign ? generateCanvasInvitation : () => generate()}
           disabled={pendingId !== null}
-          className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="dash-btn dash-btn-primary"
         >
           {pendingId === "generic"
             ? "Generating..."
@@ -242,31 +242,16 @@ export default function InvitationDownloads({
               ? "Download invitation (your design)"
               : "Download generic invitation"}
         </button>
-        <button
-          type="button"
-          onClick={generateEnvelope}
-          disabled={pendingId !== null}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="button" onClick={generateEnvelope} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
           {pendingId === "envelope" ? "Generating..." : "Download envelope design"}
         </button>
         {timelineEvents.length > 0 && (
-          <button
-            type="button"
-            onClick={generateProgramCard}
-            disabled={pendingId !== null}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="button" onClick={generateProgramCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
             {pendingId === "program" ? "Generating..." : "Download program card"}
           </button>
         )}
         {dressCodeColors.length > 0 && (
-          <button
-            type="button"
-            onClick={generateDressCodeCard}
-            disabled={pendingId !== null}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="button" onClick={generateDressCodeCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
             {pendingId === "dresscode" ? "Generating..." : "Download dress-code card"}
           </button>
         )}
@@ -277,7 +262,7 @@ export default function InvitationDownloads({
       )}
 
       <div className="mt-8 border-t border-gray-200 pt-6">
-        <h2 className="text-lg font-semibold text-gray-900">Personalized invitations</h2>
+        <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Personalized invitations</h2>
         <p className="mt-1 text-sm text-gray-500">
           Each includes a QR code that links straight to your site with the guest already
           identified, so their RSVP is automatically matched.
@@ -287,12 +272,7 @@ export default function InvitationDownloads({
 
         {guests.length > 0 && (
           <div className="mt-4">
-            <button
-              type="button"
-              onClick={generateAll}
-              disabled={pendingId !== null}
-              className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-            >
+            <button type="button" onClick={generateAll} disabled={pendingId !== null} className="dash-btn dash-btn-primary">
               {pendingId === "all"
                 ? bulkProgress
                   ? `Generating ${bulkProgress.done}/${bulkProgress.total}...`
@@ -313,7 +293,7 @@ export default function InvitationDownloads({
                 type="button"
                 onClick={() => generate(guest)}
                 disabled={pendingId !== null}
-                className="text-sm font-medium text-gray-700 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
+                className="text-sm font-medium text-gray-500 hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {pendingId === guest.id ? "Generating..." : "Download"}
               </button>

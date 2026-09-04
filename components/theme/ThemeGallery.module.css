@@ -258,16 +258,22 @@
   object-fit: cover;
 }
 
-/* Same theme-text-based scrim as HeroSection's PhotoFullBleed variant --
-   works over any theme's photo since it derives from the theme's own
-   text color rather than a fixed black. */
+/* Fixed black, same as HeroSection's PhotoFullBleed variant -- and for the
+   same reason: legibility against an arbitrary photo has nothing to do with
+   the theme's own palette. This used to be a --theme-text-based tint, which
+   put the couple's names (.inviteNames, in --theme-accent) at the mercy of
+   however that theme's accent happened to read against its own photo --
+   landing-audit.md priority 13 caught "Elin & Viggo" vanishing into Nordic
+   Minimal's marble and "Sage & Callum" into Botanical Sage's eucalyptus.
+   PhotoFullBleed already solved this correctly (see its own comment); this
+   just reuses that proven pattern instead of re-deriving a weaker one. */
 .invitePhotoOverlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to top,
-    color-mix(in srgb, var(--theme-text) 70%, transparent),
-    color-mix(in srgb, var(--theme-text) 15%, transparent) 55%,
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0.1) 60%,
     transparent
   );
 }
@@ -285,9 +291,13 @@
   text-align: center;
 }
 
+/* Fixed off-white, matching PhotoFullBleed's .content -- see the overlay
+   comment above. All three lines share this now so the couple's names (the
+   most prominent text on the card) are held to the same guaranteed-contrast
+   rule as the eyebrow/date, not left on the theme's own accent color. */
 .inviteEyebrow {
   font-family: var(--theme-font-accent, var(--theme-font-body));
-  color: var(--theme-bg);
+  color: #f5f5f0;
   font-size: 0.55rem;
   text-transform: uppercase;
   letter-spacing: 0.18em;
@@ -296,11 +306,12 @@
 
 .inviteNames {
   font-family: var(--theme-font-script);
-  color: var(--theme-accent);
+  color: #f5f5f0;
   font-size: 1.75rem;
   line-height: 1;
 }
 
+/* Decorative rule, not text -- stays in the theme's own accent color. */
 .inviteDivider {
   width: 24px;
   height: 1px;
@@ -310,7 +321,7 @@
 
 .inviteDate {
   font-family: var(--theme-font-body);
-  color: var(--theme-bg);
+  color: #f5f5f0;
   font-size: 0.6rem;
   letter-spacing: 0.05em;
   opacity: 0.9;

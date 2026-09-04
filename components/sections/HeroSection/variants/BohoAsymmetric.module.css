@@ -13,17 +13,19 @@
 .sprig {
   position: absolute;
   top: 1.5rem;
-  right: 1.5rem;
-  width: 8rem;
-  height: 12rem;
+  right: 2rem;
+  width: 6rem;
+  height: 10rem;
   background-color: var(--theme-accent);
-  opacity: 0.55;
-  mask-image: url("/patterns/leaves.svg");
-  mask-repeat: repeat;
-  mask-size: 70px 70px;
-  -webkit-mask-image: url("/patterns/leaves.svg");
-  -webkit-mask-repeat: repeat;
-  -webkit-mask-size: 70px 70px;
+  opacity: 0.7;
+  mask-image: url("/patterns/boho-pampas-grass.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: top center;
+  -webkit-mask-image: url("/patterns/boho-pampas-grass.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: top center;
 }
 
 .content {
@@ -33,18 +35,24 @@
   text-align: left;
 }
 
+/* Decorative tier -- was backwards before (plain heading font here, script
+   on the date below); the reference's one script moment belongs on the
+   names, not a functional label. */
 .names {
-  font-family: var(--theme-font-heading);
+  font-family: var(--theme-font-script);
   font-weight: 400;
-  font-size: 2rem;
-  line-height: 1.15;
+  font-size: 2.75rem;
+  line-height: 1.1;
+  color: var(--theme-accent);
   margin: 0 0 0.5rem;
 }
 
 .date {
-  font-family: var(--theme-font-script);
-  color: var(--theme-accent);
-  font-size: 1.4rem;
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
   margin: 0;
 }
 
@@ -55,16 +63,16 @@
   }
 
   .names {
-    font-size: 2.6rem;
+    font-size: 3.75rem;
   }
 
   .date {
-    font-size: 1.6rem;
+    font-size: 0.9rem;
   }
 }
 
 @media (min-width: 1024px) {
   .names {
-    font-size: 3.1rem;
+    font-size: 4.5rem;
   }
 }

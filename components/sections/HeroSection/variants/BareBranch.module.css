@@ -1,0 +1,79 @@
+.section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 2.5rem 1.25rem;
+  overflow: hidden;
+  color: var(--theme-text);
+}
+
+/* One large, sparse graphic element -- the section's only decoration,
+   spanning most of the height along the right edge so it reads as an
+   atmospheric backdrop rather than a competing focal point. */
+.branch {
+  position: absolute;
+  top: 0;
+  right: -2rem;
+  bottom: 0;
+  width: 55%;
+  background-color: var(--theme-accent);
+  opacity: 0.4;
+  mask-image: url("/patterns/dark-bare-branch.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center right;
+  -webkit-mask-image: url("/patterns/dark-bare-branch.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center right;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 22rem;
+}
+
+.names {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 2.25rem;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.65rem;
+}
+
+.date {
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .branch {
+    width: 45%;
+  }
+
+  .names {
+    font-size: 3rem;
+  }
+
+  .date {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content {
+    max-width: 26rem;
+  }
+
+  .names {
+    font-size: 3.5rem;
+  }
+}

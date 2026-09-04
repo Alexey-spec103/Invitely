@@ -14,7 +14,6 @@ export const darkWineNoir: Theme = {
     "--theme-accent": "#8E4258",
     "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
     "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/grain-dark.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

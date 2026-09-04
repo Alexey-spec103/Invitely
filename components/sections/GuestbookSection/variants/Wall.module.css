@@ -46,6 +46,13 @@
   margin: 0;
 }
 
+.empty {
+  font-family: var(--theme-font-body);
+  font-size: 0.9rem;
+  opacity: 0.6;
+  margin: 0;
+}
+
 @media (min-width: 640px) {
   .title {
     font-size: 2.4rem;

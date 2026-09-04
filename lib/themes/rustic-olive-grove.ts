@@ -1,7 +1,7 @@
 import type { Theme } from "./types";
 
-// A summer olive-grove rustic theme -- pairs the leaf texture with Fraunces
-// and a muted olive accent, distinct from Forest Cabin's darker autumn moss.
+// A summer olive-grove rustic theme -- pairs Fraunces with a muted olive
+// accent, distinct from Forest Cabin's darker autumn moss.
 export const rusticOliveGrove: Theme = {
   id: "rustic-olive-grove",
   name: "Olive Grove",
@@ -14,7 +14,6 @@ export const rusticOliveGrove: Theme = {
     "--theme-accent": "#6E7A45",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-bg-texture": "url('/patterns/leaves.svg')",
     "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

@@ -42,20 +42,22 @@ export default async function CanvasPage({ params }: PageProps<"/dashboard/[even
   if (layoutMode !== "canvas") {
     const enableCanvas = setLayoutMode.bind(null, event.id, "canvas");
     return (
-      <div className="mx-auto max-w-xl px-6 py-10">
-        <h1 className="text-xl font-semibold text-gray-900">Canvas editor</h1>
-        <p className="mt-2 text-sm text-gray-500">
-          Design your site freely — drag text and photos anywhere, pick any font and color.
-          This replaces the structured section editor for this event once enabled.
-        </p>
-        <form action={enableCanvas} className="mt-6">
-          <button
-            type="submit"
-            className="rounded-md bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700"
-          >
-            Switch this site to the canvas editor
-          </button>
-        </form>
+      <div className="-mx-4 -my-6 flex min-h-[calc(100vh-73px)] items-center justify-center bg-[var(--dash-bg)] px-4 py-6 sm:-mx-10 sm:-my-10 sm:px-10 sm:py-10">
+        <div className="mx-auto max-w-xl">
+          <h1 className="dash-h1 text-[var(--dash-text)]">Canvas editor</h1>
+          <p className="mt-2 text-sm text-[var(--dash-text-muted)]">
+            Design your site freely — drag text and photos anywhere, pick any font and color.
+            This replaces the structured section editor for this event once enabled.
+          </p>
+          <form action={enableCanvas} className="mt-6">
+            <button
+              type="submit"
+              className="rounded-md bg-[var(--dash-accent)] px-4 py-2 text-sm font-semibold text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent-hover)]"
+            >
+              Switch this site to the canvas editor
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
@@ -63,5 +65,9 @@ export default async function CanvasPage({ params }: PageProps<"/dashboard/[even
   const parsedFrames = parseCanvasFrames(siteConfig?.canvas ?? null);
   const frames = parsedFrames.length > 0 ? parsedFrames : [blankFrame];
 
-  return <CanvasEditor eventId={event.id} initialFrames={frames} />;
+  return (
+    <div className="-mx-4 -my-6 sm:-mx-10 sm:-my-10">
+      <CanvasEditor eventId={event.id} initialFrames={frames} />
+    </div>
+  );
 }

@@ -15,7 +15,6 @@ export const botanicalFern: Theme = {
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
-    "--theme-bg-texture": "url('/patterns/leaves.svg')",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };
