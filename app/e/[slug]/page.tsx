@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { EVENT_COLUMNS } from "@/lib/events";
 import { getTheme } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { parseSections, parseContent, renderSection, sectionWillRender, SECTION_LABELS } from "@/components/sections/registry";
@@ -9,13 +11,12 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import SiteHeader from "@/components/shell/SiteHeader";
 import ScrollToNextSection from "@/components/shell/ScrollToNextSection";
 import CanvasRenderer from "@/components/canvas/CanvasRenderer";
+import SectionBackground from "@/components/background/SectionBackground";
 import { parseCanvasFrames } from "@/lib/canvas/parse";
 import { submitRsvp, lookupGuestTable } from "./actions";
-
-function formatEventDate(isoDate: string) {
-  const date = new Date(`${isoDate}T00:00:00`);
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-}
+import SitePasswordGate from "./SitePasswordGate";
+import { getInviteDescription } from "@/lib/socialPreview";
+import { planMeets, BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 
 export async function generateMetadata({
   params,
@@ -25,7 +26,7 @@ export async function generateMetadata({
 
   const { data: event } = await supabase
     .from("events")
-    .select("title, event_date")
+    .select("title, event_date, site_config(content)")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -33,7 +34,24 @@ export async function generateMetadata({
     return { title: "Event not found" };
   }
 
-  const description = `You're invited — ${formatEventDate(event.event_date)}. See the details and RSVP.`;
+  const description = getInviteDescription(event.event_date);
+
+  // dashboard-audit.md B14 "Превью": a custom social-share image, falling
+  // back to the start-screen (Hero) photo -- without either, the link card
+  // guests see when this URL is pasted into a messenger has no image at all.
+  const content =
+    typeof event.site_config?.content === "object" && event.site_config.content !== null
+      ? (event.site_config.content as Record<string, unknown>)
+      : {};
+  const settings =
+    typeof content.settings === "object" && content.settings !== null
+      ? (content.settings as Record<string, unknown>)
+      : {};
+  const hero = typeof content.hero === "object" && content.hero !== null ? (content.hero as Record<string, unknown>) : {};
+  const socialImageUrl =
+    (typeof settings.socialImageUrl === "string" && settings.socialImageUrl) ||
+    (typeof hero.photoUrl === "string" && hero.photoUrl) ||
+    undefined;
 
   return {
     title: event.title,
@@ -42,6 +60,7 @@ export async function generateMetadata({
       title: event.title,
       description,
       type: "website",
+      images: socialImageUrl ? [socialImageUrl] : undefined,
     },
   };
 }
@@ -53,7 +72,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
 
   const { data: event } = await supabase
     .from("events")
-    .select("*, site_config(*)")
+    .select(`${EVENT_COLUMNS}, site_config(*)`)
     .eq("slug", slug)
     .maybeSingle();
 
@@ -61,14 +80,49 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
     notFound();
   }
 
-  const isCanvasMode = event.site_config.layout_mode === "canvas";
+  // Password protection: a hashed-password gate on top of the existing
+  // publish gate above (an unpublished event is already invisible to guests
+  // regardless of this). `site_password_hash` itself is never read here --
+  // its column-level SELECT is revoked at the DB level (see the site-password
+  // migration) -- only the opaque unlock token, which is safe to compare.
+  if (event.site_password_enabled) {
+    const cookieStore = await cookies();
+    const unlocked =
+      event.site_password_unlock_token != null &&
+      cookieStore.get(`site_unlock_${event.id}`)?.value === event.site_password_unlock_token;
+    if (!unlocked) {
+      return <SitePasswordGate eventId={event.id} title={event.title} />;
+    }
+  }
+
+  // dashboard-audit.md Block E: a host on any plan can toggle modules,
+  // design in Canvas, and save freely in the dashboard -- that's the free
+  // "try it" part. This is the one place both gates actually apply to what
+  // guests see.
+  const hasBasicAccess = planMeets(event.plan_id, "basic");
+
+  // Block E part 3: saveCanvasFrames/setLayoutMode persist unconditionally
+  // on every plan (never silently discarding a host's design) -- but the
+  // public site only actually renders Canvas mode once the plan meets
+  // Basic, falling back to the structured section layout otherwise (which
+  // still has a real Hero section to show, seeded when the event was
+  // created) rather than unlocking the free-form cover for free.
+  const isCanvasMode = event.site_config.layout_mode === "canvas" && hasBasicAccess;
 
   // Canvas mode replaces the decorative "Home" cover with freely designed
   // pages, but reuses the same functional sections (RSVP, timeline, map,
   // gifts, ...) rather than reimplementing that logic — guest lookup, RSVP
   // persistence, and banquet linking all live in one place regardless of
   // which layout mode a couple picked for their cover pages.
-  const allSections = parseSections(event.site_config.sections).filter((section) => section.enabled);
+  // Block E part 1: modules filtered here, not at the toggle, so the
+  // enforcement can't be bypassed by editing content after publish without
+  // re-toggling.
+  const allSections = parseSections(event.site_config.sections)
+    .filter((section) => section.enabled)
+    .filter(
+      (section) =>
+        hasBasicAccess || !BASIC_GATED_SECTION_TYPES.includes(section.type as (typeof BASIC_GATED_SECTION_TYPES)[number])
+    );
   const sections = isCanvasMode ? allSections.filter((section) => section.type !== "hero") : allSections;
   const content = parseContent(event.site_config.content);
 
@@ -168,7 +222,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           }
           const wrapped = (
             <div key={section.type} id={`section-${section.type}`}>
-              {element}
+              <SectionBackground fill={section.background}>{element}</SectionBackground>
             </div>
           );
           // The first section normally skips the reveal-on-scroll animation

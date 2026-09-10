@@ -25,6 +25,7 @@ export default async function EventDashboardLayout({
   return (
     <DashboardShell
       userEmail={user.email ?? ""}
+      isAnonymous={user.is_anonymous ?? false}
       events={events}
       navEventId={event.id}
       navEventType={event.event_type}

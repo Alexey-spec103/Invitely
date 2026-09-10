@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { planMeets } from "@/lib/plans";
 
 const RESERVED_PATH_PREFIXES = [
   "/dashboard",
@@ -43,12 +44,16 @@ export async function resolveCustomDomain(request: NextRequest): Promise<NextRes
 
   const { data: event } = await supabase
     .from("events")
-    .select("slug")
+    .select("slug, plan_id")
     .eq("custom_domain", hostname)
     .not("custom_domain_verified_at", "is", null)
     .maybeSingle();
 
-  if (!event) {
+  // dashboard-audit.md Block E part 2: the actual routing is the "final
+  // result" this whole feature is gated on -- checked again here (not just
+  // at verification time) so a plan downgrade after verifying stops the
+  // domain from working without needing any extra cleanup step.
+  if (!event || !planMeets(event.plan_id, "basic")) {
     return null;
   }
 
@@ -82,7 +87,21 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Обязательный вызов: обновляет истёкший токен и кладёт новую сессию в куки ответа
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Anonymous trial: give a visitor reaching /onboarding with no session at
+  // all a real (anonymous) session before the wizard renders, so every step
+  // from here on persists under a real owner_id. Scoped to this one path so
+  // marketing-page visitors/bots never get an anonymous user created. Must
+  // happen here (middleware), not in the page component -- Server
+  // Components can't set cookies, only middleware/Server Actions/Route
+  // Handlers can, and this client's `setAll` above already wires any new
+  // session onto `supabaseResponse` automatically.
+  if (!user && request.nextUrl.pathname === "/onboarding") {
+    await supabase.auth.signInAnonymously();
+  }
 
   return supabaseResponse;
 }

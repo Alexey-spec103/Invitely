@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { requireRealUser } from "@/lib/session";
 import { deleteEvent } from "@/lib/events";
 import { getEventType } from "@/lib/eventTypes";
 import { parseContent, parseSections, SECTION_ORDER } from "@/components/sections/registry";
@@ -21,15 +22,11 @@ import type { HeroVariant } from "@/components/sections/HeroSection";
 import type { SectionConfig } from "@/components/sections/registry";
 
 export async function togglePublish(eventId: string) {
+  // Publishing requires a real account, not just any session -- an
+  // anonymous trial user can build and preview freely, but guests can only
+  // actually see the site once its owner has a real (non-anonymous) account.
+  const user = await requireRealUser();
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error("Not authenticated");
-  }
 
   const { data: existingEvent, error: fetchError } = await supabase
     .from("events")
@@ -110,9 +107,10 @@ export async function updateTheme(input: UpdateThemeInput) {
 
   const { data: existingConfig } = await supabase
     .from("site_config")
-    .select("sections")
+    .select("theme_id, sections")
     .eq("event_id", input.eventId)
     .maybeSingle();
+  const previousThemeId = existingConfig?.theme_id;
 
   const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
   const sections: SectionConfig[] = existingSections.some((section) => section.type === "hero")
@@ -137,6 +135,31 @@ export async function updateTheme(input: UpdateThemeInput) {
 
   if (configError) {
     throw new Error(configError.message);
+  }
+
+  // dashboard-audit.md B11: a best-effort log of past theme choices (their
+  // ⟲ "history" icon) -- only on a real change, not a no-op re-save, and
+  // pruned to the most recent 20 rows per event so it can't grow unbounded.
+  // Never blocks the theme update itself: a history-logging failure isn't a
+  // reason to fail the save the user actually asked for.
+  if (!previousThemeId || previousThemeId !== input.themeId) {
+    const { error: historyError } = await supabase
+      .from("theme_history")
+      .insert({ event_id: input.eventId, theme_id: input.themeId });
+    if (!historyError) {
+      const { data: staleHistory } = await supabase
+        .from("theme_history")
+        .select("id")
+        .eq("event_id", input.eventId)
+        .order("changed_at", { ascending: false })
+        .range(20, 1000);
+      if (staleHistory && staleHistory.length > 0) {
+        await supabase
+          .from("theme_history")
+          .delete()
+          .in("id", staleHistory.map((row) => row.id));
+      }
+    }
   }
 
   revalidatePath(`/dashboard/${input.eventId}`);

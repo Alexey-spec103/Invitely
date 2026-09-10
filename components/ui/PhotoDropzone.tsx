@@ -3,15 +3,11 @@
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ImagePlus, X, Loader2 } from "lucide-react";
-import { photoFileToDataUrl, uploadEventPhoto } from "@/lib/photoUpload";
+import { uploadEventPhoto } from "@/lib/photoUpload";
 
 interface PhotoDropzoneProps {
   value?: string;
   onChange: (url: string | undefined) => void;
-  /** "upload" persists straight to Supabase Storage (needs a session).
-   * "local" just resizes to a data URL for an unauthenticated onboarding
-   * preview -- the real upload happens later, once there's a session. */
-  mode: "upload" | "local";
   label?: string;
   helpText?: string;
 }
@@ -22,7 +18,6 @@ interface PhotoDropzoneProps {
 export default function PhotoDropzone({
   value,
   onChange,
-  mode,
   label = "Add your photo",
   helpText,
 }: PhotoDropzoneProps) {
@@ -36,7 +31,7 @@ export default function PhotoDropzone({
     setError(null);
     setIsBusy(true);
     try {
-      const url = mode === "upload" ? await uploadEventPhoto(file) : await photoFileToDataUrl(file);
+      const url = await uploadEventPhoto(file);
       onChange(url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't add that photo");

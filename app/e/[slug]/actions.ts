@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { RsvpFormInput } from "@/components/sections/RsvpSection";
 import type { BanquetTableLookupResult } from "@/components/sections/BanquetNavigatorSection";
@@ -85,6 +86,13 @@ export async function submitRsvp(
 
   if (error) {
     console.error("submitRsvp failed", error);
+    // Postgres RLS violations always carry this code -- the only way this
+    // insert/upsert can hit it is the "published events only" policy on
+    // rsvp_responses, so it's safe to name the real cause instead of the
+    // generic message below.
+    if (error.code === "42501") {
+      throw new Error("This site isn't published yet, so RSVPs can't be submitted. Ask your host to publish it.");
+    }
     throw new Error("We couldn't submit your RSVP. Please try again in a moment.");
   }
 
@@ -128,4 +136,32 @@ export async function lookupGuestTable(eventId: string, fullName: string): Promi
   }
 
   return { found: data.found, tableName: data.table_name, attending: data.attending };
+}
+
+/** Verifies the guest-entered password against the event's hash entirely
+ * inside the `verify_site_password` Postgres function -- the hash itself is
+ * never read here (its column-level SELECT is revoked for every role; see
+ * the site-password migration), only the opaque unlock token the function
+ * returns on a correct guess. That token becomes the cookie value page.tsx
+ * checks on future visits, so the guest isn't asked again. */
+export async function unlockSitePassword(eventId: string, password: string) {
+  const supabase = await createClient();
+
+  const { data: token, error } = await supabase.rpc("verify_site_password", {
+    p_event_id: eventId,
+    p_password: password,
+  });
+
+  if (error || !token) {
+    throw new Error("Incorrect password");
+  }
+
+  const cookieStore = await cookies();
+  cookieStore.set(`site_unlock_${eventId}`, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 180, // 180 days
+  });
 }

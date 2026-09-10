@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
+import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
 
 const signupSchema = z
   .object({
@@ -38,6 +39,27 @@ export default function SignupForm() {
   const onSubmit = async (values: SignupFormValues) => {
     setFormError(null);
     const supabase = createClient();
+
+    // Reaching /signup directly while an anonymous trial session is active
+    // (e.g. the dashboard banner was dismissed) must upgrade that same
+    // session in place, not create a brand-new, disconnected account that
+    // would orphan whatever they already made.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user?.is_anonymous) {
+      try {
+        await upgradeAnonymousAccount(values.email, values.password);
+      } catch (err) {
+        setFormError(err instanceof Error ? err.message : "Failed to create account");
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,

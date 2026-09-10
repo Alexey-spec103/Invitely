@@ -59,6 +59,9 @@ export type Database = {
           id: string
           owner_id: string
           plan_id: string
+          site_password_enabled: boolean
+          site_password_hash: string | null
+          site_password_unlock_token: string | null
           slug: string
           status: string | null
           subtitle_names: string[] | null
@@ -83,6 +86,9 @@ export type Database = {
           id?: string
           owner_id: string
           plan_id?: string
+          site_password_enabled?: boolean
+          site_password_hash?: string | null
+          site_password_unlock_token?: string | null
           slug: string
           status?: string | null
           subtitle_names?: string[] | null
@@ -107,6 +113,9 @@ export type Database = {
           id?: string
           owner_id?: string
           plan_id?: string
+          site_password_enabled?: boolean
+          site_password_hash?: string | null
+          site_password_unlock_token?: string | null
           slug?: string
           status?: string | null
           subtitle_names?: string[] | null
@@ -173,7 +182,10 @@ export type Database = {
           invitation_sent_at: string | null
           invite_code: string
           max_plus_ones: number | null
+          paper_enabled: boolean
           phone: string | null
+          sent_channels: string[]
+          site_enabled: boolean
           table_id: string | null
         }
         Insert: {
@@ -186,7 +198,10 @@ export type Database = {
           invitation_sent_at?: string | null
           invite_code?: string
           max_plus_ones?: number | null
+          paper_enabled?: boolean
           phone?: string | null
+          sent_channels?: string[]
+          site_enabled?: boolean
           table_id?: string | null
         }
         Update: {
@@ -199,7 +214,10 @@ export type Database = {
           invitation_sent_at?: string | null
           invite_code?: string
           max_plus_ones?: number | null
+          paper_enabled?: boolean
           phone?: string | null
+          sent_channels?: string[]
+          site_enabled?: boolean
           table_id?: string | null
         }
         Relationships: [
@@ -346,11 +364,83 @@ export type Database = {
           },
         ]
       }
+      theme_slots: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          theme_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          theme_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theme_slots_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      theme_history: {
+        Row: {
+          changed_at: string
+          event_id: string
+          id: string
+          theme_id: string
+        }
+        Insert: {
+          changed_at?: string
+          event_id: string
+          id?: string
+          theme_id: string
+        }
+        Update: {
+          changed_at?: string
+          event_id?: string
+          id?: string
+          theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theme_history_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      set_site_password: {
+        Args: {
+          p_event_id: string
+          p_password: string
+        }
+        Returns: undefined
+      }
+      verify_site_password: {
+        Args: {
+          p_event_id: string
+          p_password: string
+        }
+        Returns: string | null
+      }
       lookup_guest_by_invite_code: {
         Args: {
           p_event_id: string

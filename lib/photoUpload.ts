@@ -5,10 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 const MAX_DIMENSION = 1400;
 const JPEG_QUALITY = 0.85;
 
-/** Resizes+compresses an image file client-side (canvas), capping the
- * longest side at MAX_DIMENSION -- keeps both Storage uploads and the
- * localStorage-held pre-signup data URL small regardless of the original
- * photo's size. */
+/** Resizes+compresses an image file client-side (canvas) before uploading,
+ * capping the longest side at MAX_DIMENSION. */
 function resizeImage(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -41,24 +39,6 @@ function resizeImage(file: File): Promise<Blob> {
   });
 }
 
-function blobToDataUrl(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(new Error("Couldn't read this image"));
-    reader.readAsDataURL(blob);
-  });
-}
-
-function dataUrlToBlob(dataUrl: string): Blob {
-  const [meta, base64] = dataUrl.split(",");
-  const mime = meta.match(/data:(.*);base64/)?.[1] ?? "image/jpeg";
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return new Blob([bytes], { type: mime });
-}
-
 function assertImageFile(file: File) {
   if (!file.type.startsWith("image/")) {
     throw new Error("Please choose an image file");
@@ -68,33 +48,15 @@ function assertImageFile(file: File) {
   }
 }
 
-/** Resizes a photo and returns a compact data URL for local (pre-signup)
- * preview/storage, with no upload -- there's no session yet to scope a
- * Storage path to. */
-export async function photoFileToDataUrl(file: File): Promise<string> {
-  assertImageFile(file);
-  const resized = await resizeImage(file);
-  return blobToDataUrl(resized);
-}
-
 /** Resizes a photo and uploads it to the "event-photos" Storage bucket
- * under the current user's own folder (required by that bucket's RLS —
- * see supabase/migrations/20260818110000_event_photos_storage.sql), then
- * returns its public URL. */
+ * under the current user's own folder (required by that bucket's RLS --
+ * see supabase/migrations/20260818110000_event_photos_storage.sql, keyed by
+ * auth.uid() so this works identically for an anonymous trial session as
+ * for a real account), then returns its public URL. */
 export async function uploadEventPhoto(file: File): Promise<string> {
   assertImageFile(file);
   const resized = await resizeImage(file);
-  return uploadBlobAsEventPhoto(resized);
-}
 
-/** Uploads a previously-created data URL (e.g. one saved to
- * pendingOnboarding before the user had a session) to Storage now that
- * they're authenticated, returning its public URL. */
-export async function uploadDataUrlAsEventPhoto(dataUrl: string): Promise<string> {
-  return uploadBlobAsEventPhoto(dataUrlToBlob(dataUrl));
-}
-
-async function uploadBlobAsEventPhoto(blob: Blob): Promise<string> {
   const supabase = createClient();
   const {
     data: { user },
@@ -106,7 +68,7 @@ async function uploadBlobAsEventPhoto(blob: Blob): Promise<string> {
   const path = `${user.id}/${Date.now()}.jpg`;
   const { error } = await supabase.storage
     .from("event-photos")
-    .upload(path, blob, { contentType: "image/jpeg", upsert: false });
+    .upload(path, resized, { contentType: "image/jpeg", upsert: false });
 
   if (error) {
     throw new Error(error.message);

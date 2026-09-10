@@ -7,9 +7,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
-import { takePendingOnboarding } from "@/lib/pendingOnboarding";
-import { uploadDataUrlAsEventPhoto } from "@/lib/photoUpload";
-import { completeOnboarding } from "@/app/onboarding/actions";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email"),
@@ -44,29 +41,6 @@ export default function LoginForm() {
     if (error) {
       setFormError(error.message);
       return;
-    }
-
-    const pending = takePendingOnboarding();
-    if (pending) {
-      try {
-        // A photo captured before signup is a local data: URL (no session
-        // to upload it under yet) -- upload it to real Storage now that
-        // we're authenticated. Non-fatal if it fails: better to finish
-        // creating the site without the photo than to block on it.
-        let photoUrl = pending.photoUrl;
-        if (photoUrl?.startsWith("data:")) {
-          try {
-            photoUrl = await uploadDataUrlAsEventPhoto(photoUrl);
-          } catch {
-            photoUrl = undefined;
-          }
-        }
-        await completeOnboarding({ ...pending, photoUrl });
-        return;
-      } catch (err) {
-        setFormError(err instanceof Error ? err.message : "Failed to finish setting up your site");
-        return;
-      }
     }
 
     router.push(themeId ? `/onboarding?theme=${themeId}` : "/dashboard");

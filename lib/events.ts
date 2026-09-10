@@ -6,6 +6,18 @@ import { DEFAULT_HERO_VARIANT, HERO_VARIANTS } from "@/components/sections/HeroS
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import type { Json } from "@/lib/supabase/database.types";
 
+// `site_password_hash` is deliberately excluded: its column-level SELECT is
+// revoked from anon/authenticated at the DB level (see the site-password
+// migration), so a plain `select("*")` against `events` fails outright for
+// every role -- Postgres denies `*` if any column is inaccessible, not just
+// that one column. Nothing here ever needs the raw hash anyway (only
+// `site_password_enabled`, which stays fully selectable).
+// A single string literal (not built via `+`, which widens to plain `string`)
+// so supabase-js can still statically infer the resulting row shape from the
+// literal type -- a `string`-typed select falls back to an untyped result.
+export const EVENT_COLUMNS =
+  "id, owner_id, slug, title, subtitle_names, event_type, event_date, event_time, venue_name, venue_address, venue_city, venue_lat, venue_lng, plan_id, status, default_locale, supported_locales, custom_domain, custom_domain_verification_token, custom_domain_verified_at, site_password_enabled, site_password_unlock_token, created_at, updated_at" as const;
+
 const COMBINING_DIACRITICS = /[̀-ͯ]/g;
 
 function slugifyName(name: string): string {
@@ -31,7 +43,7 @@ export const getEvent = cache(async (userId: string) => {
 
   const { data: existingEvents } = await supabase
     .from("events")
-    .select("*")
+    .select(EVENT_COLUMNS)
     .eq("owner_id", userId)
     .order("updated_at", { ascending: false })
     .limit(1);
@@ -44,7 +56,7 @@ export async function listEvents(userId: string) {
 
   const { data } = await supabase
     .from("events")
-    .select("*")
+    .select(EVENT_COLUMNS)
     .eq("owner_id", userId)
     .order("updated_at", { ascending: false });
 
@@ -56,7 +68,7 @@ export async function getEventById(eventId: string, userId: string) {
 
   const { data } = await supabase
     .from("events")
-    .select("*")
+    .select(EVENT_COLUMNS)
     .eq("id", eventId)
     .eq("owner_id", userId)
     .maybeSingle();
@@ -92,7 +104,7 @@ export async function createEvent(userId: string, input: CreateEventInput) {
         event_date: input.eventDate,
         status: "draft",
       })
-      .select("*")
+      .select(EVENT_COLUMNS)
       .single();
 
     if (!insertError) {

@@ -17,7 +17,13 @@ export default async function AccountLayout({ children }: LayoutProps<"/dashboar
   }
 
   return (
-    <DashboardShell userEmail={user.email ?? ""} events={events} navEventId={events[0].id} navEventType={events[0].event_type}>
+    <DashboardShell
+      userEmail={user.email ?? ""}
+      isAnonymous={user.is_anonymous ?? false}
+      events={events}
+      navEventId={events[0].id}
+      navEventType={events[0].event_type}
+    >
       {children}
     </DashboardShell>
   );
