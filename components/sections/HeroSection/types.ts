@@ -23,7 +23,9 @@ export type HeroVariant =
   | "postage-stamp"
   | "victorian-cameo"
   | "left-aligned"
-  | "stacked-grid";
+  | "stacked-grid"
+  | "watercolor-botanical"
+  | "alcohol-ink-gold";
 
 export interface HeroSectionVariantProps {
   names: string[];

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480" fill="none">
+  <!-- A single arching floral branch (stem + leaves + a couple of loose
+       blooms), soft-edged rather than botanically precise: the shape a
+       "watercolor botanical" needs, distinct from watercolor-blob.svg's
+       abstract paint-splash silhouette. Colored via currentColor so the
+       consumer paints it through a CSS mask like every other pattern here. -->
+  <path
+    d="M40 440 C 120 380, 180 340, 220 280 C 260 220, 280 170, 340 120 C 380 88, 410 68, 445 40"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+  <path d="M120 380 C 100 355, 78 348, 55 358 C 72 385, 98 396, 120 380 Z" fill="currentColor" opacity="0.85" />
+  <path d="M150 358 C 165 330, 162 305, 140 288 C 122 312, 124 340, 150 358 Z" fill="currentColor" opacity="0.75" />
+  <path d="M220 280 C 245 260, 250 235, 235 210 C 210 228, 202 258, 220 280 Z" fill="currentColor" opacity="0.7" />
+  <path d="M255 250 C 280 260, 302 254, 315 232 C 292 218, 266 226, 255 250 Z" fill="currentColor" opacity="0.65" />
+  <path d="M300 170 C 300 142, 285 122, 258 112 C 254 140, 268 164, 300 170 Z" fill="currentColor" opacity="0.6" />
+  <!-- two loose five-petal blooms, drawn soft/imprecise on purpose -->
+  <g opacity="0.8">
+    <circle cx="365" cy="95" r="9" fill="currentColor" />
+    <circle cx="352" cy="88" r="7" fill="currentColor" opacity="0.75" />
+    <circle cx="378" cy="86" r="7" fill="currentColor" opacity="0.75" />
+    <circle cx="356" cy="106" r="6.5" fill="currentColor" opacity="0.7" />
+    <circle cx="374" cy="105" r="6.5" fill="currentColor" opacity="0.7" />
+  </g>
+  <g opacity="0.55">
+    <circle cx="415" cy="55" r="6" fill="currentColor" />
+    <circle cx="406" cy="50" r="4.5" fill="currentColor" opacity="0.75" />
+    <circle cx="423" cy="49" r="4.5" fill="currentColor" opacity="0.75" />
+    <circle cx="408" cy="62" r="4" fill="currentColor" opacity="0.7" />
+    <circle cx="421" cy="61" r="4" fill="currentColor" opacity="0.7" />
+  </g>
+</svg>

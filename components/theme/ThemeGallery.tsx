@@ -1,9 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { Sparkles, Heart } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
-import { THEME_CATEGORIES, THEME_SEASONS, THEME_LAYOUTS, layoutLabelFor } from "@/lib/themes";
+import {
+  THEME_CATEGORIES,
+  THEME_SEASONS,
+  THEME_LAYOUTS,
+  layoutLabelFor,
+  POPULAR_THEME_IDS,
+  NEW_THEME_IDS,
+} from "@/lib/themes";
 import type { Theme, ThemeCategory, ThemeSeason } from "@/lib/themes";
+import { useFavoriteThemes } from "@/lib/useFavoriteThemes";
+import { CATEGORY_STYLE_ICONS, LAYOUT_STYLE_ICONS } from "@/components/icons/StyleFilterIcons";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
@@ -11,7 +21,6 @@ import {
   previewPhotoFor,
   previewNamesFor,
   previewTargetDateFor,
-  previewDomainFor,
   formatPreviewDate,
 } from "@/lib/themes/previewMedia";
 import { getCountdownParts, type CountdownParts } from "@/lib/countdown";
@@ -62,12 +71,8 @@ interface ThemeGalleryProps {
   selectedId?: string;
   onSelect: (themeId: string) => void;
   disabled?: boolean;
-  /** Adds the decorative site-chrome overlay (hamburger + "Add to calendar"
-   * pill, countdown timer, "yourname.com" placeholder domain) that mirrors
-   * weddingpost.ru's own gallery preview. Only for the public marketing
-   * landing page -- in the dashboard/onboarding a real user is picking
-   * their own theme, and fake chrome there would just read as broken UI. */
-  isMarketingPreview?: boolean;
+  /** dashboard-audit.md A6 -- see `ThemeGalleryCardProps.onCustomize`. */
+  onCustomize?: () => void;
 }
 
 /** Category/season sidebar + search + a live, screenshot-free dual mockup
@@ -77,25 +82,50 @@ interface ThemeGalleryProps {
  * the public landing page: this component only ever reports an id via
  * `onSelect`, the caller decides what that means (save, form field, or a
  * `?theme=` link). */
+type EntryId = "popular" | "new" | "favorites";
+
+/** dashboard-audit.md B7: STYLE (theme.category, exactly 10 themes in each
+ * of 10 buckets -- a designed-even split, not wrong data, confirmed via
+ * `grep`) read as synthetic sitting in its own block of ten identical
+ * counts. LAYOUT (technique/composition, organic 3-11 counts) was already
+ * "done right" per the audit. Merging them into one taxonomy -- exactly the
+ * alternative the audit itself offers -- doesn't touch `theme.category`
+ * (still load-bearing for preview photos/Hero variants elsewhere), only how
+ * the sidebar presents it: as one flat, count-sorted list instead of two
+ * separate blocks, so a handful of "10"s land interspersed among varied
+ * numbers instead of forming an all-identical block on their own. */
+type StyleValue = { kind: "category"; id: ThemeCategory } | { kind: "layout"; id: string };
+type StyleEntry = StyleValue & { label: string; count: number };
+
 export default function ThemeGallery({
   themes,
   selectedId,
   onSelect,
   disabled,
-  isMarketingPreview = false,
+  onCustomize,
 }: ThemeGalleryProps) {
-  const [category, setCategory] = useState<ThemeCategory | "all">("all");
+  // dashboard-audit.md B6: weddingpost.ru's catalog opens on its "Популярные"
+  // entry rather than an unfiltered "all" -- confirmed live. This is a
+  // separate axis from category/season/layout below (an "entry", not a
+  // category, per the audit's own wording), so picking one clears the other
+  // filters and vice versa rather than trying to combine both at once.
+  const [entry, setEntry] = useState<EntryId | null>("popular");
+  const [style, setStyle] = useState<StyleValue | null>(null);
   const [season, setSeason] = useState<ThemeSeason | "all">("all");
-  const [layout, setLayout] = useState<string | "all">("all");
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const { favoriteIds, toggleFavorite } = useFavoriteThemes();
+  const currentYear = new Date().getFullYear();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return themes.filter((theme) => {
-      if (category !== "all" && theme.category !== category) return false;
+      if (entry === "popular" && !POPULAR_THEME_IDS.includes(theme.id)) return false;
+      if (entry === "new" && !NEW_THEME_IDS.includes(theme.id)) return false;
+      if (entry === "favorites" && !favoriteIds.has(theme.id)) return false;
+      if (style?.kind === "category" && theme.category !== style.id) return false;
+      if (style?.kind === "layout" && layoutLabelFor(theme.id, theme.category) !== style.id) return false;
       if (season !== "all" && theme.season !== season) return false;
-      if (layout !== "all" && layoutLabelFor(theme.id, theme.category) !== layout) return false;
       if (
         q &&
         !theme.name.toLowerCase().includes(q) &&
@@ -106,26 +136,29 @@ export default function ThemeGallery({
       }
       return true;
     });
-  }, [themes, category, season, layout, query]);
+  }, [themes, entry, favoriteIds, style, season, query]);
 
   const visible = filtered.slice(0, visibleCount);
 
-  const updateCategory = (next: ThemeCategory | "all") => {
-    setCategory(next);
+  const selectEntry = (next: EntryId) => {
+    setEntry((current) => (current === next ? null : next));
+    setVisibleCount(PAGE_SIZE);
+  };
+
+  const updateStyle = (next: StyleValue | null) => {
+    setEntry(null);
+    setStyle(next);
     setVisibleCount(PAGE_SIZE);
   };
 
   const updateSeason = (next: ThemeSeason | "all") => {
+    setEntry(null);
     setSeason(next);
     setVisibleCount(PAGE_SIZE);
   };
 
-  const updateLayout = (next: string | "all") => {
-    setLayout(next);
-    setVisibleCount(PAGE_SIZE);
-  };
-
   const updateQuery = (next: string) => {
+    setEntry(null);
     setQuery(next);
     setVisibleCount(PAGE_SIZE);
   };
@@ -133,6 +166,10 @@ export default function ThemeGallery({
   const categoryEntries = Object.entries(THEME_CATEGORIES) as [ThemeCategory, number][];
   const seasonEntries = Object.entries(THEME_SEASONS) as [ThemeSeason, number][];
   const layoutEntries = Object.entries(THEME_LAYOUTS).sort((a, b) => b[1] - a[1]);
+  const combinedStyleEntries: StyleEntry[] = [
+    ...categoryEntries.map(([cat, count]) => ({ kind: "category" as const, id: cat, label: CATEGORY_LABELS[cat], count })),
+    ...layoutEntries.map(([label, count]) => ({ kind: "layout" as const, id: label, label, count })),
+  ].sort((a, b) => b.count - a.count);
 
   return (
     <div className={styles.root}>
@@ -147,26 +184,79 @@ export default function ThemeGallery({
         />
 
         <div className={styles.filterGroup}>
+          <button
+            type="button"
+            onClick={() => selectEntry("popular")}
+            className={entry === "popular" ? styles.filterActive : styles.filterBtn}
+          >
+            <span className={styles.entryLabel}>
+              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+              Popular
+            </span>
+            <span className={styles.count}>{POPULAR_THEME_IDS.length}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => selectEntry("new")}
+            className={entry === "new" ? styles.filterActive : styles.filterBtn}
+          >
+            <span>New</span>
+            <span className={styles.newBadge}>NEW</span>
+          </button>
+          {seasonEntries.map(([s]) => (
+            <button
+              key={`entry-${s}`}
+              type="button"
+              onClick={() => updateSeason(season === s && entry === null ? "all" : s)}
+              className={entry === null && season === s ? styles.filterActive : styles.filterBtn}
+            >
+              <span>
+                {SEASON_LABELS[s]} {currentYear}
+              </span>
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => selectEntry("favorites")}
+            className={entry === "favorites" ? styles.filterActive : styles.filterBtn}
+          >
+            <span className={styles.entryLabel}>
+              <Heart className="h-3.5 w-3.5" aria-hidden="true" />
+              Favorites
+            </span>
+            <span className={styles.count}>{favoriteIds.size}</span>
+          </button>
+        </div>
+
+        <hr className={styles.entriesDivider} />
+
+        <div className={styles.filterGroup}>
           <p className={styles.filterLabel}>Style</p>
           <button
             type="button"
-            onClick={() => updateCategory("all")}
-            className={category === "all" ? styles.filterActive : styles.filterBtn}
+            onClick={() => updateStyle(null)}
+            className={style === null ? styles.filterActive : styles.filterBtn}
           >
             <span>All styles</span>
             <span className={styles.count}>{themes.length}</span>
           </button>
-          {categoryEntries.map(([cat, count]) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => updateCategory(cat)}
-              className={category === cat ? styles.filterActive : styles.filterBtn}
-            >
-              <span>{CATEGORY_LABELS[cat]}</span>
-              <span className={styles.count}>{count}</span>
-            </button>
-          ))}
+          {combinedStyleEntries.map((item) => {
+            const Icon = item.kind === "category" ? CATEGORY_STYLE_ICONS[item.id] : LAYOUT_STYLE_ICONS[item.id];
+            return (
+              <button
+                key={`${item.kind}-${item.id}`}
+                type="button"
+                onClick={() => updateStyle(style?.kind === item.kind && style.id === item.id ? null : item)}
+                className={style?.kind === item.kind && style.id === item.id ? styles.filterActive : styles.filterBtn}
+              >
+                <span className={styles.entryLabel}>
+                  {Icon && <Icon className={styles.styleIcon} />}
+                  {item.label}
+                </span>
+                <span className={styles.count}>{item.count}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div className={styles.filterGroup}>
@@ -190,31 +280,9 @@ export default function ThemeGallery({
             </button>
           ))}
         </div>
-
-        <div className={styles.filterGroup}>
-          <p className={styles.filterLabel}>Layout</p>
-          <button
-            type="button"
-            onClick={() => updateLayout("all")}
-            className={layout === "all" ? styles.filterActive : styles.filterBtn}
-          >
-            <span>All layouts</span>
-          </button>
-          {layoutEntries.map(([label, count]) => (
-            <button
-              key={label}
-              type="button"
-              onClick={() => updateLayout(label)}
-              className={layout === label ? styles.filterActive : styles.filterBtn}
-            >
-              <span>{label}</span>
-              <span className={styles.count}>{count}</span>
-            </button>
-          ))}
-        </div>
       </aside>
 
-      <div>
+      <div className={styles.gallery}>
         <p className={styles.resultsCount}>
           {filtered.length} {filtered.length === 1 ? "style" : "styles"}
         </p>
@@ -226,7 +294,9 @@ export default function ThemeGallery({
               selected={theme.id === selectedId}
               disabled={disabled}
               onSelect={onSelect}
-              isMarketingPreview={isMarketingPreview}
+              onCustomize={onCustomize}
+              isFavorite={favoriteIds.has(theme.id)}
+              onToggleFavorite={toggleFavorite}
             />
           ))}
         </div>
@@ -253,19 +323,42 @@ export interface ThemeGalleryCardProps {
   selected: boolean;
   disabled?: boolean;
   onSelect: (themeId: string) => void;
-  isMarketingPreview?: boolean;
+  /** dashboard-audit.md A6: weddingpost.ru's own already-selected card has no
+   * hover button at all (just a permanent "✓ Выбранный вариант" banner,
+   * confirmed live) -- their hover-reveal "Настроить" only exists on OTHER
+   * cards, and both selects and opens the editor in one click. We have a
+   * separate Site tab to send a host to instead, so this is the adapted
+   * equivalent for a card that's already selected: hover reveals "Customize
+   * →", which jumps straight there. Only passed by the dashboard's own
+   * `ThemeSelectForm` (there's no site to customize yet in onboarding, and
+   * no signed-in event at all on the marketing landing page) -- omitted
+   * elsewhere, the already-selected card just shows no hover affordance,
+   * same as before this change. */
+  onCustomize?: () => void;
+  /** dashboard-audit.md B6/B9: only passed by the full `ThemeGallery` (not
+   * `LandingThemeShowcase`'s bare reuse) -- omitted, the heart just doesn't
+   * render, same optional-prop convention as `onCustomize` above. */
+  isFavorite?: boolean;
+  onToggleFavorite?: (themeId: string) => void;
 }
 
 /** Exported so `LandingThemeShowcase` (the trimmed, no-filters 6-card
  * teaser on the public landing page) can reuse the exact same card --
  * phone-mockup rendering, crop-fix, marketing chrome, all of it -- instead
  * of forking a second copy that would drift out of sync. */
-export function ThemeGalleryCard({ theme, selected, disabled, onSelect, isMarketingPreview }: ThemeGalleryCardProps) {
+export function ThemeGalleryCard({
+  theme,
+  selected,
+  disabled,
+  onSelect,
+  onCustomize,
+  isFavorite,
+  onToggleFavorite,
+}: ThemeGalleryCardProps) {
   const [name1, name2] = previewNamesFor(theme.id);
   const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
   const targetDate = useMemo(() => previewTargetDateFor(theme.id, theme.season), [theme.id, theme.season]);
   const dateLabel = formatPreviewDate(targetDate);
-  const domain = previewDomainFor(name1, name2);
   const layoutLabel = layoutLabelFor(theme.id, theme.category);
   const tags = [layoutLabel, ...theme.tags.filter((tag) => tag !== layoutLabel)].slice(0, 4);
   const recommendedVariant = recommendedHeroVariantFor(theme.id, theme.category);
@@ -274,32 +367,63 @@ export function ThemeGalleryCard({ theme, selected, disabled, onSelect, isMarket
     : DEFAULT_HERO_VARIANT;
   const anchor = anchorFor(heroVariant);
 
-  // A static snapshot, not a live tick: this is a decorative marketing
-  // thumbnail, not a real countdown, and up to ~24 cards on screen each
-  // running their own setInterval(1000ms) re-render (as the real Countdown
-  // section's SimpleDigits.tsx does for a single instance) made the whole
-  // grid janky. Null until mount, since a Date.now()-based value computed
-  // during the server render would almost always mismatch the client's
-  // hydration-time value; deferred via setTimeout rather than called
-  // directly in the effect body so the first paint isn't a synchronous
-  // cascading render.
+  // A static snapshot, not a live tick: this is a decorative demo timer, not
+  // a real countdown, and up to ~24 cards on screen each running their own
+  // setInterval(1000ms) re-render (as the real Countdown section's
+  // SimpleDigits.tsx does for a single instance) made the whole grid janky.
+  // Null until mount, since a Date.now()-based value computed during the
+  // server render would almost always mismatch the client's hydration-time
+  // value; deferred via setTimeout rather than called directly in the effect
+  // body so the first paint isn't a synchronous cascading render. Shown on
+  // every catalog card, not just the marketing landing page's -- confirmed
+  // live against weddingpost.ru's own real (logged-in) style catalog, this
+  // is standard demo chrome for a theme picker, not something that only
+  // belongs on a marketing teaser (dashboard-audit.md A4).
   const [countdown, setCountdown] = useState<CountdownParts | null>(null);
   useEffect(() => {
-    if (!isMarketingPreview) return;
     const eventDateTime = targetDate.toISOString();
     const timeout = setTimeout(() => setCountdown(getCountdownParts(eventDateTime)), 0);
     return () => clearTimeout(timeout);
-  }, [isMarketingPreview, targetDate]);
+  }, [targetDate]);
+
+  // A `<span role="button">`, not a nested `<button>` -- the card itself is
+  // already a `<button>`, and a button inside a button is invalid HTML (the
+  // browser silently hoists/breaks it), so this needs its own keyboard
+  // handling to stay a real control instead of just a styled `onClick` div.
+  const handleFavoriteClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    onToggleFavorite?.(theme.id);
+  };
+  const handleFavoriteKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      event.stopPropagation();
+      onToggleFavorite?.(theme.id);
+    }
+  };
 
   return (
     <button
       type="button"
       disabled={disabled}
-      onClick={() => onSelect(theme.id)}
+      onClick={() => (selected && onCustomize ? onCustomize() : onSelect(theme.id))}
       className={selected ? styles.cardSelected : styles.card}
     >
       <ThemeProvider theme={theme}>
         <div className={styles.duoMockup}>
+          {onToggleFavorite && (
+            <span
+              role="button"
+              tabIndex={0}
+              aria-pressed={isFavorite}
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              onClick={handleFavoriteClick}
+              onKeyDown={handleFavoriteKeyDown}
+              className={styles.favoriteHeart}
+            >
+              <Heart className="h-[18px] w-[18px]" fill={isFavorite ? "currentColor" : "none"} aria-hidden="true" />
+            </span>
+          )}
           <div className={styles.desktopPanel}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={photoUrl} alt="" className={styles.invitePhoto} loading="lazy" />
@@ -314,26 +438,24 @@ export function ThemeGalleryCard({ theme, selected, disabled, onSelect, isMarket
             </div>
           </div>
 
-          {!selected && (
+          {(!selected || onCustomize) && (
             <div className={styles.hoverReveal} aria-hidden="true">
-              <span className={styles.hoverRevealBtn}>Choose this style</span>
+              <span className={styles.hoverRevealBtn}>{selected ? "Customize →" : "Choose this style"}</span>
             </div>
           )}
 
           <div className={styles.phoneMockup}>
             <span className={styles.phoneNotch} aria-hidden="true" />
-            {isMarketingPreview && (
-              <div className={styles.phoneChrome} aria-hidden="true">
-                <span className={styles.phoneMenuIcon} />
-                <span className={styles.phoneCalendarPill}>Add to calendar</span>
-              </div>
-            )}
+            <div className={styles.phoneChrome} aria-hidden="true">
+              <span className={styles.phoneMenuIcon} />
+              <span className={styles.phoneCalendarPill}>Add to calendar</span>
+            </div>
             <div className={styles.phoneScaleWrap}>
               <div className={styles.phoneScaleInner} data-anchor={anchor}>
                 <HeroSection variant={heroVariant} names={[name1, name2]} eventDate={dateLabel} photoUrl={photoUrl} />
               </div>
             </div>
-            {isMarketingPreview && countdown && !countdown.reached && (
+            {countdown && !countdown.reached && (
               <div className={styles.phoneTimer} aria-hidden="true">
                 {[
                   { value: countdown.weeks, label: "weeks" },
@@ -353,7 +475,7 @@ export function ThemeGalleryCard({ theme, selected, disabled, onSelect, isMarket
         </div>
       </ThemeProvider>
 
-      <p className={styles.domainCaption}>{isMarketingPreview ? "yourname.com" : domain}</p>
+      <p className={styles.domainCaption}>yourname.com</p>
 
       {tags.length > 0 && (
         <div className={styles.tagRow}>
@@ -369,7 +491,6 @@ export function ThemeGalleryCard({ theme, selected, disabled, onSelect, isMarket
 
       <div className={styles.cardFooter}>
         <p className={styles.cardName}>{theme.name}</p>
-        {selected && <p className={styles.cardSelectedLabel}>Selected</p>}
       </div>
     </button>
   );

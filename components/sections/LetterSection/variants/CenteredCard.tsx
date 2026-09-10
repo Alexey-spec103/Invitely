@@ -39,7 +39,16 @@ export default function CenteredCard({
           <EditableText field="body" value={body} style={styleOverrides?.["body"]} />
         </p>
         <p className={styles.quote}>
-          «<EditableText field="quote" value={quote} style={styleOverrides?.["quote"]} />»
+          {/* dashboard-audit.md finding #4: the decorative « » marks used to
+              wrap this field unconditionally, so an empty quote read as a
+              broken bare "«»" with nothing inside -- shown only once there's
+              real text, while EditableText itself always stays mounted (not
+              wrapped in `{quote && ...}` the way note/closingLine below are)
+              so a host can still click into this field in the dashboard
+              editor to write a first quote at all. */}
+          {quote && "«"}
+          <EditableText field="quote" value={quote} style={styleOverrides?.["quote"]} />
+          {quote && "»"}
         </p>
         {note && (
           <p className={styles.note}>

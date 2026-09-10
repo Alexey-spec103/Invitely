@@ -20,6 +20,14 @@
   margin: 0 0 1rem;
 }
 
+.ampersand {
+  display: block;
+  font-family: var(--theme-font-script);
+  font-size: 0.5em;
+  line-height: 1.4;
+  color: var(--theme-accent);
+}
+
 .date {
   font-family: var(--theme-font-body);
   font-size: 0.85rem;

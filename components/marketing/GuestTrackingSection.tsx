@@ -6,7 +6,10 @@
  * screenshots of Invitely's own product: the actual public-site share menu
  * (how a couple actually gets their link to guests) and the actual guest
  * list with its Sent/RSVP status badges (how they track who's coming) --
- * see docs/research/landing-audit.md priority 9. */
+ * see docs/research/landing-audit.md priority 9. Channels are copy-link/
+ * WhatsApp/SMS/email (SendInviteMenu in GuestManager.tsx) -- no Telegram,
+ * corrected after the dashboard-audit.md D2 sweep found the screenshot and
+ * copy here had drifted to a channel that was never actually built. */
 export default function GuestTrackingSection() {
   return (
     <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
@@ -18,16 +21,16 @@ export default function GuestTrackingSection() {
           Send it anywhere, track every reply
         </h2>
         <p className="mt-4 max-w-md text-stone-600">
-          Share your one link over WhatsApp, Telegram, email, or however your guests actually
-          check messages. Every RSVP flows straight back into your guest list — who&apos;s
-          coming, who hasn&apos;t answered yet, and who you still need to invite.
+          Share your one link over WhatsApp, SMS, email, or however your guests actually check
+          messages. Every RSVP flows straight back into your guest list — who&apos;s coming, who
+          hasn&apos;t answered yet, and who you still need to invite.
         </p>
 
         <div className="mt-8 overflow-hidden rounded-xl border border-stone-200 shadow-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/marketing/guest-share-panel.png"
-            alt="Invitely's real share menu: Copy link, WhatsApp, Telegram, Email"
+            alt="Invitely's real share menu: Copy link, WhatsApp, SMS, Email"
             className="w-full"
           />
         </div>

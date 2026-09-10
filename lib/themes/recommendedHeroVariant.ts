@@ -13,9 +13,9 @@ import type { ThemeCategory } from "./types";
 const CATEGORY_HERO_VARIANTS: Record<ThemeCategory, string[]> = {
   romantic: ["monogram-center", "hand-lettering", "editorial-split", "watercolor-bloom"],
   modern: ["editorial-minimal", "minimal-text", "art-deco-crest"],
-  botanical: ["botanical-frame", "boho-asymmetric", "signature"],
+  botanical: ["botanical-frame", "boho-asymmetric", "signature", "watercolor-botanical"],
   boho: ["boho-asymmetric", "hand-lettering", "watercolor-bloom"],
-  luxury: ["monogram-crest", "letterpress", "art-deco-crest", "vintage-ornamental"],
+  luxury: ["monogram-crest", "letterpress", "art-deco-crest", "vintage-ornamental", "alcohol-ink-gold"],
   dark: ["photo-full-bleed", "monogram-crest", "art-deco-crest", "gothic-frame", "bare-branch"],
   coastal: ["coastal-wave", "minimal-text", "editorial-minimal"],
   rustic: ["collage-scrapbook", "letterpress", "boho-asymmetric", "folk-ornament"],
@@ -39,7 +39,12 @@ export function recommendedHeroVariantFor(themeId: string, category: ThemeCatego
 /** A second, independent taxonomy axis ("what is this design actually
  * built from") derived from the same recommended Hero variant, rather than
  * hand-tagged per theme -- keeps it truthfully tied to the real
- * composition instead of being an arbitrary label. */
+ * composition instead of being an arbitrary label.
+ * dashboard-audit.md "fresh eyes" finding #5: "boho-asymmetric" used to map
+ * to "Botanical" here too, colliding with the completely separate
+ * `botanical` *category* filter chip in ThemeGallery -- same word, same
+ * filter row, two unrelated meanings (structural layout vs. color/mood
+ * category), which read as a duplicate rather than two different filters. */
 const HERO_VARIANT_LAYOUT_LABEL: Record<string, string> = {
   "monogram-center": "Monogram",
   "photo-full-bleed": "Photo Invitation",
@@ -54,7 +59,7 @@ const HERO_VARIANT_LAYOUT_LABEL: Record<string, string> = {
   "watercolor-bloom": "Watercolor",
   "coastal-wave": "Coastal Motif",
   "vintage-ornamental": "Ornamental Frame",
-  "boho-asymmetric": "Botanical",
+  "boho-asymmetric": "Asymmetric",
   "monogram-crest": "Monogram",
   "folk-ornament": "Folk Ornament",
   "collage-scrapbook": "Collage",
@@ -64,6 +69,8 @@ const HERO_VARIANT_LAYOUT_LABEL: Record<string, string> = {
   "victorian-cameo": "Cameo Locket",
   "left-aligned": "Typography",
   "stacked-grid": "Grid",
+  "watercolor-botanical": "Watercolor",
+  "alcohol-ink-gold": "Alcohol Ink",
 };
 
 export function layoutLabelFor(themeId: string, category: ThemeCategory): string {

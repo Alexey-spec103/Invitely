@@ -68,7 +68,7 @@ const THEME_PREVIEW_PHOTOS: Record<string, string> = {
   "sage-and-clay": "https://images.unsplash.com/photo-1622787206647-61bb775901e1",
 
   // Luxury
-  "burgundy-velvet": "https://images.unsplash.com/photo-1766393030762-0f1940c17548",
+  "burgundy-velvet": "https://images.unsplash.com/photo-1528459105426-b9548367069b",
   "gilded-ivory": "https://images.unsplash.com/photo-1783148877802-b120f8fde090",
   "luxury-black-diamond": "https://images.unsplash.com/photo-1712314947761-a8d718bd8c32",
   "luxury-champagne-pearl": "https://images.unsplash.com/photo-1769812343385-8048c47d9667",
@@ -164,7 +164,7 @@ const CATEGORY_PREVIEW_PHOTOS_FALLBACK: Record<ThemeCategory, string[]> = {
     "https://images.unsplash.com/photo-1619422305894-dd096b3e6b98",
   ],
   luxury: [
-    "https://images.unsplash.com/photo-1766393030762-0f1940c17548",
+    "https://images.unsplash.com/photo-1528459105426-b9548367069b",
     "https://images.unsplash.com/photo-1783148877802-b120f8fde090",
   ],
   dark: [
@@ -398,14 +398,6 @@ export function previewTargetDateFor(themeId: string, season?: ThemeSeason): Dat
   target.setHours(18, 0, 0, 0);
   target.setDate(target.getDate() + offsetDays);
   return target;
-}
-
-/** Mirrors the real public-site URL pattern (`/e/{slug}`) rather than a
- * fabricated custom domain -- shows exactly what the product actually
- * delivers by default, not an aspirational fake TLD. */
-export function previewDomainFor(name1: string, name2: string): string {
-  const slug = `${name1}-${name2}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  return `invitely.com/e/${slug}`;
 }
 
 /** Deterministic (not random) so the same theme always shows the same

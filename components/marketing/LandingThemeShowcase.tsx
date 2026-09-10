@@ -46,7 +46,6 @@ export default function LandingThemeShowcase({ themes }: LandingThemeShowcasePro
               theme={theme}
               selected={false}
               onSelect={(themeId) => router.push(`/onboarding?theme=${themeId}`)}
-              isMarketingPreview
             />
             {isLast && (
               <Link href="/onboarding" className={styles.moreOverlay} aria-label="See 100+ more styles">

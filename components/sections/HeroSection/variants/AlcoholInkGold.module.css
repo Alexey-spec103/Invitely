@@ -1,0 +1,81 @@
+/* The color field itself: soft blended "ink bloom" pools mixed from the
+   theme's own bg/accent/text rather than an unrelated fixed palette, so
+   this still reads as *this theme's* alcohol-ink card, not a generic one
+   pasted into every theme alike. */
+.section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 2rem 1.25rem;
+  overflow: hidden;
+  text-align: center;
+  color: var(--theme-text);
+  background:
+    radial-gradient(ellipse 60% 55% at 18% 22%, color-mix(in srgb, var(--theme-accent) 45%, transparent), transparent 70%),
+    radial-gradient(ellipse 55% 50% at 82% 78%, color-mix(in srgb, var(--theme-accent) 30%, transparent), transparent 72%),
+    radial-gradient(ellipse 50% 45% at 70% 15%, color-mix(in srgb, var(--theme-text) 18%, transparent), transparent 75%),
+    var(--theme-bg);
+}
+
+/* Fixed gold, not var(--theme-accent) -- see the .tsx file's own comment.
+   Masked by the same branching-vein SVG every other pattern here uses the
+   mask-image technique for, just painted a real metallic tone instead of
+   being recolored per theme. No mix-blend-mode: `multiply` crushed this to
+   near-invisible on dark-bg luxury themes (it only darkens, so gold-on-dark
+   reads as barely-there) -- a plain high-opacity fill reads as metallic
+   veining consistently whether the theme underneath is light or dark. */
+.veins {
+  position: absolute;
+  inset: 0;
+  background-color: #d4af6a;
+  opacity: 0.85;
+  mask-image: url("/patterns/alcohol-ink-veins.svg");
+  mask-size: cover;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/alcohol-ink-veins.svg");
+  -webkit-mask-size: cover;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.names {
+  font-family: var(--theme-font-heading);
+  font-weight: 500;
+  font-size: 2.75rem;
+  line-height: 1.15;
+  margin: 0 0 0.75rem;
+}
+
+.date {
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .names {
+    font-size: 3.5rem;
+  }
+
+  .date {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .names {
+    font-size: 4.25rem;
+  }
+}

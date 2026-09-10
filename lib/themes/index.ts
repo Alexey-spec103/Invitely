@@ -206,6 +206,33 @@ export const themes: Record<string, Theme> = {
 
 export const DEFAULT_THEME_ID = romanticBlush.id;
 
+/** dashboard-audit.md B6: weddingpost.ru's "Популярные"/"Новые" entries rank
+ * by real usage/upload date -- neither exists here (all 100 themes shipped
+ * in one batch, confirmed via git history), so these are a deliberate
+ * editorial curation for visual spread across categories, not a computed
+ * metric pretending to be one. */
+export const POPULAR_THEME_IDS: string[] = [
+  "romantic-blush",
+  "modern-mono",
+  "botanical-sage",
+  "gilded-ivory",
+  "coastal-breeze",
+  "boho-terracotta",
+  "luxury-rose-gold",
+  "minimal-ink",
+];
+
+export const NEW_THEME_IDS: string[] = [
+  "romantic-cherry-blossom",
+  "coastal-azure-horizon",
+  "dark-storm-silver",
+  "vintage-amber-glass",
+  "boho-marigold-festival",
+  "rustic-honey-hive",
+  "minimal-porcelain",
+  "luxury-obsidian-copper",
+];
+
 export const THEME_TAGS: string[] = Array.from(
   new Set(Object.values(themes).flatMap((theme) => theme.tags))
 ).sort();

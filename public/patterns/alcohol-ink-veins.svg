@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
+  <!-- Alcohol-ink-style gold veining: thin branching crack lines spreading
+       across the whole field, like the metallic leafing traced along the
+       boundaries between ink blooms in real alcohol-ink art (or the veins
+       in marble/a geode). Colored via currentColor so the consumer paints
+       it a fixed gold through a CSS mask; the shape itself carries no
+       color opinion. -->
+  <path
+    d="M20 340 C 70 300, 90 250, 130 210 C 165 175, 190 150, 210 100 C 225 65, 235 40, 260 15"
+    stroke="currentColor"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+  <path
+    d="M130 210 C 160 220, 190 225, 225 215 C 260 205, 290 210, 330 190"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    opacity="0.85"
+  />
+  <path
+    d="M210 100 C 235 115, 255 110, 280 90 C 300 74, 320 70, 345 55"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    opacity="0.75"
+  />
+  <path
+    d="M90 250 C 65 265, 45 290, 35 320"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    opacity="0.7"
+  />
+  <path
+    d="M260 15 C 270 35, 268 55, 255 72"
+    stroke="currentColor"
+    stroke-width="1.2"
+    stroke-linecap="round"
+    opacity="0.6"
+  />
+  <path
+    d="M330 190 C 345 205, 350 225, 342 248"
+    stroke="currentColor"
+    stroke-width="1.2"
+    stroke-linecap="round"
+    opacity="0.6"
+  />
+</svg>

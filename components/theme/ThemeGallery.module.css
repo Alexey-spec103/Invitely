@@ -14,6 +14,18 @@
   .layout {
     grid-template-columns: 1fr;
   }
+  /* dashboard-audit.md "fresh eyes" finding #5: onboarding renders this
+     gallery inside a card narrow enough to trip this same breakpoint,
+     stacking ~30 filter chips above the very first theme thumbnail --
+     easy to read as "there are no designs here." Reordering (not moving
+     the markup) keeps the wide dashboard Style-tab layout, where sidebar
+     and grid already sit side by side, completely untouched. */
+  .gallery {
+    order: 1;
+  }
+  .sidebar {
+    order: 2;
+  }
 }
 
 .sidebar {
@@ -109,6 +121,34 @@
   color: var(--dash-accent, #ff6b45);
 }
 
+.entryLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.styleIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.newBadge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: var(--dash-accent, #ff6b45);
+  border-radius: 999px;
+  padding: 0.1rem 0.4rem;
+}
+
+.entriesDivider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 0;
+}
+
 .resultsCount {
   font-size: 0.8rem;
   color: #6b7280;
@@ -199,11 +239,20 @@
    button over the preview on hover instead of our previous silent
    translateY+shadow, so it's obvious the card is clickable. An overlay
    (not weddingpost's push-the-layout-down button) so nothing reflows in a
-   grid of up to 100 cards. Suppressed on the already-selected card -- its
-   coral border + "Selected" footer label already say so. */
+   grid of up to 100 cards. On the already-selected card this same slot
+   shows "Customize →" instead (dashboard-audit.md A6, only when the caller
+   passes `onCustomize`) -- the permanent coral border is what signals
+   "selected" now, not a static footer label. */
 .hoverReveal {
   position: absolute;
   inset: 0;
+  /* Above `.phoneMockup` (a later sibling, also `position: relative`) --
+     both default to z-index:auto, and DOM order alone would otherwise let
+     the phone panel's opaque background paint over this overlay's right
+     side. Only ever noticeable with text wide enough to reach that far;
+     "Choose this style" happened to fit inside the unclipped left portion,
+     "Customize →" (dashboard-audit.md A6) doesn't. */
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -239,6 +288,54 @@
 .card:hover .hoverRevealBtn,
 .card:focus-visible .hoverRevealBtn {
   transform: translateY(0);
+}
+
+/* dashboard-audit.md B9: confirmed live on weddingpost.ru's own catalog --
+   the heart is hover-only for an unfavorited, unselected card (invisible at
+   rest), stays permanently visible once favorited (`aria-pressed`) or on the
+   already-selected card, and pops in with a scale+fade keyframe extracted
+   from their stylesheet (`appearHeart`: opacity 0->1, scale 0->1, 0.3s
+   easeOutCubic) rather than a plain opacity fade. */
+@keyframes favoriteHeartPop {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.favoriteHeart {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--dash-accent, #ff6b45);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0);
+}
+
+.card:hover .favoriteHeart,
+.card:focus-visible .favoriteHeart,
+.cardSelected .favoriteHeart,
+.favoriteHeart[aria-pressed="true"] {
+  opacity: 1;
+  transform: scale(1);
+  animation: favoriteHeartPop 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.favoriteHeart:hover {
+  background: #fff;
 }
 
 .desktopPanel {
@@ -530,9 +627,3 @@
   color: #1c1917;
 }
 
-.cardSelectedLabel {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--dash-accent, #ff6b45);
-  margin-top: 0.1rem;
-}

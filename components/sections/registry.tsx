@@ -18,6 +18,7 @@ import { GuestbookSection, DEFAULT_GUESTBOOK_VARIANT } from "./GuestbookSection"
 import type { GuestbookSectionProps, GuestbookMessageItem } from "./GuestbookSection";
 import { VideoSection, DEFAULT_VIDEO_VARIANT } from "./VideoSection";
 import type { VideoSectionProps } from "./VideoSection";
+import type { BackgroundFill } from "@/lib/backgroundFills";
 import { BanquetNavigatorSection, DEFAULT_BANQUET_NAVIGATOR_VARIANT } from "./BanquetNavigatorSection";
 import type { BanquetNavigatorSectionProps, BanquetTableLookupResult } from "./BanquetNavigatorSection";
 import type { Json } from "@/lib/supabase/database.types";
@@ -38,9 +39,18 @@ export const componentRegistry = {
 
 export type SectionType = keyof typeof componentRegistry;
 
+// dashboard-audit.md "fresh eyes" finding #3: "letter" used to share the
+// label "Invitation" with the site-wide concept of "the invitation" (the
+// whole guest-facing site *is* the invitation), so toggling this one module
+// off in the Modules panel read as "does this remove the whole site?" --
+// SiteInlineEditor's own section header already called this block "Letter"
+// (see its sectionLabels map), this just brings the shared, guest-facing
+// label (Modules panel row + public nav) in line with that, spelled out as
+// "Welcome Letter" so its content (a personal note to guests) is clear on
+// its own rather than relying on context.
 export const SECTION_LABELS: Record<SectionType, string> = {
   hero: "Home",
-  letter: "Invitation",
+  letter: "Welcome Letter",
   timeline: "Schedule",
   map: "Location",
   rsvp: "RSVP",
@@ -57,6 +67,15 @@ export interface SectionConfig {
   variant: string;
   order: number;
   enabled: boolean;
+  /** dashboard-audit.md B12: one shared background field on the section
+   * itself (not duplicated into every section type's own content shape) --
+   * weddingpost.ru offers a background picker per block ("Фон главного
+   * блока", "Фон блока приглашения", etc.); this is the equivalent, applied
+   * uniformly to whichever section it's set on via SiteInlineEditor's
+   * existing per-section wrapper. Undefined for every section saved before
+   * B12, which renders with no override -- just the theme's own bg, as
+   * before. */
+  background?: BackgroundFill;
 }
 
 const SECTION_TYPES = Object.keys(componentRegistry) as SectionType[];
@@ -116,6 +135,7 @@ export function parseSections(raw: Json): SectionConfig[] {
       variant: entry.variant,
       order: entry.order,
       enabled: entry.enabled,
+      background: entry.background,
     }))
     .filter(
       (entry) =>
@@ -130,6 +150,10 @@ export function parseSections(raw: Json): SectionConfig[] {
         variant: entry.variant as string,
         order: entry.order as number,
         enabled: typeof entry.enabled === "boolean" ? entry.enabled : true,
+        background:
+          typeof entry.background === "object" && entry.background !== null && !Array.isArray(entry.background)
+            ? (entry.background as unknown as BackgroundFill)
+            : undefined,
       })
     )
     .sort((a, b) => a.order - b.order);
@@ -189,6 +213,57 @@ export function sectionWillRender(section: SectionConfig, content: Record<string
   return true;
 }
 
+/** Sets a value at a dot-path field key against a shallow-copied object --
+ * either `"field"` (top-level) or `"arrayField.index.subfield"` (one item of
+ * a repeatable list, e.g. `"events.0.title"`). Deliberately a standalone
+ * copy of the same two shapes `SiteInlineEditor`'s own field setter handles
+ * (not imported from there): that file is a client component built around
+ * its own editing state, while this one runs equally on the server for the
+ * public site -- keeping them separate avoids pulling client-only concerns
+ * into the shared render path. */
+function setByPath(obj: Record<string, unknown>, path: string, value: string): Record<string, unknown> {
+  const parts = path.split(".");
+  if (parts.length === 1) {
+    return { ...obj, [parts[0]]: value };
+  }
+  const [arrayField, indexStr, subfield] = parts;
+  const index = Number(indexStr);
+  const currentArray = Array.isArray(obj[arrayField]) ? (obj[arrayField] as unknown[]) : [];
+  if (!Number.isInteger(index) || index < 0 || index >= currentArray.length) {
+    return obj;
+  }
+  const nextArray = currentArray.slice();
+  // Two shapes: "arrayField.index" for an array of primitives (Hero's
+  // `names`), "arrayField.index.subfield" for an array of objects (a
+  // Timeline event, Map venue, etc.) -- `subfield` is only present in the
+  // second.
+  nextArray[index] =
+    subfield === undefined ? value : { ...(nextArray[index] as Record<string, unknown>), [subfield]: value };
+  return { ...obj, [arrayField]: nextArray };
+}
+
+/**
+ * dashboard-audit.md A3: hiding a block never deletes its saved value (see
+ * `hiddenFields` on each section's content, set via the "Editable blocks"
+ * panel's eye icon) -- it just withholds that field's value from render, by
+ * blanking it right before the data reaches a variant component. Used here
+ * for the public site and identically in `SiteInlineEditor` for the
+ * dashboard's own live canvas, so a hidden field disappears from both in the
+ * same way instead of only being hidden in one place.
+ */
+export function applyHiddenFields<T extends object>(data: T, hiddenFields: unknown): T {
+  if (!Array.isArray(hiddenFields) || hiddenFields.length === 0) {
+    return data;
+  }
+  let result: Record<string, unknown> = data as Record<string, unknown>;
+  for (const field of hiddenFields) {
+    if (typeof field === "string") {
+      result = setByPath(result, field, "");
+    }
+  }
+  return result as T;
+}
+
 /**
  * Renders one section from its `sections` config entry + the matching slice
  * of `content`. Data comes from a Postgres `json` column, so its shape is
@@ -200,13 +275,14 @@ export function renderSection(
   content: Record<string, unknown>,
   context: RenderSectionContext
 ) {
-  const data = content[section.type];
-  if (!data || typeof data !== "object") {
+  const rawData = content[section.type];
+  if (!rawData || typeof rawData !== "object") {
     return null;
   }
   if (!sectionWillRender(section, content)) {
     return null;
   }
+  const data = applyHiddenFields(rawData as Record<string, unknown>, (rawData as { hiddenFields?: unknown }).hiddenFields);
 
   switch (section.type) {
     case "hero": {

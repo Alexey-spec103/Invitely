@@ -1,31 +1,121 @@
-.frame {
+.stage {
   position: relative;
-  overflow: hidden;
-  border-radius: 1rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem 0 0.5rem;
 }
 
-.bgPhoto {
-  aspect-ratio: 4 / 5;
-  width: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Positioned to match the phone's screen in the specific background photo
-   -- tuned by eye against that photo, not a generic guess. */
-.screen {
+.stage::before,
+.stage::after {
+  content: "";
   position: absolute;
-  left: 31.5%;
-  right: 30%;
-  top: 25%;
-  bottom: 21%;
+  z-index: -1;
+  border-radius: 999px;
+  filter: blur(60px);
+}
+
+.stage::before {
+  top: -1rem;
+  right: 8%;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(255, 176, 120, 0.5), transparent 70%);
+}
+
+.stage::after {
+  bottom: 2rem;
+  left: 4%;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(244, 166, 190, 0.4), transparent 70%);
+}
+
+.topCaption {
+  max-width: 22rem;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #5c4632;
+}
+
+/* A clean, modern device mockup -- rounded bezel, no physical home button --
+   instead of a stock photo of a hand holding an old-style iPhone. */
+.device {
+  position: relative;
+  width: min(280px, 68vw);
+  aspect-ratio: 375 / 812;
+  border-radius: 48px;
+  padding: 10px;
+  background: linear-gradient(155deg, #3d3d42, #101012);
+  box-shadow:
+    0 40px 70px -25px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+/* Minimal side-button detailing so the bezel doesn't read as a plain
+   rounded rectangle -- a power button on the right, volume rocker on the
+   left, both just cosmetic (not a real photo prop like before). */
+.device::before {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 26%;
+  width: 3px;
+  height: 22%;
+  border-radius: 2px 0 0 2px;
+  background: #1a1a1c;
+}
+
+.device::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 16%;
+  width: 3px;
+  height: 9%;
+  border-radius: 0 2px 2px 0;
+  background: #1a1a1c;
+  box-shadow: 0 9% 0 0 #1a1a1c;
+}
+
+.dynamicIsland {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32%;
+  height: 20px;
+  border-radius: 999px;
+  background: #000;
+  z-index: 5;
+}
+
+.homeIndicator {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 5;
+}
+
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: 38px;
   background: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  padding-top: 22px;
   container-type: inline-size;
 }
 
@@ -35,7 +125,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.2rem;
-  padding: 0.18rem 0.3rem;
+  padding: 0.3rem;
   background: rgba(255, 255, 255, 0.98);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
@@ -49,22 +139,31 @@
 }
 
 .urlText {
-  font-size: 0.5rem;
+  font-size: 0.55rem;
   color: #8a8078;
   letter-spacing: 0.01em;
   font-family: system-ui, sans-serif;
 }
 
 /* Same container-query scale-to-fit technique as ThemeGallery's phone
-   mockup: render the real HeroSection at its natural mobile width, then
-   scale it down to whatever width this screen box actually has. Cropping
-   from the top (not squeezing to fit) shows the top of the real page, the
-   same way weddingpost.ru's own phone screen does. */
+   mockup: render each real section at its natural mobile width, then scale
+   it down to whatever width this screen box actually has. */
 .screenScaleWrap {
   flex: 1;
   position: relative;
   overflow: hidden;
   pointer-events: none;
+}
+
+/* Three real sections (Hero/Letter/Timeline) stacked on top of each other,
+   each one a full-bleed absolutely-positioned layer. Only one is ever
+   visually "in" at a time -- framePlay below fades/slides/blurs each one
+   in and out in turn, phase-shifted per layer via animation-delay so a
+   single keyframes definition drives all three. */
+.frameLayer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
 }
 
 .screenScaleInner {
@@ -73,42 +172,278 @@
   left: 0;
   width: 375px;
   transform-origin: top left;
-  /* The real HeroSection centers its content inside a min-height:100vh
-     section. Our screen box only shows a small window, so without this
-     shift we'd crop the vertically-centered names/date cluster out
-     entirely -- this brings it into view instead of showing empty
-     top-of-page padding. Tuned against common desktop viewport heights,
-     same as the screen-position percentages above. */
+  /* Hero and Letter both vertically center their content inside a
+     min-height:100vh flex box, so the shift needed to bring their content
+     into this small crop window depends on each one's own content height
+     (a taller block's top edge sits closer to the 50vh midline, so it
+     needs a smaller shift) -- Timeline's variant, unlike those two, is
+     top-anchored with plain padding rather than centered, so it needs
+     almost no shift at all. All three tuned by eye against a real render
+     rather than guessed, since the same formula doesn't transfer between
+     "centered" and "top-anchored" sections. */
   transform: scale(calc(100cqw / 375px)) translateY(-40vh);
 }
 
-.topCaption {
+.frameLetter .screenScaleInner {
+  transform: scale(calc(100cqw / 375px)) translateY(-22vh);
+}
+
+.frameTimeline .screenScaleInner {
+  transform: scale(calc(100cqw / 375px)) translateY(-2vh);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .frameLayer {
+    animation: framePlay 12s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .frameHero {
+    animation-delay: 0s;
+  }
+
+  /* Positive, not negative: a positive delay defers this element's first
+     iteration to start at that point in real time, then repeats every
+     `animation-duration` after that -- landing its "visible" window in
+     this frame's own third of the loop, every loop. A negative delay does
+     the opposite (fast-forwards into the timeline, i.e. wraps to near the
+     *end* of the cycle at t=0), which put Letter/Timeline's visible
+     windows in the wrong third and left blank gaps between frames. */
+  .frameLetter {
+    animation-delay: 4s;
+  }
+
+  .frameTimeline {
+    animation-delay: 8s;
+  }
+
+  .tapCursor {
+    animation: tapPulse 12s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .shineSweep {
+    animation: shineSweep 12s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .progressDot {
+    animation: dotActive 12s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .progressDotHero {
+    animation-delay: 0s;
+  }
+
+  .progressDotLetter {
+    animation-delay: 4s;
+  }
+
+  .progressDotTimeline {
+    animation-delay: 8s;
+  }
+}
+
+/* No motion preference -- just show the Hero frame, the same static shot
+   weddingpost.ru-style landing pages fall back to. */
+@media (prefers-reduced-motion: reduce) {
+  .frameHero {
+    opacity: 1;
+  }
+
+  .progressDotHero {
+    opacity: 1;
+    background: var(--dash-accent, #e0654a);
+  }
+}
+
+@keyframes framePlay {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.96);
+    filter: blur(8px);
+  }
+  7% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  26% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  33% {
+    opacity: 0;
+    transform: translateY(-22px) scale(0.96);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-22px) scale(0.96);
+    filter: blur(8px);
+  }
+}
+
+/* A soft, blurred dot that "taps" the screen right as each transition
+   fires -- a small decorative cue that this is a live, interactive
+   invitation rather than a slideshow. */
+.tapCursor {
   position: absolute;
-  left: 1rem;
-  right: 1rem;
-  top: 1rem;
-  text-align: center;
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1.3;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.4);
+  left: 50%;
+  top: 60%;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.15) 60%, transparent 72%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
+  opacity: 0;
+  z-index: 6;
+}
+
+@keyframes tapPulse {
+  0%,
+  22% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  28% {
+    opacity: 0.85;
+    transform: scale(0.8);
+  }
+  31%,
+  55% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  58% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  61% {
+    opacity: 0.85;
+    transform: scale(0.8);
+  }
+  64%,
+  89% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  92% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  95% {
+    opacity: 0.85;
+    transform: scale(0.8);
+  }
+  98%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/* A thin diagonal highlight that sweeps across the screen at each
+   transition -- a subtle glossy "premium" cue, not a full flash. */
+.shineSweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.6) 50%, transparent 58%);
+  transform: translateX(-120%);
+  opacity: 0;
+  z-index: 4;
+  mix-blend-mode: overlay;
+}
+
+@keyframes shineSweep {
+  0%,
+  24% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+  27% {
+    opacity: 1;
+  }
+  33% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+  34%,
+  57% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+  60% {
+    opacity: 1;
+  }
+  66% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+  67%,
+  91% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+  94% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+/* Carousel-style progress dots below the device -- a familiar affordance
+   that also signals "there's more than one screen here, and it's cycling
+   on its own." */
+.progressDots {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.progressDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #cbb9a8;
+  opacity: 0.45;
+  transform: scale(1);
+}
+
+@keyframes dotActive {
+  0%,
+  30% {
+    opacity: 1;
+    background: var(--dash-accent, #e0654a);
+    transform: scale(1.3);
+  }
+  38%,
+  100% {
+    opacity: 0.45;
+    background: #cbb9a8;
+    transform: scale(1);
+  }
 }
 
 .bottomCaption {
-  position: absolute;
-  left: 1.25rem;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  max-width: 65%;
+  max-width: 20rem;
+  text-align: center;
   font-size: 1.15rem;
   font-style: italic;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.4);
+  color: #7a5c46;
   font-family: var(--font-cormorant-garamond), Georgia, serif;
 }
 
 @media (min-width: 640px) {
+  .device {
+    width: min(320px, 60vw);
+  }
+
   .topCaption {
     font-size: 1.3rem;
   }

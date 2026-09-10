@@ -37,10 +37,10 @@ const STEPS: HowItWorksStep[] = [
     bullets: [
       "Upload your own photos anywhere on the design",
       "Add a video clip to bring your story to life",
-      "Drop in as many text blocks as you need",
+      "Drop in a QR code linking to your site, or a guest's own invite",
     ],
     image: "/marketing/how-it-works-3.png",
-    alt: "Invitely's real \"Add element\" modal: Text, Image, and Video",
+    alt: "Invitely's real \"Add element\" modal: Text, Image, Video, and QR code",
   },
   {
     number: "4",

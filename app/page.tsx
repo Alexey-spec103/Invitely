@@ -16,13 +16,15 @@ import {
   Type,
   Pencil,
   Sliders,
-  Heart,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import InvitelyLogo from "@/components/InvitelyLogo";
 import { themes } from "@/lib/themes";
 import { CANVAS_FONTS } from "@/lib/canvas/fonts";
 import { plans } from "@/lib/plans";
 import LandingThemeShowcase from "@/components/marketing/LandingThemeShowcase";
+import MobileNav from "@/components/marketing/MobileNav";
+import EventTypesSection from "@/components/marketing/EventTypesSection";
 import ConstructorScreenshot from "@/components/marketing/ConstructorScreenshot";
 import HeroPhoneShowcase from "@/components/marketing/HeroPhoneShowcase";
 import PlatformFanSection from "@/components/marketing/PlatformFanSection";
@@ -96,13 +98,15 @@ const modules = [
 ];
 
 // Factual, not promotional -- the free tier really is unlimited to use, and
-// paper invitations are the one thing only Premium unlocks. No fabricated
-// "-20%"-style discount badges: unlike weddingpost.ru's pricing section,
-// nothing here is ever actually discounted, so a strikethrough price would
-// be a fake one.
+// the only thing Premium actually does today is remove the watermark from
+// personalized/banquet materials (see lib/plans.ts's own comment) -- not an
+// "unlocks paper invitations" claim, since those already work on every
+// plan. No fabricated "-20%"-style discount badges either: unlike
+// weddingpost.ru's pricing section, nothing here is ever actually
+// discounted, so a strikethrough price would be a fake one.
 const planBadges: Record<string, string> = {
   free: "Always free",
-  premium: "Includes paper invitations",
+  premium: "Removes the watermark",
 };
 
 // Each paid tier's own `features` array starts with "Everything in ..." for
@@ -149,35 +153,37 @@ export default async function Home() {
           Visa / Mastercard / PayPal accepted · Instant delivery — send your invite link anywhere
           in the world
         </div>
-        <header className="border-b border-stone-100 bg-white/80 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-            {/* landing-audit.md priority 20: a bare wordmark gives no
-                "wedding" signal and doesn't stick in memory. weddingpost.ru's
-                own mark is a two-tone split heart -- their specific authored
-                execution of it, not an industry-standard shape, so this is a
-                solid-color heart in our one brand accent instead of a copy
-                of theirs. */}
+        <header className="relative border-b border-stone-100 bg-white/80 backdrop-blur">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4">
+            {/* landing-audit.md priority 20 / dashboard-audit.md D7: a bare
+                wordmark gives no signal and doesn't stick in memory. Uses the
+                same "Toast i" mark as the dashboard header now, rather than
+                a second, different mark for the marketing site. */}
             <Link href="/" className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-stone-900">
-              <Heart className="h-5 w-5 text-[var(--dash-accent)]" fill="currentColor" strokeWidth={0} />
+              <InvitelyLogo className="h-5 w-5" />
               Invitely
             </Link>
             <nav className="hidden items-center gap-8 text-sm font-medium text-stone-600 sm:flex">
-              <a href="#constructor" className="hover:text-stone-900">
+              <a href="#constructor" className="transition-colors hover:text-stone-900">
                 Constructor
               </a>
-              <a href="#themes" className="hover:text-stone-900">
+              <a href="#themes" className="transition-colors hover:text-stone-900">
                 Themes
               </a>
-              <a href="#whats-included" className="hover:text-stone-900">
+              <a href="#whats-included" className="transition-colors hover:text-stone-900">
                 What&apos;s included
               </a>
-              <a href="#pricing" className="hover:text-stone-900">
+              <a href="#pricing" className="transition-colors hover:text-stone-900">
                 Pricing
               </a>
             </nav>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <MobileNav showLogin={!user} />
               {!user && (
-                <Link href="/login" className="text-sm font-medium text-stone-600 hover:text-stone-900">
+                <Link
+                  href="/login"
+                  className="hidden text-sm font-medium text-stone-600 transition-colors hover:text-stone-900 sm:inline"
+                >
                   Login
                 </Link>
               )}
@@ -195,6 +201,19 @@ export default async function Home() {
       <section className="overflow-hidden bg-gradient-to-b from-orange-50 via-orange-50 to-white">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 sm:py-20 lg:grid-cols-2 lg:py-24">
           <div>
+            {/* landing-audit.md brand pass: the "Toast i" mark (champagne
+                flute) also lives in the header at 20px, small enough that
+                almost no one clocks it as a real mark rather than a generic
+                dot. A second, much larger showing here -- lightly rotated
+                like a wax-seal stamp, with its own soft accent glow -- gives
+                the detail a real moment to register, once per page. */}
+            <div className="relative mb-6 inline-flex">
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 -m-4 rounded-full bg-[var(--dash-accent)]/25 blur-2xl"
+              />
+              <InvitelyLogo className="relative h-16 w-16 rotate-[-8deg] shadow-lg shadow-orange-900/15 sm:h-20 sm:w-20" />
+            </div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
               An event platform, not just an invitation
             </p>
@@ -237,7 +256,7 @@ export default async function Home() {
               </Link>
               <a
                 href="#constructor"
-                className="text-sm font-bold uppercase tracking-wide text-[var(--dash-accent-text)] hover:text-red-700"
+                className="text-sm font-bold uppercase tracking-wide text-[var(--dash-accent-text)] transition-colors hover:text-red-700"
               >
                 See the constructor →
               </a>
@@ -259,13 +278,17 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-t border-stone-100 py-24">
+      <div className="landing-reveal">
+        <EventTypesSection ctaHref={ctaHref} />
+      </div>
+
+      <section className="landing-reveal border-t border-stone-100 py-24">
         <div className="mx-auto max-w-6xl px-6">
           <PlatformFanSection />
         </div>
       </section>
 
-      <section id="constructor" className="py-24">
+      <section id="constructor" className="landing-reveal scroll-mt-[120px] py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
@@ -292,7 +315,7 @@ export default async function Home() {
           <ConstructorScreenshot />
         </div>
 
-        <div className="mx-auto mt-20 grid max-w-6xl gap-8 px-6 sm:grid-cols-2">
+        <div className="mx-auto mt-20 grid max-w-6xl grid-cols-1 gap-8 px-6 sm:grid-cols-2">
           {constructorFeatures.map(({ icon: Icon, title, description }) => (
             <div key={title} className="flex gap-4">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-orange-50 text-[var(--dash-accent-text)]">
@@ -307,15 +330,17 @@ export default async function Home() {
         </div>
       </section>
 
-      <HowItWorksSection ctaHref={ctaHref} ctaLabel={constructorCtaLabel} />
+      <div className="landing-reveal">
+        <HowItWorksSection ctaHref={ctaHref} ctaLabel={constructorCtaLabel} />
+      </div>
 
-      <section className="border-t border-stone-100 py-24">
+      <section className="landing-reveal border-t border-stone-100 py-24">
         <div className="mx-auto max-w-6xl px-6">
           <SiteOrPaperSection />
         </div>
       </section>
 
-      <section id="themes" className="border-t border-stone-100 bg-stone-50 py-24">
+      <section id="themes" className="landing-reveal scroll-mt-[120px] border-t border-stone-100 bg-stone-50 py-24">
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
             Choose your style
@@ -330,7 +355,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="whats-included" className="py-24">
+      <section id="whats-included" className="landing-reveal scroll-mt-[120px] py-24">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
             What&apos;s included
@@ -338,27 +363,35 @@ export default async function Home() {
           <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">
             Every site comes with these building blocks — mix and match to tell your story.
           </p>
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* landing-audit.md polish pass, item 4: 12 identical cards single-file
+              on mobile read as a long, monotonous scroll -- 2 columns from the
+              smallest breakpoint up (matching EventTypesSection's own grid)
+              roughly halves that without cramping the icon+title+description
+              layout, which fits comfortably at half width. */}
+          <div className="mt-16 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
             {modules.map(({ icon: Icon, title, description }) => (
-              <div key={title} className="rounded-xl border border-stone-200 bg-white p-6">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-50 text-[var(--dash-accent-text)]">
-                  <Icon className="h-5 w-5" strokeWidth={2} />
+              <div
+                key={title}
+                className="rounded-xl border border-stone-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md sm:p-6"
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-50 text-[var(--dash-accent-text)] sm:h-10 sm:w-10">
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
                 </span>
-                <h3 className="mt-4 text-base font-semibold text-stone-900">{title}</h3>
-                <p className="mt-2 text-sm text-stone-600">{description}</p>
+                <h3 className="mt-3 text-sm font-semibold text-stone-900 sm:mt-4 sm:text-base">{title}</h3>
+                <p className="mt-1.5 text-xs text-stone-600 sm:mt-2 sm:text-sm">{description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-stone-100 py-24">
+      <section className="landing-reveal border-t border-stone-100 py-24">
         <div className="mx-auto max-w-6xl px-6">
           <GuestTrackingSection />
         </div>
       </section>
 
-      <section id="pricing" className="border-t border-stone-100 bg-stone-50 py-24">
+      <section id="pricing" className="landing-reveal scroll-mt-[120px] border-t border-stone-100 bg-stone-50 py-24">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
             The constructor is always free
@@ -369,7 +402,10 @@ export default async function Home() {
           </p>
           <div className="mt-16 grid gap-6 sm:grid-cols-3">
             {Object.values(plans).map((plan) => (
-              <div key={plan.id} className="relative rounded-xl border border-stone-200 bg-white p-6">
+              <div
+                key={plan.id}
+                className="relative rounded-xl border border-stone-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md"
+              >
                 {planBadges[plan.id] && (
                   <span className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
                     {planBadges[plan.id]}
@@ -393,7 +429,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-t border-stone-100 bg-gradient-to-b from-white to-orange-50 py-24 text-center">
+      <section className="landing-reveal border-t border-stone-100 bg-gradient-to-b from-white to-orange-50 py-24 text-center">
         <div className="mx-auto max-w-2xl px-6">
           <h2 className="text-3xl font-semibold tracking-tight text-stone-900">Free to start</h2>
           <p className="mt-4 text-lg text-stone-600">
@@ -427,7 +463,7 @@ export default async function Home() {
           <div className="grid gap-10 sm:grid-cols-3">
             <div>
               <p className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-white">
-                <Heart className="h-5 w-5 text-[var(--dash-accent)]" fill="currentColor" strokeWidth={0} />
+                <InvitelyLogo className="h-5 w-5" />
                 Invitely
               </p>
               <p className="mt-2 text-sm text-stone-400">Event websites, live in minutes.</p>
@@ -442,22 +478,22 @@ export default async function Home() {
               <p className="text-sm font-semibold text-white">Product</p>
               <ul className="mt-3 space-y-2 text-sm text-stone-400">
                 <li>
-                  <a href="#constructor" className="hover:text-white">
+                  <a href="#constructor" className="transition-colors hover:text-white">
                     Constructor
                   </a>
                 </li>
                 <li>
-                  <a href="#themes" className="hover:text-white">
+                  <a href="#themes" className="transition-colors hover:text-white">
                     Themes
                   </a>
                 </li>
                 <li>
-                  <a href="#whats-included" className="hover:text-white">
+                  <a href="#whats-included" className="transition-colors hover:text-white">
                     What&apos;s included
                   </a>
                 </li>
                 <li>
-                  <a href="#pricing" className="hover:text-white">
+                  <a href="#pricing" className="transition-colors hover:text-white">
                     Pricing
                   </a>
                 </li>
@@ -467,22 +503,22 @@ export default async function Home() {
               <p className="text-sm font-semibold text-white">Legal & account</p>
               <ul className="mt-3 space-y-2 text-sm text-stone-400">
                 <li>
-                  <Link href="/terms" className="hover:text-white">
+                  <Link href="/terms" className="transition-colors hover:text-white">
                     Terms of service
                   </Link>
                 </li>
                 <li>
-                  <Link href="/privacy" className="hover:text-white">
+                  <Link href="/privacy" className="transition-colors hover:text-white">
                     Privacy policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="/login" className="hover:text-white">
+                  <Link href="/login" className="transition-colors hover:text-white">
                     Login
                   </Link>
                 </li>
                 <li>
-                  <Link href="/signup" className="hover:text-white">
+                  <Link href="/signup" className="transition-colors hover:text-white">
                     Sign up
                   </Link>
                 </li>
@@ -491,7 +527,7 @@ export default async function Home() {
           </div>
           <div className="mt-12 flex flex-col gap-2 border-t border-stone-800 pt-6 text-sm text-stone-500 sm:flex-row sm:items-center sm:justify-between">
             <p>© 2026 Invitely. All rights reserved.</p>
-            <a href="mailto:support@invitely.app" className="hover:text-stone-300">
+            <a href="mailto:support@invitely.app" className="transition-colors hover:text-stone-300">
               support@invitely.app
             </a>
           </div>

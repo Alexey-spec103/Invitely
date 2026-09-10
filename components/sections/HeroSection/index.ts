@@ -27,5 +27,7 @@ export const HERO_VARIANTS: HeroVariant[] = [
   "victorian-cameo",
   "left-aligned",
   "stacked-grid",
+  "watercolor-botanical",
+  "alcohol-ink-gold",
 ];
 export const DEFAULT_HERO_VARIANT: HeroVariant = "monogram-center";
