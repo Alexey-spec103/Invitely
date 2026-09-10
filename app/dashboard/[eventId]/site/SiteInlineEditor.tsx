@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Undo2, Redo2, Monitor, Smartphone, Tablet } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import { HeroSection } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
@@ -13,6 +14,11 @@ import { MapSection } from "@/components/sections/MapSection";
 import type { MapVariant, MapVenue } from "@/components/sections/MapSection";
 import { RsvpSection } from "@/components/sections/RsvpSection";
 import type { RsvpQuestion } from "@/components/sections/RsvpSection";
+import { applyHiddenFields } from "@/components/sections/registry";
+import type { SectionConfig, SectionType } from "@/components/sections/registry";
+import type { BackgroundFill } from "@/lib/backgroundFills";
+import SectionBackground from "@/components/background/SectionBackground";
+import SectionBackgroundButton from "@/components/background/SectionBackgroundButton";
 import { CountdownSection } from "@/components/sections/CountdownSection";
 import type { CountdownVariant } from "@/components/sections/CountdownSection";
 import { GiftSection } from "@/components/sections/GiftSection";
@@ -48,7 +54,7 @@ import {
   updateGuestbookSection,
   updateVideoSection,
   updateBanquetNavigatorSection,
-  toggleSection,
+  updateSectionBackground,
 } from "./actions";
 import { updateWeddingData } from "../actions";
 import type { Theme } from "@/lib/themes";
@@ -63,18 +69,21 @@ interface LetterDraft {
   rsvpDeadline: string;
   closingLine: string;
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 interface TimelineDraft {
   title: string;
   events: TimelineEvent[];
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 interface MapDraft {
   title: string;
   venues: MapVenue[];
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 /** `options` stays the same comma-joined string the old `RsvpEditForm` used
@@ -92,17 +101,20 @@ interface RsvpDraft {
   description: string;
   questions: RsvpQuestionDraft[];
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 interface CountdownDraft {
   title: string;
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 interface GiftDraft {
   title: string;
   description: string;
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 interface DressCodeDraft {
@@ -110,23 +122,27 @@ interface DressCodeDraft {
   description: string;
   colors: DressCodeColor[];
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 interface GuestbookDraft {
   title: string;
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 interface VideoDraft {
   title: string;
   videoUrl: string;
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 interface BanquetNavigatorDraft {
   title: string;
   description: string;
   styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
 }
 
 interface WeddingDataDraft {
@@ -157,6 +173,7 @@ interface SiteInlineEditorProps {
   heroVariant: HeroVariant;
   heroPhotoUrl: string;
   heroStyleOverrides?: StyleOverrides;
+  heroHiddenFields?: string[];
   weddingData: WeddingDataDraft;
   letter: { enabled: boolean; variant: LetterVariant; values: LetterDraft };
   timeline: { enabled: boolean; variant: TimelineVariant; values: TimelineDraft };
@@ -178,6 +195,11 @@ interface SiteInlineEditorProps {
   };
   video: { enabled: boolean; variant: VideoVariant; values: VideoDraft };
   banquetNavigator: { enabled: boolean; values: BanquetNavigatorDraft; seatingLabel: string };
+  /** dashboard-audit.md B12: the raw parsed sections array, purely so this
+   * component can look up each section's own `.background` (see
+   * registry.tsx) -- simpler than threading a `background` field through
+   * every one of the props above individually. */
+  allSections: SectionConfig[];
 }
 
 /** Sets a value at a dot-path field key against a flat draft object -- the
@@ -249,6 +271,67 @@ function setStyleOverride<T extends { styleOverrides?: StyleOverrides }>(
   return { ...obj, styleOverrides: overrides };
 }
 
+/** Toggles one field key in `hiddenFields` -- dashboard-audit.md A3's eye
+ * icon. Never touches the field's actual value (that's `applyHiddenFields`,
+ * used only at render time, in `registry.tsx`), so un-hiding always restores
+ * exactly what was there before. */
+function setHidden<T extends { hiddenFields?: string[] }>(obj: T, field: string, hidden: boolean): T {
+  const current = obj.hiddenFields ?? [];
+  const next = hidden ? [...current, field] : current.filter((existing) => existing !== field);
+  return { ...obj, hiddenFields: next };
+}
+
+/** dashboard-audit.md A3: one row in the "Editable blocks" tree -- built
+ * directly from each section's own draft state (not read back from the DOM),
+ * so it's always in sync with what's about to save. `label` is the block's
+ * own current text (weddingpost.ru's own precedent: "не «Layer 12», а сам
+ * текст блока"), not a generated name. */
+interface BlockRowData {
+  key: string;
+  type: "text" | "image" | "auto" | "group";
+  label: string;
+  hidden: boolean;
+  onSelect: () => void;
+  onToggleHidden?: () => void;
+  onDelete?: () => void;
+}
+
+/** Builds everything about a row except `onSelect` -- deliberately takes no
+ * ref (not even wrapped in a thunk): the react-hooks/refs lint rule flags a
+ * ref reached through *any* function call during render, no matter how many
+ * closures it's nested inside. Callers add `onSelect` themselves as a plain
+ * object-literal property (never passed into a call), the same shape the
+ * "group" rows below already use safely. */
+function makeRow(opts: {
+  field: string;
+  label: string;
+  type: "text" | "image" | "auto";
+  hiddenFields: string[] | undefined;
+  commitHidden: (field: string, hidden: boolean) => void;
+}): Omit<BlockRowData, "onSelect"> {
+  const hidden = (opts.hiddenFields ?? []).includes(opts.field);
+  return {
+    key: opts.field,
+    type: opts.type,
+    label: opts.label.trim() || "(empty)",
+    hidden,
+    onToggleHidden: () => opts.commitHidden(opts.field, !hidden),
+  };
+}
+
+/** Same select-then-scroll behavior every row's `onSelect` needs, factored
+ * out as values only (a field-setter function and a plain string field key
+ * -- never a ref), so the ref access itself stays written inline at each
+ * call site rather than flowing through this helper. */
+function scrollToField(container: HTMLDivElement | null, field: string) {
+  requestAnimationFrame(() => {
+    container?.querySelector<HTMLElement>(`[data-field="${CSS.escape(field)}"]`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  });
+}
+
 /** Draft + selection + a simple linear undo/redo stack for one section --
  * shared shape across Letter/Timeline/Map (Hero is handled separately below
  * since its text fields route to a different table/action than its style
@@ -256,7 +339,7 @@ function setStyleOverride<T extends { styleOverrides?: StyleOverrides }>(
  * contentEditable undo (confirmed live, this session, to be per-keystroke
  * and app-unaware) -- this is a real app-level snapshot stack, the same
  * pattern already proven in CanvasEditor's history/historyIndex. */
-function useEditableSection<T extends { styleOverrides?: StyleOverrides }>(
+function useEditableSection<T extends { styleOverrides?: StyleOverrides; hiddenFields?: string[] }>(
   initial: T,
   save: (value: T) => Promise<void>
 ) {
@@ -264,51 +347,94 @@ function useEditableSection<T extends { styleOverrides?: StyleOverrides }>(
   const [selectedField, setSelectedField] = useState<string | null>(null);
   const historyRef = useRef<T[]>([initial]);
   const historyIndexRef = useRef(0);
+  // dashboard-audit.md B10: mirrors historyIndexRef/historyRef.length as
+  // state so the visible undo/redo buttons can read canUndo/canRedo during
+  // render -- reading a ref's `.current` during render is disallowed
+  // (react-hooks/refs), so the refs stay the source of truth for the actual
+  // stack (mutated only inside callbacks/handlers) and these two booleans
+  // are just kept in sync alongside every push/undo/redo.
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
 
   const pushHistory = useCallback((next: T) => {
     const truncated = historyRef.current.slice(0, historyIndexRef.current + 1);
     truncated.push(next);
     historyRef.current = truncated;
     historyIndexRef.current = truncated.length - 1;
+    setCanUndo(historyIndexRef.current > 0);
+    setCanRedo(false);
   }, []);
 
+  // dashboard-audit.md B10: `pushHistory` has a side effect (mutating the
+  // history refs, plus setCanUndo/setCanRedo) -- calling it from inside a
+  // setState *updater* function (the previous `setDraft(prev => {...
+  // pushHistory(next); return next})` shape) gets that updater silently
+  // double-invoked by React 18 StrictMode's dev-mode impurity check, which
+  // double-pushed every single commit onto the stack (confirmed live: one
+  // edit needed two clicks of the new visible Undo button to actually
+  // revert). Reading `draft` from the closure and calling `pushHistory` as a
+  // plain statement in the handler body -- not inside an updater -- runs
+  // exactly once per commit regardless of StrictMode.
   const commitText = useCallback(
     (field: string, value: string) => {
-      setDraft((prev) => {
-        const next = setFieldValue(prev, field, value);
-        pushHistory(next);
-        return next;
-      });
+      const next = setFieldValue(draft, field, value);
+      pushHistory(next);
+      setDraft(next);
     },
-    [pushHistory]
+    [draft, pushHistory]
   );
 
   const commitStyle = useCallback(
     (field: string, patch: TextStyleOverride | null) => {
-      setDraft((prev) => {
-        const next = setStyleOverride(prev, field, patch);
-        pushHistory(next);
-        return next;
-      });
+      const next = setStyleOverride(draft, field, patch);
+      pushHistory(next);
+      setDraft(next);
     },
-    [pushHistory]
+    [draft, pushHistory]
+  );
+
+  const commitHidden = useCallback(
+    (field: string, hidden: boolean) => {
+      const next = setHidden(draft, field, hidden);
+      pushHistory(next);
+      setDraft(next);
+    },
+    [draft, pushHistory]
   );
 
   const undo = useCallback(() => {
     if (historyIndexRef.current <= 0) return;
     historyIndexRef.current -= 1;
     setDraft(historyRef.current[historyIndexRef.current]);
+    setCanUndo(historyIndexRef.current > 0);
+    setCanRedo(true);
   }, []);
 
   const redo = useCallback(() => {
     if (historyIndexRef.current >= historyRef.current.length - 1) return;
     historyIndexRef.current += 1;
     setDraft(historyRef.current[historyIndexRef.current]);
+    setCanUndo(true);
+    setCanRedo(historyIndexRef.current < historyRef.current.length - 1);
   }, []);
 
   const { state, error } = useAutosave(draft, save);
 
-  return { draft, setDraft, selectedField, setSelectedField, commitText, commitStyle, undo, redo, state, error };
+  return {
+    draft,
+    setDraft,
+    selectedField,
+    setSelectedField,
+    commitText,
+    commitStyle,
+    commitHidden,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    state,
+    error,
+  };
 }
 
 const sectionLabels: Record<SectionKey, string> = {
@@ -348,6 +474,7 @@ export default function SiteInlineEditor({
   heroVariant,
   heroPhotoUrl,
   heroStyleOverrides,
+  heroHiddenFields,
   weddingData,
   letter,
   timeline,
@@ -359,8 +486,43 @@ export default function SiteInlineEditor({
   guestbook,
   video,
   banquetNavigator,
+  allSections,
 }: SiteInlineEditorProps) {
   const router = useRouter();
+  // dashboard-audit.md B12: one handler for every section's background
+  // button -- looks up the section's current fill from the raw parsed
+  // array (see the prop's own comment) and saves a new one through the one
+  // shared action, rather than each section wiring this up separately.
+  const getSectionBackground = useCallback(
+    (type: SectionType) => allSections.find((section) => section.type === type)?.background,
+    [allSections]
+  );
+  const handleBackgroundChange = useCallback(
+    (type: SectionType, fill: BackgroundFill | undefined) => {
+      void (async () => {
+        try {
+          await updateSectionBackground(eventId, type, fill);
+          router.refresh();
+        } catch {
+          // Best-effort, same as the rest of this editor's autosave-style
+          // writes -- no dedicated error UI for a background tweak.
+        }
+      })();
+    },
+    [eventId, router]
+  );
+  // dashboard-audit.md B10: weddingpost.ru's own device switcher just
+  // reflows the same live page at a different width, not a second mockup --
+  // matched here via the device frame's own max-width below. Desktop added
+  // alongside phone/tablet (phone/tablet behavior unchanged) so a host can
+  // see the real, full-width desktop layout instead of only narrow mockups
+  // -- first in the list and the default view, since that's the most
+  // complete look at the site. The preview column itself is `1fr` (see
+  // site/page.tsx's grid), so this width is a cap, not a promise -- it
+  // still gracefully shrinks on a narrower dashboard viewport, same as
+  // tablet already does.
+  const [device, setDevice] = useState<"desktop" | "phone" | "tablet">("desktop");
+  const deviceMaxWidth = device === "desktop" ? 1280 : device === "tablet" ? 640 : 420;
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const letterRef = useRef<HTMLDivElement>(null);
@@ -393,6 +555,7 @@ export default function SiteInlineEditor({
   const [weddingDataDraft, setWeddingDataDraft] = useState<WeddingDataDraft>(weddingData);
   const [heroPhoto, setHeroPhoto] = useState(heroPhotoUrl);
   const [heroOverrides, setHeroOverrides] = useState<StyleOverrides | undefined>(heroStyleOverrides);
+  const [heroHidden, setHeroHidden] = useState<string[]>(heroHiddenFields ?? []);
   const [heroSelectedField, setHeroSelectedField] = useState<string | null>(null);
 
   const { state: weddingDataState, error: weddingDataError } = useAutosave(weddingDataDraft, async (value) => {
@@ -400,9 +563,15 @@ export default function SiteInlineEditor({
     router.refresh();
   });
   const { state: heroState, error: heroError } = useAutosave(
-    { photoUrl: heroPhoto, styleOverrides: heroOverrides },
+    { photoUrl: heroPhoto, styleOverrides: heroOverrides, hiddenFields: heroHidden },
     async (value) => {
-      await updateHeroSection({ eventId, heroVariant, photoUrl: value.photoUrl, styleOverrides: value.styleOverrides });
+      await updateHeroSection({
+        eventId,
+        heroVariant,
+        photoUrl: value.photoUrl,
+        styleOverrides: value.styleOverrides,
+        hiddenFields: value.hiddenFields,
+      });
       router.refresh();
     }
   );
@@ -422,6 +591,10 @@ export default function SiteInlineEditor({
       else overrides[field] = { ...overrides[field], ...patch };
       return overrides;
     });
+  }, []);
+
+  const heroCommitHidden = useCallback((field: string, hidden: boolean) => {
+    setHeroHidden((prev) => (hidden ? [...prev, field] : prev.filter((existing) => existing !== field)));
   }, []);
 
   const heroContext = useMemo<EditableFieldContextValue>(
@@ -592,34 +765,6 @@ export default function SiteInlineEditor({
     ]
   );
 
-  // --- Section enable/disable toggle (Letter/Timeline/Map/RSVP/Countdown/Gift
-  // only -- Hero has no toggle, matching today). Optimistic, same pattern as
-  // ModuleCard's switch. ---
-  const [enabledState, setEnabledState] = useState({
-    letter: letter.enabled,
-    timeline: timeline.enabled,
-    map: map.enabled,
-    rsvp: rsvp.enabled,
-    countdown: countdown.enabled,
-    gift: gift.enabled,
-    dressCode: dressCode.enabled,
-    guestbook: guestbook.enabled,
-    video: video.enabled,
-    banquetNavigator: banquetNavigator.enabled,
-  });
-  const handleToggle = useCallback(
-    async (key: SectionKey, next: boolean) => {
-      setEnabledState((prev) => ({ ...prev, [key]: next }));
-      try {
-        await toggleSection(eventId, key, next);
-        router.refresh();
-      } catch {
-        setEnabledState((prev) => ({ ...prev, [key]: !next }));
-      }
-    },
-    [eventId, router]
-  );
-
   // --- Floating toolbar: which section (if any) currently has a selected
   // field, and that field's live DOM node for position math. ---
   type Selection = { section: "hero" | SectionKey; field: string };
@@ -717,52 +862,73 @@ export default function SiteInlineEditor({
     };
   }, [recomputeToolbarPos]);
 
-  // Ctrl+Z / Ctrl+Shift+Z, scoped to whichever section currently has a
-  // selection (Hero's text has no undo stack of its own -- it's a single
-  // field, native contentEditable undo already covers it there).
+  // dashboard-audit.md B10: which section's undo/redo stack the visible
+  // round buttons (and Ctrl+Z) act on. Tracks the *last* section a field was
+  // selected in, not just the *currently* selected one -- confirmed live
+  // that clicking away from a field you just edited (a completely normal
+  // "type, then click elsewhere to see it") otherwise made Undo go inert
+  // right when a user would actually reach for it, since `selection` itself
+  // goes null the moment nothing is selected. Hero is excluded throughout
+  // (no stack of its own; native contentEditable undo covers its one field).
+  const [lastEditedSection, setLastEditedSection] = useState<SectionKey | null>(null);
+  useEffect(() => {
+    if (!selection || selection.section === "hero") return;
+    const id = setTimeout(() => setLastEditedSection(selection.section as SectionKey), 0);
+    return () => clearTimeout(id);
+  }, [selection]);
+  const activeSection = selection && selection.section !== "hero" ? selection.section : lastEditedSection;
+
+  const activeField =
+    activeSection === "letter"
+      ? letterField
+      : activeSection === "timeline"
+        ? timelineField
+        : activeSection === "map"
+          ? mapField
+          : activeSection === "rsvp"
+            ? rsvpField
+            : activeSection === "countdown"
+              ? countdownField
+              : activeSection === "gift"
+                ? giftField
+                : activeSection === "dressCode"
+                  ? dressCodeField
+                  : activeSection === "guestbook"
+                    ? guestbookField
+                    : activeSection === "video"
+                      ? videoField
+                      : activeSection === "banquetNavigator"
+                        ? banquetNavigatorField
+                        : null;
+
+  // EditableText deliberately renders no children for the field currently
+  // selected (so a re-render mid-typing can't clobber the user's cursor --
+  // see its own comment), which also means an undo/redo while that same
+  // field is still selected updates the draft but not what's on screen.
+  // Clearing the selection here forces it to fall back to plain `value`
+  // rendering, confirmed live: without this, clicking the new visible Undo
+  // button looked like it did nothing until the field was clicked away from.
+  const runUndo = () => {
+    activeField?.undo();
+    activeField?.setSelectedField(null);
+  };
+  const runRedo = () => {
+    activeField?.redo();
+    activeField?.setSelectedField(null);
+  };
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "z") return;
-      if (!selection || selection.section === "hero") return;
+      if (!activeField) return;
       event.preventDefault();
-      const field =
-        selection.section === "letter"
-          ? letterField
-          : selection.section === "timeline"
-            ? timelineField
-            : selection.section === "map"
-              ? mapField
-              : selection.section === "rsvp"
-                ? rsvpField
-                : selection.section === "countdown"
-                  ? countdownField
-                  : selection.section === "gift"
-                    ? giftField
-                    : selection.section === "dressCode"
-                      ? dressCodeField
-                      : selection.section === "guestbook"
-                        ? guestbookField
-                        : selection.section === "video"
-                          ? videoField
-                          : banquetNavigatorField;
-      if (event.shiftKey) field.redo();
-      else field.undo();
+      if (event.shiftKey) runRedo();
+      else runUndo();
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [
-    selection,
-    letterField,
-    timelineField,
-    mapField,
-    rsvpField,
-    countdownField,
-    giftField,
-    dressCodeField,
-    guestbookField,
-    videoField,
-    banquetNavigatorField,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeField]);
 
   const clearSelection = () => {
     setHeroSelectedField(null);
@@ -833,46 +999,628 @@ export default function SiteInlineEditor({
   };
 
   const heroNames = weddingDataDraft.name2 ? [weddingDataDraft.name1, weddingDataDraft.name2] : [weddingDataDraft.name1];
+  const heroVisible = applyHiddenFields({ names: heroNames, photoUrl: heroPhoto }, heroHidden);
+  // Sections rendered from named props (not a `{...draft}` spread) read
+  // through one of these instead of the raw draft, so a hidden field's
+  // value is blanked before it reaches the live component here too --
+  // matching what registry.tsx's `applyHiddenFields` already does for the
+  // public site, so hiding looks the same in both places.
+  const rsvpVisible = applyHiddenFields(rsvpField.draft, rsvpField.draft.hiddenFields);
+  const countdownVisible = applyHiddenFields(countdownField.draft, countdownField.draft.hiddenFields);
+  const giftVisible = applyHiddenFields(giftField.draft, giftField.draft.hiddenFields);
+  const dressCodeVisible = applyHiddenFields(dressCodeField.draft, dressCodeField.draft.hiddenFields);
+  const guestbookVisible = applyHiddenFields(guestbookField.draft, guestbookField.draft.hiddenFields);
+  const videoVisible = applyHiddenFields(videoField.draft, videoField.draft.hiddenFields);
+  const banquetNavigatorVisible = applyHiddenFields(
+    banquetNavigatorField.draft,
+    banquetNavigatorField.draft.hiddenFields
+  );
+
+  // dashboard-audit.md A3: the flat "Editable blocks" tree -- every text/
+  // image/auto field across every section, in the same order it renders.
+  // Repeatable items (a Timeline event, Map venue, RSVP question, DressCode
+  // color) get one "group" row for the item itself (select + delete) ahead
+  // of its own sub-fields, the same adjacency weddingpost.ru's own tree
+  // showed live between a "Групповой элемент" row and the text rows next to
+  // it -- confirmed in Chrome this session, not guessed.
+  const blocks: BlockRowData[] = [
+    {
+      ...makeRow({
+        field: "names.0",
+        label: weddingDataDraft.name1,
+        type: "auto",
+        hiddenFields: heroHidden,
+        commitHidden: heroCommitHidden,
+      }),
+      onSelect: () => {
+        setHeroSelectedField("names.0");
+        scrollToField(heroRef.current, "names.0");
+      },
+    },
+    ...(weddingDataDraft.name2
+      ? [
+          {
+            ...makeRow({
+              field: "names.1",
+              label: weddingDataDraft.name2,
+              type: "auto" as const,
+              hiddenFields: heroHidden,
+              commitHidden: heroCommitHidden,
+            }),
+            onSelect: () => {
+              setHeroSelectedField("names.1");
+              scrollToField(heroRef.current, "names.1");
+            },
+          },
+        ]
+      : []),
+    {
+      ...makeRow({
+        field: "photoUrl",
+        label: "Hero photo",
+        type: "image",
+        hiddenFields: heroHidden,
+        commitHidden: heroCommitHidden,
+      }),
+      onSelect: () => {
+        setHeroSelectedField("photoUrl");
+        scrollToField(heroRef.current, "photoUrl");
+      },
+    },
+
+    // Unrolled, not `.map()`'d -- react-hooks/refs flags a ref reached from
+    // *any* function-call argument during render, including a callback
+    // passed to `.map()`, no matter how deeply the actual `.current` read is
+    // nested inside it (confirmed live: only the `.map()`-built rows were
+    // flagged, identical plain-array-literal rows elsewhere were not).
+    {
+      ...makeRow({
+        field: "title",
+        label: letterField.draft.title,
+        type: "text",
+        hiddenFields: letterField.draft.hiddenFields,
+        commitHidden: letterField.commitHidden,
+      }),
+      onSelect: () => {
+        letterField.setSelectedField("title");
+        scrollToField(letterRef.current, "title");
+      },
+    },
+    {
+      ...makeRow({
+        field: "body",
+        label: letterField.draft.body,
+        type: "text",
+        hiddenFields: letterField.draft.hiddenFields,
+        commitHidden: letterField.commitHidden,
+      }),
+      onSelect: () => {
+        letterField.setSelectedField("body");
+        scrollToField(letterRef.current, "body");
+      },
+    },
+    {
+      ...makeRow({
+        field: "quote",
+        label: letterField.draft.quote,
+        type: "text",
+        hiddenFields: letterField.draft.hiddenFields,
+        commitHidden: letterField.commitHidden,
+      }),
+      onSelect: () => {
+        letterField.setSelectedField("quote");
+        scrollToField(letterRef.current, "quote");
+      },
+    },
+    {
+      ...makeRow({
+        field: "note",
+        label: letterField.draft.note,
+        type: "text",
+        hiddenFields: letterField.draft.hiddenFields,
+        commitHidden: letterField.commitHidden,
+      }),
+      onSelect: () => {
+        letterField.setSelectedField("note");
+        scrollToField(letterRef.current, "note");
+      },
+    },
+    {
+      ...makeRow({
+        field: "rsvpDeadline",
+        label: letterField.draft.rsvpDeadline,
+        type: "text",
+        hiddenFields: letterField.draft.hiddenFields,
+        commitHidden: letterField.commitHidden,
+      }),
+      onSelect: () => {
+        letterField.setSelectedField("rsvpDeadline");
+        scrollToField(letterRef.current, "rsvpDeadline");
+      },
+    },
+    {
+      ...makeRow({
+        field: "closingLine",
+        label: letterField.draft.closingLine,
+        type: "text",
+        hiddenFields: letterField.draft.hiddenFields,
+        commitHidden: letterField.commitHidden,
+      }),
+      onSelect: () => {
+        letterField.setSelectedField("closingLine");
+        scrollToField(letterRef.current, "closingLine");
+      },
+    },
+
+    {
+      ...makeRow({
+        field: "title",
+        label: timelineField.draft.title,
+        type: "text",
+        hiddenFields: timelineField.draft.hiddenFields,
+        commitHidden: timelineField.commitHidden,
+      }),
+      onSelect: () => {
+        timelineField.setSelectedField("title");
+        scrollToField(timelineRef.current, "title");
+      },
+    },
+    ...timelineField.draft.events.flatMap((event, index): BlockRowData[] => [
+      {
+        key: `timeline.events.${index}`,
+        type: "group",
+        label: event.title.trim() || `Event ${index + 1}`,
+        hidden: false,
+        onSelect: () => {
+          timelineField.setSelectedField(`events.${index}.title`);
+          scrollToField(timelineRef.current, `events.${index}.title`);
+        },
+        onDelete: () =>
+          timelineField.setDraft((prev) => ({ ...prev, events: prev.events.filter((_, i) => i !== index) })),
+      },
+      ...(["time", "title", "description"] as const).map(
+        (subfield): BlockRowData => ({
+          ...makeRow({
+            field: `events.${index}.${subfield}`,
+            label: event[subfield] ?? "",
+            type: "text",
+            hiddenFields: timelineField.draft.hiddenFields,
+            commitHidden: timelineField.commitHidden,
+          }),
+          onSelect: () => {
+            timelineField.setSelectedField(`events.${index}.${subfield}`);
+            scrollToField(timelineRef.current, `events.${index}.${subfield}`);
+          },
+        })
+      ),
+    ]),
+
+    {
+      ...makeRow({
+        field: "title",
+        label: mapField.draft.title,
+        type: "text",
+        hiddenFields: mapField.draft.hiddenFields,
+        commitHidden: mapField.commitHidden,
+      }),
+      onSelect: () => {
+        mapField.setSelectedField("title");
+        scrollToField(mapRef.current, "title");
+      },
+    },
+    ...mapField.draft.venues.flatMap((venue, index): BlockRowData[] => [
+      {
+        key: `map.venues.${index}`,
+        type: "group",
+        label: venue.name.trim() || `Venue ${index + 1}`,
+        hidden: false,
+        onSelect: () => {
+          mapField.setSelectedField(`venues.${index}.name`);
+          scrollToField(mapRef.current, `venues.${index}.name`);
+        },
+        onDelete: () =>
+          mapField.setDraft((prev) => ({ ...prev, venues: prev.venues.filter((_, i) => i !== index) })),
+      },
+      ...(["name", "address"] as const).map(
+        (subfield): BlockRowData => ({
+          ...makeRow({
+            field: `venues.${index}.${subfield}`,
+            label: venue[subfield],
+            type: "text",
+            hiddenFields: mapField.draft.hiddenFields,
+            commitHidden: mapField.commitHidden,
+          }),
+          onSelect: () => {
+            mapField.setSelectedField(`venues.${index}.${subfield}`);
+            scrollToField(mapRef.current, `venues.${index}.${subfield}`);
+          },
+        })
+      ),
+    ]),
+
+    {
+      ...makeRow({
+        field: "title",
+        label: rsvpField.draft.title,
+        type: "text",
+        hiddenFields: rsvpField.draft.hiddenFields,
+        commitHidden: rsvpField.commitHidden,
+      }),
+      onSelect: () => {
+        rsvpField.setSelectedField("title");
+        scrollToField(rsvpRef.current, "title");
+      },
+    },
+    {
+      ...makeRow({
+        field: "description",
+        label: rsvpField.draft.description,
+        type: "text",
+        hiddenFields: rsvpField.draft.hiddenFields,
+        commitHidden: rsvpField.commitHidden,
+      }),
+      onSelect: () => {
+        rsvpField.setSelectedField("description");
+        scrollToField(rsvpRef.current, "description");
+      },
+    },
+    ...rsvpField.draft.questions.flatMap((question, index): BlockRowData[] => [
+      {
+        key: `rsvp.questions.${index}`,
+        type: "group",
+        label: question.label.trim() || `Question ${index + 1}`,
+        hidden: false,
+        onSelect: () => {
+          rsvpField.setSelectedField(`questions.${index}.label`);
+          scrollToField(rsvpRef.current, `questions.${index}.label`);
+        },
+        onDelete: () =>
+          rsvpField.setDraft((prev) => ({ ...prev, questions: prev.questions.filter((_, i) => i !== index) })),
+      },
+      {
+        ...makeRow({
+          field: `questions.${index}.label`,
+          label: question.label,
+          type: "text",
+          hiddenFields: rsvpField.draft.hiddenFields,
+          commitHidden: rsvpField.commitHidden,
+        }),
+        onSelect: () => {
+          rsvpField.setSelectedField(`questions.${index}.label`);
+          scrollToField(rsvpRef.current, `questions.${index}.label`);
+        },
+      },
+    ]),
+
+    {
+      ...makeRow({
+        field: "title",
+        label: countdownField.draft.title,
+        type: "text",
+        hiddenFields: countdownField.draft.hiddenFields,
+        commitHidden: countdownField.commitHidden,
+      }),
+      onSelect: () => {
+        countdownField.setSelectedField("title");
+        scrollToField(countdownRef.current, "title");
+      },
+    },
+
+    {
+      ...makeRow({
+        field: "title",
+        label: giftField.draft.title,
+        type: "text",
+        hiddenFields: giftField.draft.hiddenFields,
+        commitHidden: giftField.commitHidden,
+      }),
+      onSelect: () => {
+        giftField.setSelectedField("title");
+        scrollToField(giftRef.current, "title");
+      },
+    },
+    {
+      ...makeRow({
+        field: "description",
+        label: giftField.draft.description,
+        type: "text",
+        hiddenFields: giftField.draft.hiddenFields,
+        commitHidden: giftField.commitHidden,
+      }),
+      onSelect: () => {
+        giftField.setSelectedField("description");
+        scrollToField(giftRef.current, "description");
+      },
+    },
+
+    {
+      ...makeRow({
+        field: "title",
+        label: dressCodeField.draft.title,
+        type: "text",
+        hiddenFields: dressCodeField.draft.hiddenFields,
+        commitHidden: dressCodeField.commitHidden,
+      }),
+      onSelect: () => {
+        dressCodeField.setSelectedField("title");
+        scrollToField(dressCodeRef.current, "title");
+      },
+    },
+    {
+      ...makeRow({
+        field: "description",
+        label: dressCodeField.draft.description,
+        type: "text",
+        hiddenFields: dressCodeField.draft.hiddenFields,
+        commitHidden: dressCodeField.commitHidden,
+      }),
+      onSelect: () => {
+        dressCodeField.setSelectedField("description");
+        scrollToField(dressCodeRef.current, "description");
+      },
+    },
+    ...dressCodeField.draft.colors.flatMap((color, index): BlockRowData[] => [
+      {
+        key: `dressCode.colors.${index}`,
+        type: "group",
+        label: color.label?.trim() || `Color ${index + 1}`,
+        hidden: false,
+        onSelect: () => {
+          dressCodeField.setSelectedField(`colors.${index}.label`);
+          scrollToField(dressCodeRef.current, `colors.${index}.label`);
+        },
+        onDelete: () =>
+          dressCodeField.setDraft((prev) => ({ ...prev, colors: prev.colors.filter((_, i) => i !== index) })),
+      },
+      {
+        ...makeRow({
+          field: `colors.${index}.label`,
+          label: color.label ?? "",
+          type: "text",
+          hiddenFields: dressCodeField.draft.hiddenFields,
+          commitHidden: dressCodeField.commitHidden,
+        }),
+        onSelect: () => {
+          dressCodeField.setSelectedField(`colors.${index}.label`);
+          scrollToField(dressCodeRef.current, `colors.${index}.label`);
+        },
+      },
+    ]),
+
+    {
+      ...makeRow({
+        field: "title",
+        label: guestbookField.draft.title,
+        type: "text",
+        hiddenFields: guestbookField.draft.hiddenFields,
+        commitHidden: guestbookField.commitHidden,
+      }),
+      onSelect: () => {
+        guestbookField.setSelectedField("title");
+        scrollToField(guestbookRef.current, "title");
+      },
+    },
+
+    {
+      ...makeRow({
+        field: "title",
+        label: videoField.draft.title,
+        type: "text",
+        hiddenFields: videoField.draft.hiddenFields,
+        commitHidden: videoField.commitHidden,
+      }),
+      onSelect: () => {
+        videoField.setSelectedField("title");
+        scrollToField(videoRef.current, "title");
+      },
+    },
+
+    {
+      ...makeRow({
+        field: "title",
+        label: banquetNavigatorField.draft.title,
+        type: "text",
+        hiddenFields: banquetNavigatorField.draft.hiddenFields,
+        commitHidden: banquetNavigatorField.commitHidden,
+      }),
+      onSelect: () => {
+        banquetNavigatorField.setSelectedField("title");
+        scrollToField(banquetNavigatorRef.current, "title");
+      },
+    },
+    {
+      ...makeRow({
+        field: "description",
+        label: banquetNavigatorField.draft.description,
+        type: "text",
+        hiddenFields: banquetNavigatorField.draft.hiddenFields,
+        commitHidden: banquetNavigatorField.commitHidden,
+      }),
+      onSelect: () => {
+        banquetNavigatorField.setSelectedField("description");
+        scrollToField(banquetNavigatorRef.current, "description");
+      },
+    },
+  ];
 
   return (
-    <div ref={scrollAreaRef} className="relative max-h-[85vh] overflow-y-auto rounded-2xl" onClick={clearSelection}>
-      <ThemeProvider theme={theme}>
-        <div ref={heroRef}>
-          <EditableFieldProvider value={heroContext}>
-            <HeroSection variant={heroVariant} names={heroNames} eventDate={weddingDataDraft.eventDate} photoUrl={heroPhoto} styleOverrides={heroOverrides} />
-          </EditableFieldProvider>
-        </div>
+    <div className="flex flex-col gap-3">
+      <EditableBlocksPanel blocks={blocks} />
 
-        <SectionHeader label="Hero photo" state={heroState} error={heroError} extra={<AutosaveStatus state={weddingDataState} error={weddingDataError} />} />
+      {/* dashboard-audit.md B10: weddingpost.ru's own top bar centers big
+          round undo/redo arrows -- these drive the same per-section stack
+          Ctrl+Z already used, just exposed as clickable buttons too. */}
+      <div className="mx-auto flex w-full items-center justify-between" style={{ maxWidth: deviceMaxWidth }}>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={runUndo}
+            disabled={!activeField?.canUndo}
+            aria-label="Undo"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--dash-border)] text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--dash-border)] disabled:hover:text-[var(--dash-text-muted)]"
+          >
+            <Undo2 className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={runRedo}
+            disabled={!activeField?.canRedo}
+            aria-label="Redo"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--dash-border)] text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--dash-border)] disabled:hover:text-[var(--dash-text-muted)]"
+          >
+            <Redo2 className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="flex items-center gap-0.5 rounded-full bg-[var(--dash-surface-2)] p-0.5">
+          <button
+            type="button"
+            onClick={() => setDevice("desktop")}
+            aria-pressed={device === "desktop"}
+            aria-label="Preview at desktop width"
+            className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
+              device === "desktop"
+                ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]"
+                : "text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
+            }`}
+          >
+            <Monitor className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setDevice("phone")}
+            aria-pressed={device === "phone"}
+            aria-label="Preview at phone width"
+            className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
+              device === "phone"
+                ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]"
+                : "text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
+            }`}
+          >
+            <Smartphone className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setDevice("tablet")}
+            aria-pressed={device === "tablet"}
+            aria-label="Preview at tablet width"
+            className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
+              device === "tablet"
+                ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]"
+                : "text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
+            }`}
+          >
+            <Tablet className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* dashboard-audit.md A2's device frame, moved here from page.tsx so
+          it can sit right under the tree above instead of the tree living
+          outside a wrapper that only page.tsx controlled. Desktop skips the
+          phone-style bezel/notch entirely -- a heavy phone frame around a
+          1280px-wide view would read as a mockup again, the opposite of
+          the point, so it gets a plain browser-window chrome instead. */}
+      <div
+        className={
+          device === "desktop"
+            ? "mx-auto w-full rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface-2)] shadow-[0_20px_60px_rgba(0,0,0,0.25)] transition-[max-width]"
+            : "mx-auto w-full rounded-[2.5rem] border-[10px] border-[var(--dash-surface-2)] bg-[var(--dash-surface-2)] shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition-[max-width]"
+        }
+        style={{ maxWidth: deviceMaxWidth }}
+      >
+        {device === "desktop" ? (
+          <div className="flex items-center gap-1.5 rounded-t-xl px-3.5 py-2.5" aria-hidden="true">
+            <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+            <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+            <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+          </div>
+        ) : (
+          <span className="mx-auto mb-1 block h-1.5 w-16 rounded-full bg-black/30" aria-hidden="true" />
+        )}
+        <div className={device === "desktop" ? "overflow-hidden rounded-b-xl bg-white" : "overflow-hidden rounded-[1.75rem] bg-white"}>
+          <div
+            ref={scrollAreaRef}
+            className="relative max-h-[85vh] overflow-y-auto rounded-2xl"
+            onClick={clearSelection}
+          >
+            <ThemeProvider theme={theme}>
+        <SectionBackground fill={getSectionBackground("hero")}>
+          <div ref={heroRef}>
+            <EditableFieldProvider value={heroContext}>
+              <HeroSection
+                variant={heroVariant}
+                names={heroVisible.names}
+                eventDate={weddingDataDraft.eventDate}
+                photoUrl={heroVisible.photoUrl}
+                styleOverrides={heroOverrides}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
+
+        <SectionHeader
+          label="Hero photo"
+          state={heroState}
+          error={heroError}
+          extra={
+            <>
+              <SectionBackgroundButton
+                value={getSectionBackground("hero")}
+                onChange={(fill) => handleBackgroundChange("hero", fill)}
+              />
+              <AutosaveStatus state={weddingDataState} error={weddingDataError} />
+            </>
+          }
+        />
         <div className="px-4 pb-4" onClick={(event) => event.stopPropagation()}>
-          <PhotoDropzone value={heroPhoto || undefined} onChange={(url) => setHeroPhoto(url ?? "")} mode="upload" label="📷 Photo" />
+          <PhotoDropzone value={heroPhoto || undefined} onChange={(url) => setHeroPhoto(url ?? "")} label="📷 Photo" />
         </div>
 
         <SectionHeader
           label={sectionLabels.letter}
-          enabled={enabledState.letter}
-          onToggle={(next) => handleToggle("letter", next)}
+          enabled={letter.enabled}
           state={letterField.state}
           error={letterField.error}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("letter")}
+              onChange={(fill) => handleBackgroundChange("letter", fill)}
+            />
+          }
         />
-        <div ref={letterRef}>
-          <EditableFieldProvider value={letterContext}>
-            <LetterSection variant={letter.variant} {...letterField.draft} />
-          </EditableFieldProvider>
-        </div>
+        <SectionBackground fill={getSectionBackground("letter")}>
+          <div ref={letterRef}>
+            <EditableFieldProvider value={letterContext}>
+              <LetterSection
+                variant={letter.variant}
+                {...applyHiddenFields(letterField.draft, letterField.draft.hiddenFields)}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
 
         <SectionHeader
           label={sectionLabels.timeline}
-          enabled={enabledState.timeline}
-          onToggle={(next) => handleToggle("timeline", next)}
+          enabled={timeline.enabled}
           state={timelineField.state}
           error={timelineField.error}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("timeline")}
+              onChange={(fill) => handleBackgroundChange("timeline", fill)}
+            />
+          }
         />
-        <div ref={timelineRef}>
-          <EditableFieldProvider value={timelineContext}>
-            <TimelineSection variant={timeline.variant} {...timelineField.draft} />
-          </EditableFieldProvider>
-        </div>
+        <SectionBackground fill={getSectionBackground("timeline")}>
+          <div ref={timelineRef}>
+            <EditableFieldProvider value={timelineContext}>
+              <TimelineSection
+                variant={timeline.variant}
+                {...applyHiddenFields(timelineField.draft, timelineField.draft.hiddenFields)}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
         <div className="flex justify-center pb-6" onClick={(event) => event.stopPropagation()}>
           <button
             type="button"
@@ -890,16 +1638,23 @@ export default function SiteInlineEditor({
 
         <SectionHeader
           label={sectionLabels.map}
-          enabled={enabledState.map}
-          onToggle={(next) => handleToggle("map", next)}
+          enabled={map.enabled}
           state={mapField.state}
           error={mapField.error}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("map")}
+              onChange={(fill) => handleBackgroundChange("map", fill)}
+            />
+          }
         />
-        <div ref={mapRef}>
-          <EditableFieldProvider value={mapContext}>
-            <MapSection variant={map.variant} {...mapField.draft} />
-          </EditableFieldProvider>
-        </div>
+        <SectionBackground fill={getSectionBackground("map")}>
+          <div ref={mapRef}>
+            <EditableFieldProvider value={mapContext}>
+              <MapSection variant={map.variant} {...applyHiddenFields(mapField.draft, mapField.draft.hiddenFields)} />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
         <div className="flex justify-center pb-6" onClick={(event) => event.stopPropagation()}>
           <button
             type="button"
@@ -914,23 +1669,30 @@ export default function SiteInlineEditor({
 
         <SectionHeader
           label={sectionLabels.rsvp}
-          enabled={enabledState.rsvp}
-          onToggle={(next) => handleToggle("rsvp", next)}
+          enabled={rsvp.enabled}
           state={rsvpField.state}
           error={rsvpField.error}
-        />
-        <div ref={rsvpRef}>
-          <EditableFieldProvider value={rsvpContext}>
-            <RsvpSection
-              variant="simple-form"
-              title={rsvpField.draft.title}
-              description={rsvpField.draft.description}
-              styleOverrides={rsvpField.draft.styleOverrides}
-              questions={rsvpQuestionsForRender(rsvpField.draft.questions)}
-              onSubmit={previewOnlySubmit}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("rsvp")}
+              onChange={(fill) => handleBackgroundChange("rsvp", fill)}
             />
-          </EditableFieldProvider>
-        </div>
+          }
+        />
+        <SectionBackground fill={getSectionBackground("rsvp")}>
+          <div ref={rsvpRef}>
+            <EditableFieldProvider value={rsvpContext}>
+              <RsvpSection
+                variant="simple-form"
+                title={rsvpVisible.title}
+                description={rsvpVisible.description}
+                styleOverrides={rsvpField.draft.styleOverrides}
+                questions={rsvpQuestionsForRender(rsvpVisible.questions)}
+                onSubmit={previewOnlySubmit}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
         <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
           <RsvpQuestionsManager
             questions={rsvpField.draft.questions}
@@ -940,62 +1702,83 @@ export default function SiteInlineEditor({
 
         <SectionHeader
           label={sectionLabels.countdown}
-          enabled={enabledState.countdown}
-          onToggle={(next) => handleToggle("countdown", next)}
+          enabled={countdown.enabled}
           state={countdownField.state}
           error={countdownField.error}
-        />
-        <div ref={countdownRef}>
-          <EditableFieldProvider value={countdownContext}>
-            <CountdownSection
-              variant={countdown.variant}
-              title={countdownField.draft.title}
-              eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
-              styleOverrides={countdownField.draft.styleOverrides}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("countdown")}
+              onChange={(fill) => handleBackgroundChange("countdown", fill)}
             />
-          </EditableFieldProvider>
-        </div>
+          }
+        />
+        <SectionBackground fill={getSectionBackground("countdown")}>
+          <div ref={countdownRef}>
+            <EditableFieldProvider value={countdownContext}>
+              <CountdownSection
+                variant={countdown.variant}
+                title={countdownVisible.title}
+                eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
+                styleOverrides={countdownField.draft.styleOverrides}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
 
         <SectionHeader
           label={sectionLabels.gift}
-          enabled={enabledState.gift}
-          onToggle={(next) => handleToggle("gift", next)}
+          enabled={gift.enabled}
           state={giftField.state}
           error={giftField.error}
-        />
-        <div ref={giftRef}>
-          <EditableFieldProvider value={giftContext}>
-            <GiftSection
-              variant={gift.variant}
-              title={giftField.draft.title}
-              description={giftField.draft.description}
-              styleOverrides={giftField.draft.styleOverrides}
-              preferences={giftPreferencesForRender(gift.preferences)}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("gift")}
+              onChange={(fill) => handleBackgroundChange("gift", fill)}
             />
-          </EditableFieldProvider>
-        </div>
+          }
+        />
+        <SectionBackground fill={getSectionBackground("gift")}>
+          <div ref={giftRef}>
+            <EditableFieldProvider value={giftContext}>
+              <GiftSection
+                variant={gift.variant}
+                title={giftVisible.title}
+                description={giftVisible.description}
+                styleOverrides={giftField.draft.styleOverrides}
+                preferences={giftPreferencesForRender(gift.preferences)}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
         <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
           <GiftWishesManager eventId={eventId} preferences={gift.preferences} />
         </div>
 
         <SectionHeader
           label={sectionLabels.dressCode}
-          enabled={enabledState.dressCode}
-          onToggle={(next) => handleToggle("dressCode", next)}
+          enabled={dressCode.enabled}
           state={dressCodeField.state}
           error={dressCodeField.error}
-        />
-        <div ref={dressCodeRef}>
-          <EditableFieldProvider value={dressCodeContext}>
-            <DressCodeSection
-              variant={dressCode.variant}
-              title={dressCodeField.draft.title}
-              description={dressCodeField.draft.description}
-              colors={dressCodeField.draft.colors}
-              styleOverrides={dressCodeField.draft.styleOverrides}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("dressCode")}
+              onChange={(fill) => handleBackgroundChange("dressCode", fill)}
             />
-          </EditableFieldProvider>
-        </div>
+          }
+        />
+        <SectionBackground fill={getSectionBackground("dressCode")}>
+          <div ref={dressCodeRef}>
+            <EditableFieldProvider value={dressCodeContext}>
+              <DressCodeSection
+                variant={dressCode.variant}
+                title={dressCodeVisible.title}
+                description={dressCodeVisible.description}
+                colors={dressCodeVisible.colors}
+                styleOverrides={dressCodeField.draft.styleOverrides}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
         <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
           <DressCodeColorsManager
             colors={dressCodeField.draft.colors}
@@ -1005,42 +1788,56 @@ export default function SiteInlineEditor({
 
         <SectionHeader
           label={sectionLabels.guestbook}
-          enabled={enabledState.guestbook}
-          onToggle={(next) => handleToggle("guestbook", next)}
+          enabled={guestbook.enabled}
           state={guestbookField.state}
           error={guestbookField.error}
-        />
-        <div ref={guestbookRef}>
-          <EditableFieldProvider value={guestbookContext}>
-            <GuestbookSection
-              variant={guestbook.variant}
-              title={guestbookField.draft.title}
-              styleOverrides={guestbookField.draft.styleOverrides}
-              messages={guestbook.messages}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("guestbook")}
+              onChange={(fill) => handleBackgroundChange("guestbook", fill)}
             />
-          </EditableFieldProvider>
-        </div>
+          }
+        />
+        <SectionBackground fill={getSectionBackground("guestbook")}>
+          <div ref={guestbookRef}>
+            <EditableFieldProvider value={guestbookContext}>
+              <GuestbookSection
+                variant={guestbook.variant}
+                title={guestbookVisible.title}
+                styleOverrides={guestbookField.draft.styleOverrides}
+                messages={guestbook.messages}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
         <div className="px-4 pb-6 text-xs text-[var(--dash-text-muted)]" onClick={(event) => event.stopPropagation()}>
           Messages come from guests&apos; RSVP comments. Hide or show individual messages from the Guests tab.
         </div>
 
         <SectionHeader
           label={sectionLabels.video}
-          enabled={enabledState.video}
-          onToggle={(next) => handleToggle("video", next)}
+          enabled={video.enabled}
           state={videoField.state}
           error={videoField.error}
-        />
-        <div ref={videoRef}>
-          <EditableFieldProvider value={videoContext}>
-            <VideoSection
-              variant={video.variant}
-              title={videoField.draft.title}
-              videoUrl={videoField.draft.videoUrl}
-              styleOverrides={videoField.draft.styleOverrides}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("video")}
+              onChange={(fill) => handleBackgroundChange("video", fill)}
             />
-          </EditableFieldProvider>
-        </div>
+          }
+        />
+        <SectionBackground fill={getSectionBackground("video")}>
+          <div ref={videoRef}>
+            <EditableFieldProvider value={videoContext}>
+              <VideoSection
+                variant={video.variant}
+                title={videoVisible.title}
+                videoUrl={videoVisible.videoUrl}
+                styleOverrides={videoField.draft.styleOverrides}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
         <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
           <VideoUrlManager
             videoUrl={videoField.draft.videoUrl}
@@ -1050,22 +1847,29 @@ export default function SiteInlineEditor({
 
         <SectionHeader
           label={banquetNavigator.seatingLabel}
-          enabled={enabledState.banquetNavigator}
-          onToggle={(next) => handleToggle("banquetNavigator", next)}
+          enabled={banquetNavigator.enabled}
           state={banquetNavigatorField.state}
           error={banquetNavigatorField.error}
-        />
-        <div ref={banquetNavigatorRef}>
-          <EditableFieldProvider value={banquetNavigatorContext}>
-            <BanquetNavigatorSection
-              variant="simple-lookup"
-              title={banquetNavigatorField.draft.title}
-              description={banquetNavigatorField.draft.description}
-              styleOverrides={banquetNavigatorField.draft.styleOverrides}
-              onLookup={previewOnlyLookup}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("banquetNavigator")}
+              onChange={(fill) => handleBackgroundChange("banquetNavigator", fill)}
             />
-          </EditableFieldProvider>
-        </div>
+          }
+        />
+        <SectionBackground fill={getSectionBackground("banquetNavigator")}>
+          <div ref={banquetNavigatorRef}>
+            <EditableFieldProvider value={banquetNavigatorContext}>
+              <BanquetNavigatorSection
+                variant="simple-lookup"
+                title={banquetNavigatorVisible.title}
+                description={banquetNavigatorVisible.description}
+                styleOverrides={banquetNavigatorField.draft.styleOverrides}
+                onLookup={previewOnlyLookup}
+              />
+            </EditableFieldProvider>
+          </div>
+        </SectionBackground>
       </ThemeProvider>
 
       {selection && toolbarPos && (
@@ -1120,6 +1924,9 @@ export default function SiteInlineEditor({
           }
         />
       )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1293,17 +2100,22 @@ function DressCodeColorsManager({
   );
 }
 
+/** Whether a section is on/off is now controlled exclusively by
+ * SectionModulesPanel (dashboard-audit.md A1) -- this header used to carry
+ * its own duplicate toggle switch, which meant two different controls could
+ * disagree about the same section's enabled state. Only a plain, non-
+ * interactive "Off" badge remains here, so an editor mid-edit can still see
+ * at a glance that a section won't show on the live site without a second
+ * place to change it. */
 function SectionHeader({
   label,
   enabled,
-  onToggle,
   state,
   error,
   extra,
 }: {
   label: string;
   enabled?: boolean;
-  onToggle?: (next: boolean) => void;
   state: AutosaveState;
   error: string | null;
   extra?: React.ReactNode;
@@ -1312,27 +2124,102 @@ function SectionHeader({
     <div className="flex items-center justify-between border-t border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-2">
       <div className="flex items-center gap-3">
         <span className="text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">{label}</span>
-        {onToggle && (
-          <button
-            type="button"
-            role="switch"
-            aria-checked={enabled}
-            onClick={(event) => {
-              event.stopPropagation();
-              onToggle(!enabled);
-            }}
-            className={`relative h-4 w-7 shrink-0 rounded-full transition ${enabled ? "bg-[var(--dash-accent)]" : "bg-[var(--dash-border)]"}`}
-          >
-            <span
-              className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition ${enabled ? "left-3.5" : "left-0.5"}`}
-            />
-          </button>
+        {enabled === false && (
+          <span className="rounded-full bg-[var(--dash-border)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
+            Off
+          </span>
         )}
       </div>
       <div className="flex items-center gap-2">
         {extra}
         <AutosaveStatus state={state} error={error} />
       </div>
+    </div>
+  );
+}
+
+const BLOCK_TYPE_ICON: Record<BlockRowData["type"], string> = {
+  text: "A",
+  image: "🖼",
+  auto: "🖊",
+  group: "⊞",
+};
+
+/** dashboard-audit.md A3: "Editable blocks" -- a flat, counted list of every
+ * text/image/auto field on the page, labeled with the block's own current
+ * text rather than a generated name ("не «Layer 12», а сам текст блока",
+ * confirmed against weddingpost.ru's own tree in Chrome this session).
+ * Clicking a row selects + scrolls to that field in the canvas below; the
+ * eye icon toggles `hiddenFields` (reversible -- the stored value is never
+ * touched, only withheld from render, see `applyHiddenFields`); the trash
+ * icon (repeatable items only) removes that item outright, the same
+ * operation the floating toolbar's own delete button already does. */
+function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      className="rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface)] p-3"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between text-left"
+      >
+        <span className="flex items-center gap-2 text-sm font-semibold text-[var(--dash-accent)]">
+          Editable blocks
+          <span className="rounded-full bg-[var(--dash-surface-2)] px-2 py-0.5 text-xs font-normal text-[var(--dash-text-muted)]">
+            {blocks.length}
+          </span>
+        </span>
+        <span className="text-xs text-[var(--dash-text-muted)]">{open ? "Hide" : "Show"}</span>
+      </button>
+      {open && (
+        <ul className="mt-3 max-h-64 space-y-0.5 overflow-y-auto">
+          {blocks.map((block) => (
+            <li
+              key={block.key}
+              className={`group flex items-center justify-between gap-2 rounded-md px-2 py-1 text-xs hover:bg-[var(--dash-surface-2)] ${
+                block.hidden ? "opacity-40" : ""
+              } ${block.type === "group" ? "mt-1 font-semibold text-[var(--dash-text-muted)]" : ""}`}
+            >
+              <button
+                type="button"
+                onClick={block.onSelect}
+                className="flex min-w-0 flex-1 items-center gap-2 text-left"
+              >
+                <span aria-hidden="true" className="w-4 shrink-0 text-center text-[var(--dash-text-muted)]">
+                  {BLOCK_TYPE_ICON[block.type]}
+                </span>
+                <span className="truncate text-[var(--dash-text)]">{block.label}</span>
+              </button>
+              <span className="hidden shrink-0 items-center gap-1 group-hover:flex">
+                {block.onToggleHidden && (
+                  <button
+                    type="button"
+                    onClick={block.onToggleHidden}
+                    className="rounded px-1 text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
+                    aria-label={block.hidden ? "Show block" : "Hide block"}
+                  >
+                    {block.hidden ? "🚫" : "👁"}
+                  </button>
+                )}
+                {block.onDelete && (
+                  <button
+                    type="button"
+                    onClick={block.onDelete}
+                    className="rounded px-1 text-[var(--dash-text-muted)] hover:text-red-400"
+                    aria-label="Delete"
+                  >
+                    🗑
+                  </button>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

@@ -28,6 +28,8 @@ interface AddGuestInput {
   phone?: string;
   groupLabel?: string;
   maxPlusOnes?: number;
+  paperEnabled?: boolean;
+  siteEnabled?: boolean;
 }
 
 export async function addGuest(input: AddGuestInput) {
@@ -41,6 +43,8 @@ export async function addGuest(input: AddGuestInput) {
     phone: input.phone || null,
     group_label: input.groupLabel || null,
     max_plus_ones: input.maxPlusOnes ?? null,
+    paper_enabled: input.paperEnabled ?? true,
+    site_enabled: input.siteEnabled ?? true,
   });
 
   if (error) {
@@ -53,9 +57,54 @@ export async function addGuest(input: AddGuestInput) {
 export async function setInvitationSent(guestId: string, sent: boolean) {
   const supabase = await createClient();
 
+  // A manual "mark as not sent" also clears the channel record -- otherwise
+  // toggling it back on later would misleadingly still show whichever
+  // channel was used before this reset.
   const { error } = await supabase
     .from("guests")
-    .update({ invitation_sent_at: sent ? new Date().toISOString() : null })
+    .update({
+      invitation_sent_at: sent ? new Date().toISOString() : null,
+      ...(sent ? {} : { sent_channels: [] }),
+    })
+    .eq("id", guestId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/dashboard", "layout");
+}
+
+export type SendChannel = "link" | "sms" | "whatsapp" | "email";
+
+/** dashboard-audit.md B18: records which channel(s) a host actually used to
+ * reach a guest -- the honest equivalent of weddingpost.ru's "delivery
+ * status" given Invitely has no real SMS/email backend to report true
+ * delivery receipts from. Also flips `invitation_sent_at` the same way
+ * `setInvitationSent(guestId, true)` already does, so "Sent" status and
+ * channel history stay in sync regardless of which action set them. */
+export async function recordInvitationSent(guestId: string, channel: SendChannel) {
+  const supabase = await createClient();
+
+  const { data: guest, error: fetchError } = await supabase
+    .from("guests")
+    .select("sent_channels, invitation_sent_at")
+    .eq("id", guestId)
+    .single();
+
+  if (fetchError) {
+    throw new Error(fetchError.message);
+  }
+
+  const channels = new Set(guest.sent_channels ?? []);
+  channels.add(channel);
+
+  const { error } = await supabase
+    .from("guests")
+    .update({
+      sent_channels: Array.from(channels),
+      invitation_sent_at: guest.invitation_sent_at ?? new Date().toISOString(),
+    })
     .eq("id", guestId);
 
   if (error) {
@@ -103,6 +152,8 @@ interface UpdateGuestInput {
   phone?: string;
   groupLabel?: string;
   maxPlusOnes?: number;
+  paperEnabled: boolean;
+  siteEnabled: boolean;
 }
 
 export async function updateGuest(input: UpdateGuestInput) {
@@ -117,6 +168,8 @@ export async function updateGuest(input: UpdateGuestInput) {
       phone: input.phone || null,
       group_label: input.groupLabel || null,
       max_plus_ones: input.maxPlusOnes ?? null,
+      paper_enabled: input.paperEnabled,
+      site_enabled: input.siteEnabled,
     })
     .eq("id", input.guestId);
 

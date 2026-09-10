@@ -8,6 +8,7 @@ import { parseContent } from "@/components/sections/registry";
 import GuestManager from "./GuestManager";
 import RsvpResponses from "./RsvpResponses";
 import GuestListDownload from "./GuestListDownload";
+import SupportCard from "../../SupportCard";
 import { formatAnswers } from "./formatAnswers";
 import type { GuestListRow } from "@/components/pdf/GuestListDocument";
 
@@ -139,9 +140,14 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
         </div>
       )}
 
+      <div className="mt-6">
+        <SupportCard />
+      </div>
+
       <GuestManager
         eventId={event.id}
         eventSlug={event.slug}
+        eventTitle={event.title}
         guests={allGuests}
         attendees={attendees ?? []}
         rsvpStatusByGuestId={Object.fromEntries(

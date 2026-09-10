@@ -177,3 +177,32 @@ body {
 .dashboard-shell .dash-btn-neutral:hover:not(:disabled) {
   background: #e1e1e6;
 }
+
+/* Public marketing landing page polish pass: a soft fade + rise as each
+   section below the hero enters view while scrolling, so the page reads as
+   considered rather than a flat stack of static blocks. Progressive
+   enhancement only -- browsers without scroll-driven animation support
+   (Firefox, as of this writing) just show the section normally with no JS
+   fallback needed, and it's gated behind prefers-reduced-motion like every
+   other animation on the site. The hero itself is excluded (it's already
+   on screen at load, before any scrolling happens). */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .landing-reveal {
+      animation: landing-reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 25%;
+    }
+  }
+}
+
+@keyframes landing-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

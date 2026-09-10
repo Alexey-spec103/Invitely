@@ -3,6 +3,7 @@
 import { resolveTxt } from "node:dns/promises";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { planMeets } from "@/lib/plans";
 
 const DOMAIN_PATTERN = /^(?!-)[a-z0-9-]{1,63}(?<!-)(\.(?!-)[a-z0-9-]{1,63}(?<!-))+$/i;
 
@@ -45,7 +46,7 @@ export async function checkDomainVerification(input: CheckDomainVerificationInpu
 
   const { data: event, error } = await supabase
     .from("events")
-    .select("custom_domain, custom_domain_verification_token")
+    .select("custom_domain, custom_domain_verification_token, plan_id")
     .eq("id", input.eventId)
     .single();
 
@@ -55,6 +56,13 @@ export async function checkDomainVerification(input: CheckDomainVerificationInpu
 
   if (!event.custom_domain || !event.custom_domain_verification_token) {
     throw new Error("Set a domain first.");
+  }
+
+  // dashboard-audit.md Block E part 2: checking the TXT record is the step
+  // that actually marks the domain verified/live -- setting a domain and
+  // seeing the instructions above stays free on every plan.
+  if (!planMeets(event.plan_id, "basic")) {
+    throw new Error("Verifying is free to try, but a domain only goes live on the Basic plan or above.");
   }
 
   let records: string[][];

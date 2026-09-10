@@ -20,6 +20,7 @@ import type { GuestbookVariant } from "@/components/sections/GuestbookSection";
 import type { VideoVariant } from "@/components/sections/VideoSection";
 import type { BanquetNavigatorVariant } from "@/components/sections/BanquetNavigatorSection";
 import type { Json } from "@/lib/supabase/database.types";
+import type { BackgroundFill } from "@/lib/backgroundFills";
 import { DEFAULT_THEME_ID, getTheme } from "@/lib/themes";
 import {
   recommendedCountdownVariantFor,
@@ -74,9 +75,26 @@ function existingStyleOverrides(
     : undefined;
 }
 
+/** Same fallback-to-what-was-already-saved reasoning as `existingStyleOverrides`
+ * -- dashboard-audit.md A3's "hide a block" toggle (`hiddenFields`, a list of
+ * field keys within this section) shouldn't reset to "everything visible"
+ * just because a save came from a code path that doesn't know about it yet. */
+function existingHiddenFields(content: Record<string, unknown>, type: string): string[] | undefined {
+  const section = content[type];
+  if (typeof section !== "object" || section === null) return undefined;
+  const hidden = (section as { hiddenFields?: unknown }).hiddenFields;
+  return Array.isArray(hidden) ? (hidden as string[]) : undefined;
+}
+
 interface UpdateSiteSettingsInput {
   eventId: string;
   musicUrl?: string;
+}
+
+function existingSettings(content: Record<string, unknown>): Record<string, unknown> {
+  return typeof content.settings === "object" && content.settings !== null
+    ? (content.settings as Record<string, unknown>)
+    : {};
 }
 
 export async function updateSiteSettings(input: UpdateSiteSettingsInput) {
@@ -101,7 +119,13 @@ export async function updateSiteSettings(input: UpdateSiteSettingsInput) {
 
   const content = {
     ...existingContent,
+    // Merge onto the previous settings bag, not a full replace -- this and
+    // updateSocialImage below both write into content.settings from
+    // independently-autosaving cards (Music, Link preview), and a blind
+    // replace here would silently wipe out socialImageUrl the next time a
+    // host so much as edits the music URL.
     settings: {
+      ...existingSettings(existingContent),
       musicUrl: input.musicUrl || undefined,
     },
   };
@@ -125,6 +149,59 @@ export async function updateSiteSettings(input: UpdateSiteSettingsInput) {
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+}
+
+/** dashboard-audit.md B14 "Превью": the custom social-share image a host can
+ * set from the "Link preview" quick-settings card, read by
+ * app/e/[slug]/page.tsx's generateMetadata as openGraph.images (falling back
+ * to the Hero photo when unset). A separate action from updateSiteSettings
+ * above -- same content.settings bag, but its own independently-autosaving
+ * card -- both merge onto the existing bag rather than replacing it. */
+export async function updateSocialImage(eventId: string, socialImageUrl: string | undefined) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
+  const { data: existingConfig } = await supabase
+    .from("site_config")
+    .select("*")
+    .eq("event_id", eventId)
+    .maybeSingle();
+
+  const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
+  const existingContent = existingConfig ? parseContent(existingConfig.content) : {};
+
+  const content = {
+    ...existingContent,
+    settings: {
+      ...existingSettings(existingContent),
+      socialImageUrl: socialImageUrl || undefined,
+    },
+  };
+
+  const { error: configError } = existingConfig
+    ? await supabase
+        .from("site_config")
+        .update({ content: content as unknown as Json })
+        .eq("event_id", eventId)
+    : await supabase.from("site_config").insert({
+        event_id: eventId,
+        theme_id: DEFAULT_THEME_ID,
+        sections: existingSections as unknown as Json,
+        content: content as unknown as Json,
+      });
+
+  if (configError) {
+    throw new Error(configError.message);
+  }
+
+  revalidatePath(`/dashboard/${eventId}/site`);
 }
 
 /** The single thing every module card's header switch calls -- on/off is
@@ -183,11 +260,59 @@ export async function toggleSection(eventId: string, type: SectionType, enabled:
   revalidatePath(`/dashboard/${eventId}/site`);
 }
 
+/** dashboard-audit.md B12: one shared background field on `SectionConfig`
+ * itself, patched in place here rather than duplicated per section's own
+ * content type -- see the field's own comment in registry.tsx. Only ever
+ * called from a section's own header button (SiteInlineEditor), so the
+ * section is always already in `sections[]` by the time this runs; unlike
+ * `toggleSection`, this doesn't fabricate a new entry for a section that
+ * isn't there yet. */
+export async function updateSectionBackground(
+  eventId: string,
+  type: SectionType,
+  background: BackgroundFill | undefined
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
+  const { data: existingConfig } = await supabase
+    .from("site_config")
+    .select("sections")
+    .eq("event_id", eventId)
+    .maybeSingle();
+
+  const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
+  if (!existingSections.some((section) => section.type === type)) {
+    throw new Error(`Section "${type}" doesn't exist yet`);
+  }
+
+  const sections = existingSections.map((section) => (section.type === type ? { ...section, background } : section));
+
+  const { error } = await supabase
+    .from("site_config")
+    .update({ sections: sections as unknown as Json })
+    .eq("event_id", eventId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/dashboard/${eventId}/site`);
+}
+
 interface UpdateHeroSectionInput {
   eventId: string;
   heroVariant: HeroVariant;
   photoUrl?: string;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 /** Names/date are no longer accepted here -- they're owned by the "Wedding
@@ -240,6 +365,7 @@ export async function updateHeroSection(input: UpdateHeroSectionInput) {
       eventDate: event.event_date,
       photoUrl: input.photoUrl ?? "",
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "hero"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "hero"),
     },
   };
 
@@ -271,6 +397,7 @@ interface UpdateTimelineSectionInput {
   events: { time: string; title: string; description: string }[];
   timelineVariant: TimelineVariant;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateTimelineSection(input: UpdateTimelineSectionInput) {
@@ -299,7 +426,7 @@ export async function updateTimelineSection(input: UpdateTimelineSectionInput) {
       )
     : [
         ...existingSections,
-        { type: "timeline", variant: input.timelineVariant, order: SECTION_ORDER.timeline, enabled: false },
+        { type: "timeline", variant: input.timelineVariant, order: SECTION_ORDER.timeline, enabled: true },
       ];
 
   const content = {
@@ -308,6 +435,7 @@ export async function updateTimelineSection(input: UpdateTimelineSectionInput) {
       title: input.title,
       events: input.events,
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "timeline"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "timeline"),
     },
   };
 
@@ -339,6 +467,7 @@ interface UpdateMapSectionInput {
   venues: { name: string; address: string }[];
   mapVariant: MapVariant;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateMapSection(input: UpdateMapSectionInput) {
@@ -365,7 +494,7 @@ export async function updateMapSection(input: UpdateMapSectionInput) {
     ? existingSections.map((section) =>
         section.type === "map" ? { ...section, variant: input.mapVariant } : section
       )
-    : [...existingSections, { type: "map", variant: input.mapVariant, order: SECTION_ORDER.map, enabled: false }];
+    : [...existingSections, { type: "map", variant: input.mapVariant, order: SECTION_ORDER.map, enabled: true }];
 
   const content = {
     ...existingContent,
@@ -373,6 +502,7 @@ export async function updateMapSection(input: UpdateMapSectionInput) {
       title: input.title,
       venues: input.venues,
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "map"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "map"),
     },
   };
 
@@ -403,6 +533,7 @@ interface UpdateCountdownSectionInput {
   title?: string;
   countdownVariant: CountdownVariant;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateCountdownSection(input: UpdateCountdownSectionInput) {
@@ -431,7 +562,7 @@ export async function updateCountdownSection(input: UpdateCountdownSectionInput)
       )
     : [
         ...existingSections,
-        { type: "countdown", variant: input.countdownVariant, order: SECTION_ORDER.countdown, enabled: false },
+        { type: "countdown", variant: input.countdownVariant, order: SECTION_ORDER.countdown, enabled: true },
       ];
 
   const content = {
@@ -439,6 +570,7 @@ export async function updateCountdownSection(input: UpdateCountdownSectionInput)
     countdown: {
       title: input.title || undefined,
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "countdown"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "countdown"),
     },
   };
 
@@ -470,6 +602,7 @@ interface UpdateGiftWishesSectionInput {
   description?: string;
   giftVariant: GiftVariant;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateGiftWishesSection(input: UpdateGiftWishesSectionInput) {
@@ -498,7 +631,7 @@ export async function updateGiftWishesSection(input: UpdateGiftWishesSectionInpu
       )
     : [
         ...existingSections,
-        { type: "gift", variant: input.giftVariant, order: SECTION_ORDER.gift, enabled: false },
+        { type: "gift", variant: input.giftVariant, order: SECTION_ORDER.gift, enabled: true },
       ];
 
   const content = {
@@ -507,6 +640,7 @@ export async function updateGiftWishesSection(input: UpdateGiftWishesSectionInpu
       title: input.title || undefined,
       description: input.description || undefined,
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "gift"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "gift"),
     },
   };
 
@@ -539,6 +673,7 @@ interface UpdateDressCodeSectionInput {
   colors: { hex: string; label?: string }[];
   dressCodeVariant: DressCodeVariant;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateDressCodeSection(input: UpdateDressCodeSectionInput) {
@@ -567,7 +702,7 @@ export async function updateDressCodeSection(input: UpdateDressCodeSectionInput)
       )
     : [
         ...existingSections,
-        { type: "dressCode", variant: input.dressCodeVariant, order: SECTION_ORDER.dressCode, enabled: false },
+        { type: "dressCode", variant: input.dressCodeVariant, order: SECTION_ORDER.dressCode, enabled: true },
       ];
 
   const content = {
@@ -577,6 +712,7 @@ export async function updateDressCodeSection(input: UpdateDressCodeSectionInput)
       description: input.description || undefined,
       colors: input.colors,
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "dressCode"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "dressCode"),
     },
   };
 
@@ -608,6 +744,7 @@ interface UpdateVideoSectionInput {
   videoUrl: string;
   videoVariant: VideoVariant;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateVideoSection(input: UpdateVideoSectionInput) {
@@ -636,7 +773,7 @@ export async function updateVideoSection(input: UpdateVideoSectionInput) {
       )
     : [
         ...existingSections,
-        { type: "video", variant: input.videoVariant, order: SECTION_ORDER.video, enabled: false },
+        { type: "video", variant: input.videoVariant, order: SECTION_ORDER.video, enabled: true },
       ];
 
   const content = {
@@ -645,6 +782,7 @@ export async function updateVideoSection(input: UpdateVideoSectionInput) {
       title: input.title || undefined,
       videoUrl: input.videoUrl,
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "video"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "video"),
     },
   };
 
@@ -675,6 +813,7 @@ interface UpdateGuestbookSectionInput {
   title?: string;
   guestbookVariant: GuestbookVariant;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateGuestbookSection(input: UpdateGuestbookSectionInput) {
@@ -703,7 +842,7 @@ export async function updateGuestbookSection(input: UpdateGuestbookSectionInput)
       )
     : [
         ...existingSections,
-        { type: "guestbook", variant: input.guestbookVariant, order: SECTION_ORDER.guestbook, enabled: false },
+        { type: "guestbook", variant: input.guestbookVariant, order: SECTION_ORDER.guestbook, enabled: true },
       ];
 
   const content = {
@@ -711,6 +850,7 @@ export async function updateGuestbookSection(input: UpdateGuestbookSectionInput)
     guestbook: {
       title: input.title || undefined,
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "guestbook"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "guestbook"),
     },
   };
 
@@ -742,6 +882,7 @@ interface UpdateRsvpSectionInput {
   description?: string;
   questions: { id: string; label: string; type: "text" | "choice"; options?: string }[];
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateRsvpSection(input: UpdateRsvpSectionInput) {
@@ -768,7 +909,7 @@ export async function updateRsvpSection(input: UpdateRsvpSectionInput) {
     ? existingSections
     : [
         ...existingSections,
-        { type: "rsvp", variant: "simple-form", order: SECTION_ORDER.rsvp, enabled: false },
+        { type: "rsvp", variant: "simple-form", order: SECTION_ORDER.rsvp, enabled: true },
       ];
 
   const content = {
@@ -791,6 +932,7 @@ export async function updateRsvpSection(input: UpdateRsvpSectionInput) {
               : undefined,
         })),
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "rsvp"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "rsvp"),
     },
   };
 
@@ -822,6 +964,7 @@ interface UpdateBanquetNavigatorSectionInput {
   description?: string;
   banquetNavigatorVariant: BanquetNavigatorVariant;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigatorSectionInput) {
@@ -856,7 +999,7 @@ export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigato
           type: "banquetNavigator",
           variant: input.banquetNavigatorVariant,
           order: SECTION_ORDER.banquetNavigator,
-          enabled: false,
+          enabled: true,
         },
       ];
 
@@ -866,6 +1009,7 @@ export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigato
       title: input.title,
       description: input.description || undefined,
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "banquetNavigator"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "banquetNavigator"),
     },
   };
 
@@ -891,11 +1035,13 @@ export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigato
   revalidatePath(`/dashboard/${input.eventId}/site`);
 }
 
-/** Swaps a section's `order` with its neighbor in the current sort order --
- * the same adjacent-swap convention already used for canvas frame reordering
- * and z-index layering elsewhere in this app, rather than rewriting every
- * section's order value on each move. */
-export async function reorderSection(eventId: string, sectionType: string, direction: "up" | "down") {
+/** Takes the full new module order (drag-and-drop drop result, not an
+ * adjacent swap) and rewrites every section's `order` to its index in that
+ * list -- one write per drop, not a chain of pairwise swaps. `orderedTypes`
+ * is expected to list every section currently in `sections` exactly once;
+ * any type this event doesn't have yet (never toggled on) is simply absent
+ * from the write, same as before. */
+export async function reorderSections(eventId: string, orderedTypes: SectionType[]) {
   const supabase = await createClient();
 
   const {
@@ -915,17 +1061,10 @@ export async function reorderSection(eventId: string, sectionType: string, direc
   if (!existingConfig) return;
 
   const allSections = parseSections(existingConfig.sections);
-  const liveSections = allSections.filter((section) => section.enabled);
-  const index = liveSections.findIndex((section) => section.type === sectionType);
-  const swapWith = direction === "up" ? index - 1 : index + 1;
-  if (index === -1 || swapWith < 0 || swapWith >= liveSections.length) return;
-
-  const indexOrder = liveSections[index].order;
-  const swapOrder = liveSections[swapWith].order;
+  const orderIndex = new Map(orderedTypes.map((type, index) => [type, index]));
   const reordered = allSections.map((section) => {
-    if (section.type === liveSections[index].type) return { ...section, order: swapOrder };
-    if (section.type === liveSections[swapWith].type) return { ...section, order: indexOrder };
-    return section;
+    const index = orderIndex.get(section.type);
+    return index === undefined ? section : { ...section, order: index };
   });
 
   const { error } = await supabase
@@ -950,6 +1089,7 @@ interface UpdateLetterSectionInput {
   closingLine: string;
   letterVariant: LetterVariant;
   styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
 }
 
 export async function updateLetterSection(input: UpdateLetterSectionInput) {
@@ -978,7 +1118,7 @@ export async function updateLetterSection(input: UpdateLetterSectionInput) {
       )
     : [
         ...existingSections,
-        { type: "letter", variant: input.letterVariant, order: SECTION_ORDER.letter, enabled: false },
+        { type: "letter", variant: input.letterVariant, order: SECTION_ORDER.letter, enabled: true },
       ];
 
   const content = {
@@ -991,6 +1131,7 @@ export async function updateLetterSection(input: UpdateLetterSectionInput) {
       rsvpDeadline: input.rsvpDeadline || undefined,
       closingLine: input.closingLine || undefined,
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "letter"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "letter"),
     },
   };
 

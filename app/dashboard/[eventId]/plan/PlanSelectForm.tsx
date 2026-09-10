@@ -32,11 +32,21 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
   return (
     <div>
       <h1 className="dash-h1 text-gray-900">Plan</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        No payment is collected yet — this just sets your plan.
-      </p>
+      <p className="mt-1 text-sm text-gray-500">Choose the plan that fits, free to switch anytime.</p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      {/* dashboard-audit.md B20: weddingpost.ru stations real Visa/
+          MasterCard/PCI-DSS badges directly above its purchase button --
+          we have no real payment processing behind these "Select" buttons
+          (they just set plan_id, nothing is charged), so real card-network
+          badges would be a false trust claim here, not a missing
+          decoration. The honest equivalent: state plainly that nothing is
+          charged, right above the buttons rather than quiet page-subtitle
+          text. */}
+      <span className="mt-4 inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700">
+        🔓 No payment collected
+      </span>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-3">
         {Object.values(plans).map((plan) => {
           const isSelected = plan.id === selected;
           return (

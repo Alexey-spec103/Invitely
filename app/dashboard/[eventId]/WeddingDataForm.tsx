@@ -58,7 +58,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
   return (
     <form onSubmit={(e) => e.preventDefault()} className="mt-4 space-y-4 rounded-md border border-gray-200 bg-white p-4" noValidate>
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-900">Wedding data</p>
+        <p className="text-sm font-medium text-gray-900">{type.id === "wedding" ? "Wedding data" : "Event data"}</p>
         <AutosaveStatus state={state} error={error} />
       </div>
 
@@ -69,6 +69,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
         <input
           id="wd-name1"
           type="text"
+          defaultValue={defaultValues.name1}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
           {...register("name1")}
         />
@@ -83,6 +84,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
           <input
             id="wd-name2"
             type="text"
+            defaultValue={defaultValues.name2}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
             {...register("name2")}
           />
@@ -96,6 +98,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
         <input
           id="wd-eventDate"
           type="date"
+          defaultValue={defaultValues.eventDate}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
           {...register("eventDate")}
         />
@@ -110,6 +113,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
           id="wd-venueName"
           type="text"
           placeholder="Name of the ZAGS, restaurant..."
+          defaultValue={defaultValues.venueName}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
           {...register("venueName")}
         />
@@ -123,6 +127,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
           <input
             id="wd-venueCity"
             type="text"
+            defaultValue={defaultValues.venueCity}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
             {...register("venueCity")}
           />
@@ -134,6 +139,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
           <input
             id="wd-venueAddress"
             type="text"
+            defaultValue={defaultValues.venueAddress}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
             {...register("venueAddress")}
           />

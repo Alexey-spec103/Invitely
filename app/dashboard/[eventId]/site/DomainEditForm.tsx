@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,6 +16,11 @@ type DomainFormValues = z.infer<typeof domainFormSchema>;
 
 interface DomainEditFormProps {
   eventId: string;
+  /** dashboard-audit.md Block E part 2: setting a domain and getting the TXT
+   * instructions stays available on every plan (the free "try it" part) --
+   * this only drives the upfront hint below, since the real enforcement is
+   * server-side in checkDomainVerification/proxy.ts's resolveCustomDomain. */
+  hasBasicAccess: boolean;
   defaultValues: {
     customDomain: string;
     verificationToken: string | null;
@@ -22,7 +28,7 @@ interface DomainEditFormProps {
   };
 }
 
-export default function DomainEditForm({ eventId, defaultValues }: DomainEditFormProps) {
+export default function DomainEditForm({ eventId, hasBasicAccess, defaultValues }: DomainEditFormProps) {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
@@ -137,6 +143,17 @@ export default function DomainEditForm({ eventId, defaultValues }: DomainEditFor
                   <dd className="inline font-mono break-all">{defaultValues.verificationToken}</dd>
                 </div>
               </dl>
+
+              {!hasBasicAccess && (
+                <p className="mt-3 rounded-md bg-orange-50 px-3 py-2 text-sm text-orange-800">
+                  🔒 Verifying is free to try, but a domain only goes live on the Basic plan or
+                  above.{" "}
+                  <Link href={`/dashboard/${eventId}/plan`} className="font-medium underline">
+                    Upgrade
+                  </Link>
+                  .
+                </p>
+              )}
 
               {verifyError && (
                 <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">

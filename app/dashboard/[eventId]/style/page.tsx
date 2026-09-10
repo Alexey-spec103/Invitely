@@ -20,11 +20,16 @@ export default async function StylePage({ params }: PageProps<"/dashboard/[event
   }
 
   const supabase = await createClient();
-  const { data: siteConfig } = await supabase
-    .from("site_config")
-    .select("theme_id")
-    .eq("event_id", event.id)
-    .maybeSingle();
+  const [{ data: siteConfig }, { data: slots }, { data: history }] = await Promise.all([
+    supabase.from("site_config").select("theme_id").eq("event_id", event.id).maybeSingle(),
+    supabase.from("theme_slots").select("id, theme_id").eq("event_id", event.id).order("created_at"),
+    supabase
+      .from("theme_history")
+      .select("id, theme_id, changed_at")
+      .eq("event_id", event.id)
+      .order("changed_at", { ascending: false })
+      .limit(10),
+  ]);
 
   return (
     <ThemeSelectForm
@@ -33,6 +38,8 @@ export default async function StylePage({ params }: PageProps<"/dashboard/[event
       name1={event.subtitle_names?.[0] ?? "Partner One"}
       name2={event.subtitle_names?.[1]}
       eventDate={event.event_date}
+      slots={slots ?? []}
+      history={history ?? []}
     />
   );
 }

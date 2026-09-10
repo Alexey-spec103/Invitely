@@ -60,7 +60,14 @@ export default function ModuleCard({
   emphasized,
 }: ModuleCardProps) {
   const router = useRouter();
-  const [open, setOpen] = useState(defaultOpen ?? false);
+  // dashboard-audit.md B13: weddingpost.ru's own wedding-data fields (Venue/
+  // City/Address) sit directly in the panel, always visible -- confirmed
+  // live, no click-to-reveal at all, unlike our own "collapsed once
+  // complete, click Edit to see the fields again" behavior. `emphasized` is
+  // only ever used for that one card (see this component's own doc comment
+  // above), so forcing it permanently open here -- no Edit/Close toggle --
+  // is a targeted fix, not a behavior change for any other module.
+  const [open, setOpen] = useState(emphasized ? true : (defaultOpen ?? false));
   const [checked, setChecked] = useState(enabled ?? false);
   const [toggleError, setToggleError] = useState<string | null>(null);
 
@@ -181,13 +188,15 @@ export default function ModuleCard({
               />
             </button>
           )}
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            className="rounded-2xl border border-[var(--dash-border)] px-[18px] py-[7px] text-[13px] font-semibold text-[var(--dash-text)] transition hover:border-[var(--dash-accent)]"
-          >
-            {open ? "Close" : "Edit"}
-          </button>
+          {!emphasized && (
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              className="rounded-2xl border border-[var(--dash-border)] px-[18px] py-[7px] text-[13px] font-semibold text-[var(--dash-text)] transition hover:border-[var(--dash-accent)]"
+            >
+              {open ? "Close" : "Edit"}
+            </button>
+          )}
         </div>
       </div>
 

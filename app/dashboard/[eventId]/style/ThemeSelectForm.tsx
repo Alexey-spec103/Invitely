@@ -5,7 +5,20 @@ import { useRouter } from "next/navigation";
 import { themes, getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
 import ThemeGallery from "@/components/theme/ThemeGallery";
 import MaterialsPreviewModal from "@/components/theme/MaterialsPreviewModal";
+import HowItWorksButton from "./HowItWorksButton";
+import DesignSlotsPanel from "./DesignSlotsPanel";
 import { updateTheme } from "../actions";
+
+interface ThemeSlotRow {
+  id: string;
+  theme_id: string;
+}
+
+interface ThemeHistoryRow {
+  id: string;
+  theme_id: string;
+  changed_at: string;
+}
 
 interface ThemeSelectFormProps {
   eventId: string;
@@ -13,6 +26,8 @@ interface ThemeSelectFormProps {
   name1: string;
   name2?: string;
   eventDate: string | null;
+  slots: ThemeSlotRow[];
+  history: ThemeHistoryRow[];
 }
 
 export default function ThemeSelectForm({
@@ -21,6 +36,8 @@ export default function ThemeSelectForm({
   name1,
   name2,
   eventDate,
+  slots,
+  history,
 }: ThemeSelectFormProps) {
   const router = useRouter();
   const [selected, setSelected] = useState(currentThemeId);
@@ -53,16 +70,29 @@ export default function ThemeSelectForm({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="border-l-4 border-[var(--dash-accent)] pl-4">
           <h1 className="dash-h1 text-gray-900">Style</h1>
-          <p className="mt-1 text-sm text-gray-500">Pick a theme for your site.</p>
+          <p className="mt-1 text-sm text-gray-500">Let&apos;s find the style and design for your event.</p>
+          <p className="mt-1 text-xs text-gray-400">Everything here can be customized further in the constructor.</p>
         </div>
-        <button
-          type="button"
-          onClick={() => setPreviewOpen(true)}
-          className="dash-btn dash-btn-neutral"
-        >
-          Preview full material set
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <HowItWorksButton />
+          <button
+            type="button"
+            onClick={() => setPreviewOpen(true)}
+            className="dash-btn dash-btn-neutral"
+          >
+            Preview full material set
+          </button>
+        </div>
       </div>
+
+      <DesignSlotsPanel
+        eventId={eventId}
+        currentThemeId={selected}
+        slots={slots}
+        history={history}
+        onActivate={handleSelect}
+        activating={isPending}
+      />
 
       {previewOpen && (
         <MaterialsPreviewModal
@@ -80,6 +110,7 @@ export default function ThemeSelectForm({
           selectedId={selected}
           onSelect={handleSelect}
           disabled={isPending}
+          onCustomize={() => router.push(`/dashboard/${eventId}/site`)}
         />
       </div>
 

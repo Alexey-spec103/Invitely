@@ -1,0 +1,265 @@
+.panel {
+  margin-top: 1.25rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+}
+
+.card[aria-current="true"] {
+  cursor: default;
+  border-color: var(--dash-accent, #ff6b45);
+}
+
+.card:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.swatch {
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  flex: none;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.swatchAccent {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+}
+
+.cardName {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #1c1917;
+  white-space: nowrap;
+}
+
+.cardBadge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dash-accent, #ff6b45);
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.removeBtn:hover {
+  background: #f3f4f6;
+  color: #ef4444;
+}
+
+.addCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px dashed #d1d5db;
+  background: none;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.addCard:hover {
+  border-color: var(--dash-accent, #ff6b45);
+  color: var(--dash-accent, #ff6b45);
+}
+
+.addCard:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.historyWrap {
+  position: relative;
+  margin-left: 0.25rem;
+}
+
+.historyBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.historyBtn:hover {
+  border-color: var(--dash-accent, #ff6b45);
+  color: var(--dash-accent, #ff6b45);
+}
+
+.historyPopover {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 20;
+  width: 220px;
+  padding: 0.6rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.historyTitle {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  padding: 0.1rem 0.3rem 0.4rem;
+}
+
+.historyEmpty {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  padding: 0.3rem;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.historyItem {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  font-size: 0.8rem;
+  color: #1c1917;
+  text-align: left;
+  cursor: pointer;
+}
+
+.historyItem:hover {
+  background: #f9fafb;
+}
+
+.historyItem:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.historyTime {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+.error {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: #dc2626;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(17, 17, 17, 0.55);
+}
+
+.modal {
+  width: 100%;
+  max-width: 64rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modalEyebrow {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1c1917;
+}
+
+.modalHint {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  max-width: 32rem;
+}
+
+.closeBtn {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: none;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: #e5e7eb;
+}
+
+.modalGallery {
+  margin-top: 1.25rem;
+}
