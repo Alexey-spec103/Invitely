@@ -6,11 +6,15 @@ import { getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { parseContent } from "@/components/sections/registry";
 import { parseCanvasFrames } from "@/lib/canvas/parse";
+import { getPaperContent } from "@/lib/paperContent";
+import { getBanquetCardData } from "@/lib/banquetCards";
 import { getWeddingDataCompleteness } from "@/lib/weddingData";
-import { plans, DEFAULT_PLAN_ID } from "@/lib/plans";
+import { plans, DEFAULT_PLAN_ID, isPremiumPlan } from "@/lib/plans";
 import InvitationDownloads from "./InvitationDownloads";
-import PaperEditor from "./PaperEditor";
+import InvitationsShowcase from "./InvitationsShowcase";
+import InvitationStats from "./InvitationStats";
 import HubOverviewStrip from "../HubOverviewStrip";
+import SupportCard from "../../SupportCard";
 
 export default async function InvitationsPage({
   params,
@@ -29,14 +33,18 @@ export default async function InvitationsPage({
   }
 
   const supabase = await createClient();
-  const [{ data: siteConfig }, { data: guests }] = await Promise.all([
-    supabase
-      .from("site_config")
-      .select("theme_id, content, layout_mode, canvas")
-      .eq("event_id", event.id)
-      .maybeSingle(),
-    supabase.from("guests").select("*").eq("event_id", event.id).order("created_at"),
-  ]);
+  const [{ data: siteConfig }, { data: guests }, { data: rsvpResponses }, { data: giftPreferences }, banquetCardData] =
+    await Promise.all([
+      supabase
+        .from("site_config")
+        .select("theme_id, content, layout_mode, canvas")
+        .eq("event_id", event.id)
+        .maybeSingle(),
+      supabase.from("guests").select("*").eq("event_id", event.id).order("created_at"),
+      supabase.from("rsvp_responses").select("attending").eq("event_id", event.id),
+      supabase.from("gift_preferences").select("id").eq("event_id", event.id),
+      getBanquetCardData(event.id),
+    ]);
 
   const canvasFrames =
     siteConfig?.layout_mode === "canvas" ? parseCanvasFrames(siteConfig.canvas) : [];
@@ -49,72 +57,53 @@ export default async function InvitationsPage({
   }
 
   const content = siteConfig ? parseContent(siteConfig.content) : {};
-  const mapContent =
-    typeof content.map === "object" && content.map !== null
-      ? (content.map as Record<string, unknown>)
-      : {};
-  const primaryVenue =
-    Array.isArray(mapContent.venues) &&
-    typeof mapContent.venues[0] === "object" &&
-    mapContent.venues[0] !== null
-      ? (mapContent.venues[0] as Record<string, unknown>)
-      : {};
-  const venueName = typeof primaryVenue.name === "string" ? primaryVenue.name : undefined;
-  const venueAddress = typeof primaryVenue.address === "string" ? primaryVenue.address : undefined;
+  const paperContent = getPaperContent(content);
 
-  const timelineContent =
-    typeof content.timeline === "object" && content.timeline !== null
-      ? (content.timeline as Record<string, unknown>)
+  const heroContent =
+    typeof content.hero === "object" && content.hero !== null
+      ? (content.hero as Record<string, unknown>)
       : {};
-  const timelineEvents = Array.isArray(timelineContent.events)
-    ? timelineContent.events
-        .filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null)
-        .map((item) => ({
-          time: typeof item.time === "string" ? item.time : "",
-          title: typeof item.title === "string" ? item.title : "",
-          description: typeof item.description === "string" ? item.description : undefined,
-        }))
-    : [];
-  const timelineTitle = typeof timelineContent.title === "string" ? timelineContent.title : undefined;
-
-  const dressCodeContent =
-    typeof content.dressCode === "object" && content.dressCode !== null
-      ? (content.dressCode as Record<string, unknown>)
-      : {};
-  const dressCodeTitle = typeof dressCodeContent.title === "string" ? dressCodeContent.title : "";
-  const dressCodeDescription =
-    typeof dressCodeContent.description === "string" ? dressCodeContent.description : undefined;
-  const dressCodeColors = Array.isArray(dressCodeContent.colors)
-    ? dressCodeContent.colors
-        .filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null)
-        .map((item) => ({
-          hex: typeof item.hex === "string" ? item.hex : "",
-          label: typeof item.label === "string" ? item.label : undefined,
-        }))
-        .filter((color) => color.hex)
-    : [];
-
-  const invitationsContent =
-    typeof content.invitations === "object" && content.invitations !== null
-      ? (content.invitations as Record<string, unknown>)
-      : {};
-  const backMessage =
-    typeof invitationsContent.backMessage === "string" ? invitationsContent.backMessage : "";
+  const heroPhotoUrl = typeof heroContent.photoUrl === "string" ? heroContent.photoUrl : undefined;
 
   const { percent: weddingDataPercent } = getWeddingDataCompleteness(event);
   const plan = plans[event.plan_id ?? DEFAULT_PLAN_ID] ?? plans[DEFAULT_PLAN_ID];
+  // dashboard-audit.md B21: personalized invitations and banquet/table-card
+  // materials are both Premium-tier features in lib/plans.ts -- this is
+  // what actually enforces that now (a watermark, not a hard paywall).
+  const locked = !isPremiumPlan(plan.id);
+
+  // dashboard-audit.md A7: a guest whose invitation has the paper toggle off
+  // (site-only) shouldn't show up in "Personalized invitations" at all --
+  // not just be skipped from "Download all".
+  const paperInvitationGuests = (guests ?? [])
+    .filter((guest) => guest.paper_enabled)
+    .map((guest) => ({
+      id: guest.id,
+      fullName: guest.full_name,
+      inviteCode: guest.invite_code,
+    }));
+
+  const names = event.subtitle_names?.length ? event.subtitle_names : [event.title];
+
+  // dashboard-audit.md B22: "Приглашений" / "Гостей" are two different real
+  // numbers here (sent vs. total), not weddingpost.ru's separate
+  // invitation/guest entities -- same idea, honestly mapped onto Invitely's
+  // actual per-guest model.
+  const invitationsSent = (guests ?? []).filter((guest) => guest.invitation_sent_at != null).length;
+  const confirmedCount = (rsvpResponses ?? []).filter((response) => response.attending).length;
+  const giftWishesCount = (giftPreferences ?? []).length;
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-5xl">
       <h1 className="dash-h1 text-gray-900">Invitations</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Design your paper card, then download a print-ready PDF invitation, on-brand with your
-        chosen theme.
+        Download each guest&apos;s personalized, print-ready PDF and track who&apos;s been sent one — change the design itself on the Paper tab.
       </p>
 
       <div className="mt-6">
         <HubOverviewStrip
           eventId={event.id}
+          eventType={event.event_type}
           themeName={theme.name}
           weddingDataPercent={weddingDataPercent}
           planName={plan.name}
@@ -122,41 +111,58 @@ export default async function InvitationsPage({
         />
       </div>
 
-      <PaperEditor
+      <div className="mt-6">
+        <SupportCard />
+      </div>
+
+      <InvitationsShowcase
         eventId={event.id}
+        slug={event.slug}
+        status={event.status ?? "draft"}
+        customDomain={event.custom_domain}
+        customDomainVerifiedAt={event.custom_domain_verified_at}
         theme={theme}
-        names={event.subtitle_names?.length ? event.subtitle_names : [event.title]}
+        names={names}
         eventDate={event.event_date}
-        venueName={venueName}
-        venueAddress={venueAddress}
-        timelineTitle={timelineTitle}
-        timelineEvents={timelineEvents}
-        dressCodeTitle={dressCodeTitle}
-        dressCodeDescription={dressCodeDescription}
-        dressCodeColors={dressCodeColors}
-        backMessage={backMessage}
+        venueName={paperContent.venueName}
+        venueAddress={paperContent.venueAddress}
+        heroPhotoUrl={heroPhotoUrl}
+        timelineEvents={paperContent.timelineEvents}
+        dressCodeColors={paperContent.dressCodeColors}
+        tableCardData={banquetCardData.tableCardData}
+        tableNames={banquetCardData.tableNames}
+        allGuestNames={banquetCardData.allGuestNames}
+        locked={locked}
       />
 
       <InvitationDownloads
+        eventId={event.id}
         theme={theme}
         slug={event.slug}
-        names={event.subtitle_names?.length ? event.subtitle_names : [event.title]}
+        names={names}
         eventDate={event.event_date}
-        venueName={venueName}
-        venueAddress={venueAddress}
-        timelineTitle={timelineTitle}
-        timelineEvents={timelineEvents}
+        venueName={paperContent.venueName}
+        venueAddress={paperContent.venueAddress}
+        timelineTitle={paperContent.timelineTitle}
+        timelineEvents={paperContent.timelineEvents}
         canvasFrames={canvasFrames}
-        backMessage={backMessage || undefined}
-        dressCodeTitle={dressCodeTitle}
-        dressCodeDescription={dressCodeDescription}
-        dressCodeColors={dressCodeColors}
-        guests={(guests ?? []).map((guest) => ({
-          id: guest.id,
-          fullName: guest.full_name,
-          inviteCode: guest.invite_code,
-        }))}
+        backMessage={paperContent.backMessage || undefined}
+        backCanvas={paperContent.backCanvas}
+        dressCodeTitle={paperContent.dressCodeTitle}
+        dressCodeDescription={paperContent.dressCodeDescription}
+        dressCodeColors={paperContent.dressCodeColors}
+        guests={paperInvitationGuests}
+        locked={locked}
       />
+
+      <div className="mt-6">
+        <InvitationStats
+          invitationsSent={invitationsSent}
+          guestsCount={(guests ?? []).length}
+          confirmedCount={confirmedCount}
+          giftWishesCount={giftWishesCount}
+        />
+      </div>
     </div>
   );
 }

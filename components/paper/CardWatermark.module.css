@@ -1,0 +1,29 @@
+/* dashboard-audit.md B21: same oversized+rotated+overflow-hidden technique
+   any CSS diagonal watermark uses -- the wrap is sized well past its
+   parent and rotated, so the parent's own `overflow: hidden` (every
+   *CardPreview's `.face`) clips it back to a clean tiled diagonal fill
+   with no gaps at the corners. */
+.wrap {
+  position: absolute;
+  top: -30%;
+  left: -30%;
+  width: 160%;
+  height: 160%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: center;
+  transform: rotate(-28deg);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #000;
+  margin: 0.6em 0.8em;
+  white-space: nowrap;
+}

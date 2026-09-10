@@ -1,0 +1,89 @@
+/* dashboard-audit.md B15 -- positions tuned by eye against weddingpost.ru's
+   own "Витрина банкета" scene, same scattered-mockup technique as
+   components/marketing/PlatformFanSection.module.css. */
+.scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  min-height: 260px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #e8e6e2;
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Confirmed live on weddingpost.ru: the photo is bleached toward white,
+     not plain desaturated gray -- raised brightness + lowered contrast on
+     top of grayscale is what actually reproduces that look, and is also
+     exactly what makes the colored cards below read clearly against it. */
+  filter: grayscale(0.55) brightness(1.3) contrast(0.85);
+}
+
+.item {
+  /* grid, not block: these preview components' inner FlipCard/face divs are
+     `position: absolute`, contributing zero height to a block parent (same
+     fix PlatformFanSection/InvitationsShowcase already rely on). */
+  display: grid;
+  position: absolute;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow:
+    0 14px 28px -12px rgba(20, 16, 14, 0.35),
+    0 3px 8px rgba(20, 16, 14, 0.16);
+}
+
+.tableNumber {
+  top: 10%;
+  left: 6%;
+  width: 16%;
+  aspect-ratio: 1 / 1;
+  transform: rotate(-6deg);
+  z-index: 1;
+}
+
+.place {
+  top: 46%;
+  left: 24%;
+  width: 20%;
+  aspect-ratio: 252 / 144;
+  transform: rotate(4deg);
+  z-index: 2;
+}
+
+.table {
+  top: 6%;
+  left: 62%;
+  width: 22%;
+  aspect-ratio: 420 / 595;
+  transform: rotate(6deg);
+  z-index: 3;
+}
+
+@media (max-width: 640px) {
+  .scene {
+    aspect-ratio: 4 / 5;
+  }
+
+  .tableNumber {
+    top: 6%;
+    left: 4%;
+    width: 26%;
+  }
+
+  .place {
+    top: 40%;
+    left: 12%;
+    width: 34%;
+  }
+
+  .table {
+    top: 44%;
+    left: 52%;
+    width: 40%;
+  }
+}

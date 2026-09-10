@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { addBanquetTable, renameBanquetTable, deleteBanquetTable, updateBanquetTableCapacity } from "./banquet-actions";
+import { Plus } from "lucide-react";
+import { addBanquetTable } from "./banquet-actions";
+import TableCard, { type SeatedGuest } from "./TableCard";
+import type { Theme } from "@/lib/themes";
 import type { Tables } from "@/lib/supabase/database.types";
 
 const tableFormSchema = z.object({
@@ -17,18 +20,32 @@ type TableFormValues = z.infer<typeof tableFormSchema>;
 
 interface BanquetTablesManagerProps {
   eventId: string;
+  theme: Theme;
   tables: Tables<"banquet_tables">[];
+  guests: Tables<"guests">[];
+  attendees: Tables<"guest_attendees">[];
   label: string;
+  /** dashboard-audit.md B21: true when the event's plan is below Premium. */
+  locked: boolean;
 }
 
-export default function BanquetTablesManager({ eventId, tables, label }: BanquetTablesManagerProps) {
+/** dashboard-audit.md B16: replaces the old bare add-table form + plain
+ * name-only list with a grid of real table cards (see TableCard.tsx),
+ * plus a dashed "add table" card matching weddingpost.ru's own layout --
+ * confirmed live, a card grid with a dashed placeholder card trailing it,
+ * not a static form pinned above the list. */
+export default function BanquetTablesManager({
+  eventId,
+  theme,
+  tables,
+  guests,
+  attendees,
+  label,
+  locked,
+}: BanquetTablesManagerProps) {
   const router = useRouter();
+  const [isAdding, setIsAdding] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState("");
-  const [editingCapacity, setEditingCapacity] = useState("");
-  const [renaming, setRenaming] = useState(false);
 
   const {
     register,
@@ -45,160 +62,94 @@ export default function BanquetTablesManager({ eventId, tables, label }: Banquet
     try {
       await addBanquetTable(eventId, values.name, values.capacity ? Number(values.capacity) : undefined);
       reset();
+      setIsAdding(false);
       router.refresh();
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Failed to save");
     }
   };
 
-  const startEditing = (table: Tables<"banquet_tables">) => {
-    setEditingId(table.id);
-    setEditingName(table.name);
-    setEditingCapacity(table.capacity != null ? String(table.capacity) : "");
-  };
+  const unassignedGuests = guests.filter((guest) => !guest.table_id);
 
-  const handleRename = async (tableId: string) => {
-    const trimmed = editingName.trim();
-    if (!trimmed) return;
-    setRenaming(true);
-    try {
-      await renameBanquetTable(tableId, trimmed);
-      await updateBanquetTableCapacity(tableId, editingCapacity ? Number(editingCapacity) : null);
-      router.refresh();
-      setEditingId(null);
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to rename");
-    } finally {
-      setRenaming(false);
-    }
-  };
-
-  const handleDelete = async (tableId: string) => {
-    if (!window.confirm("Remove this table? Any assigned guests will become unassigned.")) {
-      return;
-    }
-    setDeletingId(tableId);
-    try {
-      await deleteBanquetTable(tableId);
-      router.refresh();
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to delete");
-    } finally {
-      setDeletingId(null);
-    }
-  };
+  const seatedGuestsByTable = (tableId: string): SeatedGuest[] =>
+    guests
+      .filter((guest) => guest.table_id === tableId)
+      .map((guest) => ({
+        id: guest.id,
+        fullName: guest.full_name,
+        partyNames: attendees
+          .filter((attendee) => attendee.guest_id === guest.id)
+          .map((attendee) => attendee.full_name),
+      }));
 
   return (
     <div>
       <h1 className="dash-h1 text-gray-900">{label}</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        Set up tables, then assign guests to seats below.
-      </p>
+      <p className="mt-1 text-sm text-gray-500">Set up tables, then add guests to each one.</p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex items-end gap-3" noValidate>
-        <div className="flex-1">
-          <label htmlFor="tableName" className="block text-sm font-semibold text-gray-900">
-            Table name
-          </label>
-          <input id="tableName" type="text" placeholder="Table 1" className="dash-input mt-1" {...register("name")} />
-          {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
-        </div>
-        <div className="w-24">
-          <label htmlFor="tableCapacity" className="block text-sm font-semibold text-gray-900">
-            Seats <span className="font-normal text-gray-400">(optional)</span>
-          </label>
-          <input id="tableCapacity" type="number" min={1} placeholder="8" className="dash-input mt-1" {...register("capacity")} />
-        </div>
-        <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary">
-          {isSubmitting ? "Adding..." : "Add table"}
-        </button>
-      </form>
-
-      {formError && (
-        <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
-      )}
-
-      <ul className="mt-6 divide-y divide-gray-200 border-t border-gray-200">
-        {tables.length === 0 && (
-          <li className="py-4 text-sm text-gray-500">No tables added yet.</li>
-        )}
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {tables.map((table) => (
-          <li key={table.id} className="flex items-center justify-between py-3">
-            {editingId === table.id ? (
-              <div className="flex flex-1 items-center gap-2">
-                <input
-                  type="text"
-                  value={editingName}
-                  onChange={(event) => setEditingName(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      void handleRename(table.id);
-                    }
-                  }}
-                  autoFocus
-                  className="dash-input max-w-xs"
-                />
-                <input
-                  type="number"
-                  min={1}
-                  placeholder="Seats"
-                  value={editingCapacity}
-                  onChange={(event) => setEditingCapacity(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      void handleRename(table.id);
-                    }
-                  }}
-                  className="dash-input w-20"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRename(table.id)}
-                  disabled={renaming || !editingName.trim()}
-                  className="whitespace-nowrap text-sm font-medium text-gray-900 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {renaming ? "Saving..." : "Save"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setEditingId(null)}
-                  className="whitespace-nowrap text-sm font-medium text-gray-600 hover:text-gray-900"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <>
-                <p className="text-sm font-medium text-gray-900">
-                  {table.name}
-                  {table.capacity != null && (
-                    <span className="ml-2 text-xs font-normal text-gray-500">{table.capacity} seats</span>
-                  )}
-                </p>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => startEditing(table)}
-                    className="text-sm font-medium text-gray-700 hover:text-gray-900"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(table.id)}
-                    disabled={deletingId === table.id}
-                    className="text-sm font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {deletingId === table.id ? "Removing..." : "Remove"}
-                  </button>
-                </div>
-              </>
-            )}
-          </li>
+          <TableCard
+            key={table.id}
+            eventId={eventId}
+            theme={theme}
+            table={table}
+            seatedGuests={seatedGuestsByTable(table.id)}
+            unassignedGuests={unassignedGuests}
+            locked={locked}
+          />
         ))}
-      </ul>
+
+        {isAdding ? (
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 p-4"
+            noValidate
+          >
+            <div>
+              <label htmlFor="tableName" className="block text-xs font-semibold text-gray-900">
+                Table name
+              </label>
+              <input id="tableName" type="text" placeholder="Table 1" className="dash-input mt-1" autoFocus {...register("name")} />
+              {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
+            </div>
+            <div>
+              <label htmlFor="tableCapacity" className="block text-xs font-semibold text-gray-900">
+                Seats <span className="font-normal text-gray-400">(optional)</span>
+              </label>
+              <input id="tableCapacity" type="number" min={1} placeholder="8" className="dash-input mt-1" {...register("capacity")} />
+            </div>
+            {formError && <p className="text-xs text-red-600">{formError}</p>}
+            <div className="flex items-center gap-3">
+              <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary text-sm">
+                {isSubmitting ? "Adding..." : "Add table"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  reset();
+                  setFormError(null);
+                  setIsAdding(false);
+                }}
+                className="text-sm font-medium text-gray-600 hover:text-gray-900"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIsAdding(true)}
+            className="flex min-h-[10rem] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-4 text-gray-500 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
+              <Plus className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <span className="text-sm font-medium">Add table</span>
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
-import type { CanvasElement } from "@/lib/canvas/types";
+import type { CanvasElement, CanvasFrame } from "@/lib/canvas/types";
+import type { BackgroundFill } from "@/lib/backgroundFills";
+import BackgroundPicker from "@/components/background/BackgroundPicker";
 
 interface LayersPanelProps {
   elements: CanvasElement[];
@@ -9,8 +11,8 @@ interface LayersPanelProps {
   onToggleHidden: (id: string) => void;
   onToggleDesktopOnly: (id: string) => void;
   onDelete: (id: string) => void;
-  background: { color?: string; imageUrl?: string };
-  onBackgroundColorChange: (color: string) => void;
+  background: CanvasFrame["background"];
+  onBackgroundFillChange: (fill: BackgroundFill | undefined) => void;
   onBackgroundImagePick: () => void;
   onBackgroundImageRemove: () => void;
   uploadingBackground: boolean;
@@ -21,12 +23,16 @@ function elementLabel(element: CanvasElement): string {
   if (element.type === "text") {
     return element.text.trim() || "(empty text)";
   }
-  return element.type === "video" ? "Video" : "Image";
+  if (element.type === "video") return "Video";
+  if (element.type === "qr") return "QR code";
+  return "Image";
 }
 
 function elementIcon(element: CanvasElement): string {
   if (element.type === "text") return "A";
-  return element.type === "video" ? "🎬" : "🖼";
+  if (element.type === "video") return "🎬";
+  if (element.type === "qr") return "▦";
+  return "🖼";
 }
 
 /** A synced list of every element on the active frame -- clicking a row
@@ -41,7 +47,7 @@ export default function LayersPanel({
   onToggleDesktopOnly,
   onDelete,
   background,
-  onBackgroundColorChange,
+  onBackgroundFillChange,
   onBackgroundImagePick,
   onBackgroundImageRemove,
   uploadingBackground,
@@ -127,21 +133,15 @@ export default function LayersPanel({
        * element list rather than in a separate always-visible toolbar. */}
       <div className="border-t border-[var(--dash-border)] px-3 py-3">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">Background</p>
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            value={background.color ?? "#ffffff"}
-            onChange={(event) => onBackgroundColorChange(event.target.value)}
-            className="h-8 w-10 shrink-0 rounded border border-[var(--dash-border)]"
-            title="Background color"
-          />
+        <BackgroundPicker value={background.fill} onChange={onBackgroundFillChange} />
+        <div className="mt-2 flex items-center gap-2">
           <button
             type="button"
             onClick={onBackgroundImagePick}
             disabled={uploadingBackground}
             className="flex-1 rounded-md border border-[var(--dash-border)] px-2.5 py-1.5 text-xs font-medium text-[var(--dash-text)] hover:border-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {uploadingBackground ? "Uploading..." : background.imageUrl ? "Change image" : "Add image"}
+            {uploadingBackground ? "Uploading..." : background.imageUrl ? "Change image" : "Add photo"}
           </button>
         </div>
         {background.imageUrl && (

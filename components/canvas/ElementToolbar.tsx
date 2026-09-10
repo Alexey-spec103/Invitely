@@ -58,12 +58,12 @@ export default function ElementToolbar({
     <div
       ref={measureRef}
       style={{ position: "absolute", top: position.top, left: position.left }}
-      className="z-30 w-max max-w-[22rem] space-y-1.5 rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-2 shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
+      className="z-30 w-max max-w-[min(22rem,calc(100vw-1rem))] space-y-1.5 rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-2 shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
       onMouseDown={(event) => event.stopPropagation()}
     >
       {element.type === "text" && (
         <>
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <FontPicker value={element.fontFamily} onChange={(family) => onUpdate({ fontFamily: family })} />
             <input
               type="number"
@@ -105,7 +105,7 @@ export default function ElementToolbar({
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <label
               className="flex items-center gap-1 rounded-md border border-[var(--dash-border)] px-1.5 py-1 text-xs text-[var(--dash-text-muted)]"
               title="Line height"
@@ -137,7 +137,28 @@ export default function ElementToolbar({
         </>
       )}
 
-      <div className="flex items-center gap-1.5">
+      {element.type === "qr" && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <select
+            value={element.source}
+            onChange={(event) => onUpdate({ source: event.target.value as "inviteLink" | "siteLink" })}
+            className="rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-xs text-[var(--dash-text)]"
+            title="What this QR code links to"
+          >
+            <option value="siteLink">Site link</option>
+            <option value="inviteLink">Guest&apos;s personal invite</option>
+          </select>
+          <input
+            type="text"
+            value={element.caption ?? ""}
+            onChange={(event) => onUpdate({ caption: event.target.value || undefined })}
+            placeholder="Caption (optional)"
+            className="w-36 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-xs text-[var(--dash-text)] placeholder:text-[var(--dash-text-muted)]"
+          />
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center gap-1.5">
         <label
           className="flex items-center gap-1 rounded-md border border-[var(--dash-border)] px-1.5 py-1 text-xs text-[var(--dash-text-muted)]"
           title="Entrance animation duration (seconds)"
@@ -161,7 +182,7 @@ export default function ElementToolbar({
         )}
       </div>
 
-      <div className="flex items-center gap-1.5 border-t border-[var(--dash-border)] pt-1.5">
+      <div className="flex flex-wrap items-center gap-1.5 border-t border-[var(--dash-border)] pt-1.5">
         <button type="button" onClick={() => onReorder("front")} title="Bring to front" className={iconButtonClass}>
           <BringToFront className="h-4 w-4" aria-hidden="true" />
         </button>

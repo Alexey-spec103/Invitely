@@ -1,9 +1,11 @@
+import type { BackgroundFill } from "@/lib/backgroundFills";
+
 /** Design-space width every CanvasFrame is authored at. The renderer scales
  * this down (or up) to fit the real viewport rather than reflowing content —
  * elements keep their relative layout on any screen size. */
 export const CANVAS_DESIGN_WIDTH = 1200;
 
-export type CanvasElementType = "text" | "image" | "video";
+export type CanvasElementType = "text" | "image" | "video" | "qr";
 
 export interface CanvasElementBase {
   id: string;
@@ -53,7 +55,19 @@ export interface CanvasVideoElement extends CanvasElementBase {
   borderRadius: number;
 }
 
-export type CanvasElement = CanvasTextElement | CanvasImageElement | CanvasVideoElement;
+// A QR element never carries its own image data -- what it should encode
+// depends on who's looking at it (a specific guest's personal invite link,
+// or just the event's public site), so it's resolved into a real scannable
+// image only at output time (see lib/canvas/resolveQrElements.ts), not
+// stored here. This is what lets the same element render correctly in a
+// generic (non-personalized) export and a per-guest one.
+export interface CanvasQrElement extends CanvasElementBase {
+  type: "qr";
+  source: "inviteLink" | "siteLink";
+  caption?: string;
+}
+
+export type CanvasElement = CanvasTextElement | CanvasImageElement | CanvasVideoElement | CanvasQrElement;
 
 export interface CanvasFrame {
   id: string;
@@ -61,8 +75,21 @@ export interface CanvasFrame {
   width: typeof CANVAS_DESIGN_WIDTH;
   height: number;
   background: {
+    /** Legacy plain solid color, from before B12's shared background
+     * library existed -- still rendered as a fallback when `fill` is unset,
+     * so frames saved before this field existed keep rendering unchanged.
+     * The BackgroundPicker UI no longer writes to this field directly (a
+     * color chosen there becomes `fill: {kind: "color", ...}` instead, so
+     * opacity applies uniformly across color/gradient/texture). */
     color?: string;
+    /** The host's own uploaded photo -- a full-cover image fill, mutually
+     * exclusive with `fill` in the editor UI (picking one clears the other)
+     * since only one background can show at once. */
     imageUrl?: string;
+    /** Color/gradient/texture fill from the shared background library
+     * (lib/backgroundFills.ts) -- undefined for every frame saved before
+     * B12, which keeps rendering from `color`/`imageUrl` exactly as before. */
+    fill?: BackgroundFill;
   };
   elements: CanvasElement[];
 }

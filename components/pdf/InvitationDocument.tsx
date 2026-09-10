@@ -1,7 +1,11 @@
 import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
+import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument";
+import { PdfWatermark } from "./PdfWatermark";
 import type { Theme } from "@/lib/themes";
+import type { CanvasFrame } from "@/lib/canvas/types";
+import { pdfBackgroundColor } from "@/lib/backgroundFills";
 
 export interface InvitationDocumentProps {
   theme: Theme;
@@ -12,6 +16,18 @@ export interface InvitationDocumentProps {
   guestName?: string;
   qrDataUrl?: string;
   backMessage?: string;
+  /** The invitation's canvas-designed back side (dashboard-audit.md A9),
+   * with any `qr` elements already resolved to real images by
+   * resolveCanvasQrElements -- this component never generates QR codes
+   * itself. Takes over the back page entirely when present; falls back to
+   * the plain `backMessage` text page otherwise. */
+  backFrame?: CanvasFrame;
+  /** dashboard-audit.md B21: true when the event's plan is below Premium
+   * -- personalized (QR-linked, per-guest) invitations are a Premium-tier
+   * material in lib/plans.ts. Only meaningful when `guestName`/`qrDataUrl`
+   * are set (the personalized path); the generic, non-personalized
+   * invitation download isn't gated. */
+  locked?: boolean;
 }
 
 function formatEventDate(isoDate: string) {
@@ -28,11 +44,18 @@ export function InvitationDocument({
   guestName,
   qrDataUrl,
   backMessage,
+  backFrame,
+  locked,
 }: InvitationDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
   registerCanvasPdfFont(style.headingFont);
   registerCanvasPdfFont(style.bodyFont);
+  if (backFrame) {
+    for (const family of collectFontFamilies([backFrame])) {
+      registerCanvasPdfFont(family);
+    }
+  }
 
   const styles = StyleSheet.create({
     page: {
@@ -144,14 +167,32 @@ export function InvitationDocument({
             <Text style={styles.qrCaption}>Scan to RSVP</Text>
           </View>
         )}
+        {locked && <PdfWatermark repeat={36} />}
       </Page>
 
-      {backMessage && (
-        <Page size="A5" style={styles.page}>
-          <View style={styles.border} fixed />
-          <Text style={styles.backAmpersand}>&</Text>
-          <Text style={styles.backMessage}>{backMessage}</Text>
+      {backFrame ? (
+        <Page
+          size="A5"
+          style={{
+            position: "relative",
+            backgroundColor:
+              backFrame.background.fill || backFrame.background.color
+                ? pdfBackgroundColor(backFrame.background)
+                : style.background,
+          }}
+        >
+          <CanvasPdfFrameContent frame={backFrame} />
+          {locked && <PdfWatermark repeat={36} />}
         </Page>
+      ) : (
+        backMessage && (
+          <Page size="A5" style={styles.page}>
+            <View style={styles.border} fixed />
+            <Text style={styles.backAmpersand}>&</Text>
+            <Text style={styles.backMessage}>{backMessage}</Text>
+            {locked && <PdfWatermark repeat={36} />}
+          </Page>
+        )
       )}
     </Document>
   );

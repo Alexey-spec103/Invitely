@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
+import { QrCode } from "lucide-react";
 import type { CanvasFrame, CanvasElement } from "@/lib/canvas/types";
 import { canvasFontStylesheetUrl } from "@/lib/canvas/fonts";
+import BackgroundLayer from "@/components/background/BackgroundLayer";
 import AnimatedCanvasElement from "./AnimatedCanvasElement";
 import styles from "./CanvasRenderer.module.css";
 
@@ -46,6 +48,7 @@ export default function CanvasRenderer({ frames }: CanvasRendererProps) {
             backgroundPosition: "center",
           }}
         >
+          <BackgroundLayer fill={frame.background.fill} />
           <div
             className={styles.frameInner}
             style={{
@@ -108,7 +111,7 @@ function CanvasElementView({ element }: { element: CanvasElement }) {
           filter: element.filter,
         }}
       />
-    ) : (
+    ) : element.type === "video" ? (
       <video
         src={element.videoUrl}
         muted
@@ -122,6 +125,27 @@ function CanvasElementView({ element }: { element: CanvasElement }) {
           borderRadius: element.borderRadius,
         }}
       />
+    ) : (
+      // A live public canvas page has no per-guest context to resolve this
+      // against (that only exists for the print/PDF export -- see
+      // resolveCanvasQrElements), so it's a placeholder here too rather than
+      // a real, scannable code.
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 4,
+          border: "1px dashed rgba(0,0,0,0.3)",
+          color: "rgba(0,0,0,0.5)",
+        }}
+      >
+        <QrCode style={{ width: "40%", height: "40%" }} aria-hidden="true" />
+        {element.caption && <span style={{ fontSize: 10 }}>{element.caption}</span>}
+      </div>
     );
 
   if (element.animationDuration) {

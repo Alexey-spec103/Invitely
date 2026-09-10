@@ -1,6 +1,7 @@
 import { Document, Page, Text, Image, StyleSheet } from "@react-pdf/renderer";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import type { CanvasFrame, CanvasElement } from "@/lib/canvas/types";
+import { pdfBackgroundColor } from "@/lib/backgroundFills";
 
 export interface CanvasPdfDocumentProps {
   frames: CanvasFrame[];
@@ -11,10 +12,12 @@ export interface CanvasPdfDocumentProps {
 // 1200-wide frame down to exactly A5 width (420pt / 148mm), matching the
 // page size the structured InvitationDocument already prints at, so a
 // canvas-designed invitation and a structured one come out a comparable
-// physical size.
-const PDF_SCALE = 420 / 1200;
+// physical size. Exported so other documents that embed a single canvas
+// frame inside an otherwise-structured page (InvitationDocument's canvas
+// back side) size and register fonts the same way.
+export const PDF_SCALE = 420 / 1200;
 
-function collectFontFamilies(frames: CanvasFrame[]): string[] {
+export function collectFontFamilies(frames: CanvasFrame[]): string[] {
   const families = new Set<string>();
   for (const frame of frames) {
     for (const element of frame.elements) {
@@ -49,9 +52,28 @@ function CanvasPdfPage({ frame }: { frame: CanvasFrame }) {
     page: {
       width,
       height,
-      backgroundColor: frame.background.color || "#ffffff",
+      backgroundColor: pdfBackgroundColor(frame.background),
       position: "relative",
     },
+  });
+
+  return (
+    <Page size={[width, height]} style={styles.page}>
+      <CanvasPdfFrameContent frame={frame} />
+    </Page>
+  );
+}
+
+/** Just the paintable content of a canvas frame (background image + sorted
+ * elements), at PDF_SCALE, with no `<Page>` of its own -- lets a page that
+ * isn't otherwise canvas-driven (InvitationDocument's canvas-designed back
+ * side) embed one frame's design inside a `<Page>` it already controls the
+ * size/background-color of. */
+export function CanvasPdfFrameContent({ frame }: { frame: CanvasFrame }) {
+  const width = frame.width * PDF_SCALE;
+  const height = frame.height * PDF_SCALE;
+
+  const styles = StyleSheet.create({
     backgroundImage: {
       position: "absolute",
       top: 0,
@@ -67,7 +89,7 @@ function CanvasPdfPage({ frame }: { frame: CanvasFrame }) {
     .sort((a, b) => a.zIndex - b.zIndex);
 
   return (
-    <Page size={[width, height]} style={styles.page}>
+    <>
       {frame.background.imageUrl && (
         // eslint-disable-next-line jsx-a11y/alt-text -- react-pdf's Image is a PDF primitive, not an HTML img; it has no alt prop
         <Image src={frame.background.imageUrl} style={styles.backgroundImage} />
@@ -75,11 +97,11 @@ function CanvasPdfPage({ frame }: { frame: CanvasFrame }) {
       {sortedElements.map((element) => (
         <CanvasPdfElement key={element.id} element={element} />
       ))}
-    </Page>
+    </>
   );
 }
 
-function CanvasPdfElement({ element }: { element: CanvasElement }) {
+export function CanvasPdfElement({ element }: { element: CanvasElement }) {
   const positionStyle = {
     position: "absolute" as const,
     left: element.x * PDF_SCALE,
@@ -112,6 +134,15 @@ function CanvasPdfElement({ element }: { element: CanvasElement }) {
   // already gives desktopOnly/animationDuration (both silently ignored,
   // not an error).
   if (element.type === "video") {
+    return null;
+  }
+
+  // A qr element should always have been swapped for a real, scannable
+  // `image` element by resolveCanvasQrElements before frames reach this
+  // component (it needs the target guest/site URL, which this component
+  // has no way to know) -- if one slips through unresolved, skip it rather
+  // than crash or print a meaningless blank image.
+  if (element.type === "qr") {
     return null;
   }
 

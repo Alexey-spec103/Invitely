@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ImagePlus, Type, Video, X } from "lucide-react";
+import { ImagePlus, QrCode, Type, Video, X } from "lucide-react";
 
 interface AddElementModalProps {
   open: boolean;
@@ -11,6 +11,7 @@ interface AddElementModalProps {
   uploadingImage: boolean;
   onAddVideo: () => void;
   uploadingVideo: boolean;
+  onAddQr: () => void;
 }
 
 /** Replaces the old bare "+Text"/"+Image" toolbar buttons with a small
@@ -28,6 +29,7 @@ export default function AddElementModal({
   uploadingImage,
   onAddVideo,
   uploadingVideo,
+  onAddQr,
 }: AddElementModalProps) {
   useEffect(() => {
     if (!open) return;
@@ -54,7 +56,7 @@ export default function AddElementModal({
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => {
@@ -92,6 +94,18 @@ export default function AddElementModal({
             <Video className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
             <span className="text-sm font-medium text-[var(--dash-text)]">Video</span>
             <span className="text-xs text-[var(--dash-text-muted)]">Upload a short clip from your device</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onAddQr();
+              onClose();
+            }}
+            className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-white/5"
+          >
+            <QrCode className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
+            <span className="text-sm font-medium text-[var(--dash-text)]">QR code</span>
+            <span className="text-xs text-[var(--dash-text-muted)]">Links to your site, or a guest&apos;s invite</span>
           </button>
         </div>
       </div>

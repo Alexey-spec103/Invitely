@@ -2,6 +2,14 @@ import type { Theme } from "@/lib/themes";
 
 const FONT_VAR_PATTERN = /--font-([a-z0-9-]+)/;
 
+// Words that don't follow the generic "capitalize each word" rule below --
+// Google Fonts' own family name keeps this acronym fully capitalized
+// ("EB Garamond"), so the generic reconstruction from a lowercase CSS var
+// name ("eb-garamond" -> "Eb Garamond") would ask /api/pdf-fonts for a family
+// Google Fonts doesn't recognize and get a 404. The only such exception
+// among every font any theme currently uses.
+const ACRONYM_WORDS: Record<string, string> = { eb: "EB" };
+
 /** Theme font vars reference next/font CSS variables (browser-only) in the
  * shape `var(--font-some-name), fallback, serif` — this recovers the actual
  * Google Font family name generically from the variable name itself
@@ -19,7 +27,7 @@ function resolveFontFamily(cssVarValue: string): string {
   }
   return match[1]
     .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => ACRONYM_WORDS[word] ?? word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
 

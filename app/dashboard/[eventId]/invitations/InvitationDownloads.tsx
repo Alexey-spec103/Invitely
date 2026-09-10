@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import PremiumUpgradeNote from "@/components/paper/PremiumUpgradeNote";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
 
@@ -22,6 +23,7 @@ interface DressCodeColorItem {
 }
 
 interface InvitationDownloadsProps {
+  eventId: string;
   theme: Theme;
   slug: string;
   names: string[];
@@ -32,10 +34,16 @@ interface InvitationDownloadsProps {
   timelineEvents: TimelineEventItem[];
   canvasFrames: CanvasFrame[];
   backMessage?: string;
+  backCanvas?: CanvasFrame;
   dressCodeTitle: string;
   dressCodeDescription?: string;
   dressCodeColors: DressCodeColorItem[];
   guests: GuestItem[];
+  /** dashboard-audit.md B21: true when the event's plan is below Premium
+   * -- personalized (QR-linked, per-guest) invitations are Premium-only in
+   * lib/plans.ts. Only applied to the actual per-guest downloads below,
+   * never to the plain non-personalized invitation. */
+  locked: boolean;
 }
 
 function saveBlob(blob: Blob, filename: string) {
@@ -48,6 +56,7 @@ function saveBlob(blob: Blob, filename: string) {
 }
 
 export default function InvitationDownloads({
+  eventId,
   theme,
   slug,
   names,
@@ -58,10 +67,12 @@ export default function InvitationDownloads({
   timelineEvents,
   canvasFrames,
   backMessage,
+  backCanvas,
   dressCodeTitle,
   dressCodeDescription,
   dressCodeColors,
   guests,
+  locked,
 }: InvitationDownloadsProps) {
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -73,11 +84,18 @@ export default function InvitationDownloads({
     setError(null);
     setPendingId("generic");
     try {
-      const [{ pdf }, { CanvasPdfDocument }] = await Promise.all([
+      const [{ pdf }, { CanvasPdfDocument }, { resolveCanvasQrElements }] = await Promise.all([
         import("@react-pdf/renderer"),
         import("@/components/pdf/CanvasPdfDocument"),
+        import("@/lib/canvas/resolveQrElements"),
       ]);
-      const blob = await pdf(<CanvasPdfDocument frames={canvasFrames} />).toBlob();
+      // No specific guest for this generic download -- any "guest's personal
+      // invite" QR element falls back to the plain site link, same as
+      // resolveCanvasQrElements does when inviteUrl is omitted.
+      const resolvedFrames = await resolveCanvasQrElements(canvasFrames, {
+        siteUrl: `${window.location.origin}/e/${slug}`,
+      });
+      const blob = await pdf(<CanvasPdfDocument frames={resolvedFrames} />).toBlob();
       saveBlob(blob, "invitation.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate PDF");
@@ -156,11 +174,26 @@ export default function InvitationDownloads({
     pdfModule: typeof import("@react-pdf/renderer"),
     documentModule: typeof import("@/components/pdf/InvitationDocument")
   ) => {
+    const inviteUrl = guest ? `${window.location.origin}/e/${slug}?invite=${guest.inviteCode}` : undefined;
+
     let qrDataUrl: string | undefined;
-    if (guest) {
+    if (guest && inviteUrl) {
       const QRCode = (await import("qrcode")).default;
-      const inviteUrl = `${window.location.origin}/e/${slug}?invite=${guest.inviteCode}`;
       qrDataUrl = await QRCode.toDataURL(inviteUrl, { margin: 1, width: 240 });
+    }
+
+    // A "Guest's personal invite" QR on the canvas back side needs to
+    // encode *this* guest's link, not the plain site link -- resolved fresh
+    // per guest (resolveCanvasQrElements falls back to the site link when
+    // inviteUrl is undefined, i.e. the generic/non-personalized download).
+    let backFrame: CanvasFrame | undefined;
+    if (backCanvas) {
+      const { resolveCanvasQrElements } = await import("@/lib/canvas/resolveQrElements");
+      const [resolved] = await resolveCanvasQrElements([backCanvas], {
+        siteUrl: `${window.location.origin}/e/${slug}`,
+        inviteUrl,
+      });
+      backFrame = resolved;
     }
 
     return pdfModule
@@ -174,6 +207,8 @@ export default function InvitationDownloads({
           guestName={guest?.fullName}
           qrDataUrl={qrDataUrl}
           backMessage={backMessage}
+          backFrame={backFrame}
+          locked={Boolean(guest) && locked}
         />
       )
       .toBlob();
@@ -269,6 +304,15 @@ export default function InvitationDownloads({
           {hasCanvasDesign &&
             " These use your theme's default layout rather than your custom canvas design — per-guest personalization for canvas designs isn't available yet."}
         </p>
+        {/* dashboard-audit.md B21: personalized invitations are a
+            Premium-tier material in lib/plans.ts -- watermarked (not
+            blocked) below that plan, same honest "see it, upgrade to
+            remove it" logic as the banquet materials. */}
+        {locked && (
+          <div className="mt-1">
+            <PremiumUpgradeNote eventId={eventId} />
+          </div>
+        )}
 
         {guests.length > 0 && (
           <div className="mt-4">

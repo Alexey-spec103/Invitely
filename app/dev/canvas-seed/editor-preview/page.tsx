@@ -7,5 +7,5 @@ import { seedHeroFrame } from "@/lib/canvas/seed";
  * event/site_config row behind "dev-preview-event"), everything else is
  * live and testable. */
 export default function CanvasEditorPreviewPage() {
-  return <CanvasEditor eventId="dev-preview-event" initialFrames={[seedHeroFrame]} />;
+  return <CanvasEditor eventId="dev-preview-event" initialFrames={[seedHeroFrame]} hasBasicAccess />;
 }
