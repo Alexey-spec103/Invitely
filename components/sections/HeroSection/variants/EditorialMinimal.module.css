@@ -1,13 +1,36 @@
 .section {
+  position: relative;
   display: flex;
   align-items: flex-end;
   min-height: 100vh;
   min-height: 100svh;
   padding: 3rem 1.5rem;
+  overflow: hidden;
   color: var(--theme-text);
 }
 
+/* A repeating wave-line tile, not a single icon -- reads as a horizon
+   rule, matching the section's own thin-hairline-rule language (.rule
+   below) rather than looking like a dropped-in sticker. */
+.wave {
+  position: absolute;
+  top: 3rem;
+  right: 1.5rem;
+  width: 7rem;
+  height: 1.25rem;
+  background-color: var(--theme-accent);
+  opacity: 0.35;
+  mask-image: url("/patterns/wave-line.svg");
+  mask-repeat: repeat-x;
+  mask-size: 56px 20px;
+  -webkit-mask-image: url("/patterns/wave-line.svg");
+  -webkit-mask-repeat: repeat-x;
+  -webkit-mask-size: 56px 20px;
+}
+
 .block {
+  position: relative;
+  z-index: 1;
   max-width: 30rem;
   text-align: left;
 }
@@ -51,6 +74,12 @@
 @media (min-width: 640px) {
   .section {
     padding: 4rem 2rem;
+  }
+
+  .wave {
+    top: 4rem;
+    right: 2rem;
+    width: 10rem;
   }
 
   .block {

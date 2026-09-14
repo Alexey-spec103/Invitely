@@ -56,13 +56,34 @@
   min-height: 100vh;
   min-height: 100svh;
   padding: 2rem 1.25rem;
+  overflow: hidden;
   text-align: center;
   color: var(--theme-text);
 }
 
 .contentCentered {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 32rem;
+}
+
+/* Oversized, near-transparent initials behind the content -- same technique
+   and reasoning as MinimalText's own .monogram (this layout's CSS comment
+   above already names MinimalText as the model for the no-photo case). */
+.monogram {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--theme-font-heading);
+  font-size: clamp(7rem, 32vw, 20rem);
+  line-height: 1;
+  color: var(--theme-accent);
+  opacity: 0.08;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* A small celestial accent in the top corner, over the photo -- a quiet

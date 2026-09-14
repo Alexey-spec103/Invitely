@@ -47,6 +47,19 @@
   -webkit-mask-position: center;
 }
 
+/* No-photo fallback for .stage/.frame above -- a plain pointed-arch outline
+   (own shape via border-radius, no image asset) so the composition still
+   reads as a considered gothic-arch silhouette rather than empty space. */
+.archOutline {
+  display: block;
+  width: 7rem;
+  height: 9rem;
+  border: 1px solid var(--theme-accent);
+  border-bottom: none;
+  border-radius: 3.5rem 3.5rem 0 0;
+  opacity: 0.5;
+}
+
 .names {
   font-family: var(--theme-font-heading);
   font-weight: 400;
@@ -73,6 +86,12 @@
   .photo {
     width: 10.5rem;
     height: 13.5rem;
+  }
+
+  .archOutline {
+    width: 8rem;
+    height: 10.5rem;
+    border-radius: 4rem 4rem 0 0;
   }
 
   .names {

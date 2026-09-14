@@ -28,6 +28,27 @@
   -webkit-mask-position: top center;
 }
 
+/* The one corner the content and .sprig above both leave empty -- small
+   and quiet, a different real asset (lavender, not pampas grass) so it
+   reads as a deliberate second accent, not a copy of the first. */
+.cornerSprig {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 3.5rem;
+  height: 5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.4;
+  mask-image: url("/patterns/rustic-lavender-sprig.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: bottom center;
+  -webkit-mask-image: url("/patterns/rustic-lavender-sprig.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: bottom center;
+}
+
 .content {
   position: relative;
   z-index: 1;

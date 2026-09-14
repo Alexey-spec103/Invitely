@@ -7,16 +7,21 @@ import styles from "./GothicFrame.module.css";
  * Dark category a genuine framed-photo option alongside the existing
  * full-bleed/monogram-crest/art-deco-crest variants, none of which frame a
  * photo this way. Honest fallback: with no photo, neither the photo nor the
- * frame renders -- just the names/date, no empty frame outline. */
+ * ornamented .frame mask renders (a hollow frame ring with nothing inside
+ * would read as broken, not intentional) -- but a plain empty arch outline,
+ * pure CSS border-radius, no photo/mask required, now stands in its place
+ * so the section is never just two lines of text on a blank field. */
 export default function GothicFrame({ names, eventDate, photoUrl, styleOverrides }: HeroSectionVariantProps) {
   return (
     <section className={styles.section}>
-      {photoUrl && (
+      {photoUrl ? (
         <div className={styles.stage}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photoUrl} alt="" className={styles.photo} />
           <span className={styles.frame} aria-hidden="true" />
         </div>
+      ) : (
+        <span className={styles.archOutline} aria-hidden="true" />
       )}
       <p className={styles.names}>
         <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />

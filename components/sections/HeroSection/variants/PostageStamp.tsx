@@ -7,16 +7,23 @@ import styles from "./PostageStamp.module.css";
  * (the same asset Letterpress uses for its own stamp motif) in the corner.
  * Structurally distinct from VintageOrnamental's boxed double-frame and
  * BotanicalFrame's corner-only viney flourishes. Honest fallback: no photo
- * means no stamp card at all, not an empty perforated rectangle. */
+ * means no stamp card WITH A PHOTO SLOT (that would read as a broken empty
+ * image well) -- but the same dashed-perforation + postmark motif, without
+ * a photo well, stands in as a small quiet "blank stamp" corner accent so
+ * the section still reads as this variant's own composition. */
 export default function PostageStamp({ names, eventDate, photoUrl, styleOverrides }: HeroSectionVariantProps) {
   return (
     <section className={styles.section}>
-      {photoUrl && (
+      {photoUrl ? (
         <div className={styles.stamp}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photoUrl} alt="" className={styles.photo} />
           <span className={styles.postmark} aria-hidden="true" />
         </div>
+      ) : (
+        <span className={styles.blankStamp} aria-hidden="true">
+          <span className={styles.postmark} aria-hidden="true" />
+        </span>
       )}
       <p className={styles.names}>
         <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />

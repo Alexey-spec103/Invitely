@@ -28,6 +28,26 @@
   -webkit-mask-position: center;
 }
 
+/* Small delicate sprig, offset up and to the right of center via transform
+   (not top/left) so it stays centered-then-nudged, same crop-safe technique
+   as .blob above -- a quiet second layer, not a second focal point. */
+.sprig {
+  position: absolute;
+  width: 5rem;
+  height: 5rem;
+  transform: translate(9rem, -10rem) rotate(8deg);
+  background-color: var(--theme-accent);
+  opacity: 0.55;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
 .content {
   position: relative;
   z-index: 1;

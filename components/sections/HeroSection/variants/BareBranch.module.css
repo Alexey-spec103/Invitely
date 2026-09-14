@@ -30,6 +30,20 @@
   -webkit-mask-position: center right;
 }
 
+/* A thin diagonal gradient stroke in the top-left, balancing the branch's
+   weight on the right -- own gradient/rotation, not a texture or asset. */
+.cornerStroke {
+  position: absolute;
+  top: -10%;
+  left: -6%;
+  width: 55%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--theme-accent) 0%, transparent 100%);
+  opacity: 0.5;
+  transform-origin: top left;
+  transform: rotate(35deg);
+}
+
 .content {
   position: relative;
   z-index: 1;

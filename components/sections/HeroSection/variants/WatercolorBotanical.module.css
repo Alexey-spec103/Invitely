@@ -38,6 +38,28 @@
   -webkit-mask-position: center;
 }
 
+/* A second, smaller, quieter branch layered behind .branch and offset via
+   transform (not top/left -- same crop-safety reasoning as .branch itself)
+   so the pair reads as layered depth rather than one shape doubled. */
+.branchBack {
+  position: absolute;
+  width: 20rem;
+  height: 20rem;
+  max-width: 90vw;
+  max-height: 90vw;
+  transform: translate(-9rem, 8rem) rotate(-12deg);
+  background-color: var(--theme-accent);
+  opacity: 0.16;
+  mask-image: url("/patterns/botanical-eucalyptus-branch.svg");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/botanical-eucalyptus-branch.svg");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
 .content {
   position: relative;
   z-index: 1;

@@ -30,6 +30,19 @@
   filter: sepia(0.15) contrast(1.05);
 }
 
+/* No-photo fallback for .stamp above -- the same dashed-perforation frame,
+   smaller and with no photo well inside (an empty picture frame would read
+   as broken), so it's honestly just a quiet decorative corner motif. */
+.blankStamp {
+  position: relative;
+  display: block;
+  width: 4rem;
+  height: 5rem;
+  background-color: var(--theme-bg);
+  border: 2px dashed color-mix(in srgb, var(--theme-text) 35%, transparent);
+  opacity: 0.8;
+}
+
 /* The same etched-banner asset Letterpress uses for its own stamp motif --
    reused here as a small corner "postmark". */
 .postmark {
