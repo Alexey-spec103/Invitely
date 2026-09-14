@@ -69,6 +69,28 @@
   border-radius: 0.25rem;
 }
 
+/* Same corner-flourish mask used across this whole pass -- the panel's
+   own quoteMark glyph is a real-scale accent, not a decorative motif, so
+   this adds the one this variant was otherwise missing. */
+.panelMark {
+  position: absolute;
+  top: -0.6rem;
+  right: -0.6rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  background-color: var(--theme-accent);
+  opacity: 0.5;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  pointer-events: none;
+}
+
 .quoteMark {
   display: block;
   font-family: var(--theme-font-script);

@@ -10,9 +10,13 @@ export default function MinimalRows({ title, description, preferences, styleOver
   return (
     <section className={styles.section}>
       {(title || editable) && (
-        <h2 className={styles.title}>
-          <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
-        </h2>
+        <div className={styles.titleRow}>
+          <span className={styles.titleFlourish} aria-hidden="true" />
+          <h2 className={styles.title}>
+            <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />
+          </h2>
+          <span className={`${styles.titleFlourish} ${styles.titleFlourishRight}`} aria-hidden="true" />
+        </div>
       )}
       {(description || editable) && (
         <p className={styles.description}>

@@ -15,6 +15,29 @@
   padding-left: 1.5rem;
 }
 
+/* A thin vine tracing the left edge, filling the left padding this
+   asymmetric layout already reserves -- same repeat-y-along-one-axis
+   technique as Hero/EditorialMinimal's own wave accent, contained fully
+   inside .content so it can't overflow the viewport. */
+.vine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0.85rem;
+  background-color: var(--theme-accent);
+  opacity: 0.3;
+  mask-image: url("/patterns/botanical-branch.svg");
+  mask-repeat: repeat-y;
+  mask-size: 0.85rem auto;
+  mask-position: top left;
+  -webkit-mask-image: url("/patterns/botanical-branch.svg");
+  -webkit-mask-repeat: repeat-y;
+  -webkit-mask-size: 0.85rem auto;
+  -webkit-mask-position: top left;
+  pointer-events: none;
+}
+
 .title {
   font-family: var(--theme-font-heading);
   font-weight: 300;

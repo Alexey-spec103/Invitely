@@ -24,6 +24,7 @@ export default function SimpleList({ title, description, preferences, styleOverr
         <div className={styles.grid}>
           {preferences.map((item) => (
             <div key={item.id} className={styles.card}>
+              <span className={styles.cardMark} aria-hidden="true" />
               {item.imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={item.imageUrl} alt={item.title} className={styles.image} />

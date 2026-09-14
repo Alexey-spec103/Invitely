@@ -30,6 +30,7 @@
 }
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -37,6 +38,27 @@
   border: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent);
   border-radius: 0.3rem;
   background: color-mix(in srgb, var(--theme-bg) 70%, transparent);
+}
+
+/* Same corner-flourish mask used across Hero/Letter/Map -- one corner per
+   card, matching MapSection/SideBySideCards' identical treatment. */
+.cardMark {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.4rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.5;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  pointer-events: none;
 }
 
 .image {

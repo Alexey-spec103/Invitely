@@ -50,6 +50,7 @@ export default function SplitQuote({
             dashboard-audit.md #4 fix already applied to CenteredCard. Only
             the decorative quote mark is conditional. */}
         <div className={styles.quotePanel}>
+          <span className={styles.panelMark} aria-hidden="true" />
           {quote && (
             <span className={styles.quoteMark} aria-hidden="true">
               &ldquo;

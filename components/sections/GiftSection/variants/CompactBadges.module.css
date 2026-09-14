@@ -30,7 +30,8 @@
 }
 
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-family: var(--theme-font-body);
   font-size: 0.8rem;
   letter-spacing: 0.02em;
@@ -39,6 +40,20 @@
   border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, transparent);
   color: var(--theme-text);
   text-decoration: none;
+}
+
+/* A small ribbon-tail shape ahead of each badge -- plain CSS clip-path,
+   no new asset needed (same reasoning as Hero/PostageStamp's own CSS
+   fallback shapes), reading as a gift ribbon rather than a generic bullet. */
+.badgeIcon {
+  display: inline-block;
+  flex: none;
+  width: 0.5rem;
+  height: 0.65rem;
+  margin-right: 0.4rem;
+  background: var(--theme-accent);
+  opacity: 0.6;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%);
 }
 
 a.badge:hover {

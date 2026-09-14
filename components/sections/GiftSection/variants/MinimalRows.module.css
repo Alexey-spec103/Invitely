@@ -4,12 +4,42 @@
   text-align: center;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0 0 0.75rem;
+}
+
 .title {
   font-family: var(--theme-font-heading);
   font-weight: 300;
   font-size: 1.9rem;
   letter-spacing: 0.03em;
-  margin: 0 0 0.75rem;
+  margin: 0;
+}
+
+/* Same corner-flourish mask used across this whole pass -- kept to the
+   title only, so the functional/scannable rows below stay plain. */
+.titleFlourish {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: var(--theme-accent);
+  opacity: 0.5;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
+.titleFlourishRight {
+  transform: scaleX(-1);
 }
 
 .description {

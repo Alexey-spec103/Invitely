@@ -31,10 +31,12 @@ export default function CompactBadges({ title, description, preferences, styleOv
                 rel="noreferrer"
                 className={styles.badge}
               >
+                <span className={styles.badgeIcon} aria-hidden="true" />
                 {item.title}
               </a>
             ) : (
               <span key={item.id} className={styles.badge}>
+                <span className={styles.badgeIcon} aria-hidden="true" />
                 {item.title}
               </span>
             )

@@ -24,6 +24,7 @@ export default function MinimalLine({
   return (
     <section className={styles.section}>
       <div className={styles.content}>
+        <span className={styles.vine} aria-hidden="true" />
         <h2 className={styles.title}>
           <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
         </h2>
