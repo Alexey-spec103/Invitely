@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { Sparkles, Heart } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import {
@@ -15,6 +15,7 @@ import type { Theme, ThemeCategory, ThemeSeason } from "@/lib/themes";
 import { useFavoriteThemes } from "@/lib/useFavoriteThemes";
 import { CATEGORY_STYLE_ICONS, LAYOUT_STYLE_ICONS } from "@/components/icons/StyleFilterIcons";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
+import { highlightFeaturesFor } from "@/lib/themes/highlightFeatures";
 import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import {
@@ -361,6 +362,7 @@ export function ThemeGalleryCard({
   const dateLabel = formatPreviewDate(targetDate);
   const layoutLabel = layoutLabelFor(theme.id, theme.category);
   const tags = [layoutLabel, ...theme.tags.filter((tag) => tag !== layoutLabel)].slice(0, 4);
+  const highlightFeatures = highlightFeaturesFor(theme.category);
   const recommendedVariant = recommendedHeroVariantFor(theme.id, theme.category);
   const heroVariant: HeroVariant = HERO_VARIANTS.includes(recommendedVariant as HeroVariant)
     ? (recommendedVariant as HeroVariant)
@@ -386,6 +388,27 @@ export function ThemeGalleryCard({
     return () => clearTimeout(timeout);
   }, [targetDate]);
 
+  // Generated lazily on first hover/focus, not eagerly for all ~24 cards on
+  // screen at once -- a shopper browsing the catalog on a laptop scans this
+  // to see the theme rendered live on their own phone (app/preview/[themeId])
+  // instead of just imagining it from the mockup. `qrcode` is already a
+  // project dependency (invite/canvas QR export) and already used this same
+  // dynamic-import-then-toDataURL way from a client component (see
+  // InvitationDownloads.tsx), so this reuses that exact pattern.
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const qrRequestedRef = useRef(false);
+  const requestQrPreview = () => {
+    if (qrRequestedRef.current || typeof window === "undefined") return;
+    qrRequestedRef.current = true;
+    const previewUrl = `${window.location.origin}/preview/${theme.id}`;
+    import("qrcode")
+      .then(({ default: QRCode }) => QRCode.toDataURL(previewUrl, { margin: 1, width: 160 }))
+      .then(setQrDataUrl)
+      .catch(() => {
+        // Non-fatal -- the corner badge just never appears for this card.
+      });
+  };
+
   // A `<span role="button">`, not a nested `<button>` -- the card itself is
   // already a `<button>`, and a button inside a button is invalid HTML (the
   // browser silently hoists/breaks it), so this needs its own keyboard
@@ -407,10 +430,19 @@ export function ThemeGalleryCard({
       type="button"
       disabled={disabled}
       onClick={() => (selected && onCustomize ? onCustomize() : onSelect(theme.id))}
+      onMouseEnter={requestQrPreview}
+      onFocus={requestQrPreview}
       className={selected ? styles.cardSelected : styles.card}
     >
       <ThemeProvider theme={theme}>
         <div className={styles.duoMockup}>
+          {qrDataUrl && (
+            <div className={styles.qrReveal} aria-hidden="true">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={qrDataUrl} alt="" className={styles.qrImage} />
+              <span className={styles.qrCaption}>Scan to preview</span>
+            </div>
+          )}
           {onToggleFavorite && (
             <span
               role="button"
@@ -491,6 +523,11 @@ export function ThemeGalleryCard({
 
       <div className={styles.cardFooter}>
         <p className={styles.cardName}>{theme.name}</p>
+        {/* A curated sample of real, working capabilities (varied by
+            category for catalog browsing variety), never an exclusivity
+            claim -- see highlightFeatures.ts's own comment for why every
+            theme supports the exact same full feature set under the hood. */}
+        <p className={styles.cardFeatures}>{highlightFeatures.join(" · ")}</p>
       </div>
     </button>
   );

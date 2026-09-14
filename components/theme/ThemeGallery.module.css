@@ -338,6 +338,43 @@
   background: #fff;
 }
 
+.qrReveal {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.35rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.card:hover .qrReveal,
+.card:focus-visible .qrReveal {
+  opacity: 1;
+}
+
+.qrImage {
+  display: block;
+  width: 56px;
+  height: 56px;
+}
+
+.qrCaption {
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #44403c;
+  white-space: nowrap;
+}
+
 .desktopPanel {
   position: relative;
   flex: 1.3;
@@ -625,5 +662,14 @@
   font-size: 1.05rem;
   font-weight: 600;
   color: #1c1917;
+}
+
+.cardFeatures {
+  margin-top: 0.2rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #78716c;
 }
 
