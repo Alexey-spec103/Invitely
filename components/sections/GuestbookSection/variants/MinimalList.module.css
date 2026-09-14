@@ -13,18 +13,57 @@
 }
 
 .list {
+  position: relative;
   max-width: 32rem;
   margin: 0 auto;
+  padding-top: 0.75rem;
   text-align: left;
 }
 
-.row {
-  padding: 1.25rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 20%, transparent);
+/* A thin decorative swash in place of the flat border-bottom this variant
+   used to have -- same reused-asset vocabulary as the rest of this pass,
+   capping the list top-and-bottom and dividing every row between. */
+.list::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 0.5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.35;
+  mask-image: url("/patterns/swash-underline.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/swash-underline.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
 }
 
-.row:first-child {
-  border-top: 1px solid color-mix(in srgb, var(--theme-accent) 20%, transparent);
+.row {
+  position: relative;
+  padding: 1.25rem 0;
+}
+
+.row:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 0.5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.35;
+  mask-image: url("/patterns/swash-underline.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/swash-underline.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
 }
 
 .comment {

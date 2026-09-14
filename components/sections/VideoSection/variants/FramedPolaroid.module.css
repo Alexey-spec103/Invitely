@@ -7,12 +7,30 @@
 }
 
 .polaroid {
+  position: relative;
   width: 100%;
   max-width: 30rem;
   padding: 1rem 1rem 1.5rem;
   background-color: color-mix(in srgb, var(--theme-bg) 60%, white);
   border: 1px solid color-mix(in srgb, var(--theme-accent) 20%, transparent);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* A strip of "washi tape" pinning the polaroid down -- plain CSS, no new
+   asset needed (same reasoning as Hero/PostageStamp's own dashed-frame
+   fallback), fitting this variant's tactile scrapbook read better than a
+   formal flourish. */
+.tape {
+  position: absolute;
+  top: -0.7rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  width: 3.5rem;
+  height: 1.15rem;
+  background: color-mix(in srgb, var(--theme-accent) 35%, white 65%);
+  opacity: 0.85;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  z-index: 1;
 }
 
 .frame {

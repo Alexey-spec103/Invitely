@@ -16,6 +16,7 @@ export default function FramedPolaroid({ title, videoUrl, styleOverrides }: Vide
   return (
     <section className={styles.section}>
       <div className={styles.polaroid}>
+        <span className={styles.tape} aria-hidden="true" />
         <div className={styles.frame}>
           {!embed ? (
             <p className={styles.placeholder}>Paste a video URL below.</p>

@@ -36,6 +36,17 @@
   border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 15%, transparent);
 }
 
+/* A small script-font quotation mark per card -- lighter-weight than
+   Wall's ghost-scale version, sized to sit as a quiet lead-in above each
+   card's comment instead of behind the whole section. */
+.quoteMark {
+  font-family: var(--theme-font-script);
+  font-size: 2.25rem;
+  line-height: 1;
+  color: var(--theme-accent);
+  opacity: 0.5;
+}
+
 .comment {
   font-family: var(--theme-font-body);
   font-size: 0.95rem;

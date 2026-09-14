@@ -32,6 +32,48 @@
   border: 0;
 }
 
+/* Same corner-flourish mask + data-pos convention as Letter/OrnateBorder's
+   four-corner frame -- this variant's plain bordered frame otherwise has
+   no decoration at all. */
+.flourish {
+  position: absolute;
+  width: 1.75rem;
+  height: 1.75rem;
+  background-color: var(--theme-accent);
+  opacity: 0.8;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.flourish[data-pos="tl"] {
+  top: -0.6rem;
+  left: -0.6rem;
+}
+
+.flourish[data-pos="tr"] {
+  top: -0.6rem;
+  right: -0.6rem;
+  transform: scaleX(-1);
+}
+
+.flourish[data-pos="bl"] {
+  bottom: -0.6rem;
+  left: -0.6rem;
+  transform: scaleY(-1);
+}
+
+.flourish[data-pos="br"] {
+  bottom: -0.6rem;
+  right: -0.6rem;
+  transform: rotate(180deg);
+}
+
 .placeholder {
   position: absolute;
   inset: 0;

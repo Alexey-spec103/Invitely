@@ -13,6 +13,9 @@ export default function Wall({ title, messages, styleOverrides }: GuestbookSecti
 
   return (
     <section className={styles.section}>
+      <span className={styles.quoteMark} aria-hidden="true">
+        &ldquo;
+      </span>
       {(title || editable) && (
         <h2 className={styles.title}>
           <EditableText field="title" value={title ?? ""} style={styleOverrides?.["title"]} />

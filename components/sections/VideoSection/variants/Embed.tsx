@@ -21,6 +21,10 @@ export default function Embed({ title, videoUrl, styleOverrides }: VideoSectionV
         </h2>
       )}
       <div className={styles.frame}>
+        <span className={styles.flourish} data-pos="tl" aria-hidden="true" />
+        <span className={styles.flourish} data-pos="tr" aria-hidden="true" />
+        <span className={styles.flourish} data-pos="bl" aria-hidden="true" />
+        <span className={styles.flourish} data-pos="br" aria-hidden="true" />
         {!embed ? (
           <p className={styles.placeholder}>Paste a video URL below.</p>
         ) : embed.kind === "iframe" ? (

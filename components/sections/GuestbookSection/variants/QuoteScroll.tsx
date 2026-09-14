@@ -25,6 +25,9 @@ export default function QuoteScroll({ title, messages, styleOverrides }: Guestbo
         <div className={styles.track}>
           {messages.map((message, index) => (
             <div key={`${message.guestName}-${index}`} className={styles.card}>
+              <span className={styles.quoteMark} aria-hidden="true">
+                &ldquo;
+              </span>
               <p className={styles.comment}>&ldquo;{message.comment}&rdquo;</p>
               <p className={styles.author}>{message.guestName}</p>
             </div>
