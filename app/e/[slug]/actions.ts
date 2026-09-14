@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { RsvpFormInput } from "@/components/sections/RsvpSection";
 import type { BanquetTableLookupResult } from "@/components/sections/BanquetNavigatorSection";
 import type { Json } from "@/lib/supabase/database.types";
+import { sendEmail } from "@/lib/email";
 
 export async function submitRsvp(
   eventId: string,
@@ -119,6 +120,36 @@ export async function submitRsvp(
           console.error("submitRsvp attendee sync (insert) failed", attendeeError);
         }
       }
+    }
+  }
+
+  // Best-effort confirmation email -- never blocks or fails the RSVP itself.
+  // Only guests resolved to a real `guests` row can have an email on file
+  // (the public RSVP form itself never asks for one); most self-service
+  // guests won't, and that's fine, there's just nothing to send to.
+  if (resolvedGuestId) {
+    try {
+      const { data: guestEmail } = await supabase.rpc("get_guest_email_for_rsvp_confirmation", {
+        p_event_id: eventId,
+        p_guest_id: resolvedGuestId,
+      });
+
+      if (guestEmail) {
+        const { data: event } = await supabase.from("events").select("title").eq("id", eventId).single();
+        const eventTitle = event?.title ?? "the event";
+
+        const html = input.attending
+          ? `<p>Hi ${input.guestName},</p><p>Thank you, we'll see you there! Your RSVP for <strong>${eventTitle}</strong> is confirmed.</p>`
+          : `<p>Hi ${input.guestName},</p><p>Thanks for letting us know you won't be able to make it to <strong>${eventTitle}</strong>. We'll miss you!</p>`;
+
+        await sendEmail({
+          to: guestEmail,
+          subject: input.attending ? `You're confirmed for ${eventTitle}` : `RSVP received for ${eventTitle}`,
+          html,
+        });
+      }
+    } catch (emailError) {
+      console.error("submitRsvp confirmation email failed", emailError);
     }
   }
 }

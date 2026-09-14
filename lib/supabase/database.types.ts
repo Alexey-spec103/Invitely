@@ -427,6 +427,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_own_account: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       set_site_password: {
         Args: {
           p_event_id: string
@@ -438,6 +442,13 @@ export type Database = {
         Args: {
           p_event_id: string
           p_password: string
+        }
+        Returns: string | null
+      }
+      get_guest_email_for_rsvp_confirmation: {
+        Args: {
+          p_event_id: string
+          p_guest_id: string
         }
         Returns: string | null
       }

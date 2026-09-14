@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { parseGuestLines } from "./parseGuestLines";
+import { sendEmail } from "@/lib/email";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+\-()\s]{6,20}$/;
@@ -112,6 +113,47 @@ export async function recordInvitationSent(guestId: string, channel: SendChannel
   }
 
   revalidatePath("/dashboard", "layout");
+}
+
+/** Real server-side delivery for the "Email" option in SendInviteMenu,
+ * replacing the mailto: compose window with an actual sent email. Guest and
+ * event details are re-fetched here (not trusted from the caller) so this
+ * only ever sends using an email address on file for a guest the caller
+ * actually owns -- RLS on both selects already enforces that, matching
+ * every other action in this file. */
+export async function sendGuestInvitationEmail(guestId: string, rsvpUrl: string) {
+  const supabase = await createClient();
+
+  const { data: guest, error: guestError } = await supabase
+    .from("guests")
+    .select("full_name, email, event_id")
+    .eq("id", guestId)
+    .single();
+
+  if (guestError || !guest) {
+    throw new Error(guestError?.message ?? "Guest not found");
+  }
+  if (!guest.email) {
+    throw new Error("This guest has no email on file");
+  }
+
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("title")
+    .eq("id", guest.event_id)
+    .single();
+
+  if (eventError || !event) {
+    throw new Error(eventError?.message ?? "Event not found");
+  }
+
+  await sendEmail({
+    to: guest.email,
+    subject: `You're invited to ${event.title}`,
+    html: `<p>Hi ${guest.full_name},</p><p>You're invited to <strong>${event.title}</strong>.</p><p><a href="${rsvpUrl}">RSVP here</a></p>`,
+  });
+
+  await recordInvitationSent(guestId, "email");
 }
 
 export async function addGuestsBulk(eventId: string, rawText: string) {
