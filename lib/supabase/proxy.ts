@@ -22,7 +22,12 @@ export async function resolveCustomDomain(request: NextRequest): Promise<NextRes
     return null;
   }
 
-  const hostname = request.nextUrl.hostname;
+  // request.nextUrl.hostname doesn't reflect the incoming Host header in
+  // this Next.js version's App Router (confirmed live: it stays pinned to
+  // the server's own bind address regardless of what the client sent) --
+  // the raw Host header itself is the only thing that actually carries the
+  // visitor's real hostname.
+  const hostname = request.headers.get("host") ?? request.nextUrl.hostname;
   if (hostname === appDomain || hostname === "localhost") {
     return null;
   }
