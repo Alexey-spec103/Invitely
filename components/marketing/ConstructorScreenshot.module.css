@@ -4,9 +4,13 @@
   padding-bottom: 14%;
 }
 
-/* The screenshot itself is a wide 3-panel layout (style rail + canvas +
-   layers panel), so the "laptop" is sized to its real aspect ratio rather
-   than forced into a standard 16:10 that would crop a panel away. */
+/* A real laptop screen is ~16:10 (this matches a MacBook's own panel), not
+   the source screenshot's raw 1568x463 (a wide 3-panel style
+   rail+canvas+layers capture) -- that ultra-wide ratio was previously used
+   as-is, which is what made the mockup read as an unnaturally flat, wide
+   slab instead of an actual device. `object-fit: cover` centers the crop,
+   keeping the canvas (the actual invitation design, the part worth reading)
+   fully in frame while trimming evenly off both side panels. */
 .laptop {
   position: relative;
   width: 100%;
@@ -14,7 +18,7 @@
 
 .laptopScreen {
   width: 100%;
-  aspect-ratio: 1568 / 460;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: 10px 10px 0 0;
   background: #000;
@@ -26,6 +30,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
 
