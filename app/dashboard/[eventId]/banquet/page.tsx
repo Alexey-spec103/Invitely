@@ -88,17 +88,23 @@ export default async function BanquetPage({ params }: PageProps<"/dashboard/[eve
   const firstTableGuestNames = firstTable
     ? guestList.filter((guest) => guest.table_id === firstTable.id).map((guest) => guest.full_name)
     : [];
+  const seatingLabel = getEventType(event.event_type).seatingLabel;
 
   return (
     <div>
-      <HubOverviewStrip
-        eventId={event.id}
-        eventType={event.event_type}
-        themeName={theme.name}
-        weddingDataPercent={weddingDataPercent}
-        planName={plan.name}
-        planPriceEur={plan.priceEur}
-      />
+      <h1 className="dash-h1 text-gray-900">{seatingLabel}</h1>
+      <p className="mt-1 text-sm text-gray-500">Set up tables, then add guests to each one.</p>
+
+      <div className="mt-6">
+        <HubOverviewStrip
+          eventId={event.id}
+          eventType={event.event_type}
+          themeName={theme.name}
+          weddingDataPercent={weddingDataPercent}
+          planName={plan.name}
+          planPriceEur={plan.priceEur}
+        />
+      </div>
 
       <div className="mt-6">
         <BanquetShowcase theme={theme} tableName={firstTable?.name} guestNames={firstTableGuestNames} locked={locked} />
@@ -184,11 +190,11 @@ export default async function BanquetPage({ params }: PageProps<"/dashboard/[eve
         tables={tableList}
         guests={guestList}
         attendees={attendeeList}
-        label={getEventType(event.event_type).seatingLabel}
         locked={locked}
       />
 
       <GuestTableAssignments
+        eventId={event.id}
         guests={guestList}
         tables={tableList}
         attendees={attendeeList}

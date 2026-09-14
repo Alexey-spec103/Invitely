@@ -24,7 +24,6 @@ interface BanquetTablesManagerProps {
   tables: Tables<"banquet_tables">[];
   guests: Tables<"guests">[];
   attendees: Tables<"guest_attendees">[];
-  label: string;
   /** dashboard-audit.md B21: true when the event's plan is below Premium. */
   locked: boolean;
 }
@@ -40,7 +39,6 @@ export default function BanquetTablesManager({
   tables,
   guests,
   attendees,
-  label,
   locked,
 }: BanquetTablesManagerProps) {
   const router = useRouter();
@@ -84,10 +82,7 @@ export default function BanquetTablesManager({
 
   return (
     <div>
-      <h1 className="dash-h1 text-gray-900">{label}</h1>
-      <p className="mt-1 text-sm text-gray-500">Set up tables, then add guests to each one.</p>
-
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {tables.map((table) => (
           <TableCard
             key={table.id}
@@ -103,7 +98,7 @@ export default function BanquetTablesManager({
         {isAdding ? (
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 p-4"
+            className="flex flex-col justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 p-5"
             noValidate
           >
             <div>
@@ -141,7 +136,7 @@ export default function BanquetTablesManager({
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="flex min-h-[10rem] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-4 text-gray-500 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+            className="flex min-h-[10rem] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-5 text-gray-500 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
               <Plus className="h-5 w-5" aria-hidden="true" />

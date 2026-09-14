@@ -2,10 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { assignGuestToTable } from "./banquet-actions";
 import type { Tables } from "@/lib/supabase/database.types";
 
 interface GuestTableAssignmentsProps {
+  eventId: string;
   guests: Tables<"guests">[];
   tables: Tables<"banquet_tables">[];
   attendees: Tables<"guest_attendees">[];
@@ -14,6 +16,7 @@ interface GuestTableAssignmentsProps {
 }
 
 export default function GuestTableAssignments({
+  eventId,
   guests,
   tables,
   attendees,
@@ -181,7 +184,18 @@ export default function GuestTableAssignments({
 
       <ul className={`divide-y divide-gray-200 border-t border-gray-200 ${guests.length > 0 ? "mt-4" : "mt-6"}`}>
         {guests.length === 0 && (
-          <li className="py-4 text-sm text-gray-500">No guests added yet.</li>
+          <li className="list-none py-4">
+            <Link
+              href={`/dashboard/${eventId}/guests`}
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-500 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+            >
+              <span className="text-2xl" aria-hidden="true">
+                🍽️
+              </span>
+              <span className="text-sm font-medium">No guests yet</span>
+              <span className="text-xs text-gray-400">Add guests on the Guests tab, then seat them here</span>
+            </Link>
+          </li>
         )}
         {guests.length > 0 && filteredGuests.length === 0 && (
           <li className="py-4 text-sm text-gray-500">No guests match your search/filter.</li>

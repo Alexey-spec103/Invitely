@@ -140,6 +140,29 @@ body {
   border-bottom-color: var(--dash-accent);
 }
 
+/* Same underline-only shape as .dash-input, recolored for the DARK cabinet
+   screens (Site's live-preview constructor cards) -- .dash-input's near-black
+   text is illegible on --dash-surface, confirmed live (typed text was
+   completely invisible, only the browser's spellcheck squiggle showed). */
+.dashboard-shell .dash-input-dark {
+  display: block;
+  width: 100%;
+  border: none;
+  border-bottom: 1.5px solid var(--dash-border);
+  background: transparent;
+  border-radius: 0;
+  padding: 0.375rem 0;
+  color: var(--dash-text);
+  font-size: 0.925rem;
+}
+.dashboard-shell .dash-input-dark::placeholder {
+  color: var(--dash-text-muted);
+}
+.dashboard-shell .dash-input-dark:focus {
+  outline: none;
+  border-bottom-color: var(--dash-accent);
+}
+
 .dashboard-shell .dash-btn {
   display: inline-flex;
   align-items: center;

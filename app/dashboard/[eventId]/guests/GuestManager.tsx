@@ -13,6 +13,7 @@ import {
   deleteGuestAttendee,
   setInvitationSent,
   recordInvitationSent,
+  sendGuestInvitationEmail,
   type SendChannel,
 } from "./actions";
 import BulkAddGuests from "./BulkAddGuests";
@@ -309,11 +310,12 @@ function InvitationSentBadge({
 }
 
 /** dashboard-audit.md B18: "Отправка SMS / мессенджер" -- Invitely has no
- * real SMS/email delivery backend, so this opens the host's own phone/email
+ * real SMS delivery backend, so WhatsApp/SMS open the host's own phone
  * compose window pre-filled with the guest's personal RSVP link (same
- * pattern any "share" button on the web uses), then records which channel
- * was used via `recordInvitationSent`. Hidden entirely when there's neither
- * a phone nor an email to send to. */
+ * pattern any "share" button on the web uses). Email is real server-side
+ * delivery via Resend (see sendGuestInvitationEmail) -- all three record
+ * which channel was used via `recordInvitationSent`. Hidden entirely when
+ * there's neither a phone nor an email to send to. */
 function SendInviteMenu({
   guestId,
   guestName,
@@ -333,6 +335,8 @@ function SendInviteMenu({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -355,7 +359,7 @@ function SendInviteMenu({
 
   if ((!phone && !email) || !inviteCode) return null;
 
-  const handleSend = async (channel: Extract<SendChannel, "sms" | "whatsapp" | "email">) => {
+  const handleSend = async (channel: Extract<SendChannel, "sms" | "whatsapp">) => {
     setOpen(false);
     const url = `${window.location.origin}/e/${slug}?invite=${inviteCode}`;
     const message = `Hi ${guestName}! You're invited to ${eventTitle}. RSVP here: ${url}`;
@@ -365,9 +369,6 @@ function SendInviteMenu({
       window.open(`https://wa.me/${digits}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
     } else if (channel === "sms" && phone) {
       window.location.href = `sms:${phone}?&body=${encodeURIComponent(message)}`;
-    } else if (channel === "email" && email) {
-      const subject = encodeURIComponent(`You're invited to ${eventTitle}`);
-      window.location.href = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(message)}`;
     }
 
     try {
@@ -375,6 +376,21 @@ function SendInviteMenu({
       router.refresh();
     } catch {
       // Non-critical -- the compose window still opened either way.
+    }
+  };
+
+  const handleSendEmail = async () => {
+    setOpen(false);
+    setEmailError(null);
+    setSendingEmail(true);
+    try {
+      const url = `${window.location.origin}/e/${slug}?invite=${inviteCode}`;
+      await sendGuestInvitationEmail(guestId, url);
+      router.refresh();
+    } catch (err) {
+      setEmailError(err instanceof Error ? err.message : "Failed to send email");
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -418,13 +434,19 @@ function SendInviteMenu({
             <button
               type="button"
               role="menuitem"
-              onClick={() => handleSend("email")}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
+              onClick={handleSendEmail}
+              disabled={sendingEmail}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              ✉️ Email
+              ✉️ {sendingEmail ? "Sending..." : "Email"}
             </button>
           )}
         </div>
+      )}
+      {emailError && (
+        <p className="absolute right-0 top-full mt-1 w-48 rounded-md bg-red-50 px-2 py-1 text-[11px] text-red-700 shadow-sm">
+          {emailError}
+        </p>
       )}
     </div>
   );

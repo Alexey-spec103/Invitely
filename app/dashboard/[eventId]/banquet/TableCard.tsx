@@ -101,7 +101,7 @@ export default function TableCard({ eventId, theme, table, seatedGuests, unassig
   };
 
   return (
-    <div className="flex gap-4 rounded-2xl border border-gray-200 bg-white p-4">
+    <div className="flex gap-4 rounded-2xl border border-gray-200 bg-white p-5">
       <div className="flex w-24 shrink-0 flex-col items-center gap-2">
         <div
           className="grid w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm"
@@ -260,7 +260,7 @@ export default function TableCard({ eventId, theme, table, seatedGuests, unassig
               onClick={() => setIsAddingGuest(true)}
               disabled={unassignedGuests.length === 0}
               title={unassignedGuests.length === 0 ? "Every guest is already seated" : undefined}
-              className="inline-flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
+              className="dash-btn dash-btn-neutral gap-1 px-3 py-1.5 text-xs"
             >
               <Plus className="h-3.5 w-3.5" aria-hidden="true" /> Add guest
             </button>

@@ -41,17 +41,17 @@ export default function SiteSettingsEditForm({ eventId, defaultValues }: SiteSet
       </div>
 
       <div>
-        <label htmlFor="musicUrl" className="block text-sm font-medium text-gray-700">
-          Background music URL <span className="text-gray-400">(optional)</span>
+        <label htmlFor="musicUrl" className="block text-sm font-medium text-[var(--dash-text-muted)]">
+          Background music URL <span className="text-[var(--dash-text-muted)]">(optional)</span>
         </label>
         <input
           id="musicUrl"
           type="text"
           placeholder="https://..."
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+          className="mt-1 dash-input-dark"
           {...register("musicUrl")}
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
           Link to a hosted audio file. Guests will get a play/pause button in the header.
         </p>
       </div>

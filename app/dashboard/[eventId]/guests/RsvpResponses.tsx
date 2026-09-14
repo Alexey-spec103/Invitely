@@ -135,7 +135,15 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
 
       <ul className="mt-6 divide-y divide-gray-200 border-t border-gray-200">
         {responses.length === 0 && (
-          <li className="py-4 text-sm text-gray-500">No responses yet — they&apos;ll show up here as guests RSVP. 📬</li>
+          <li className="list-none py-4">
+            <div className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-500">
+              <span className="text-2xl" aria-hidden="true">
+                📬
+              </span>
+              <span className="text-sm font-medium">No responses yet</span>
+              <span className="text-xs text-gray-400">They&apos;ll show up here as guests RSVP</span>
+            </div>
+          </li>
         )}
         {responses.length > 0 && filteredResponses.length === 0 && (
           <li className="py-4 text-sm text-gray-500">No responses match &ldquo;{search}&rdquo;.</li>
@@ -150,7 +158,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
                 className={
                   response.attending
                     ? "rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700"
-                    : "rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600"
+                    : "rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700"
                 }
               >
                 {response.attending ? "Attending" : "Not attending"}

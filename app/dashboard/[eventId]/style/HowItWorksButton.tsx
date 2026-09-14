@@ -37,7 +37,7 @@ export default function HowItWorksButton() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="flex items-center gap-1.5 rounded-full bg-gray-900 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-gray-800"
+        className="dash-btn dash-btn-neutral gap-1.5 px-3.5 py-1.5 text-xs"
       >
         <Play className="h-3 w-3 fill-current" aria-hidden="true" />
         How does this work?

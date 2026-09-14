@@ -284,14 +284,14 @@ export default function PaperConstructor({
     <div
       className={
         isBackCanvasActive
-          ? "mt-6 rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:flex sm:items-start sm:gap-6"
-          : "mt-6 rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:grid sm:grid-cols-[minmax(0,160px)_minmax(0,240px)_1fr] sm:items-start sm:gap-6"
+          ? "mt-6 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:flex sm:items-start sm:gap-6"
+          : "mt-6 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:grid sm:grid-cols-[minmax(0,160px)_minmax(0,240px)_1fr] sm:items-start sm:gap-6"
       }
     >
       <nav className={isBackCanvasActive ? "flex-none space-y-4 sm:w-40" : "space-y-4"}>
         {groupedMedia.map(({ group, items }) => (
           <div key={group}>
-            <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
+            <p className="dash-h2 px-1 text-xs uppercase tracking-wide text-[var(--dash-accent)]">
               {group}
             </p>
             <div className="mt-1 space-y-0.5">
@@ -387,7 +387,7 @@ export default function PaperConstructor({
                 type="button"
                 onClick={() => setZoom((z) => Math.max(ZOOM_MIN, +(z - ZOOM_STEP).toFixed(2)))}
                 aria-label="Zoom out"
-                className="rounded-md border border-[var(--dash-border)] px-2.5 py-1 text-sm text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+                className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
               >
                 −
               </button>
@@ -395,7 +395,7 @@ export default function PaperConstructor({
                 type="button"
                 onClick={() => setZoom((z) => Math.min(ZOOM_MAX, +(z + ZOOM_STEP).toFixed(2)))}
                 aria-label="Zoom in"
-                className="rounded-md border border-[var(--dash-border)] px-2.5 py-1 text-sm text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+                className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
               >
                 +
               </button>
@@ -403,7 +403,7 @@ export default function PaperConstructor({
                 <button
                   type="button"
                   onClick={() => setActiveId("invitation-back")}
-                  className="rounded-md border border-[var(--dash-border)] px-2.5 py-1 text-sm text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
                   ↺ Flip to back
                 </button>
@@ -417,7 +417,7 @@ export default function PaperConstructor({
                   onClick={() => setBanquetIndex((i) => Math.max(0, i - 1))}
                   disabled={banquetItemIndex === 0}
                   aria-label="Previous"
-                  className="rounded-md border border-[var(--dash-border)] p-1 hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="dash-btn dash-btn-neutral p-1 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
@@ -429,7 +429,7 @@ export default function PaperConstructor({
                   onClick={() => setBanquetIndex((i) => Math.min(banquetCount - 1, i + 1))}
                   disabled={banquetItemIndex === banquetCount - 1}
                   aria-label="Next"
-                  className="rounded-md border border-[var(--dash-border)] p-1 hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="dash-btn dash-btn-neutral p-1 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>

@@ -151,7 +151,7 @@ export default function InvitationsShowcase({
 
   return (
     <div className="mt-8 overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.3fr_1fr]">
+      <div className="grid gap-8 p-6 lg:grid-cols-[1.3fr_1fr]">
         <div>
           <h2 className="dash-h2 text-lg text-gray-900">Your complete kit</h2>
           <p className="mt-1 text-sm text-gray-500">

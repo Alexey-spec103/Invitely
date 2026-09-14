@@ -84,7 +84,7 @@ export default function DomainEditForm({ eventId, hasBasicAccess, defaultValues 
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-[var(--dash-text-muted)]">
         Point your own domain at this site. You&apos;ll still need to configure DNS with
         whichever host you deploy to — this only verifies ownership and routes matching
         requests once your domain is live.
@@ -92,36 +92,30 @@ export default function DomainEditForm({ eventId, hasBasicAccess, defaultValues 
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3" noValidate>
         <div>
-          <label htmlFor="domain" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="domain" className="block text-sm font-medium text-[var(--dash-text-muted)]">
             Domain
           </label>
           <input
             id="domain"
             type="text"
             placeholder="yoursite.com"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+            className="mt-1 dash-input-dark"
             {...register("domain")}
           />
-          {errors.domain && <p className="mt-1 text-sm text-red-600">{errors.domain.message}</p>}
+          {errors.domain && <p className="mt-1 text-sm text-red-400">{errors.domain.message}</p>}
         </div>
 
-        {formError && (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
-        )}
+        {formError && <p className="text-sm text-red-400">{formError}</p>}
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary">
           {isSubmitting ? "Saving..." : "Save & get verification instructions"}
         </button>
       </form>
 
       {defaultValues.customDomain && defaultValues.verificationToken && (
-        <div className="rounded-md border border-gray-200 bg-gray-50 p-4">
+        <div className="rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] p-4">
           {defaultValues.verifiedAt ? (
-            <p className="text-sm text-emerald-700">
+            <p className="text-sm text-emerald-400">
               Verified on {new Date(defaultValues.verifiedAt).toLocaleString("en-US", {
                 dateStyle: "medium",
                 timeStyle: "short",
@@ -130,22 +124,22 @@ export default function DomainEditForm({ eventId, hasBasicAccess, defaultValues 
           ) : null}
           {!defaultValues.verifiedAt && (
             <>
-              <p className="text-sm font-medium text-gray-900">Add this TXT record to verify ownership</p>
-              <dl className="mt-2 space-y-1 text-sm text-gray-700">
+              <p className="text-sm font-medium text-[var(--dash-text)]">Add this TXT record to verify ownership</p>
+              <dl className="mt-2 space-y-1 text-sm text-[var(--dash-text-muted)]">
                 <div>
-                  <dt className="inline font-medium">Host: </dt>
+                  <dt className="inline font-medium text-[var(--dash-text)]">Host: </dt>
                   <dd className="inline font-mono">
                     _invitely-verify.{defaultValues.customDomain}
                   </dd>
                 </div>
                 <div>
-                  <dt className="inline font-medium">Value: </dt>
+                  <dt className="inline font-medium text-[var(--dash-text)]">Value: </dt>
                   <dd className="inline font-mono break-all">{defaultValues.verificationToken}</dd>
                 </div>
               </dl>
 
               {!hasBasicAccess && (
-                <p className="mt-3 rounded-md bg-orange-50 px-3 py-2 text-sm text-orange-800">
+                <p className="mt-3 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-400">
                   🔒 Verifying is free to try, but a domain only goes live on the Basic plan or
                   above.{" "}
                   <Link href={`/dashboard/${eventId}/plan`} className="font-medium underline">
@@ -155,32 +149,21 @@ export default function DomainEditForm({ eventId, hasBasicAccess, defaultValues 
                 </p>
               )}
 
-              {verifyError && (
-                <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-                  {verifyError}
-                </p>
-              )}
+              {verifyError && <p className="mt-3 text-sm text-red-400">{verifyError}</p>}
 
-              <button
-                type="button"
-                onClick={handleVerify}
-                disabled={isVerifying}
-                className="mt-3 rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-              >
+              <button type="button" onClick={handleVerify} disabled={isVerifying} className="dash-btn dash-btn-primary mt-3">
                 {isVerifying ? "Checking..." : "Verify"}
               </button>
             </>
           )}
 
-          {removeError && (
-            <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{removeError}</p>
-          )}
+          {removeError && <p className="mt-3 text-sm text-red-400">{removeError}</p>}
 
           <button
             type="button"
             onClick={handleRemove}
             disabled={isRemoving}
-            className="mt-3 block text-sm font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-3 block text-sm font-medium text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isRemoving ? "Removing..." : "Remove domain"}
           </button>

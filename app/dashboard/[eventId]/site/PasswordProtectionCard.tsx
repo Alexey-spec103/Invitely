@@ -97,7 +97,7 @@ export default function PasswordProtectionCard({ eventId, enabled }: PasswordPro
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Choose a password"
-              className="dash-input"
+              className="dash-input-dark"
               autoComplete="off"
             />
             {error && <p className="text-sm text-red-500">{error}</p>}

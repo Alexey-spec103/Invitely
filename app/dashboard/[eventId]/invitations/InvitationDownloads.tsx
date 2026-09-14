@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import PremiumUpgradeNote from "@/components/paper/PremiumUpgradeNote";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
@@ -328,7 +329,18 @@ export default function InvitationDownloads({
 
         <ul className="mt-4 divide-y divide-gray-200 border-t border-gray-200">
           {guests.length === 0 && (
-            <li className="py-4 text-sm text-gray-500">No guests added yet.</li>
+            <li className="list-none py-4">
+              <Link
+                href={`/dashboard/${eventId}/guests`}
+                className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-500 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+              >
+                <span className="text-2xl" aria-hidden="true">
+                  💌
+                </span>
+                <span className="text-sm font-medium">No guests yet</span>
+                <span className="text-xs text-gray-400">Add guests on the Guests tab to download their invitations</span>
+              </Link>
+            </li>
           )}
           {guests.map((guest) => (
             <li key={guest.id} className="flex items-center justify-between py-3">
