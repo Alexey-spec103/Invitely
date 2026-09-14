@@ -6,9 +6,13 @@ export default function EmbedStatic({ title, venues, styleOverrides }: MapSectio
   return (
     <section className={styles.section}>
       <div className={styles.stack}>
-        <h2 className={styles.title}>
-          <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
-        </h2>
+        <div className={styles.titleRow}>
+          <span className={styles.titleFlourish} aria-hidden="true" />
+          <h2 className={styles.title}>
+            <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+          </h2>
+          <span className={`${styles.titleFlourish} ${styles.titleFlourishRight}`} aria-hidden="true" />
+        </div>
         {(venues ?? []).map((venue, index) => {
           const query = encodeURIComponent(`${venue.name}, ${venue.address}`);
           const src = `https://www.google.com/maps?q=${query}&output=embed`;

@@ -26,13 +26,44 @@
   color: var(--theme-text);
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
 .title {
   font-family: var(--theme-font-script);
   font-weight: 400;
   font-size: 1.9rem;
   line-height: 1.5;
   letter-spacing: 0;
-  margin: 0 0 1rem;
+  margin: 0;
+}
+
+/* Same corner-flourish mask reused across Hero/Letter/Video -- a small
+   flanking pair either side of the title instead of card corners, since
+   this variant deliberately has no card chrome to anchor corners to. */
+.titleFlourish {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: var(--theme-accent);
+  opacity: 0.5;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
+.titleFlourishRight {
+  transform: scaleX(-1);
 }
 
 .venueName {
@@ -68,9 +99,17 @@
     padding: 3.5rem 1.5rem;
   }
 
+  .titleRow {
+    margin: 0 0 1.25rem;
+  }
+
   .title {
     font-size: 2.3rem;
-    margin: 0 0 1.25rem;
+  }
+
+  .titleFlourish {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 
   .venueName {
@@ -92,9 +131,12 @@
     padding: 4rem 1.5rem;
   }
 
+  .titleRow {
+    margin: 0 0 1.5rem;
+  }
+
   .title {
     font-size: 2.6rem;
-    margin: 0 0 1.5rem;
   }
 
   .venueName {

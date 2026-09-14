@@ -29,8 +29,30 @@
 }
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
+}
+
+/* Same corner-flourish mask used across Hero/Letter/Map -- a quiet accent
+   on the one corner these bordered map cards otherwise leave bare. */
+.cardMark {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.4rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.5;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  pointer-events: none;
 }
 
 .venueName {

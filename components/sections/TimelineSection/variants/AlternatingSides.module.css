@@ -66,6 +66,26 @@
   display: none;
 }
 
+/* Same corner-flourish mask used across Hero/Letter/Map/Timeline -- the
+   spacer column is pure whitespace by this layout's own design, so it's a
+   natural home for a quiet accent instead of leaving it empty. Mirrored via
+   scaleX per side below, matching the alternating layout it sits in. */
+.spacerMark {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.3;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
 .time {
   display: block;
   font-family: var(--theme-font-heading);
@@ -124,7 +144,8 @@
   }
 
   .spacer {
-    display: block;
+    display: flex;
+    align-items: center;
     grid-column: 2;
   }
 
@@ -135,6 +156,11 @@
 
   .item:nth-child(even) .spacer {
     grid-column: 1;
+    justify-content: flex-end;
+  }
+
+  .item:nth-child(even) .spacerMark {
+    transform: scaleX(-1);
   }
 
   .time {

@@ -35,10 +35,36 @@
   text-align: left;
 }
 
+.venueRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.2rem;
+}
+
+/* Same corner-flourish mask used across Hero/Letter/Map -- stands in for a
+   location marker here, ahead of each venue name in this left-aligned,
+   otherwise unadorned list. */
+.venueMark {
+  flex: none;
+  width: 0.9rem;
+  height: 0.9rem;
+  background-color: var(--theme-accent);
+  opacity: 0.6;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
 .venueName {
   font-family: var(--theme-font-heading);
   font-size: 1.1rem;
-  margin: 0 0 0.2rem;
+  margin: 0;
 }
 
 .venueAddress {

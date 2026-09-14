@@ -24,14 +24,43 @@
 /* A lighter, more translucent flat panel than the Letter card (no
    radius/shadow either) -- same "paper sheet" language, just a fainter
    sheet, per the reference's Timeline capture. */
+.listWrap {
+  position: relative;
+  width: 100%;
+  max-width: 30rem;
+}
+
 .list {
   position: relative;
   list-style: none;
   width: 100%;
-  max-width: 30rem;
   margin: 0;
   padding: 2.5rem 1.5rem 1rem;
   background: color-mix(in srgb, var(--theme-bg) 50%, transparent);
+}
+
+/* A laurel-wreath cap over the spine's start, sitting in the top padding
+   before the line/dot column begins -- the same reused-asset vocabulary as
+   Letter's corner flourishes, here marking where the timeline "begins"
+   instead of a card corner. */
+.spineCap {
+  position: absolute;
+  top: 0.3rem;
+  left: 1.8125rem;
+  transform: translateX(-50%);
+  width: 1.75rem;
+  height: 1.75rem;
+  background-color: var(--theme-accent);
+  opacity: 0.45;
+  mask-image: url("/patterns/laurel-wreath.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/laurel-wreath.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  pointer-events: none;
 }
 
 .list::before {

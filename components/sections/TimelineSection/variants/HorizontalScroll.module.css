@@ -30,6 +30,7 @@
 }
 
 .card {
+  position: relative;
   flex: 0 0 14rem;
   scroll-snap-align: start;
   display: flex;
@@ -40,6 +41,28 @@
   border-left: 1px solid color-mix(in srgb, var(--theme-accent) 15%, transparent);
   border-right: 1px solid color-mix(in srgb, var(--theme-accent) 15%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 15%, transparent);
+}
+
+/* Same corner-flourish mask used across Hero/Letter/Map/Timeline -- one
+   corner per card rather than a full four-corner frame, since a scrolling
+   row of many cards would get visually noisy with more than that. */
+.cardMark {
+  position: absolute;
+  top: -0.5rem;
+  left: 0.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: var(--theme-accent);
+  opacity: 0.55;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  pointer-events: none;
 }
 
 .time {
