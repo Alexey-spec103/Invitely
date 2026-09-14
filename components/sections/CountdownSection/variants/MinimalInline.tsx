@@ -66,15 +66,20 @@ export default function MinimalInline({ title, eventDateTime, styleOverrides }: 
       ) : parts.reached ? (
         <p className={styles.reached}>Today&apos;s the day!</p>
       ) : (
-        <p className={styles.inline}>
-          {pad(parts.days)} <span className={styles.label}>days</span>
-          <span className={styles.divider}>·</span>
-          {pad(parts.hours)} <span className={styles.label}>hrs</span>
-          <span className={styles.divider}>·</span>
-          {pad(parts.minutes)} <span className={styles.label}>min</span>
-          <span className={styles.divider}>·</span>
-          {pad(parts.seconds)} <span className={styles.label}>sec</span>
-        </p>
+        <>
+          <span className={styles.ghostNumber} aria-hidden="true">
+            {pad(parts.days)}
+          </span>
+          <p className={styles.inline}>
+            {pad(parts.days)} <span className={styles.label}>days</span>
+            <span className={styles.divider}>·</span>
+            {pad(parts.hours)} <span className={styles.label}>hrs</span>
+            <span className={styles.divider}>·</span>
+            {pad(parts.minutes)} <span className={styles.label}>min</span>
+            <span className={styles.divider}>·</span>
+            {pad(parts.seconds)} <span className={styles.label}>sec</span>
+          </p>
+        </>
       )}
     </section>
   );

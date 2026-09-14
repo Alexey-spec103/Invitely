@@ -21,11 +21,37 @@
 }
 
 .grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
   gap: 1rem;
   max-width: 32rem;
   margin: 0 auto;
+}
+
+/* Two open corner brackets, plain CSS borders -- same technique as Hero's
+   StackedGrid, geometric enough to suit this grid's more structured mood
+   better than the organic flourish mask used elsewhere in this pass. */
+.cornerTopLeft,
+.cornerBottomRight {
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  opacity: 0.35;
+}
+
+.cornerTopLeft {
+  top: -1rem;
+  left: -1rem;
+  border-top: 1px solid var(--theme-text);
+  border-left: 1px solid var(--theme-text);
+}
+
+.cornerBottomRight {
+  bottom: -1rem;
+  right: -1rem;
+  border-bottom: 1px solid var(--theme-text);
+  border-right: 1px solid var(--theme-text);
 }
 
 .swatch {

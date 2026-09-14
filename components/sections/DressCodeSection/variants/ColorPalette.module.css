@@ -20,6 +20,34 @@
   margin: 0 auto 2rem;
 }
 
+.swatchesWrap {
+  position: relative;
+  padding-top: 2.5rem;
+}
+
+/* A laurel-wreath cap "presenting" the palette row -- same reused mask as
+   Timeline's spine cap, here marking a ceremonial moment instead of a
+   sequence start. Sits above the row rather than flanking it so it
+   doesn't break when the row wraps to multiple lines on narrow screens. */
+.laurelCap {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2.25rem;
+  height: 2.25rem;
+  background-color: var(--theme-accent);
+  opacity: 0.4;
+  mask-image: url("/patterns/laurel-wreath.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/laurel-wreath.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
 .swatches {
   display: flex;
   flex-wrap: wrap;

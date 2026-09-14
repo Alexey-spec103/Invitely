@@ -19,6 +19,8 @@ export default function SwatchGrid({ title, description, colors, styleOverrides 
       )}
 
       <div className={styles.grid}>
+        <span className={styles.cornerTopLeft} aria-hidden="true" />
+        <span className={styles.cornerBottomRight} aria-hidden="true" />
         {colors.map((color, index) => (
           <div key={`${color.hex}-${index}`} className={styles.swatch}>
             <span className={styles.chip} style={{ backgroundColor: color.hex }} aria-hidden="true" />

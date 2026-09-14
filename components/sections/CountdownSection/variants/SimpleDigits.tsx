@@ -53,6 +53,8 @@ export default function SimpleDigits({ title, eventDateTime, styleOverrides }: C
         <p className={styles.reached}>Today&apos;s the day!</p>
       ) : (
         <div className={styles.digits}>
+          <span className={styles.cornerMark} data-pos="tl" aria-hidden="true" />
+          <span className={styles.cornerMark} data-pos="br" aria-hidden="true" />
           <div className={styles.digit}>
             <span className={styles.number}>{parts.weeks}</span>
             <span className={styles.label}>Weeks</span>

@@ -18,6 +18,33 @@
   margin: 0;
 }
 
+.ringsWrap {
+  position: relative;
+  padding-top: 2.5rem;
+}
+
+/* Same laurel-wreath cap technique as Timeline's spine cap and DressCode's
+   ColorPalette -- here marking the countdown ring set as a small
+   ceremonial moment rather than a plain row of numbers. */
+.laurelCap {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2.25rem;
+  height: 2.25rem;
+  background-color: var(--theme-accent);
+  opacity: 0.4;
+  mask-image: url("/patterns/laurel-wreath.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/laurel-wreath.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
 .rings {
   display: flex;
   flex-wrap: wrap;

@@ -18,21 +18,24 @@ export default function ColorPalette({ title, description, colors, styleOverride
         </p>
       )}
 
-      <div className={styles.swatches}>
-        {colors.map((color, index) => (
-          <div key={`${color.hex}-${index}`} className={styles.swatch}>
-            <span className={styles.chip} style={{ backgroundColor: color.hex }} aria-hidden="true" />
-            {(color.label || editable) && (
-              <span className={styles.label}>
-                <EditableText
-                  field={`colors.${index}.label`}
-                  value={color.label ?? ""}
-                  style={styleOverrides?.[`colors.${index}.label`]}
-                />
-              </span>
-            )}
-          </div>
-        ))}
+      <div className={styles.swatchesWrap}>
+        <span className={styles.laurelCap} aria-hidden="true" />
+        <div className={styles.swatches}>
+          {colors.map((color, index) => (
+            <div key={`${color.hex}-${index}`} className={styles.swatch}>
+              <span className={styles.chip} style={{ backgroundColor: color.hex }} aria-hidden="true" />
+              {(color.label || editable) && (
+                <span className={styles.label}>
+                  <EditableText
+                    field={`colors.${index}.label`}
+                    value={color.label ?? ""}
+                    style={styleOverrides?.[`colors.${index}.label`]}
+                  />
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

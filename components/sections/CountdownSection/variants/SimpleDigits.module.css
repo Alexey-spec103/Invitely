@@ -19,10 +19,40 @@
 }
 
 .digits {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 1.25rem;
+}
+
+/* Same corner-flourish mask + data-pos convention as Video/Embed's
+   four-corner frame -- diagonal two-corner here (top-left/bottom-right)
+   rather than all four, framing the digit row without crowding it. */
+.cornerMark {
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.5;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  pointer-events: none;
+}
+
+.cornerMark[data-pos="tl"] {
+  top: -1rem;
+  left: -1rem;
+}
+
+.cornerMark[data-pos="br"] {
+  bottom: -1rem;
+  right: -1rem;
+  transform: rotate(180deg);
 }
 
 .digit {

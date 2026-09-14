@@ -46,26 +46,29 @@ export default function CircularRings({ title, eventDateTime, styleOverrides }: 
       ) : parts.reached ? (
         <p className={styles.reached}>Today&apos;s the day!</p>
       ) : (
-        <div className={styles.rings}>
-          <div className={styles.ring}>
-            <span className={styles.number}>{parts.weeks}</span>
-            <span className={styles.label}>Weeks</span>
-          </div>
-          <div className={styles.ring}>
-            <span className={styles.number}>{parts.days}</span>
-            <span className={styles.label}>Days</span>
-          </div>
-          <div className={styles.ring}>
-            <span className={styles.number}>{parts.hours}</span>
-            <span className={styles.label}>Hours</span>
-          </div>
-          <div className={styles.ring}>
-            <span className={styles.number}>{parts.minutes}</span>
-            <span className={styles.label}>Minutes</span>
-          </div>
-          <div className={styles.ring}>
-            <span className={styles.number}>{parts.seconds}</span>
-            <span className={styles.label}>Seconds</span>
+        <div className={styles.ringsWrap}>
+          <span className={styles.laurelCap} aria-hidden="true" />
+          <div className={styles.rings}>
+            <div className={styles.ring}>
+              <span className={styles.number}>{parts.weeks}</span>
+              <span className={styles.label}>Weeks</span>
+            </div>
+            <div className={styles.ring}>
+              <span className={styles.number}>{parts.days}</span>
+              <span className={styles.label}>Days</span>
+            </div>
+            <div className={styles.ring}>
+              <span className={styles.number}>{parts.hours}</span>
+              <span className={styles.label}>Hours</span>
+            </div>
+            <div className={styles.ring}>
+              <span className={styles.number}>{parts.minutes}</span>
+              <span className={styles.label}>Minutes</span>
+            </div>
+            <div className={styles.ring}>
+              <span className={styles.number}>{parts.seconds}</span>
+              <span className={styles.label}>Seconds</span>
+            </div>
           </div>
         </div>
       )}

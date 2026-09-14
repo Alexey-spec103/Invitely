@@ -18,14 +18,18 @@ export default function MinimalStripe({ title, description, colors, styleOverrid
         </p>
       )}
 
-      <div className={styles.stripe} aria-hidden="true">
-        {colors.map((color, index) => (
-          <span
-            key={`${color.hex}-${index}`}
-            className={styles.band}
-            style={{ backgroundColor: color.hex }}
-          />
-        ))}
+      <div className={styles.stripeWrap}>
+        <span className={styles.stripeCapLeft} aria-hidden="true" />
+        <span className={styles.stripeCapRight} aria-hidden="true" />
+        <div className={styles.stripe} aria-hidden="true">
+          {colors.map((color, index) => (
+            <span
+              key={`${color.hex}-${index}`}
+              className={styles.band}
+              style={{ backgroundColor: color.hex }}
+            />
+          ))}
+        </div>
       </div>
 
       <p className={styles.labels}>

@@ -20,12 +20,45 @@
   margin: 0 auto 2rem;
 }
 
+.stripeWrap {
+  position: relative;
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+/* Plain CSS end-caps marking where the gradient band starts/ends -- a
+   quieter geometric accent than a full flourish, fitting this variant's
+   minimal lean (Hero's StackedGrid/LeftAligned use the same bracket
+   technique). Held on a wrapper outside .stripe's own overflow:hidden,
+   which exists to clip the color bands into a pill and would otherwise
+   clip these too. */
+.stripeCapLeft,
+.stripeCapRight {
+  position: absolute;
+  top: -0.4rem;
+  bottom: -0.4rem;
+  width: 0.5rem;
+  opacity: 0.35;
+}
+
+.stripeCapLeft {
+  left: -0.75rem;
+  border-top: 1px solid var(--theme-text);
+  border-left: 1px solid var(--theme-text);
+  border-bottom: 1px solid var(--theme-text);
+}
+
+.stripeCapRight {
+  right: -0.75rem;
+  border-top: 1px solid var(--theme-text);
+  border-right: 1px solid var(--theme-text);
+  border-bottom: 1px solid var(--theme-text);
+}
+
 .stripe {
   display: flex;
   width: 100%;
-  max-width: 30rem;
   height: 2.5rem;
-  margin: 0 auto;
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--theme-text) 15%, transparent);
