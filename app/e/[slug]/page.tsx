@@ -15,7 +15,8 @@ import SectionBackground from "@/components/background/SectionBackground";
 import { parseCanvasFrames } from "@/lib/canvas/parse";
 import { submitRsvp, lookupGuestTable } from "./actions";
 import SitePasswordGate from "./SitePasswordGate";
-import { getInviteDescription } from "@/lib/socialPreview";
+import EnvelopeReveal from "@/components/site/EnvelopeReveal";
+import { getInviteDescription, formatEventDate } from "@/lib/socialPreview";
 import { planMeets, BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 
 export async function generateMetadata({
@@ -199,8 +200,40 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
     theme = romanticBlush;
   }
 
+  // EnvelopeReveal reuses the Hero section's own names/date content when it
+  // exists, so a host's custom monogram or wording carries over -- falling
+  // back to the event's own subtitle_names/event_date for canvas-mode sites,
+  // which have no Hero content block at all.
+  const heroContent =
+    typeof content.hero === "object" && content.hero !== null ? (content.hero as Record<string, unknown>) : {};
+  const envelopeNames =
+    Array.isArray(heroContent.names) && heroContent.names.every((name): name is string => typeof name === "string") && heroContent.names.length > 0
+      ? heroContent.names
+      : (event.subtitle_names?.length ? event.subtitle_names : [event.title]);
+  // Same "only reformat what actually looks like a raw ISO date" rule as
+  // HeroSection.tsx's own dispatcher -- content.hero.eventDate is seeded
+  // as the raw "YYYY-MM-DD" value at event creation (lib/events.ts) and
+  // only ever becomes a human string once a host edits Wedding Data, so
+  // both shapes have to be handled here too, not just the fallback.
+  const rawEnvelopeDate =
+    typeof heroContent.eventDate === "string" && heroContent.eventDate ? heroContent.eventDate : event.event_date;
+  const envelopeDate = /^\d{4}-\d{2}-\d{2}$/.test(rawEnvelopeDate) ? formatEventDate(rawEnvelopeDate) : rawEnvelopeDate;
+  const envelopeMonogramInitials =
+    typeof heroContent.monogramInitials === "string" ? heroContent.monogramInitials : undefined;
+  const envelopeRevealEnabled = typeof settings.envelopeRevealEnabled === "boolean" ? settings.envelopeRevealEnabled : true;
+
   return (
     <>
+      {envelopeRevealEnabled && (
+        <EnvelopeReveal
+          eventId={event.id}
+          theme={theme}
+          names={envelopeNames}
+          eventDate={envelopeDate}
+          monogramInitials={envelopeMonogramInitials}
+          guestName={invitedGuest?.full_name}
+        />
+      )}
       {isCanvasMode && <CanvasRenderer frames={parseCanvasFrames(event.site_config.canvas)} />}
       <ThemeProvider theme={theme}>
         <SiteHeader

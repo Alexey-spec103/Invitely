@@ -372,6 +372,8 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
     musicUrl: typeof settingsContent.musicUrl === "string" ? settingsContent.musicUrl : "",
   };
   const socialImageUrl = typeof settingsContent.socialImageUrl === "string" ? settingsContent.socialImageUrl : "";
+  const envelopeRevealEnabled =
+    typeof settingsContent.envelopeRevealEnabled === "boolean" ? settingsContent.envelopeRevealEnabled : true;
 
   const allSections = siteConfig ? parseSections(siteConfig.sections) : [];
   // dashboard-audit.md Block E: shared across the module lock hints and the
@@ -441,6 +443,7 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
         eventId={event.id}
         sections={allSections}
         hasBasicAccess={hasBasicAccess}
+        envelopeRevealEnabled={envelopeRevealEnabled}
       />
 
       <div className="mt-6 lg:grid lg:grid-cols-[420px_1fr] lg:items-start lg:gap-6">

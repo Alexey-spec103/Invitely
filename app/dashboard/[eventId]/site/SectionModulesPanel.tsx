@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { reorderSections, toggleSection } from "./actions";
+import { reorderSections, toggleSection, updateEnvelopeReveal } from "./actions";
 import { SECTION_LABELS, SECTION_ORDER, type SectionConfig, type SectionType } from "@/components/sections/registry";
 import { BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 
@@ -22,6 +22,11 @@ interface SectionModulesPanelProps {
    * free "try it" part) -- this only drives the lock hint below, since the
    * real enforcement lives in app/e/[slug]/page.tsx's public render. */
   hasBasicAccess: boolean;
+  /** Whether EnvelopeReveal shows on the public site's first visit -- a
+   * site-wide setting (content.settings.envelopeRevealEnabled), not a real
+   * `sections[]` entry, but toggled from right here for the same on/off UX
+   * as every other module. */
+  envelopeRevealEnabled: boolean;
 }
 
 // Decorative only -- weddingpost.ru's own module column has its own icon
@@ -46,7 +51,12 @@ const MODULE_ICONS: Partial<Record<SectionType, string>> = {
  * single place that turns modules on/off (SiteInlineEditor's per-section
  * headers used to have their own toggle too; removed in favor of this one
  * panel, matching weddingpost.ru's own single "Модули" column). */
-export default function SectionModulesPanel({ eventId, sections, hasBasicAccess }: SectionModulesPanelProps) {
+export default function SectionModulesPanel({
+  eventId,
+  sections,
+  hasBasicAccess,
+  envelopeRevealEnabled,
+}: SectionModulesPanelProps) {
   const router = useRouter();
   const byType = new Map(sections.map((section) => [section.type, section]));
   // Hero excluded -- always on, no row, no drag, order pinned to 0 by
@@ -69,6 +79,21 @@ export default function SectionModulesPanel({ eventId, sections, hasBasicAccess 
   // sustained hover and doesn't exist at all on touch. Click-to-expand
   // works on both.
   const [expandedGateInfo, setExpandedGateInfo] = useState<SectionType | null>(null);
+  const [envelopeEnabled, setEnvelopeEnabled] = useState(envelopeRevealEnabled);
+  const [envelopePending, setEnvelopePending] = useState(false);
+
+  const handleEnvelopeToggle = async (next: boolean) => {
+    setEnvelopeEnabled(next);
+    setEnvelopePending(true);
+    try {
+      await updateEnvelopeReveal(eventId, next);
+      router.refresh();
+    } catch {
+      setEnvelopeEnabled(!next);
+    } finally {
+      setEnvelopePending(false);
+    }
+  };
 
   const handleToggle = async (type: SectionType, next: boolean) => {
     setEnabled((prev) => ({ ...prev, [type]: next }));
@@ -100,7 +125,7 @@ export default function SectionModulesPanel({ eventId, sections, hasBasicAccess 
   };
 
   return (
-    <div className="mb-8 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4">
+    <div className="mb-8 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
       <h2 className="dash-h2 text-sm text-[var(--dash-accent)]">Modules</h2>
       <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
         Guests won&apos;t see a module until it&apos;s turned on here — drag to change the order they appear in on your public site.
@@ -168,6 +193,39 @@ export default function SectionModulesPanel({ eventId, sections, hasBasicAccess 
           );
         })}
       </ul>
+
+      {/* Not a draggable row like the modules above -- EnvelopeReveal has no
+          position in the page flow to reorder, it's a one-off moment before
+          the site even starts rendering. Same toggle-switch look as every
+          module above for a consistent on/off UX, just its own row. */}
+      <div className="mt-3 border-t border-[var(--dash-border)] pt-3">
+        <div className="flex items-center justify-between px-3 py-1.5 text-sm text-[var(--dash-text)]">
+          <span className="flex items-center gap-2">
+            <span aria-hidden="true">✉️</span>
+            Envelope reveal
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={envelopeEnabled}
+            aria-label={`Turn envelope reveal ${envelopeEnabled ? "off" : "on"}`}
+            disabled={envelopePending}
+            onClick={() => handleEnvelopeToggle(!envelopeEnabled)}
+            className={`relative h-4 w-7 shrink-0 rounded-full transition disabled:opacity-50 ${
+              envelopeEnabled ? "bg-[var(--dash-accent)]" : "bg-[var(--dash-border)]"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition ${
+                envelopeEnabled ? "left-3.5" : "left-0.5"
+              }`}
+            />
+          </button>
+        </div>
+        <p className="px-3 pb-1 text-xs text-[var(--dash-text-muted)]">
+          A brief animated envelope guests tap open before seeing your site.
+        </p>
+      </div>
     </div>
   );
 }

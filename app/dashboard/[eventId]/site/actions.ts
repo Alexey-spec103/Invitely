@@ -204,6 +204,59 @@ export async function updateSocialImage(eventId: string, socialImageUrl: string 
   revalidatePath(`/dashboard/${eventId}/site`);
 }
 
+/** Site-wide on/off switch for the envelope-open animation (EnvelopeReveal)
+ * shown on a guest's first visit to the public site. Same content.settings
+ * bag as updateSiteSettings/updateSocialImage above -- it isn't a real
+ * `sections[]` entry because it has no position in the page flow to drag,
+ * just its own toggle in SectionModulesPanel for the same on/off UX as
+ * every other module. */
+export async function updateEnvelopeReveal(eventId: string, enabled: boolean) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
+  const { data: existingConfig } = await supabase
+    .from("site_config")
+    .select("*")
+    .eq("event_id", eventId)
+    .maybeSingle();
+
+  const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
+  const existingContent = existingConfig ? parseContent(existingConfig.content) : {};
+
+  const content = {
+    ...existingContent,
+    settings: {
+      ...existingSettings(existingContent),
+      envelopeRevealEnabled: enabled,
+    },
+  };
+
+  const { error: configError } = existingConfig
+    ? await supabase
+        .from("site_config")
+        .update({ content: content as unknown as Json })
+        .eq("event_id", eventId)
+    : await supabase.from("site_config").insert({
+        event_id: eventId,
+        theme_id: DEFAULT_THEME_ID,
+        sections: existingSections as unknown as Json,
+        content: content as unknown as Json,
+      });
+
+  if (configError) {
+    throw new Error(configError.message);
+  }
+
+  revalidatePath(`/dashboard/${eventId}/site`);
+}
+
 /** The single thing every module card's header switch calls -- on/off is
  * fully decoupled from content now (see the individual `update*Section`
  * actions below, which never touch `enabled`), so flipping a switch never
