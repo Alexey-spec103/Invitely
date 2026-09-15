@@ -298,5 +298,50 @@ texture" preset instead of free-form prompting) before continuing this category.
 
 ---
 
+## Восточный (oriental)
+
+### Reference 1 — Ажурный (openwork lace) invitation cards (category mood — several
+cards in this style browser share the same intricate white lace medallion motif,
+so this was a style study rather than one specific couple's card).
+**Studied:** intricate white lace/doily circular medallion, dense symmetric
+mandala-like pattern, very fine detail.
+**Prompt:** `oriental wedding decoration, intricate white lace mandala medallion
+pattern, ornate circular doily design with gold center accent, elegant flat vector
+illustration, isolated on transparent background, no text, colorful`
+**Saved as:** `oriental-color-mandala.svg` — excellent first-try match, subtle
+gold center accent as requested.
+
+### Reference 2 — Islamic geometric pattern (category mood, Ажурный/Восточный
+overlap — several cards use gold-on-cream geometric tile motifs).
+**Studied:** deep green and gold 8-pointed star geometric medallion, arabesque
+interlocking pattern.
+**Prompt attempt 1 (issue):** including "mihrab arch frame" in the prompt made
+Recraft generate a literal mosque illustration (dome, minaret, crescent moon) —
+same architecture-drift failure mode as the Marble category's "arch"/"frame"
+prompts. Real religious-building imagery isn't an appropriate generic decorative
+asset, so this result was discarded (not saved).
+**Fix that worked:** dropped "arch"/"mihrab" entirely, described the geometric
+star pattern directly instead.
+**Prompt (final):** `oriental wedding decoration, geometric star pattern medallion
+in gold and deep green, intricate arabesque design, flat vector illustration,
+isolated on transparent background, no text, colorful`
+**Saved as:** `oriental-color-star.svg`
+
+### Reference 3 — "Ангелина и Вячеслав" invitation card
+**Studied:** East Asian (Chinese/Japanese) sub-style — red paper lanterns, gold
+pagoda-roof architecture, red color scheme, cherry-blossom-adjacent florals. A
+distinctly different Восточный sub-theme from the Islamic/Central-Asian cards
+above (this category spans multiple "Eastern" traditions).
+**Prompt:** `east asian wedding decoration, red paper lantern with chrysanthemum
+and peony flowers, gold accents, elegant flat vector illustration, isolated on
+transparent background, no text, colorful`
+**Saved as:** `oriental-color-lantern.svg` — lanterns rendered mostly white/grey
+with red caps and tassels rather than fully red paper, but the cherry-blossom
+branch with gold flower centers is lovely; kept as-is.
+
+**Восточный status: 3/3 references done.**
+
+---
+
 <!-- Next: bring each category above up to 3 references, then move to remaining
 categories (Пионы, Мраморный/vintage, Восточный, Рустик, Ажурный, etc.) -->
