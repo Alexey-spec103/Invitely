@@ -38,3 +38,4 @@ subfolder) and wire it into the relevant section variant.
 | `peony-color-burgundy.svg` | "Макар и Дарья" — burgundy/wine peonies, dark moody | peony wedding decoration, deep burgundy and wine red peonies, sage green eucalyptus leaves |
 | `peony-color-white.svg` | "Татьяна и Алексей" — pure white peonies | peony wedding decoration, pure white peonies, soft green leaves, delicate elegant |
 | `peony-color-terracotta.svg` | "Амур и Ольга" — warm terracotta/peach peonies | peony wedding decoration, warm terracotta and peach peonies, golden autumn leaves |
+| `marble-color-geode.svg` | "Валерий и Наталия" — blue-grey marble, pivoted to agate/geode | wedding decoration, blue-grey agate geode crystal cluster with gold accents — abstract "marble texture" prompts kept generating literal architecture instead (see LOG.md); only 1/3 for this category |

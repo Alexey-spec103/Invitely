@@ -266,5 +266,37 @@ background, no text, colorful`
 
 ---
 
+## Мраморный (marble)
+
+### Reference 1 — "Валерий и Наталия" invitation card
+**Studied:** blue-grey marble texture background with thin gold veining — this
+category is almost entirely full-bleed marble-texture backgrounds (like Морской),
+not small motifs, so translating it into an isolated decorative element required
+picking a concrete subject rather than "abstract marble texture."
+**Prompt attempts 1-5 (issue, not resolved cleanly):** every attempt to generate an
+isolated "marble texture" shape or frame — geometric corner, oval gem, gold arch
+frame — came back as a literal building/architecture illustration (a Taj-Mahal-like
+domed structure, a glass conservatory/gazebo) or an unrelated object (a monstera
+leaf on a crystal, a nautilus shell), never actual marble stone texture. "Marble"
++ "geometric"/"frame"/"arch" reliably triggered architectural associations in this
+model; dropping those words didn't fix it either.
+**Fix that worked (pivot, not a fix):** abandoned the "abstract marble texture"
+concept and generated a concrete, different but adjacent subject instead — an
+agate/geode slice (concentric banded rings, a mineral cross-section) with a gold
+botanical sprig laid over it. This is a real, commonly-used motif in the same
+"stone luxury" wedding-stationery aesthetic, and Recraft rendered it reliably on
+the first real attempt.
+**Prompt (final):** `wedding decoration, blue-grey agate geode crystal cluster
+with gold accents, elegant flat vector illustration, isolated on transparent
+background, no text, colorful`
+**Saved as:** `marble-color-geode.svg`
+
+**Мраморный status: 1/3 references done — only the agate/geode pivot succeeded;
+the other 2 references for this category are not yet attempted. Revisit with a
+different strategy (e.g. try Recraft's Style explorer for an existing "marble
+texture" preset instead of free-form prompting) before continuing this category.**
+
+---
+
 <!-- Next: bring each category above up to 3 references, then move to remaining
 categories (Пионы, Мраморный/vintage, Восточный, Рустик, Ажурный, etc.) -->
