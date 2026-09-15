@@ -64,6 +64,28 @@ rust dried florals, cream and tan tones, small white rose, asymmetric corner
 arrangement, flat vector illustration, isolated on transparent background, no text`
 **Saved as:** `boho-color-spray.svg`
 
+### Reference 2 — line-art dried botanical card (style browser, Бохо category)
+**Studied:** delicate thin-line style — dried fern leaves, white cosmos flowers,
+a thin brown curved line arcing behind the spray, very sparse/airy composition
+(mostly negative space) rather than a dense cluster — the "quiet" end of boho,
+distinct from Reference 1's dense colorful spray.
+**Prompt:** `boho wedding decoration, delicate dried fern leaves and white cosmos
+flowers, thin brown curved line accent, sparse elegant line-art botanical
+illustration, flat vector, isolated on transparent background, no text, colorful`
+**Saved as:** `boho-color-lineart.svg`
+
+### Reference 3 — "Константин и Мария" invitation card
+**Studied:** thin gold geometric angular frame (polygon, not a simple circle/diamond),
+white cosmos flowers clustered with tan/brown dried pampas grass plumes tucked into
+one corner of the frame — same gold-geometric-frame device as the Романтический
+category's Reference 2, but paired with boho's pampas-grass palette instead of roses.
+**Prompt:** `boho wedding decoration, thin gold geometric angular frame corner,
+white cosmos flowers, tan and brown dried pampas grass plumes, elegant flat vector
+illustration, isolated on transparent background, no text, colorful`
+**Saved as:** `boho-color-frame.svg`
+
+**Бохо status: 3/3 references done.**
+
 ---
 
 ## Морской (coastal)
@@ -88,6 +110,40 @@ stationery illustration, isolated on transparent background, no text, vivid past
 colors` + negative prompt above
 **Saved as:** `coastal-color-spray.svg` (still fairly muted — authentic to the
 category's own dusty palette, not a failure)
+
+### Reference 2 — "Алексей и Анастасия" invitation card (minimalist variant)
+**Studied:** unlike most Морской cards (full-bleed watercolor scenes), this one is
+a clean white background with a small elegant blue line-art seashell emblem at the
+top and thin scattered dot accents — the minimalist end of the coastal category.
+**Prompt:** `coastal wedding decoration, delicate blue line-art seashell emblem,
+thin scattered dot accents, minimalist elegant illustration, flat vector, isolated
+on transparent background, no text, colorful`
+**Saved as:** `coastal-color-shell.svg`
+
+### Reference 3 — nautical anchor motif (own composition, not a single weddingpost.ru
+card — this category's small-motif options were exhausted after References 1-2, so
+this explores a related nautical subject in the same category's palette).
+**Studied:** anchor + starfish + seaweed as a distinct coastal sub-theme (nautical,
+not shells/watercolor).
+**Prompt attempts 1-3 (issue, not a failure):** every anchor+rope composition
+Recraft generated — regardless of phrasing ("entwined with rope", "die-cut sticker
+style", explicit "no background shape") — came back with a solid or circular
+backdrop shape baked into the vector itself (not a removable PNG background; a real
+path in the SVG, color `#E4E5DF`). Concluded this is the model's natural style for
+this composition (a badge/emblem backdrop), not a bug to fight further — round
+wax-seal-style emblems are a legitimate, common wedding-invitation motif, so the
+circular badge was kept deliberately rather than re-attempted a 4th time.
+**Prompt (final, badge accepted):** `coastal wedding decoration, small navy blue
+anchor icon, scattered coral starfish and white seashells, sage seaweed sprig,
+elegant flat vector illustration, isolated on transparent background, no text,
+colorful, no rope, no circular frame, no background shape`
+**Saved as:** `coastal-color-badge.svg` — **note:** unlike every other staged
+asset, this one has an intentional opaque circular badge background baked in
+(taupe/beige `#E4E5DF`), not a transparent cutout. Use only where a round badge
+shape fits the layout, or as inspiration to redraw as a true die-cut in a future
+pass.
+
+**Морской status: 3/3 references done.**
 
 ---
 
