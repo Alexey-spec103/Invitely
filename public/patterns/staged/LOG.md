@@ -206,6 +206,33 @@ botanical spray, flat vector illustration, isolated on transparent background, n
 text, colorful`
 **Saved as:** `provence-color-wisteria.svg`
 
+### Reference 2 — "Даниэль и Ирина" invitation card
+**Studied:** a rustic stone archway with blush pink climbing roses trailing over
+it — an architectural (not purely botanical) provence motif, distinct from
+Reference 1's hanging wisteria.
+**Prompt:** `provence wedding decoration, blush pink and rose climbing florals
+over a rustic stone archway corner, soft green leaves, romantic watercolor style
+botanical illustration, flat vector, isolated on transparent background, no text,
+colorful`
+**Saved as:** `provence-color-archway.svg` — one of the most detailed/successful
+generations in the whole batch, close match to the reference on first try.
+
+### Reference 3 — "Жанна и Марат" invitation card
+**Studied:** a full lavender-field landscape scene — rolling hills, a single tree,
+a small rustic stone cottage — the classic "Provence countryside" motif, distinct
+from both prior references (this one is a landscape/scene, not a floral spray or
+architectural detail).
+**Prompt:** `provence wedding decoration, lavender field with a small rustic stone
+cottage silhouette, rolling hills, soft purple and green watercolor style
+illustration, flat vector, isolated on transparent background, no text, colorful`
+**Saved as:** `provence-color-lavender.svg` — composition is excellent (tree,
+cottage, rolling lavender rows) but came back in a muted mauve-grey palette
+rather than vivid purple; accepted as-is since it reads as an elegant, quieter
+illustration style consistent with several other assets in this library (e.g.
+`boho-color-lineart.svg`), not re-attempted for saturation.
+
+**Прованс status: 3/3 references done.**
+
 ---
 
 <!-- Next: bring each category above up to 3 references, then move to remaining
