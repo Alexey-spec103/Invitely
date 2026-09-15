@@ -291,10 +291,39 @@ with gold accents, elegant flat vector illustration, isolated on transparent
 background, no text, colorful`
 **Saved as:** `marble-color-geode.svg`
 
-**Мраморный status: 1/3 references done — only the agate/geode pivot succeeded;
-the other 2 references for this category are not yet attempted. Revisit with a
-different strategy (e.g. try Recraft's Style explorer for an existing "marble
-texture" preset instead of free-form prompting) before continuing this category.**
+### Reference 2 — "Антон и Мария" invitation card ("мы — лёд и пламя" / "we are
+ice and fire")
+**Studied:** dramatic near-black marble background with fiery orange cracks —
+the "ice and fire, two opposites" concept, the most dramatic/luxury-coded card in
+this category.
+**Prompt attempt 1 (issue):** `wedding decoration, black and dark grey agate geode
+crystal slice with fiery orange veining, dramatic luxury flat vector
+illustration...` — generated a black-and-white silhouette of a dancing woman
+inside the agate rings instead of veining (bizarre, unrelated misfire — "dramatic
+luxury" likely pulled in an unrelated "dramatic dance" association). Discarded.
+**Fix that worked:** added explicit `no figures, no people, no silhouettes` and
+rebalanced the color wording.
+**Prompt (final):** `black and charcoal grey agate geode crystal slice with warm
+orange and amber veining, no figures, no people, no silhouettes, elegant luxury
+flat vector illustration, isolated on transparent background, no text, colorful`
+**Saved as:** `marble-color-dark.svg` — came back mostly pale/white with only a
+small orange crystal core and a dark charcoal rim, not the fully dark/dramatic
+result asked for; kept as-is (dark rim still gives it a distinct, moodier feel
+than the other agate pieces) rather than re-attempted a 3rd time.
+
+### Reference 3 — "Михаил и Оливия" invitation card
+**Studied:** teal/turquoise marble with gold ink-splash accents and gold flecks —
+a jewel-tone, opulent variant.
+**Prompt:** `teal and turquoise agate geode crystal slice with gold splash
+accents, no figures, no people, elegant luxury flat vector illustration, isolated
+on transparent background, no text, colorful`
+**Saved as:** `marble-color-teal.svg` — excellent result, sage-teal druzy crystal
+center with a fine gold-speckled outer edge, close match to the reference mood.
+
+**Мраморный status: 3/3 references done** (all three use the agate/geode-slice
+pivot established in Reference 1 — abstract "marble texture" prompts never once
+worked cleanly across 8 total attempts in this category; the concrete
+agate-slice framing is the reliable path for this whole aesthetic going forward).
 
 ---
 
