@@ -42,3 +42,6 @@ subfolder) and wire it into the relevant section variant.
 | `oriental-color-mandala.svg` | Ажурный category mood — white lace medallion | oriental wedding decoration, intricate white lace mandala medallion pattern, ornate circular doily design with gold center accent |
 | `oriental-color-star.svg` | Islamic geometric pattern mood | oriental wedding decoration, geometric star pattern medallion in gold and deep green — avoided "arch"/"mihrab" wording, which generated a literal mosque instead |
 | `oriental-color-lantern.svg` | "Ангелина и Вячеслав" — East Asian lanterns + cherry blossom | east asian wedding decoration, red paper lantern with chrysanthemum and peony flowers, gold accents |
+| `rustic-color-wildflowers.svg` | Рустик category mood — dried wildflower cluster | rustic wedding decoration, delicate dried wildflowers cluster, small daisies and cosmos, thin stems |
+| `rustic-color-eucalyptus.svg` | Рустик category mood — eucalyptus spray | rustic wedding decoration, cascading eucalyptus greenery spray — came back as a full tied bouquet, pale grey-green |
+| `rustic-color-wheat.svg` | "Олег и Лидия" — golden wheat + pampas grass | rustic wedding decoration, golden wheat stalks and dried pampas grass bundle — has the same tied-bundle background-blob quirk as `coastal-color-badge.svg` |

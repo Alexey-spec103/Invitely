@@ -343,5 +343,44 @@ branch with gold flower centers is lovely; kept as-is.
 
 ---
 
+## Рустик (rustic)
+
+### Reference 1 — category mood card (delicate dried wildflower cluster with
+thin-line monogram — a common rustic motif across several cards in this style).
+**Studied:** small white daisies/cosmos, thin stems, baby's-breath-style sprigs,
+very sparse and airy composition.
+**Prompt:** `rustic wedding decoration, delicate dried wildflowers cluster, small
+daisies and cosmos, thin stems, elegant flat vector illustration, isolated on
+transparent background, no text, colorful`
+**Saved as:** `rustic-color-wildflowers.svg` — clean transparent background,
+excellent match.
+
+### Reference 2 — category mood (eucalyptus greenery spray, common across many
+Рустик cards).
+**Studied:** cascading soft sage-green eucalyptus leaves.
+**Prompt:** `rustic wedding decoration, cascading eucalyptus greenery spray, soft
+sage green leaves, elegant flat vector illustration, isolated on transparent
+background, no text, colorful`
+**Saved as:** `rustic-color-eucalyptus.svg` — came back as a full tied bridal
+bouquet (roses + eucalyptus) rather than a loose greenery spray, in a pale
+desaturated grey-green palette; kept as-is, consistent with other quiet-palette
+pieces in this library.
+
+### Reference 3 — "Олег и Лидия" invitation card
+**Studied:** golden wheat stalks and dried pampas grass, warm autumn palette.
+**Prompt:** `rustic wedding decoration, golden wheat stalks and dried pampas
+grass bundle, warm amber and honey tones, elegant flat vector illustration,
+isolated on transparent background, no text, colorful`
+**Saved as:** `rustic-color-wheat.svg` — same "tied bundle → opaque background
+blob baked into the vector" issue as the coastal anchor (`coastal-color-badge.svg`,
+see Морской section): every one of the 4 variants generated for this prompt had a
+pale beige blob behind the wheat sheaf. Accepted as a recurring model quirk for
+tied-bouquet compositions specifically (not retried further) rather than a
+one-off; picked the cleanest-looking variant of the 4.
+
+**Рустик status: 3/3 references done.**
+
+---
+
 <!-- Next: bring each category above up to 3 references, then move to remaining
 categories (Пионы, Мраморный/vintage, Восточный, Рустик, Ажурный, etc.) -->
