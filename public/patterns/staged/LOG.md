@@ -159,6 +159,39 @@ illustration, isolated on transparent background, no text, no background
 rectangle`
 **Saved as:** `luxury-color-peonies.svg`
 
+### Reference 2 — "Фаина и Роман" invitation card
+**Studied:** deep navy blue background, gold stars, crescent moon, gold thread/dot
+constellation lines — a celestial night-sky variant of the dark-luxury mood,
+distinct from Reference 1's crimson-floral take.
+**Prompt:** `moody luxury wedding decoration, gold stars and crescent moon,
+delicate gold constellation lines, deep navy blue night sky accent, jewel-tone flat
+vector illustration, isolated on transparent background, no text, colorful`
+**Saved as:** `luxury-color-stars.svg` — came back as a full decorative square
+frame (garland strings + stars along all four edges, moon in the center) rather
+than a corner accent; kept as-is since it's a strong, usable frame element.
+
+### Reference 3 — "Вячеслав и Александра" invitation card
+**Studied:** black background, metallic gold autumn oak leaves cascading across
+the card — a botanical (not floral, not celestial) take on the dark-luxury mood.
+**Prompt attempt 1 (issue):** `moody luxury wedding decoration, metallic gold
+autumn oak leaves cascading cluster...` — came back desaturated/pale grey despite
+"metallic gold" and "colorful" in the prompt (same failure mode as the coastal
+category's Reference 1).
+**Fix that partially worked:** rewrote the prompt to drop "wedding decoration"'s
+usual template and lead with the color instruction, added an explicit negative
+prompt (`black and white, monochrome, grayscale, sepia, desaturated, pale, faded,
+washed out, light gray, cream, beige, white outline only, line art only, no
+color`). Result: branch and acorns rendered in true gold/amber tones; the leaves
+themselves stayed pale grey. Accepted as a legitimate two-tone look (gold
+branch/acorns, grey-green leaves) rather than attempting a 4th regeneration.
+**Prompt (final):** `wedding decoration, vivid metallic gold foil oak leaf branch
+with acorns, rich amber and bronze gold gradient, luxury flat vector illustration,
+isolated on transparent background, no text, saturated gold colors, not gray, not
+white, not pale` + negative prompt above
+**Saved as:** `luxury-color-leaves.svg`
+
+**Тёмный фон / Luxury status: 3/3 references done.**
+
 ---
 
 ## Прованс (provence)
