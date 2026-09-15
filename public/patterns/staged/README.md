@@ -35,3 +35,6 @@ subfolder) and wire it into the relevant section variant.
 | `provence-color-wisteria.svg` | "Виктория и Денис" — hanging periwinkle/lavender wisteria | provence wedding decoration, hanging wisteria clusters in periwinkle and lavender blue, soft green eucalyptus leaves |
 | `provence-color-archway.svg` | "Даниэль и Ирина" — pink roses over a stone archway | provence wedding decoration, blush pink and rose climbing florals over a rustic stone archway corner — one of the strongest results in the batch |
 | `provence-color-lavender.svg` | "Жанна и Марат" — lavender field with a stone cottage | provence wedding decoration, lavender field with a small rustic stone cottage silhouette, rolling hills — landscape scene, muted mauve-grey palette rather than vivid purple |
+| `peony-color-burgundy.svg` | "Макар и Дарья" — burgundy/wine peonies, dark moody | peony wedding decoration, deep burgundy and wine red peonies, sage green eucalyptus leaves |
+| `peony-color-white.svg` | "Татьяна и Алексей" — pure white peonies | peony wedding decoration, pure white peonies, soft green leaves, delicate elegant |
+| `peony-color-terracotta.svg` | "Амур и Ольга" — warm terracotta/peach peonies | peony wedding decoration, warm terracotta and peach peonies, golden autumn leaves |

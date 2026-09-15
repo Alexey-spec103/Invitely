@@ -235,5 +235,36 @@ illustration style consistent with several other assets in this library (e.g.
 
 ---
 
+## Пионы (peony)
+
+### Reference 1 — "Макар и Дарья" invitation card
+**Studied:** deep burgundy and wine-red peonies with sage-green eucalyptus, dark
+moody bouquet cluster.
+**Prompt:** `peony wedding decoration, deep burgundy and wine red peonies, sage
+green eucalyptus leaves, elegant flat vector illustration, isolated on
+transparent background, no text, colorful`
+**Saved as:** `peony-color-burgundy.svg`
+
+### Reference 2 — "Татьяна и Алексей" invitation card
+**Studied:** pure white peonies, soft green leaves — the elegant/pure end of the
+peony category, distinct from Reference 1's dark moody bouquet.
+**Prompt:** `peony wedding decoration, pure white peonies, soft green leaves,
+delicate elegant flat vector illustration, isolated on transparent background,
+no text, colorful`
+**Saved as:** `peony-color-white.svg`
+
+### Reference 3 — "Амур и Ольга" invitation card
+**Studied:** warm terracotta and peach peonies with golden autumn-toned leaves —
+a warm autumnal variant, distinct from both prior references' cool/neutral
+palettes.
+**Prompt:** `peony wedding decoration, warm terracotta and peach peonies, golden
+autumn leaves, elegant flat vector illustration, isolated on transparent
+background, no text, colorful`
+**Saved as:** `peony-color-terracotta.svg`
+
+**Пионы status: 3/3 references done.**
+
+---
+
 <!-- Next: bring each category above up to 3 references, then move to remaining
 categories (Пионы, Мраморный/vintage, Восточный, Рустик, Ажурный, etc.) -->
