@@ -327,6 +327,76 @@ agate-slice framing is the reliable path for this whole aesthetic going forward)
 
 ---
 
+## Космический (cosmic)
+
+The hardest category so far — "cosmic wedding decoration" reliably drifted into
+literal bride-and-groom scenes, a rocket ship, or animal-shaped constellations
+regardless of explicit `no people`/`no figures`/`no animals` exclusions. ~10
+generation attempts total across the 3 references below; every discarded result
+is noted so the pattern is documented rather than repeated blind next time.
+
+### Reference 1 — style-browser mood (gold stars/moon on navy, same family as
+`luxury-color-stars.svg` but this category's own cards lean navy/purple night-sky
+themes — "Владимир и Юлия" nebula card, "Сара и Тимофей" starry-night card).
+**Studied:** gold stars, crescent moon, thin gold constellation lines — the
+common thread across this category's cards, regardless of exact background hue.
+**Prompt attempts 1-4 (discarded):** `cosmic wedding decoration, purple and
+violet nebula galaxy swirl...` → generated a bride-and-groom couple silhouette
+scene. Retry with `no people, no figures, no couple` → generated a rocket ship
+(monochrome, no purple at all). Retry with the exact `luxury-color-stars.svg`
+wording but purple instead of navy (`gold stars and moon phases on deep purple
+night sky...`) → generated ANOTHER couple-and-building scene.
+**Fix that worked:** re-used the *literal* `luxury-color-stars.svg` prompt
+unchanged except swapping "navy" for "purple" and "moon phases" back to
+"crescent moon" (the exact working formula, not a paraphrase of it).
+**Prompt (final):** `moody luxury wedding decoration, gold stars and crescent
+moon, delicate gold constellation lines, deep purple night sky accent, jewel-tone
+flat vector illustration, isolated on transparent background, no text, colorful`
+**Saved as:** `cosmic-color-stars.svg` — came back as a charming gold-star/
+charcoal-moon arched window motif with olive branches (pale background, not
+deep purple), but clean and figure-free; kept as-is.
+
+### Reference 2 — abstract constellation motif (own composition, not a single
+weddingpost.ru card — pursued after Reference 1 to get a non-frame, pure
+line-and-stars motif for variety).
+**Studied:** thin gold lines connecting stars, minimalist star-chart aesthetic.
+**Prompt attempts (discarded):** "geometric constellation wireframe" generated a
+literal unicorn made of constellation lines; "no animals, no creatures, no
+shapes of objects" on a rewritten prompt generated a goat/capricorn zodiac
+figure (see Reference 3 below — kept that one instead, deliberately, once it
+was clear the model wants to draw a creature inside any "constellation"
+prompt). The one clean result came from browsing the *same* generation batch as
+Reference 1's fix (2 generate calls of that exact prompt ran during the
+recovery process) — a genuine abstract gold-line constellation with an olive
+branch, no figure, picked directly from history rather than a new prompt.
+**Saved as:** `cosmic-color-constellation.svg` — pure gold constellation lines,
+small stars, one olive branch sprig, fully transparent background.
+
+### Reference 3 — zodiac constellation (own composition, embracing the model's
+tendency rather than fighting it)
+**Studied:** N/A — this is the "if you can't beat it, use it" pivot: every
+"constellation" prompt in this session generated an animal figure regardless of
+exclusions, so instead of fighting that tendency a 4th time, one of the
+animal-constellation results was kept deliberately as a legitimate zodiac-sign
+motif (a real, common decorative device — capricorn/goat outlined in gold
+stars-and-lines).
+**Prompt:** `gold dot-and-line star constellation pattern, small five-point
+stars connected by thin curved lines, no animals, no creatures, no shapes of
+objects, abstract night sky map, elegant flat vector illustration, isolated on
+transparent background, no text, colorful` (ignored the "no animals" instruction
+entirely — kept for reference as the prompt that produced it, not because it
+worked as written)
+**Saved as:** `cosmic-color-zodiac.svg` — capricorn/goat silhouette with gold
+star-and-line constellation overlay, fully transparent background, no other
+figures.
+
+**Космический status: 3/3 references done** (all three needed a rewrite,
+recovery, or deliberate pivot — this category's failure rate was far higher
+than any other; see individual notes above before attempting more references
+here).
+
+---
+
 ## Восточный (oriental)
 
 ### Reference 1 — Ажурный (openwork lace) invitation cards (category mood — several
