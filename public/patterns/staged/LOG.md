@@ -450,6 +450,53 @@ floral-with-named-flower-colors framing broke through).
 
 ---
 
+## Акварельный (watercolor)
+
+First category deliberately using genuine watercolor-technique language
+(`"visible brush strokes"`, `"loose brushstroke illustration"`,
+`"ink-wash... soft bleeding edges"`) instead of the repeated `"elegant flat
+vector illustration"` suffix used everywhere earlier — see the style-diversity
+note under Ажурный above. All three came back with visibly different linework/
+shading than the flat-vector pieces (softer gradients, looser stem lines,
+ghosted secondary layers) even where color didn't fully come through.
+
+### Reference 1 — "Артём и Наталья" invitation card
+**Studied:** soft translucent eucalyptus greenery wreath, painterly watercolor
+texture.
+**Prompt:** `watercolor style wedding decoration, soft translucent eucalyptus
+greenery wreath, delicate painted texture with visible brush strokes, pastel
+green watercolor illustration, isolated on transparent background, no text,
+colorful`
+**Saved as:** `watercolor-color-eucalyptus.svg` — genuine soft gradient shading
+on leaves, coral-pink flower bases, clearly softer technique than the flat-
+vector pieces.
+
+### Reference 2 — "Алина и Денис" invitation card
+**Studied:** blue cornflower wildflower field with dried wheat stalks, loose
+painted brushwork.
+**Prompt:** `watercolor style wedding decoration, blue cornflowers and wild
+wheat stalks, soft painted texture, loose brushstroke illustration, gentle
+color bleeding, isolated on transparent background, no text, colorful`
+**Saved as:** `watercolor-color-cornflower.svg` — the best color result in this
+category: real blue cornflowers with visible ink linework, plus ghosted paler
+duplicate flowers layered behind the main ones (a genuine watercolor-painting
+compositional trick, unprompted).
+
+### Reference 3 — "Алексей и Диана" invitation card
+**Studied:** loose blue anemone/poppy flowers, minimal ink-wash brushstroke
+style, sparse composition.
+**Prompt:** `loose ink-wash watercolor wedding decoration, blue anemone and
+poppy flowers, minimal brushstroke style, soft bleeding edges, sparse elegant
+composition, isolated on transparent background, no text, colorful`
+**Saved as:** `watercolor-color-anemone.svg` — elegant sparse anemone spray
+with dark contrasting flower centers and a fine dark stem line; no blue came
+through (fully monochrome white/grey) but the loose, organic linework is
+distinctly different from every flat-vector piece earlier in this library.
+
+**Акварельный status: 3/3 references done.**
+
+---
+
 ## Восточный (oriental)
 
 ### Reference 1 — Ажурный (openwork lace) invitation cards (category mood — several
