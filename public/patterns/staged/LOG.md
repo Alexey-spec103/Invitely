@@ -397,6 +397,59 @@ here).
 
 ---
 
+## Ажурный (ajour / openwork lace)
+
+**Style-diversity note:** by this category it was clear that repeating the same
+`"elegant flat vector illustration"` suffix on every prompt across all
+categories was producing one homogeneous rendering style regardless of subject
+— every asset reads as "the same illustrator" rather than reflecting each
+reference's actual look. Starting after this category, the style-descriptor
+phrase is chosen per reference (matching what's actually on the weddingpost.ru
+card — watercolor, bold flat color, fine line engraving, papercut, etc.)
+instead of reused verbatim. Recraft's "Style references" upload (paperclip icon
+next to the prompt box) is also worth trying for a future batch — not yet used
+this session.
+
+### Reference 1 — "Михаил и Наталья" invitation card
+**Studied:** ornate gold pearl-beadwork curtain-swag border, luxurious openwork
+scrollwork.
+**Prompt:** `ajour lace wedding decoration, ornate gold pearl beadwork curtain
+border pattern, luxurious openwork design, elegant flat vector illustration,
+isolated on transparent background, no text, colorful`
+**Saved as:** `ajour-color-beadwork.svg` — came back as a literal sheer curtain
+with a beaded scroll swag (accurate composition, matches the reference almost
+exactly) but fully monochrome pale grey/white, no gold color came through.
+
+### Reference 2 — "Егор и Екатерина" invitation card
+**Studied:** dark emerald green background with a white ornate lace border
+frame — the color-contrast variant of this category (most other cards are
+white-on-white or cream).
+**Prompt:** `ajour lace wedding decoration, elegant white lace border frame
+pattern, ornate openwork design, dark emerald green and white color palette,
+flat vector illustration, isolated on transparent background, no text,
+colorful`
+**Saved as:** `ajour-color-frame.svg` — came back as a die-cut lace frame with a
+bride silhouette inside (not asked for, but a genuine, common wedding-stationery
+motif so kept) — no green color came through, fully pale monochrome.
+
+### Reference 3 — "Карина и Галия" invitation card
+**Studied:** dense white floral lace border pattern, intricate embroidery-style
+openwork.
+**Prompt:** `ajour lace wedding decoration, dense pink and burgundy floral lace
+border pattern, intricate openwork embroidery design, no people, no figures,
+elegant flat vector illustration, isolated on transparent background, no text,
+colorful`
+**Saved as:** `ajour-color-floral.svg` — the one clear color success in this
+category: burgundy floral scroll-vine with daisy flowers over a pale lace
+scallop border, genuine burgundy tone came through as requested.
+
+**Ажурный status: 3/3 references done** (2 of 3 came back monochrome despite
+explicit color requests — this category's white/cream lace subject matter
+seems to bias the model toward staying pale regardless of prompt; only the
+floral-with-named-flower-colors framing broke through).
+
+---
+
 ## Восточный (oriental)
 
 ### Reference 1 — Ажурный (openwork lace) invitation cards (category mood — several
