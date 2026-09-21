@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CreditCard, Settings, UserRound } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { CreditCard, LogOut, Settings, UserRound } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 interface UserMenuProps {
   userEmail: string;
@@ -15,11 +17,24 @@ interface UserMenuProps {
 /** dashboard-audit.md B1: `Plan` moves out of the rail and into "the user
  * menu" -- this is that menu, opened from the header's profile icon. */
 export default function UserMenu({ userEmail, planEventId }: UserMenuProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   // An anonymous trial session has no email at all -- show a clear fallback
   // rather than a blank line/tooltip.
   const displayEmail = userEmail || "Guest";
+
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    const supabase = createClient();
+    // scope: "local" -- end only this browser's session. Supabase's default
+    // ("global") revokes the refresh token everywhere, signing the user out
+    // of every other device/tab too, which isn't what "Sign out" here means.
+    await supabase.auth.signOut({ scope: "local" });
+    router.push("/login");
+    router.refresh();
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -78,6 +93,16 @@ export default function UserMenu({ userEmail, planEventId }: UserMenuProps) {
             <Settings className="h-4 w-4 text-[var(--dash-text-muted)]" aria-hidden="true" />
             Account settings
           </Link>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={handleSignOut}
+            disabled={signingOut}
+            className="flex w-full items-center gap-2.5 border-t border-[var(--dash-border)] px-3.5 py-2.5 text-left text-sm font-medium text-[var(--dash-text)] hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <LogOut className="h-4 w-4 text-[var(--dash-text-muted)]" aria-hidden="true" />
+            {signingOut ? "Signing out..." : "Sign out"}
+          </button>
         </div>
       )}
     </div>

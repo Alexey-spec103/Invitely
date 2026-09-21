@@ -100,6 +100,30 @@ import { vintageForestEmerald } from "./vintage-forest-emerald";
 import { luxurySapphireSilver } from "./luxury-sapphire-silver";
 import { luxuryRoseGold } from "./luxury-rose-gold";
 import { luxuryObsidianCopper } from "./luxury-obsidian-copper";
+import { marbleSageGold } from "./marble-sage-gold";
+import { marbleTealGold } from "./marble-teal-gold";
+import { marbleNoirRust } from "./marble-noir-rust";
+import { marbleOnyxSage } from "./marble-onyx-sage";
+import { marbleIvoryCharcoal } from "./marble-ivory-charcoal";
+import { marbleChampagneTeal } from "./marble-champagne-teal";
+import { cosmicMidnightGold } from "./cosmic-midnight-gold";
+import { cosmicVioletSilver } from "./cosmic-violet-silver";
+import { cosmicIndigoBronze } from "./cosmic-indigo-bronze";
+import { cosmicObsidianStarlight } from "./cosmic-obsidian-starlight";
+import { cosmicPlumGold } from "./cosmic-plum-gold";
+import { cosmicNavyCopper } from "./cosmic-navy-copper";
+import { peonyBlushBurgundy } from "./peony-blush-burgundy";
+import { peonyTerracottaCream } from "./peony-terracotta-cream";
+import { peonyDustyMauve } from "./peony-dusty-mauve";
+import { peonySageClay } from "./peony-sage-clay";
+import { peonyWineIvory } from "./peony-wine-ivory";
+import { peonyChampagneTerracotta } from "./peony-champagne-terracotta";
+import { provenceLavenderSage } from "./provence-lavender-sage";
+import { provenceCoralSage } from "./provence-coral-sage";
+import { provencePeriwinkleRose } from "./provence-periwinkle-rose";
+import { provenceSageTerracotta } from "./provence-sage-terracotta";
+import { provenceDustyLilac } from "./provence-dusty-lilac";
+import { provenceStoneLavender } from "./provence-stone-lavender";
 
 export const themes: Record<string, Theme> = {
   [romanticBlush.id]: romanticBlush,
@@ -202,6 +226,30 @@ export const themes: Record<string, Theme> = {
   [luxurySapphireSilver.id]: luxurySapphireSilver,
   [luxuryRoseGold.id]: luxuryRoseGold,
   [luxuryObsidianCopper.id]: luxuryObsidianCopper,
+  [marbleSageGold.id]: marbleSageGold,
+  [marbleTealGold.id]: marbleTealGold,
+  [marbleNoirRust.id]: marbleNoirRust,
+  [marbleOnyxSage.id]: marbleOnyxSage,
+  [marbleIvoryCharcoal.id]: marbleIvoryCharcoal,
+  [marbleChampagneTeal.id]: marbleChampagneTeal,
+  [cosmicMidnightGold.id]: cosmicMidnightGold,
+  [cosmicVioletSilver.id]: cosmicVioletSilver,
+  [cosmicIndigoBronze.id]: cosmicIndigoBronze,
+  [cosmicObsidianStarlight.id]: cosmicObsidianStarlight,
+  [cosmicPlumGold.id]: cosmicPlumGold,
+  [cosmicNavyCopper.id]: cosmicNavyCopper,
+  [peonyBlushBurgundy.id]: peonyBlushBurgundy,
+  [peonyTerracottaCream.id]: peonyTerracottaCream,
+  [peonyDustyMauve.id]: peonyDustyMauve,
+  [peonySageClay.id]: peonySageClay,
+  [peonyWineIvory.id]: peonyWineIvory,
+  [peonyChampagneTerracotta.id]: peonyChampagneTerracotta,
+  [provenceLavenderSage.id]: provenceLavenderSage,
+  [provenceCoralSage.id]: provenceCoralSage,
+  [provencePeriwinkleRose.id]: provencePeriwinkleRose,
+  [provenceSageTerracotta.id]: provenceSageTerracotta,
+  [provenceDustyLilac.id]: provenceDustyLilac,
+  [provenceStoneLavender.id]: provenceStoneLavender,
 };
 
 export const DEFAULT_THEME_ID = romanticBlush.id;

@@ -13,7 +13,7 @@ export const romanticIvoryLace: Theme = {
     "--theme-bg": "#FCF7F1",
     "--theme-text": "#4B3E37",
     "--theme-accent": "#C9A98C",
-    "--theme-font-heading": "var(--font-eb-garamond), Georgia, serif",
+    "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },

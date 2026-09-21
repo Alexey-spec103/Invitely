@@ -12,7 +12,7 @@ export const bohoTurquoiseTribal: Theme = {
     "--theme-bg": "#EEF3F0",
     "--theme-text": "#263631",
     "--theme-accent": "#4FA089",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-cormorant), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

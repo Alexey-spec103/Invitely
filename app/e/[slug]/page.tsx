@@ -18,6 +18,7 @@ import SitePasswordGate from "./SitePasswordGate";
 import EnvelopeReveal from "@/components/site/EnvelopeReveal";
 import { getInviteDescription, formatEventDate } from "@/lib/socialPreview";
 import { planMeets, BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
+import PublicSiteBadge from "@/components/site/PublicSiteBadge";
 
 export async function generateMetadata({
   params,
@@ -244,9 +245,12 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
         />
         {sections.map((section, index) => {
           const element = renderSection(section, content, {
+            hero: { themeCategory: theme.category },
+            letter: { themeCategory: theme.category },
             rsvp: { onSubmit: boundSubmitRsvp, defaultGuestName: invitedGuest?.full_name, maxPartySize },
-            countdown: { eventDateTime },
-            gift: { preferences: giftItems },
+            countdown: { eventDateTime, themeCategory: theme.category },
+            gift: { preferences: giftItems, themeCategory: theme.category },
+            dressCode: { themeCategory: theme.category },
             guestbook: { messages: guestbookMessages },
             banquetNavigator: { onLookup: boundLookupGuestTable, assignedTableName },
           });
@@ -265,6 +269,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           return index === 0 && !isCanvasMode ? wrapped : <RevealOnScroll key={section.type}>{wrapped}</RevealOnScroll>;
         })}
         {!isCanvasMode && sections.length > 1 && <ScrollToNextSection />}
+        {!hasBasicAccess && <PublicSiteBadge />}
       </ThemeProvider>
     </>
   );

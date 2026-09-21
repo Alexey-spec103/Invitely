@@ -11,7 +11,7 @@ export const modernIvoryNoir: Theme = {
     "--theme-bg": "#FAF9F7",
     "--theme-text": "#1A1A1A",
     "--theme-accent": "#1A1A1A",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-italiana), Georgia, serif",
     "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },

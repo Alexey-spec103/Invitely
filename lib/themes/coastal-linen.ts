@@ -13,7 +13,7 @@ export const coastalLinen: Theme = {
     "--theme-bg": "#F5F2EA",
     "--theme-text": "#2B3A3A",
     "--theme-accent": "#7B9E9E",
-    "--theme-font-heading": "var(--font-eb-garamond), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },

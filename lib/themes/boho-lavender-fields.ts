@@ -12,7 +12,7 @@ export const bohoLavenderFields: Theme = {
     "--theme-bg": "#F1ECF2",
     "--theme-text": "#3E3548",
     "--theme-accent": "#9B7FB0",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { plans } from "@/lib/plans";
-import { updatePlan } from "./actions";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { plans, DEFAULT_PLAN_ID } from "@/lib/plans";
+import { updatePlan, createCheckoutSession } from "./actions";
 
 interface PlanSelectFormProps {
   eventId: string;
@@ -12,19 +12,49 @@ interface PlanSelectFormProps {
 
 export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selected, setSelected] = useState(currentPlanId);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  // Stripe redirects back here with ?checkout=success once payment
+  // completes -- the actual plan_id write happens separately, in the
+  // webhook (it's the only side that knows payment truly succeeded), so
+  // this is purely a "thanks, hang on" message while that lands; refresh
+  // once to pick it up in case the webhook beat the redirect back.
+  const checkoutStatus = searchParams.get("checkout");
+  useEffect(() => {
+    if (checkoutStatus === "success") {
+      router.refresh();
+    }
+  }, [checkoutStatus, router]);
+
   const handleSelect = (planId: string) => {
-    setSelected(planId);
     setError(null);
+
+    if (planId === DEFAULT_PLAN_ID) {
+      setSelected(planId);
+      startTransition(async () => {
+        try {
+          await updatePlan({ eventId, planId });
+          router.refresh();
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Failed to save");
+        }
+      });
+      return;
+    }
+
+    // Paid plans go through Stripe Checkout, not a direct DB write --
+    // navigating away mid-transition is fine, so this doesn't touch
+    // `selected` (a plan the host hasn't actually paid for yet shouldn't
+    // show as chosen while they're still on the Stripe page).
     startTransition(async () => {
       try {
-        await updatePlan({ eventId, planId });
-        router.refresh();
+        const { url } = await createCheckoutSession({ eventId, planId });
+        window.location.href = url;
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to save");
+        setError(err instanceof Error ? err.message : "Failed to start checkout");
       }
     });
   };
@@ -34,17 +64,26 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
       <h1 className="dash-h1 text-gray-900">Plan</h1>
       <p className="mt-1 text-sm text-gray-500">Choose the plan that fits, free to switch anytime.</p>
 
-      {/* dashboard-audit.md B20: weddingpost.ru stations real Visa/
-          MasterCard/PCI-DSS badges directly above its purchase button --
-          we have no real payment processing behind these "Select" buttons
-          (they just set plan_id, nothing is charged), so real card-network
-          badges would be a false trust claim here, not a missing
-          decoration. The honest equivalent: state plainly that nothing is
-          charged, right above the buttons rather than quiet page-subtitle
-          text. */}
-      <span className="mt-4 inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700">
-        🔓 No payment collected
+      {/* dashboard-audit.md B20's original honesty concern (no real payment
+          processing, so a card-network badge here would be a false trust
+          claim) is resolved now that paid plans actually go through Stripe
+          Checkout -- swapped for a real Stripe mention instead of removing
+          the badge outright, so the trust signal stays but now points at
+          something true. */}
+      <span className="mt-4 inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] font-medium text-gray-600">
+        🔒 Paid plans are processed securely by Stripe
       </span>
+
+      {checkoutStatus === "success" && (
+        <p className="mt-3 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          Payment received — your plan will update in a moment.
+        </p>
+      )}
+      {checkoutStatus === "cancelled" && (
+        <p className="mt-3 rounded-md bg-gray-50 px-3 py-2 text-sm text-gray-600">
+          Checkout cancelled — nothing was charged.
+        </p>
+      )}
 
       <div className="mt-4 grid gap-4 sm:grid-cols-3">
         {Object.values(plans).map((plan) => {
@@ -83,7 +122,13 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                     : "dash-btn dash-btn-primary mt-5 w-full"
                 }
               >
-                {isSelected ? "Selected" : "Select"}
+                {isSelected
+                  ? "Selected"
+                  : plan.priceEur === 0
+                    ? "Select"
+                    : isPending
+                      ? "Redirecting…"
+                      : `Upgrade — €${plan.priceEur}`}
               </button>
             </div>
           );

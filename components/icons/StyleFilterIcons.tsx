@@ -129,6 +129,59 @@ export function MinimalStyleIcon({ className }: StyleIconProps) {
   );
 }
 
+// An irregular agate-slice silhouette with a wandering vein line through
+// it -- distinct from LuxuryStyleIcon's symmetric faceted diamond above
+// (that one reads as "cut gem," this one as "polished stone").
+export function MarbleStyleIcon({ className }: StyleIconProps) {
+  return (
+    <IconFrame className={className}>
+      <path d="M10 3.2l4.6 2.3.8 5-2.6 4.3-5.6.8-3.6-3.6.4-5.4z" />
+      <path d="M4.6 11.6c1.6-.6 2.4-1.8 2-3.2.5 1.2 1.7 1.7 3 1.3-.3 1.4.4 2.4 1.8 2.7" />
+    </IconFrame>
+  );
+}
+
+// A crescent moon with two small four-point stars -- distinct from
+// DarkMoodyStyleIcon's plain crescent above (no stars there).
+export function CosmicStyleIcon({ className }: StyleIconProps) {
+  return (
+    <IconFrame className={className}>
+      <path d="M11.8 4.5a5.6 5.6 0 1 0 2.9 7.9 4.4 4.4 0 0 1-2.9-7.9z" />
+      <path d="M15.5 4.5l.5 1.2 1.2.5-1.2.5-.5 1.2-.5-1.2-1.2-.5 1.2-.5z" />
+      <path d="M5.5 13l.35.85.85.35-.85.35-.35.85-.35-.85-.85-.35.85-.35z" />
+    </IconFrame>
+  );
+}
+
+// A layered peony bloom -- concentric overlapping petal arcs around a
+// center, distinct from RomanticStyleIcon's single simple heart above.
+export function PeonyStyleIcon({ className }: StyleIconProps) {
+  return (
+    <IconFrame className={className}>
+      <circle cx="10" cy="10" r="1.6" />
+      <path d="M10 8.4a2.6 2.6 0 1 1 0 3.2M11.6 10a2.6 2.6 0 1 1-3.2 0M8.4 10a2.6 2.6 0 1 1 1.6-2.6M10 11.6a2.6 2.6 0 1 1 2.6 1.6" />
+      <path d="M10 6.4a4.4 4.4 0 1 1 0 7.2M13.6 10a4.4 4.4 0 1 1-7.2 0" />
+    </IconFrame>
+  );
+}
+
+// A hanging wisteria/lavender stem -- a single vertical stalk with small
+// alternating oval buds, distinct from RusticStyleIcon's symmetric
+// wheat-head branch above (that one reads as grain, this one as a trailing
+// flower spray).
+export function ProvenceStyleIcon({ className }: StyleIconProps) {
+  return (
+    <IconFrame className={className}>
+      <path d="M10 3.5v13" />
+      <ellipse cx="8.6" cy="6.5" rx="1.1" ry="0.6" transform="rotate(-30 8.6 6.5)" />
+      <ellipse cx="11.4" cy="8.2" rx="1.1" ry="0.6" transform="rotate(30 11.4 8.2)" />
+      <ellipse cx="8.6" cy="9.9" rx="1.1" ry="0.6" transform="rotate(-30 8.6 9.9)" />
+      <ellipse cx="11.4" cy="11.6" rx="1.1" ry="0.6" transform="rotate(30 11.4 11.6)" />
+      <ellipse cx="8.6" cy="13.3" rx="1.1" ry="0.6" transform="rotate(-30 8.6 13.3)" />
+    </IconFrame>
+  );
+}
+
 // -- Layout-kind entries (layoutLabelFor) ------------------------------------
 
 export function EditorialLayoutIcon({ className }: StyleIconProps) {
@@ -324,6 +377,10 @@ export const CATEGORY_STYLE_ICONS: Record<ThemeCategory, ComponentType<StyleIcon
   rustic: RusticStyleIcon,
   vintage: VintageStyleIcon,
   minimal: MinimalStyleIcon,
+  marble: MarbleStyleIcon,
+  cosmic: CosmicStyleIcon,
+  peony: PeonyStyleIcon,
+  provence: ProvenceStyleIcon,
 };
 
 /** Keyed by the exact label strings `layoutLabelFor` produces (see

@@ -12,7 +12,7 @@ export const rusticCopperOak: Theme = {
     "--theme-bg": "#EEE1CE",
     "--theme-text": "#4A3620",
     "--theme-accent": "#A85C32",
-    "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

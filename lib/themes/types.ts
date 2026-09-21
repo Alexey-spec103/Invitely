@@ -23,7 +23,11 @@ export type ThemeCategory =
   | "coastal"
   | "rustic"
   | "vintage"
-  | "minimal";
+  | "minimal"
+  | "marble"
+  | "cosmic"
+  | "peony"
+  | "provence";
 
 /** Seasonal collection -- a cross-cutting filter (like weddingpost's season
  * nav), not a category. Optional: a theme with no strong seasonal read

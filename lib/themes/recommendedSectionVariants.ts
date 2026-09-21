@@ -29,6 +29,10 @@ const CATEGORY_COUNTDOWN_VARIANTS: Record<ThemeCategory, string[]> = {
   rustic: ["simple-digits", "circular-rings"],
   vintage: ["simple-digits", "circular-rings"],
   minimal: ["minimal-inline", "simple-digits"],
+  marble: ["circular-rings", "simple-digits"],
+  cosmic: ["circular-rings", "minimal-inline"],
+  peony: ["simple-digits", "circular-rings"],
+  provence: ["circular-rings", "simple-digits"],
 };
 
 export function recommendedCountdownVariantFor(themeId: string, category: ThemeCategory): string {
@@ -47,6 +51,10 @@ const CATEGORY_GIFT_VARIANTS: Record<ThemeCategory, string[]> = {
   rustic: ["simple-list", "minimal-rows"],
   vintage: ["simple-list", "compact-badges"],
   minimal: ["minimal-rows", "compact-badges"],
+  marble: ["compact-badges", "simple-list"],
+  cosmic: ["compact-badges", "minimal-rows"],
+  peony: ["simple-list", "minimal-rows"],
+  provence: ["minimal-rows", "simple-list"],
 };
 
 export function recommendedGiftVariantFor(themeId: string, category: ThemeCategory): string {
@@ -65,6 +73,10 @@ const CATEGORY_DRESS_CODE_VARIANTS: Record<ThemeCategory, string[]> = {
   rustic: ["color-palette", "swatch-grid"],
   vintage: ["swatch-grid", "color-palette"],
   minimal: ["minimal-stripe", "color-palette"],
+  marble: ["swatch-grid", "minimal-stripe"],
+  cosmic: ["minimal-stripe", "swatch-grid"],
+  peony: ["color-palette", "swatch-grid"],
+  provence: ["swatch-grid", "color-palette"],
 };
 
 export function recommendedDressCodeVariantFor(themeId: string, category: ThemeCategory): string {
@@ -83,6 +95,10 @@ const CATEGORY_GUESTBOOK_VARIANTS: Record<ThemeCategory, string[]> = {
   rustic: ["wall", "quote-scroll"],
   vintage: ["quote-scroll", "wall"],
   minimal: ["minimal-list", "wall"],
+  marble: ["quote-scroll", "minimal-list"],
+  cosmic: ["minimal-list", "quote-scroll"],
+  peony: ["wall", "quote-scroll"],
+  provence: ["wall", "quote-scroll"],
 };
 
 export function recommendedGuestbookVariantFor(themeId: string, category: ThemeCategory): string {
@@ -101,6 +117,10 @@ const CATEGORY_VIDEO_VARIANTS: Record<ThemeCategory, string[]> = {
   rustic: ["framed-polaroid", "embed"],
   vintage: ["framed-polaroid", "embed"],
   minimal: ["embed", "full-bleed"],
+  marble: ["full-bleed", "embed"],
+  cosmic: ["full-bleed", "embed"],
+  peony: ["framed-polaroid", "embed"],
+  provence: ["framed-polaroid", "full-bleed"],
 };
 
 export function recommendedVideoVariantFor(themeId: string, category: ThemeCategory): string {

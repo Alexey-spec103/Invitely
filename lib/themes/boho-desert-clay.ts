@@ -12,7 +12,7 @@ export const bohoDesertClay: Theme = {
     "--theme-bg": "#EFE3D6",
     "--theme-text": "#4A3324",
     "--theme-accent": "#C77B4E",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

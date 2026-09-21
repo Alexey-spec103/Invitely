@@ -12,7 +12,7 @@ export const darkWineNoir: Theme = {
     "--theme-bg": "#1C0F13",
     "--theme-text": "#EEE2E4",
     "--theme-accent": "#8E4258",
-    "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
+    "--theme-font-heading": "var(--font-bodoni-moda), Georgia, serif",
     "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },

@@ -25,6 +25,23 @@
   padding-top: 2.5rem;
 }
 
+/* The category-gated color cap is much larger than the mask it replaces
+   (see .laurelCapColor below), so this wrapper needs more top clearance
+   whenever a color cap is present. Uses the same cap-safe-top formula as
+   decorAnchors.module.css's .capSafeTop, but declared directly here rather
+   than via `composes` -- composed rules land BEFORE this file's own rules
+   in bundle order, so a composed padding-top loses the cascade to this
+   file's own .swatchesWrap { padding-top: 2.5rem }, which is always also
+   present on the same element and comes later in source order. Confirmed
+   live: the composed value was silently discarded, leaving the wreath cap
+   overlapping the swatch labels below. A same-file, later-declared
+   longhand is the only reliable way to win here. */
+.swatchesWrapColor {
+  --decor-size: 8rem;
+  --decor-gap: 2rem;
+  padding-top: calc(var(--decor-size) + var(--decor-gap));
+}
+
 /* A laurel-wreath cap "presenting" the palette row -- same reused mask as
    Timeline's spine cap, here marking a ceremonial moment instead of a
    sequence start. Sits above the row rather than flanking it so it
@@ -46,6 +63,15 @@
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: contain;
   -webkit-mask-position: center;
+}
+
+/* Category-gated full-color swap-in for .laurelCap above -- same
+   "presenting" position and size class of element, real illustrated art
+   instead of a flat accent-tinted mask. Unmatched categories keep the
+   mask fallback. Composes the shared cap-above anchor. */
+.laurelCapColor {
+  composes: capAbove from "../../decorAnchors.module.css";
+  --decor-size: 8rem;
 }
 
 .swatches {
@@ -85,5 +111,13 @@
   .chip {
     width: 3.5rem;
     height: 3.5rem;
+  }
+
+  .laurelCapColor {
+    --decor-size: 11rem;
+  }
+
+  .swatchesWrapColor {
+    --decor-size: 11rem;
   }
 }

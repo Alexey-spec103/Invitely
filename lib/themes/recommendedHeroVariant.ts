@@ -16,11 +16,21 @@ const CATEGORY_HERO_VARIANTS: Record<ThemeCategory, string[]> = {
   botanical: ["botanical-frame", "boho-asymmetric", "signature", "watercolor-botanical"],
   boho: ["boho-asymmetric", "hand-lettering", "watercolor-bloom"],
   luxury: ["monogram-crest", "letterpress", "art-deco-crest", "vintage-ornamental", "alcohol-ink-gold"],
-  dark: ["photo-full-bleed", "monogram-crest", "art-deco-crest", "gothic-frame", "bare-branch"],
-  coastal: ["coastal-wave", "minimal-text", "editorial-minimal"],
+  // watercolor-bloom added for dark/coastal/vintage alongside their existing
+  // archetypes -- it's the same "colorful wreath framing the names" device
+  // romantic uses, gated by category via WATERCOLOR_BLOOM_DECOR, generic
+  // enough (a masked blob + a small offset sprig) to not be tied to any one
+  // mood. Rolled out once WATERCOLOR_BLOOM_DECOR had real assets for these
+  // three categories -- see decorMotifs.ts.
+  dark: ["photo-full-bleed", "monogram-crest", "art-deco-crest", "gothic-frame", "bare-branch", "watercolor-bloom"],
+  coastal: ["coastal-wave", "minimal-text", "editorial-minimal", "watercolor-bloom"],
   rustic: ["collage-scrapbook", "letterpress", "boho-asymmetric", "folk-ornament"],
-  vintage: ["vintage-ornamental", "letterpress", "botanical-frame", "postage-stamp", "victorian-cameo"],
+  vintage: ["vintage-ornamental", "letterpress", "botanical-frame", "postage-stamp", "victorian-cameo", "watercolor-bloom"],
   minimal: ["minimal-text", "editorial-minimal", "monogram-center", "left-aligned", "stacked-grid"],
+  marble: ["monogram-crest", "letterpress", "art-deco-crest", "victorian-cameo", "watercolor-bloom"],
+  cosmic: ["monogram-crest", "art-deco-crest", "gothic-frame", "bare-branch", "watercolor-bloom"],
+  peony: ["monogram-center", "hand-lettering", "editorial-split", "watercolor-bloom"],
+  provence: ["botanical-frame", "watercolor-botanical", "signature", "watercolor-bloom"],
 };
 
 function stableIndex(seed: string, length: number): number {

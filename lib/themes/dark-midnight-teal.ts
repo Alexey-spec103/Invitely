@@ -12,7 +12,7 @@ export const darkMidnightTeal: Theme = {
     "--theme-bg": "#0C1A1B",
     "--theme-text": "#E3ECEA",
     "--theme-accent": "#4E9C93",
-    "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
+    "--theme-font-heading": "var(--font-italiana), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },

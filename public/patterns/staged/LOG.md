@@ -34,6 +34,16 @@ white roses tucked into the frame, sage green eucalyptus leaves — a more
 pink and soft white roses, sage green eucalyptus leaves, elegant flat vector
 illustration, isolated on transparent background, no text, colorful`
 **Saved as:** `romantic-color-frame.svg`
+**Contrast fix (2026-09-17):** original blush/white roses nearly vanished
+against romantic's own cream/pink theme backgrounds (`#F7EDE9`-`#FCF0F1`) —
+confirmed by rendering side-by-side on real theme bg colors, not guessed.
+Regenerated with `romantic wedding decoration, thin gold geometric angular
+frame corner, deep dusty rose and burgundy pink roses, dark sage green
+eucalyptus leaves, elegant flat vector illustration, isolated on transparent
+background, no text, vivid saturated colors, no white flowers, no pale
+pastel` — kept the gold frame (already worked), swapped the flower palette
+for one dark rose + white roses instead of all-pale, verified visibly
+readable on the same backgrounds afterward.
 
 ### Reference 3 — "Кирилл & Анна" invitation card (white/blush variant)
 **Studied:** same card family as Reference 2, but the all-white/blush-cream rose
@@ -47,8 +57,16 @@ either too flat/green or had a different, less balanced composition).
 hydrangea clusters, soft sage green leaves, elegant arching botanical spray, flat
 vector illustration, isolated on transparent background, no text, colorful`
 **Saved as:** `romantic-color-hydrangea.svg`
+**Contrast fix (2026-09-17):** same all-white/blush contrast failure as
+Reference 2. Regenerated with `romantic wedding decoration, dusty rose and
+deep mauve pink roses and hydrangea clusters, dark sage green leaves,
+elegant arching botanical spray, flat vector illustration, isolated on
+transparent background, no text, vivid saturated colors, no white flowers,
+no pale pastel` — picked a result with two strong burgundy/mauve roses
+anchoring a white hydrangea cluster (rather than an all-pale result),
+verified visibly readable on romantic's real backgrounds afterward.
 
-**Романтический status: 3/3 references done.**
+**Романтический status: 3/3 references done, all contrast-verified against real theme backgrounds.**
 
 ---
 
@@ -84,7 +102,23 @@ white cosmos flowers, tan and brown dried pampas grass plumes, elegant flat vect
 illustration, isolated on transparent background, no text, colorful`
 **Saved as:** `boho-color-frame.svg`
 
-**Бохо status: 3/3 references done.**
+### Reference 4 — weddingpost.ru "Андрей и Анна" mockup (full-page density study)
+**Studied:** unlike References 1-3 (each a small corner/frame accent), this mockup
+uses a full-height wisteria vine running down both sides of the entire hero
+viewport, framing names+date+countdown together as one continuous element —
+prompted by user feedback that a single small icon per section reads as too
+sparse next to weddingpost.ru's actual density.
+**Prompt:** `boho wedding decoration, tall vertical vine border running top to
+bottom, dried pampas grass plumes cascading downward, terracotta and rust dried
+florals, cream and tan tones, small white rose accents, elongated full-height
+climbing garland composition, flat vector illustration, isolated on transparent
+background, no text, colorful` (1:2 portrait aspect, reusing the working
+Reference-1 palette formula verbatim rather than inventing new color language)
+**Saved as:** `boho-color-vine-tall.svg` — ran through svgo (31% smaller, 1.1MB
+-> 760KB) before promoting to `color/`, still ~760KB due to genuinely higher
+path count (a full-height composition, not a compact corner motif).
+
+**Бохо status: 3/3 corner references done, plus 1 full-height frame variant.**
 
 ---
 
@@ -553,6 +587,17 @@ daisies and cosmos, thin stems, elegant flat vector illustration, isolated on
 transparent background, no text, colorful`
 **Saved as:** `rustic-color-wildflowers.svg` — clean transparent background,
 excellent match.
+**Contrast fix (2026-09-17):** the pale white daisies/cosmos nearly vanished
+against rustic's own tan/cream theme backgrounds (`#EDE3D3`-`#F3EAC9`) —
+confirmed by rendering side-by-side on real theme bg colors. Regenerated
+with `rustic wedding decoration, dried wildflowers cluster in warm
+terracotta orange and mustard yellow, small dark burgundy cosmos flowers,
+thin brown stems, flat vector illustration, isolated on transparent
+background, no text, vivid saturated colors, no pastel, no washed out
+colors, no white flowers` — first attempt came back as a fully wrapped
+paper-cone bouquet (still saturated color, but a different composition than
+wanted); regenerated once more and picked an open loose spray instead,
+verified visibly readable on rustic's real backgrounds afterward.
 
 ### Reference 2 — category mood (eucalyptus greenery spray, common across many
 Рустик cards).
@@ -564,6 +609,20 @@ background, no text, colorful`
 bouquet (roses + eucalyptus) rather than a loose greenery spray, in a pale
 desaturated grey-green palette; kept as-is, consistent with other quiet-palette
 pieces in this library.
+**Contrast fix attempted, not resolved (2026-09-17):** confirmed via
+side-by-side rendering on rustic's real backgrounds that this asset is
+genuinely too pale to use as-is. Tried multiple regeneration passes with
+`rustic wedding decoration, cascading deep olive and forest green eucalyptus
+greenery spray with small rust orange dried flower accents, ... rich
+saturated colors, no pastel, no grey` (plus, in a follow-up pass, explicit
+`no cake, no arbor, no trellis, no arch, no furniture, no building, no
+structure` after several results drew a full wedding cake or garden arbor
+behind the branch instead of an isolated sprig) — eucalyptus specifically
+kept reverting to pale grey-green leaves regardless of saturation wording,
+a stronger version of the same model bias noted above. Left unpromoted
+(not copied to `color/`, not wired into any component) rather than ship a
+still-weak result — needs either a different reference/composition angle
+or acceptance that this one motif isn't achievable with this model.
 
 ### Reference 3 — "Олег и Лидия" invitation card
 **Studied:** golden wheat stalks and dried pampas grass, warm autumn palette.
@@ -576,8 +635,17 @@ see Морской section): every one of the 4 variants generated for this prom
 pale beige blob behind the wheat sheaf. Accepted as a recurring model quirk for
 tied-bouquet compositions specifically (not retried further) rather than a
 one-off; picked the cleanest-looking variant of the 4.
+**Contrast fix (2026-09-17):** the wheat itself had reasonable contrast
+already; regenerated anyway with `... warm amber and tan tones ... isolated
+on plain transparent background only, no background shape, no shadow, no
+vignette, no text` hoping to also fix the background-blob quirk. The blob
+persisted across every variant of this regeneration too, confirming it's a
+durable model bias for this composition, not a one-off — accepted again
+(the blob doesn't hurt contrast, just adds a faint same-tone patch) and
+picked the variant with the strongest amber wheat-head color.
 
-**Рустик status: 3/3 references done.**
+**Рустик status: 3/3 references done. 2/3 (wildflowers, wheat) contrast-verified
+against real theme backgrounds; eucalyptus still unresolved, see above.**
 
 ---
 

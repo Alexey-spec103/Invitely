@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="760">
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.06 0.065" numOctaves="2" stitchTiles="stitch" result="weave" seed="63" />
+    <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" stitchTiles="stitch" result="fiber" seed="8" />
+    <feBlend in="weave" in2="fiber" mode="multiply" result="grain" />
+    <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0.18  0 0 0 0 0.11  0 0 0 0 0.03  0 0 0 0.18 0" />
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grain)" />
+  <g>
+    <ellipse cx="0" cy="0" rx="4.1" ry="6.4" fill="#a9863f" opacity="0.10" transform="translate(240.7 409.1) rotate(351.8)" />
+    <ellipse cx="0" cy="0" rx="2.6" ry="4.0" fill="#8f7038" opacity="0.23" transform="translate(226.2 13.4) rotate(171.8)" />
+    <ellipse cx="0" cy="0" rx="2.1" ry="3.2" fill="#a9863f" opacity="0.18" transform="translate(478.6 143.6) rotate(323.1)" />
+    <ellipse cx="0" cy="0" rx="3.6" ry="5.6" fill="#c29a52" opacity="0.25" transform="translate(757.6 543.7) rotate(43.2)" />
+    <ellipse cx="0" cy="0" rx="4.0" ry="6.3" fill="#8f7038" opacity="0.16" transform="translate(730.0 40.2) rotate(106.9)" />
+    <ellipse cx="0" cy="0" rx="2.9" ry="4.6" fill="#a9863f" opacity="0.25" transform="translate(714.0 143.0) rotate(320.9)" />
+    <ellipse cx="0" cy="0" rx="2.4" ry="3.8" fill="#a9863f" opacity="0.16" transform="translate(135.2 467.7) rotate(189.6)" />
+    <ellipse cx="0" cy="0" rx="2.2" ry="3.4" fill="#a9863f" opacity="0.14" transform="translate(314.0 228.7) rotate(211.8)" />
+    <ellipse cx="0" cy="0" rx="2.9" ry="4.6" fill="#a9863f" opacity="0.10" transform="translate(292.2 351.6) rotate(349.1)" />
+    <ellipse cx="0" cy="0" rx="2.4" ry="3.7" fill="#c29a52" opacity="0.23" transform="translate(636.4 660.5) rotate(115.3)" />
+    <ellipse cx="0" cy="0" rx="2.5" ry="3.8" fill="#a9863f" opacity="0.12" transform="translate(387.0 291.1) rotate(35.2)" />
+    <ellipse cx="0" cy="0" rx="2.7" ry="4.2" fill="#c29a52" opacity="0.18" transform="translate(451.3 578.7) rotate(1.2)" />
+    <ellipse cx="0" cy="0" rx="4.1" ry="6.5" fill="#a9863f" opacity="0.12" transform="translate(135.7 459.0) rotate(160.2)" />
+    <ellipse cx="0" cy="0" rx="2.0" ry="3.1" fill="#c29a52" opacity="0.19" transform="translate(668.4 42.4) rotate(116.0)" />
+    <ellipse cx="0" cy="0" rx="2.0" ry="3.1" fill="#c29a52" opacity="0.21" transform="translate(95.7 511.6) rotate(18.0)" />
+    <ellipse cx="0" cy="0" rx="3.0" ry="4.7" fill="#a9863f" opacity="0.22" transform="translate(642.7 170.0) rotate(108.9)" />
+    <ellipse cx="0" cy="0" rx="3.8" ry="6.0" fill="#a9863f" opacity="0.14" transform="translate(678.7 186.4) rotate(219.1)" />
+    <ellipse cx="0" cy="0" rx="4.0" ry="6.2" fill="#8f7038" opacity="0.17" transform="translate(678.4 570.5) rotate(76.3)" />
+    <ellipse cx="0" cy="0" rx="3.9" ry="6.1" fill="#8f7038" opacity="0.25" transform="translate(109.5 463.5) rotate(279.8)" />
+    <ellipse cx="0" cy="0" rx="2.0" ry="3.1" fill="#8f7038" opacity="0.20" transform="translate(377.7 731.9) rotate(100.9)" />
+    <ellipse cx="0" cy="0" rx="3.3" ry="5.1" fill="#a9863f" opacity="0.13" transform="translate(341.5 599.9) rotate(59.0)" />
+    <ellipse cx="0" cy="0" rx="2.2" ry="3.4" fill="#c29a52" opacity="0.19" transform="translate(357.6 477.1) rotate(130.6)" />
+    <ellipse cx="0" cy="0" rx="3.7" ry="5.7" fill="#a9863f" opacity="0.14" transform="translate(703.7 520.8) rotate(163.4)" />
+    <ellipse cx="0" cy="0" rx="3.9" ry="6.0" fill="#c29a52" opacity="0.11" transform="translate(617.1 473.3) rotate(308.2)" />
+    <ellipse cx="0" cy="0" rx="2.8" ry="4.4" fill="#8f7038" opacity="0.26" transform="translate(511.8 330.9) rotate(328.8)" />
+    <ellipse cx="0" cy="0" rx="3.8" ry="6.0" fill="#a9863f" opacity="0.25" transform="translate(489.1 698.8) rotate(244.5)" />
+    <ellipse cx="0" cy="0" rx="3.9" ry="6.1" fill="#a9863f" opacity="0.21" transform="translate(504.7 199.7) rotate(218.1)" />
+    <ellipse cx="0" cy="0" rx="2.8" ry="4.3" fill="#a9863f" opacity="0.23" transform="translate(506.2 311.5) rotate(24.7)" />
+    <ellipse cx="0" cy="0" rx="2.5" ry="3.8" fill="#c29a52" opacity="0.15" transform="translate(373.6 222.6) rotate(320.0)" />
+    <ellipse cx="0" cy="0" rx="3.1" ry="4.9" fill="#a9863f" opacity="0.18" transform="translate(656.3 343.0) rotate(80.8)" />
+  </g>
+</svg>

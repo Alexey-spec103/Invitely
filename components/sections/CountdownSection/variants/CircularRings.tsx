@@ -5,10 +5,12 @@ import type { CountdownSectionVariantProps } from "../types";
 import { getCountdownParts, type CountdownParts } from "@/lib/countdown";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import { CAP_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./CircularRings.module.css";
 
-export default function CircularRings({ title, eventDateTime, styleOverrides }: CountdownSectionVariantProps) {
+export default function CircularRings({ title, eventDateTime, styleOverrides, themeCategory }: CountdownSectionVariantProps) {
   const { editable } = useEditableField();
+  const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
   const [parts, setParts] = useState<CountdownParts | null>(null);
 
   useEffect(() => {
@@ -46,8 +48,12 @@ export default function CircularRings({ title, eventDateTime, styleOverrides }: 
       ) : parts.reached ? (
         <p className={styles.reached}>Today&apos;s the day!</p>
       ) : (
-        <div className={styles.ringsWrap}>
-          <span className={styles.laurelCap} aria-hidden="true" />
+        <div className={capAsset ? `${styles.ringsWrap} ${styles.ringsWrapColor}` : styles.ringsWrap}>
+          {capAsset ? (
+            <img className={styles.laurelCapColor} src={capAsset} alt="" aria-hidden="true" />
+          ) : (
+            <span className={styles.laurelCap} aria-hidden="true" />
+          )}
           <div className={styles.rings}>
             <div className={styles.ring}>
               <span className={styles.number}>{parts.weeks}</span>

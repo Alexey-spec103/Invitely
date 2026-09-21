@@ -1659,7 +1659,26 @@ export default function SiteInlineEditor({
           <button
             type="button"
             onClick={() =>
-              mapField.setDraft((prev) => ({ ...prev, venues: [...prev.venues, { name: "New venue", address: "" }] }))
+              mapField.setDraft((prev) => {
+                // First venue on the block starts from Wedding Data's own
+                // venue name/city/address instead of a placeholder -- an
+                // untouched "New venue" / "" pair isn't just a cosmetic
+                // placeholder, it becomes a literal Google Maps text query
+                // ("New venue, ") that resolves to a real, unrelated
+                // business somewhere in the world rather than the wedding's
+                // actual location. Only the very first venue gets this --
+                // a second/third venue has no single "the" venue to infer
+                // from Wedding Data, so it falls back to the old placeholder.
+                const isFirstVenue = prev.venues.length === 0;
+                const address = [weddingDataDraft.venueAddress, weddingDataDraft.venueCity]
+                  .filter(Boolean)
+                  .join(", ");
+                const seeded =
+                  isFirstVenue && (weddingDataDraft.venueName || address)
+                    ? { name: weddingDataDraft.venueName || "New venue", address }
+                    : { name: "New venue", address: "" };
+                return { ...prev, venues: [...prev.venues, seeded] };
+              })
             }
             className="dash-btn dash-btn-neutral text-xs"
           >

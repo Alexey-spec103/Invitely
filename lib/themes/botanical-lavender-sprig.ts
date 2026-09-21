@@ -13,7 +13,7 @@ export const botanicalLavenderSprig: Theme = {
     "--theme-bg": "#F0EEF3",
     "--theme-text": "#38334A",
     "--theme-accent": "#8C7CB0",
-    "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
+    "--theme-font-heading": "var(--font-cormorant), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },

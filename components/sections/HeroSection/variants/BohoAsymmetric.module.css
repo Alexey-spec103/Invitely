@@ -10,7 +10,53 @@
   color: var(--theme-text);
 }
 
-.sprig {
+/* Full-height right-edge frame (see BohoAsymmetric.tsx's top comment) --
+   object-fit: cover on a 1:2 portrait source inside a much narrower/taller
+   box always crops horizontally (never vertically) here, so the vine's
+   full top-to-bottom span is preserved and only its outer frond tips bleed
+   off the edge -- a deliberate crop, not a bug. */
+.sideVine {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 5rem;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+
+/* Rustic full-color pair -- same top-right/bottom-right corner layout the
+   masked fallback below uses, since rustic has no full-height vine asset
+   yet (only corner-style motifs). */
+.rusticSprig {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 9rem;
+  height: 9rem;
+  object-fit: contain;
+  object-position: top right;
+  pointer-events: none;
+}
+
+.rusticCornerSprig {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 6rem;
+  height: 6rem;
+  object-fit: contain;
+  object-position: bottom right;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Fallback for the remaining category that also recommends this variant
+   (botanical) -- theme-accent-tinted single-color masks, safe for any
+   color palette, same technique/assets this variant used before the
+   full-color boho/rustic branches above were added. */
+.sprigMask {
   position: absolute;
   top: 1.5rem;
   right: 2rem;
@@ -28,10 +74,7 @@
   -webkit-mask-position: top center;
 }
 
-/* The one corner the content and .sprig above both leave empty -- small
-   and quiet, a different real asset (lavender, not pampas grass) so it
-   reads as a deliberate second accent, not a copy of the first. */
-.cornerSprig {
+.cornerSprigMask {
   position: absolute;
   bottom: 1.5rem;
   right: 1.5rem;
@@ -78,7 +121,21 @@
 }
 
 @media (min-width: 640px) {
-  .sprig {
+  .sideVine {
+    width: 7rem;
+  }
+
+  .rusticSprig {
+    width: 13rem;
+    height: 13rem;
+  }
+
+  .rusticCornerSprig {
+    width: 8rem;
+    height: 8rem;
+  }
+
+  .sprigMask {
     width: 10rem;
     height: 15rem;
   }
@@ -93,6 +150,10 @@
 }
 
 @media (min-width: 1024px) {
+  .sideVine {
+    width: 9rem;
+  }
+
   .names {
     font-size: 4.5rem;
   }

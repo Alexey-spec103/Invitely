@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="760">
+  <filter id="clouds">
+    <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="4" stitchTiles="stitch" result="marble" seed="14" />
+    <feColorMatrix in="marble" type="matrix" values="0 0 0 0 0.7  0 0 0 0 0.66  0 0 0 0 0.58  0 0 0 0.22 0" />
+  </filter>
+  <filter id="pearlShadow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="1.2" />
+  </filter>
+  <rect width="100%" height="100%" filter="url(#clouds)" />
+  <g>
+    <ellipse cx="442.3" cy="338.2" rx="9.5" ry="3.3" fill="#000" opacity="0.21" filter="url(#pearlShadow)" />
+    <circle cx="440.8" cy="329.4" r="7.3" fill="url(#pearlGradDark)" />
+    <ellipse cx="490.3" cy="145.8" rx="7.3" ry="2.5" fill="#000" opacity="0.20" filter="url(#pearlShadow)" />
+    <circle cx="488.8" cy="139.0" r="5.6" fill="url(#pearlGradDark)" />
+    <ellipse cx="212.8" cy="461.7" rx="9.5" ry="3.3" fill="#000" opacity="0.21" filter="url(#pearlShadow)" />
+    <circle cx="211.3" cy="452.9" r="7.3" fill="url(#pearlGradDark)" />
+    <ellipse cx="352.1" cy="199.3" rx="9.6" ry="3.3" fill="#000" opacity="0.22" filter="url(#pearlShadow)" />
+    <circle cx="350.6" cy="190.5" r="7.4" fill="url(#pearlGradDark)" />
+    <ellipse cx="543.5" cy="237.3" rx="5.2" ry="1.8" fill="#000" opacity="0.19" filter="url(#pearlShadow)" />
+    <circle cx="542" cy="232.5" r="4" fill="url(#pearlGradDark)" />
+    <ellipse cx="372.0" cy="504.3" rx="7.9" ry="2.7" fill="#000" opacity="0.21" filter="url(#pearlShadow)" />
+    <circle cx="370.5" cy="496.9" r="6.1" fill="url(#pearlGradDark)" />
+    <ellipse cx="24.2" cy="353.8" rx="9.4" ry="3.2" fill="#000" opacity="0.21" filter="url(#pearlShadow)" />
+    <circle cx="22.7" cy="345.2" r="7.2" fill="url(#pearlGradDark)" />
+    <ellipse cx="57.3" cy="436.5" rx="4.2" ry="1.4" fill="#000" opacity="0.18" filter="url(#pearlShadow)" />
+    <circle cx="55.8" cy="432.7" r="3.2" fill="url(#pearlGradDark)" />
+    <ellipse cx="208.4" cy="65.5" rx="5.1" ry="1.8" fill="#000" opacity="0.19" filter="url(#pearlShadow)" />
+    <circle cx="206.9" cy="60.9" r="3.9" fill="url(#pearlGradDark)" />
+    <ellipse cx="570.0" cy="393.1" rx="4.0" ry="1.4" fill="#000" opacity="0.18" filter="url(#pearlShadow)" />
+    <circle cx="568.5" cy="389.3" r="3.1" fill="url(#pearlGradDark)" />
+    <ellipse cx="142.6" cy="613.1" rx="7.0" ry="2.4" fill="#000" opacity="0.20" filter="url(#pearlShadow)" />
+    <circle cx="141.1" cy="606.7" r="5.4" fill="url(#pearlGradDark)" />
+    <ellipse cx="587.8" cy="246.7" rx="6.8" ry="2.3" fill="#000" opacity="0.20" filter="url(#pearlShadow)" />
+    <circle cx="586.3" cy="240.5" r="5.2" fill="url(#pearlGradDark)" />
+    <ellipse cx="47.7" cy="59.5" rx="7.5" ry="2.6" fill="#000" opacity="0.20" filter="url(#pearlShadow)" />
+    <circle cx="46.2" cy="52.5" r="5.8" fill="url(#pearlGradDark)" />
+    <ellipse cx="439.2" cy="195.3" rx="8.1" ry="2.8" fill="#000" opacity="0.21" filter="url(#pearlShadow)" />
+    <circle cx="437.7" cy="187.9" r="6.2" fill="url(#pearlGradDark)" />
+    <ellipse cx="168.2" cy="236.5" rx="8.7" ry="3.0" fill="#000" opacity="0.21" filter="url(#pearlShadow)" />
+    <circle cx="166.7" cy="228.5" r="6.7" fill="url(#pearlGradDark)" />
+    <ellipse cx="622.6" cy="378.0" rx="5.2" ry="1.8" fill="#000" opacity="0.19" filter="url(#pearlShadow)" />
+    <circle cx="621.1" cy="373.2" r="4" fill="url(#pearlGradDark)" />
+    <ellipse cx="220.4" cy="227.1" rx="4.4" ry="1.5" fill="#000" opacity="0.19" filter="url(#pearlShadow)" />
+    <circle cx="218.9" cy="223.1" r="3.4" fill="url(#pearlGradDark)" />
+    <ellipse cx="483.4" cy="500.4" rx="8.5" ry="2.9" fill="#000" opacity="0.21" filter="url(#pearlShadow)" />
+    <circle cx="481.9" cy="492.6" r="6.5" fill="url(#pearlGradDark)" />
+    <ellipse cx="671.0" cy="86.2" rx="10.0" ry="3.5" fill="#000" opacity="0.22" filter="url(#pearlShadow)" />
+    <circle cx="669.5" cy="77.0" r="7.7" fill="url(#pearlGradDark)" />
+    <ellipse cx="323.3" cy="681.8" rx="4.8" ry="1.7" fill="#000" opacity="0.19" filter="url(#pearlShadow)" />
+    <circle cx="321.8" cy="677.4" r="3.7" fill="url(#pearlGradDark)" />
+    <ellipse cx="99.2" cy="34.0" rx="6.2" ry="2.2" fill="#000" opacity="0.20" filter="url(#pearlShadow)" />
+    <circle cx="97.7" cy="28.2" r="4.8" fill="url(#pearlGradDark)" />
+    <ellipse cx="358.7" cy="452.8" rx="9.8" ry="3.4" fill="#000" opacity="0.22" filter="url(#pearlShadow)" />
+    <circle cx="357.2" cy="443.8" r="7.5" fill="url(#pearlGradDark)" />
+    <ellipse cx="75.8" cy="528.3" rx="10.0" ry="3.5" fill="#000" opacity="0.22" filter="url(#pearlShadow)" />
+    <circle cx="74.3" cy="519.1" r="7.7" fill="url(#pearlGradDark)" />
+    <ellipse cx="216.3" cy="516.9" rx="5.1" ry="1.8" fill="#000" opacity="0.19" filter="url(#pearlShadow)" />
+    <circle cx="214.8" cy="512.3" r="3.9" fill="url(#pearlGradDark)" />
+    <ellipse cx="385.7" cy="597.5" rx="4.7" ry="1.6" fill="#000" opacity="0.19" filter="url(#pearlShadow)" />
+    <circle cx="384.2" cy="593.1" r="3.6" fill="url(#pearlGradDark)" />
+    <ellipse cx="718.4" cy="418.6" rx="9.9" ry="3.4" fill="#000" opacity="0.22" filter="url(#pearlShadow)" />
+    <circle cx="716.9" cy="409.4" r="7.6" fill="url(#pearlGradDark)" />
+  </g>
+  <defs>
+    <radialGradient id="pearlGradDark" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#f5f1e8" />
+      <stop offset="45%" stop-color="#d9cfba" />
+      <stop offset="100%" stop-color="#8f8264" />
+    </radialGradient>
+  </defs>
+</svg>

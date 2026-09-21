@@ -58,6 +58,10 @@ const CATEGORY_LABELS: Record<ThemeCategory, string> = {
   rustic: "Rustic",
   vintage: "Vintage",
   minimal: "Minimal",
+  marble: "Marble",
+  cosmic: "Cosmic",
+  peony: "Peony",
+  provence: "Provence",
 };
 
 const SEASON_LABELS: Record<ThemeSeason, string> = {
@@ -457,16 +461,16 @@ export function ThemeGalleryCard({
             </span>
           )}
           <div className={styles.desktopPanel}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photoUrl} alt="" className={styles.invitePhoto} loading="lazy" />
-            <div className={styles.invitePhotoOverlay} />
-            <div className={styles.inviteContent}>
-              <span className={styles.inviteEyebrow}>Together with their families</span>
-              <span className={styles.inviteNames}>
-                {name1} &amp; {name2}
-              </span>
-              <span className={styles.inviteDivider} />
-              <span className={styles.inviteDate}>{dateLabel}</span>
+            <div className={styles.desktopScaleWrap}>
+              <div className={styles.desktopScaleInner} data-anchor={anchor}>
+                <HeroSection
+                  variant={heroVariant}
+                  names={[name1, name2]}
+                  eventDate={dateLabel}
+                  photoUrl={photoUrl}
+                  themeCategory={theme.category}
+                />
+              </div>
             </div>
           </div>
 
@@ -484,7 +488,13 @@ export function ThemeGalleryCard({
             </div>
             <div className={styles.phoneScaleWrap}>
               <div className={styles.phoneScaleInner} data-anchor={anchor}>
-                <HeroSection variant={heroVariant} names={[name1, name2]} eventDate={dateLabel} photoUrl={photoUrl} />
+                <HeroSection
+                  variant={heroVariant}
+                  names={[name1, name2]}
+                  eventDate={dateLabel}
+                  photoUrl={photoUrl}
+                  themeCategory={theme.category}
+                />
               </div>
             </div>
             {countdown && !countdown.reached && (

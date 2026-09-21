@@ -12,7 +12,7 @@ export const vintagePowderBlue: Theme = {
     "--theme-bg": "#E9EEF0",
     "--theme-text": "#2E3A40",
     "--theme-accent": "#7FA3B0",
-    "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },

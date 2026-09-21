@@ -7,6 +7,7 @@ import {
   parseContent,
   SECTION_ORDER,
   DEFAULT_VARIANTS,
+  DEFAULT_CONTENT_ON_ENABLE,
   type SectionType,
 } from "@/components/sections/registry";
 import type { HeroVariant } from "@/components/sections/HeroSection";
@@ -262,7 +263,18 @@ export async function updateEnvelopeReveal(eventId: string, enabled: boolean) {
  * actions below, which never touch `enabled`), so flipping a switch never
  * has to open a form or wait on its autosave. Never removes an entry from
  * `sections`, only flips its flag, so a module's variant/content always
- * survive being toggled off and back on. */
+ * survive being toggled off and back on.
+ *
+ * Also seeds `content[type]` from `DEFAULT_CONTENT_ON_ENABLE` the first time
+ * a section with no content yet is switched on -- otherwise "on" here and
+ * "on" in `renderSection`/`sectionWillRender` disagree: the public page (and
+ * `sectionWillRender`'s own nav-link list) require *both* an enabled flag
+ * AND a real `content[type]` object, and content only used to get created by
+ * a section's own `update*Section` action (i.e. only once the host opened
+ * that card and actually edited something -- `useAutosave` skips the
+ * untouched first render). Confirmed live: RSVP showed "on" in this list and
+ * rendered fine in the dashboard's own canvas preview, yet never appeared on
+ * the published `/e/[slug]` page, because only this switch had been used. */
 export async function toggleSection(eventId: string, type: SectionType, enabled: boolean) {
   const supabase = await createClient();
 
@@ -281,6 +293,7 @@ export async function toggleSection(eventId: string, type: SectionType, enabled:
     .maybeSingle();
 
   const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
+  const existingContent = existingConfig ? parseContent(existingConfig.content) : {};
 
   const sections = existingSections.some((section) => section.type === type)
     ? existingSections.map((section) => (section.type === type ? { ...section, enabled } : section))
@@ -294,16 +307,22 @@ export async function toggleSection(eventId: string, type: SectionType, enabled:
         },
       ];
 
+  const seedContent = DEFAULT_CONTENT_ON_ENABLE[type];
+  const content =
+    enabled && seedContent && !(type in existingContent)
+      ? { ...existingContent, [type]: seedContent }
+      : existingContent;
+
   const { error } = existingConfig
     ? await supabase
         .from("site_config")
-        .update({ sections: sections as unknown as Json })
+        .update({ sections: sections as unknown as Json, content: content as unknown as Json })
         .eq("event_id", eventId)
     : await supabase.from("site_config").insert({
         event_id: eventId,
         theme_id: DEFAULT_THEME_ID,
         sections: sections as unknown as Json,
-        content: {} as unknown as Json,
+        content: content as unknown as Json,
       });
 
   if (error) {

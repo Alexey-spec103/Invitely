@@ -1,0 +1,119 @@
+/**
+ * Shared positioning "recipes" for the small category-gated decorative
+ * accents used across Letter/Countdown/Gift/DressCode -- Problem 2's anchor
+ * system. A component composes the anchor class it needs (`composes: X
+ * from "./decorAnchors.module.css"`) and only ever sets the *size* via
+ * `--decor-size` per its own breakpoints; the positioning math and the
+ * safe-zone clearance that keeps the accent off the text live here once,
+ * not recomputed by hand in five different files.
+ *
+ * That "recomputed by hand" pattern is exactly what caused two overlap
+ * bugs in one afternoon (Gift's description running under an enlarged
+ * corner accent, Letter's quote running under an enlarged bleed accent) --
+ * both were the same mistake in different files: grow the accent, forget
+ * the clearance has to grow with it. Centralizing the formula here means
+ * fixing it once fixes it everywhere that composes from it.
+ */
+
+/* --- cap-above: a single accent centered above a content row (Countdown's
+   rings, DressCode's swatches). The matching safe-zone clearance is NOT a
+   composed class here (there was a .capSafeTop originally) -- the wrapper
+   that needs the extra padding-top always also carries a base class (e.g.
+   .ringsWrap/.swatchesWrap) that sets its own padding-top, and `composes`
+   rules land BEFORE a file's own rules in bundle order, so the composed
+   value silently lost the cascade to that base class every time. Confirmed
+   live (DressCode's wreath cap overlapping the swatch labels). Each
+   component instead declares `padding-top: calc(var(--decor-size) +
+   var(--decor-gap))` directly, longhand, in its own *Color wrapper class --
+   same formula, copy-pasted rather than shared, because same-file source
+   order is the only thing that reliably wins here. */
+.capAbove {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--decor-size);
+  height: var(--decor-size);
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* --- corner-pair-bleed: two accents anchored past their container's own
+   edge (negative offset), for when the container is a card/frame with
+   text inside it that the accent must never reach (Letter). --decor-inward
+   is how far the accent reaches back *into* the container regardless of
+   how large --decor-size grows -- keep it constant across breakpoints (a
+   component should redeclare --decor-size per breakpoint, not
+   --decor-inward) so growing the accent only ever grows how far it bleeds
+   outward, never how far it reaches inward toward the text. */
+.cornerBleedTopLeft {
+  position: absolute;
+  top: calc(-1 * (var(--decor-size) - var(--decor-inward, 5rem)));
+  left: calc(-1 * (var(--decor-size) - var(--decor-inward, 5rem)));
+  width: var(--decor-size);
+  height: var(--decor-size);
+  object-fit: contain;
+  object-position: top left;
+  pointer-events: none;
+}
+
+.cornerBleedBottomRight {
+  position: absolute;
+  bottom: calc(-1 * (var(--decor-size) - var(--decor-inward, 5rem)));
+  right: calc(-1 * (var(--decor-size) - var(--decor-inward, 5rem)));
+  width: var(--decor-size);
+  height: var(--decor-size);
+  object-fit: contain;
+  object-position: bottom right;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* --- corner-pair-edge: two accents anchored just inside their container's
+   own edge (positive offset), for a container with no card/frame to bleed
+   past (Gift's whole section). The container needs BOTH real top padding
+   (via .edgeSafeTop, sized past the top accent's own height) AND a
+   guaranteed minimum height (the bottom accent is anchored to the
+   container's bottom edge independently of how tall the actual content
+   is -- a short container, e.g. no gift items yet, otherwise lets the two
+   accents' footprints overlap each other's slice of the middle where the
+   text sits). Both failure modes were confirmed live, not theoretical. */
+.cornerEdgeTopLeft {
+  position: absolute;
+  top: var(--decor-edge-offset, 1rem);
+  left: var(--decor-edge-offset, 1rem);
+  width: var(--decor-size);
+  height: var(--decor-size);
+  object-fit: contain;
+  object-position: top left;
+  pointer-events: none;
+}
+
+.cornerEdgeBottomRight {
+  position: absolute;
+  bottom: var(--decor-edge-offset, 1rem);
+  right: var(--decor-edge-offset, 1rem);
+  width: var(--decor-size);
+  height: var(--decor-size);
+  object-fit: contain;
+  object-position: bottom right;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* No .edgeSafeTop composed class here for the same reason .capSafeTop was
+   removed above -- Gift's .section sets its own padding (a shorthand,
+   which still collides the same way) and always wins the cascade over a
+   composed padding-top. SimpleList.module.css's .sectionColor declares
+   `padding-top: calc(var(--decor-size) + var(--decor-edge-offset) +
+   var(--decor-gap))` directly, same formula, for the same reason.
+
+   No formula for the matching min-height, deliberately -- how tall the
+   text block between the two edge accents actually is depends on that
+   component's own content (a title+description is not the same height as
+   a title+body+quote+closing-line), not on --decor-size alone. A generic
+   formula here would look systematic while actually being arbitrary --
+   worse than what it replaces. Each component composing .cornerEdgeTopLeft/
+   .cornerEdgeBottomRight sets its own `min-height` per breakpoint directly,
+   verified live (screenshot at the breakpoint in question) rather than
+   derived, same as SimpleList.module.css's `.sectionColor` already does. */

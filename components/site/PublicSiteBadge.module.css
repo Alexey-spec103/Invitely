@@ -1,0 +1,30 @@
+.badge {
+  position: fixed;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-family: var(--theme-font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--theme-text);
+  background: color-mix(in srgb, var(--theme-bg) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 30%, transparent);
+  backdrop-filter: blur(6px);
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+
+.badge:hover {
+  opacity: 1;
+}
+
+.mark {
+  color: var(--theme-accent);
+}

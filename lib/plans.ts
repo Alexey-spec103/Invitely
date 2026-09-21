@@ -15,17 +15,18 @@ export const plans: Record<string, Plan> = {
   basic: {
     id: "basic",
     name: "Basic",
-    priceEur: 29,
+    priceEur: 19,
     features: [
       "Everything in Free",
       "Custom domain",
       "Countdown, gift wishes & dress-code modules",
+      "No \"Made with Invitely\" badge",
     ],
   },
   premium: {
     id: "premium",
     name: "Premium",
-    priceEur: 59,
+    priceEur: 39,
     features: [
       "Everything in Basic",
       "No watermark on personalized invitations",

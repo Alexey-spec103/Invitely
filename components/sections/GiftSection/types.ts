@@ -1,4 +1,5 @@
 import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+import type { ThemeCategory } from "@/lib/themes/types";
 
 export type GiftVariant = "simple-list" | "minimal-rows" | "compact-badges";
 
@@ -16,6 +17,7 @@ export interface GiftSectionVariantProps {
   description?: string;
   preferences: GiftPreferenceItem[];
   styleOverrides?: Record<string, TextStyleOverride>;
+  themeCategory?: ThemeCategory;
 }
 
 export interface GiftSectionProps extends GiftSectionVariantProps {

@@ -12,7 +12,7 @@ export const botanicalCherryBloom: Theme = {
     "--theme-bg": "#F5EEE9",
     "--theme-text": "#423029",
     "--theme-accent": "#C48B78",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },

@@ -1,12 +1,17 @@
 import Link from "next/link";
 
-// PLACEHOLDER LEGAL TEXT -- landing-audit.md priority 16 flagged that the
-// footer linked nowhere for "terms of service," which is both a trust gap
-// and (per the audit's own note) a GDPR-adjacent problem once real payments
-// are involved. This is generic SaaS boilerplate written to fill that gap
-// so the footer link isn't dead, NOT reviewed or drafted by a lawyer. It
-// must be replaced with attorney-reviewed terms before this product takes
-// real payments from real users.
+// LEGAL TEXT, STILL NOT ATTORNEY-REVIEWED -- upgraded 2026-09-21 alongside
+// app/privacy/page.tsx to add sections a real ToS typically needs that the
+// original pilot omitted (eligibility, IP/trademarks, warranty disclaimer,
+// liability limitation, termination, indemnification). Section 4 now
+// reflects that Stripe payments are actually live (one-time per event, not
+// a subscription). Two things this deliberately does NOT fill in: `4`'s
+// refund policy, and `10. Governing
+// law` -- which country/state's law and which courts apply is a business
+// decision (where the operating entity is incorporated) that only the
+// company can make, not something to invent. A real privacy/ToS lawyer in
+// that jurisdiction must still review this before the product takes real
+// payments or handles real guests' data.
 export const metadata = {
   title: "Terms of Service — Invitely",
 };
@@ -51,16 +56,28 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-stone-900">3. Plans and payment</h2>
+            <h2 className="text-base font-semibold text-stone-900">3. Eligibility</h2>
             <p className="mt-2">
-              Free features remain free for as long as your account is active. Paid features (custom
-              domains, paper invitations, banquet tools) are billed as described at the time of
-              purchase. Prices are shown in EUR and include applicable taxes unless stated otherwise.
+              You must be at least 18 years old, or the age of legal majority where you live if
+              that&apos;s older, to create an Invitely account.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-stone-900">4. Guest data</h2>
+            <h2 className="text-base font-semibold text-stone-900">4. Plans and payment</h2>
+            <p className="mt-2">
+              Free features remain free for as long as your account is active. Paid plans (Basic
+              and Premium) are a single one-time payment per event, not a recurring subscription —
+              you pay once to unlock a plan&apos;s features for that event, with no further
+              charges tied to it. Payments are processed securely by Stripe; we never see or store
+              your card details. Prices are shown in EUR at checkout and may change for new
+              purchases, but a plan you&apos;ve already bought for an event keeps its features.
+              [Refund policy to be completed by the operating entity.]
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-stone-900">5. Guest data</h2>
             <p className="mt-2">
               When you invite guests and collect RSVPs, you act as the data controller for that
               guest information, and Invitely acts as a processor on your behalf. See our{" "}
@@ -72,7 +89,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-stone-900">5. Acceptable use</h2>
+            <h2 className="text-base font-semibold text-stone-900">6. Acceptable use</h2>
             <p className="mt-2">
               Don&apos;t use Invitely to publish unlawful, abusive, or infringing content, or to
               attempt to disrupt or gain unauthorized access to the service.
@@ -80,16 +97,44 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-stone-900">6. Cancellation</h2>
+            <h2 className="text-base font-semibold text-stone-900">7. Our intellectual property</h2>
             <p className="mt-2">
-              You may stop using Invitely and delete your account at any time. Deleting your account
-              removes your published site and associated guest data, subject to any retention
-              required by law.
+              The Invitely name, logo, and the site templates, themes, and software we built are
+              our property (or licensed to us). These terms don&apos;t grant you any rights to
+              them beyond using the service as intended — they don&apos;t transfer to you along
+              with the event site you create.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-stone-900">7. Changes to these terms</h2>
+            <h2 className="text-base font-semibold text-stone-900">8. Disclaimer and limitation of liability</h2>
+            <p className="mt-2">
+              Invitely is provided &quot;as is,&quot; without warranties of any kind. We don&apos;t
+              guarantee the service will be uninterrupted, error-free, or that every email or RSVP
+              will be delivered — for an event-critical use case like a wedding, keep a backup plan
+              (e.g. your own guest list) rather than relying on any single tool exclusively. To the
+              extent permitted by law, our liability for any claim relating to the service is limited
+              to the amount you paid us in the 12 months before the claim arose, if any.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-stone-900">9. Termination</h2>
+            <p className="mt-2">
+              You may stop using Invitely and delete your account at any time. Deleting your
+              account removes your published site and associated guest data, subject to any
+              retention required by law. We may suspend or terminate an account that violates
+              section 6 (Acceptable use) or these terms more generally.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-stone-900">10. Governing law</h2>
+            <p className="mt-2">[To be completed once the operating entity and its jurisdiction are finalized.]</p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-stone-900">11. Changes to these terms</h2>
             <p className="mt-2">
               We may update these terms from time to time. Material changes will be communicated
               before they take effect.
@@ -97,7 +142,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-stone-900">8. Contact</h2>
+            <h2 className="text-base font-semibold text-stone-900">12. Contact</h2>
             <p className="mt-2">
               Questions about these terms?{" "}
               <a href="mailto:support@invitely.app" className="text-stone-900 underline underline-offset-2">

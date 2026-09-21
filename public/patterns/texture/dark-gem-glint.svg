@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="760">
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.015 0.4" numOctaves="2" stitchTiles="stitch" result="fiber" seed="47" />
+    <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" stitchTiles="stitch" result="speckle" seed="19" />
+    <feBlend in="fiber" in2="speckle" mode="multiply" result="grain" />
+    <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0.75  0 0 0 0 0.7  0 0 0 0 0.62  0 0 0 0.5 0" />
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grain)" />
+  <g>
+    <polygon points="436.4,690.7 439.8,698.3 436.4,705.9 433.0,698.3" fill="url(#gemGrad)" opacity="0.52" transform="rotate(303.1 436.4 698.3)" />
+    <polygon points="424.7,377.2 427.2,382.7 424.7,388.3 422.2,382.7" fill="url(#gemGrad)" opacity="0.19" transform="rotate(184.0 424.7 382.7)" />
+    <polygon points="496.0,455.3 497.8,459.4 496.0,463.5 494.1,459.4" fill="url(#gemGrad)" opacity="0.55" transform="rotate(106.0 496.0 459.4)" />
+    <polygon points="478.2,435.3 481.4,442.5 478.2,449.8 474.9,442.5" fill="url(#gemGrad)" opacity="0.46" transform="rotate(116.6 478.2 442.5)" />
+    <polygon points="475.6,466.4 477.6,470.8 475.6,475.1 473.7,470.8" fill="url(#gemGrad)" opacity="0.36" transform="rotate(188.2 475.6 470.8)" />
+    <polygon points="738.1,447.0 740.6,452.6 738.1,458.2 735.6,452.6" fill="url(#gemGrad)" opacity="0.52" transform="rotate(309.4 738.1 452.6)" />
+    <polygon points="294.8,544.1 296.5,547.8 294.8,551.4 293.2,547.8" fill="url(#gemGrad)" opacity="0.20" transform="rotate(186.7 294.8 547.8)" />
+    <polygon points="298.7,121.6 301.0,126.5 298.7,131.5 296.5,126.5" fill="url(#gemGrad)" opacity="0.47" transform="rotate(153.0 298.7 126.5)" />
+    <polygon points="697.1,17.8 700.3,24.9 697.1,31.9 693.9,24.9" fill="url(#gemGrad)" opacity="0.32" transform="rotate(6.4 697.1 24.9)" />
+    <polygon points="186.5,496.7 188.6,501.3 186.5,506.0 184.4,501.3" fill="url(#gemGrad)" opacity="0.50" transform="rotate(229.7 186.5 501.3)" />
+    <polygon points="520.6,345.1 524.2,353.2 520.6,361.4 516.9,353.2" fill="url(#gemGrad)" opacity="0.53" transform="rotate(53.2 520.6 353.2)" />
+    <polygon points="570.2,98.1 573.2,104.7 570.2,111.3 567.3,104.7" fill="url(#gemGrad)" opacity="0.25" transform="rotate(27.5 570.2 104.7)" />
+    <polygon points="89.5,309.0 93.4,317.6 89.5,326.2 85.6,317.6" fill="url(#gemGrad)" opacity="0.31" transform="rotate(70.4 89.5 317.6)" />
+    <polygon points="559.7,401.2 563.6,409.8 559.7,418.4 555.8,409.8" fill="url(#gemGrad)" opacity="0.24" transform="rotate(120.2 559.7 409.8)" />
+    <polygon points="687.8,496.0 690.4,501.9 687.8,507.7 685.2,501.9" fill="url(#gemGrad)" opacity="0.21" transform="rotate(9.2 687.8 501.9)" />
+    <polygon points="441.6,414.0 443.5,418.3 441.6,422.5 439.7,418.3" fill="url(#gemGrad)" opacity="0.52" transform="rotate(220.0 441.6 418.3)" />
+    <polygon points="20.0,247.2 23.6,255.1 20.0,263.1 16.4,255.1" fill="url(#gemGrad)" opacity="0.37" transform="rotate(19.5 20.0 255.1)" />
+    <polygon points="199.9,202.1 201.5,205.7 199.9,209.2 198.3,205.7" fill="url(#gemGrad)" opacity="0.29" transform="rotate(138.6 199.9 205.7)" />
+    <polygon points="380.2,566.9 383.8,574.7 380.2,582.6 376.7,574.7" fill="url(#gemGrad)" opacity="0.30" transform="rotate(217.3 380.2 574.7)" />
+    <polygon points="675.1,675.8 676.7,679.4 675.1,682.9 673.6,679.4" fill="url(#gemGrad)" opacity="0.53" transform="rotate(165.3 675.1 679.4)" />
+    <polygon points="372.4,243.4 374.1,247.4 372.4,251.3 370.6,247.4" fill="url(#gemGrad)" opacity="0.52" transform="rotate(211.8 372.4 247.4)" />
+    <polygon points="142.6,89.4 146.1,97.1 142.6,104.8 139.2,97.1" fill="url(#gemGrad)" opacity="0.30" transform="rotate(308.7 142.6 97.1)" />
+    <polygon points="358.6,407.9 361.7,414.6 358.6,421.3 355.6,414.6" fill="url(#gemGrad)" opacity="0.43" transform="rotate(108.5 358.6 414.6)" />
+    <polygon points="473.2,454.6 477.1,463.2 473.2,471.9 469.3,463.2" fill="url(#gemGrad)" opacity="0.46" transform="rotate(252.2 473.2 463.2)" />
+  </g>
+  <defs>
+    <radialGradient id="gemGrad" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="55%" stop-color="#d8d2c4" />
+      <stop offset="100%" stop-color="#d8d2c4" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+</svg>

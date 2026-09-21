@@ -3,10 +3,12 @@
 import type { DressCodeSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import { CAP_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./ColorPalette.module.css";
 
-export default function ColorPalette({ title, description, colors, styleOverrides }: DressCodeSectionVariantProps) {
+export default function ColorPalette({ title, description, colors, styleOverrides, themeCategory }: DressCodeSectionVariantProps) {
   const { editable } = useEditableField();
+  const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>
@@ -18,8 +20,12 @@ export default function ColorPalette({ title, description, colors, styleOverride
         </p>
       )}
 
-      <div className={styles.swatchesWrap}>
-        <span className={styles.laurelCap} aria-hidden="true" />
+      <div className={capAsset ? `${styles.swatchesWrap} ${styles.swatchesWrapColor}` : styles.swatchesWrap}>
+        {capAsset ? (
+          <img className={styles.laurelCapColor} src={capAsset} alt="" aria-hidden="true" />
+        ) : (
+          <span className={styles.laurelCap} aria-hidden="true" />
+        )}
         <div className={styles.swatches}>
           {colors.map((color, index) => (
             <div key={`${color.hex}-${index}`} className={styles.swatch}>

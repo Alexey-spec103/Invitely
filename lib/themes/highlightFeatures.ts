@@ -22,6 +22,10 @@ const CATEGORY_HIGHLIGHT_FEATURES: Record<ThemeCategory, string[]> = {
   luxury: ["RSVP", "GIFTS", "DRESS CODE"],
   vintage: ["RSVP", "GIFTS", "DRESS CODE"],
   dark: ["RSVP", "GIFTS", "DRESS CODE"],
+  marble: ["RSVP", "GIFTS", "DRESS CODE"],
+  cosmic: ["RSVP", "GIFTS", "DRESS CODE"],
+  peony: ["RSVP", "GUESTBOOK", "PHOTOS"],
+  provence: ["RSVP", "GUESTBOOK", "PHOTOS"],
 };
 
 export function highlightFeaturesFor(category: ThemeCategory): string[] {

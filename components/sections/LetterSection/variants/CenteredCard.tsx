@@ -1,5 +1,6 @@
 import type { LetterSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { CORNER_PAIR_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./CenteredCard.module.css";
 
 function formatDeadline(isoDate: string) {
@@ -26,12 +27,27 @@ export default function CenteredCard({
   rsvpDeadline,
   closingLine,
   styleOverrides,
+  themeCategory,
 }: LetterSectionVariantProps) {
+  // Same category -> asset pairing as GiftSection/SimpleList's corner
+  // accents (both read from CORNER_PAIR_DECOR), so every twin-corner spot
+  // across the site reads as the same design system. Unmatched categories
+  // keep the original theme-accent-tinted mask (safe for any palette).
+  const flourishAssets = themeCategory ? CORNER_PAIR_DECOR[themeCategory] : undefined;
   return (
     <section className={styles.section}>
       <div className={styles.card}>
-        <span className={styles.flourishTopLeft} aria-hidden="true" />
-        <span className={styles.flourishBottomRight} aria-hidden="true" />
+        {flourishAssets ? (
+          <>
+            <img className={styles.flourishTopLeftColor} src={flourishAssets[0]} alt="" aria-hidden="true" />
+            <img className={styles.flourishBottomRightColor} src={flourishAssets[1]} alt="" aria-hidden="true" />
+          </>
+        ) : (
+          <>
+            <span className={styles.flourishTopLeft} aria-hidden="true" />
+            <span className={styles.flourishBottomRight} aria-hidden="true" />
+          </>
+        )}
         <h2 className={styles.title}>
           <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
         </h2>

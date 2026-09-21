@@ -10,7 +10,7 @@ export const burgundyVelvet: Theme = {
     "--theme-bg": "#3C0F1A",
     "--theme-text": "#F2E4D8",
     "--theme-accent": "#CBA25B",
-    "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
+    "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",

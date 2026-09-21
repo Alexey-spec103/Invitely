@@ -187,6 +187,31 @@ const CATEGORY_PREVIEW_PHOTOS_FALLBACK: Record<ThemeCategory, string[]> = {
     "https://images.unsplash.com/photo-1533155929419-7b6cb0b49ccb",
     "https://images.unsplash.com/photo-1586880043376-2b7bd270cd4b",
   ],
+  // Reuses luxury's own fallback pair rather than guessing new Unsplash
+  // ids -- both categories read as elegant/refined, and these are already
+  // confirmed-working URLs.
+  marble: [
+    "https://images.unsplash.com/photo-1528459105426-b9548367069b",
+    "https://images.unsplash.com/photo-1783148877802-b120f8fde090",
+  ],
+  // Reuses dark's own fallback pair -- cosmic's palette is night-sky/dark
+  // like dark's, and these are already confirmed-working URLs.
+  cosmic: [
+    "https://images.unsplash.com/photo-1518343161123-c7e9ab4dc4da",
+    "https://images.unsplash.com/photo-1447875569765-2b3db822bec9",
+  ],
+  // Reuses romantic's own fallback pair -- peony is a floral-romantic mood,
+  // and these are already confirmed-working URLs.
+  peony: [
+    "https://images.unsplash.com/photo-1511201173873-c327e63eb6c4",
+    "https://images.unsplash.com/photo-1582794543462-0d7922e50cf5",
+  ],
+  // Reuses botanical's own fallback pair -- provence is a botanical/
+  // countryside mood, and these are already confirmed-working URLs.
+  provence: [
+    "https://images.unsplash.com/photo-1512716679859-da19b4af9c38",
+    "https://images.unsplash.com/photo-1533038590840-1cde6e668a91",
+  ],
 };
 
 /** Rotating example couple names for card previews -- fallback only, used

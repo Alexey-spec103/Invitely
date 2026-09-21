@@ -13,7 +13,7 @@ export const modernTerracottaGrid: Theme = {
     "--theme-bg": "#FBEEE6",
     "--theme-text": "#3A2A20",
     "--theme-accent": "#C1633B",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-italiana), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",

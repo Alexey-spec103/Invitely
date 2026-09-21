@@ -12,7 +12,7 @@ export const bohoEarthenClay: Theme = {
     "--theme-bg": "#EEE1D0",
     "--theme-text": "#453322",
     "--theme-accent": "#A9764E",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-cormorant), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

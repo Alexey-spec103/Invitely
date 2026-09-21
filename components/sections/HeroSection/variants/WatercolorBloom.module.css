@@ -48,9 +48,77 @@
   -webkit-mask-position: center;
 }
 
+/* Boho/romantic full-color swap-ins for .blob/.sprig above -- same centered
+   and nudged-offset positions, real illustrated assets instead of a flat
+   accent-tinted mask. Not used by any other category sharing this variant
+   -- they keep the mask fallback. */
+.blobColor {
+  position: absolute;
+  width: 36rem;
+  height: 36rem;
+  max-width: 95vw;
+  max-height: 95vw;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* Offset kept comfortably outside the (larger) blob's own radius at every
+   breakpoint -- translate distance from center must exceed half of
+   .blobColor's current width, or this second accent starts sitting on top
+   of the first instead of beside it. */
+.sprigColor {
+  position: absolute;
+  width: 7rem;
+  height: 7rem;
+  transform: translate(15rem, -16rem) rotate(8deg);
+  object-fit: contain;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Off-center pair for every category whose asset is a solid spray/branch/
+   scroll cluster, not an open-center ring (see WATERCOLOR_BLOOM_RING in
+   decorMotifs.ts) -- anchored to opposite corners (top-right / bottom-left)
+   with real inset offsets, not the flex-centered-then-transformed technique
+   .blobColor/.sprigColor use, so neither one's bounding box reaches into
+   the vertical-and-horizontal center where .content always sits. */
+.blobColorCorner {
+  position: absolute;
+  top: -3rem;
+  right: -3rem;
+  width: 22rem;
+  height: 22rem;
+  max-width: 70vw;
+  max-height: 70vw;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.sprigColorCorner {
+  position: absolute;
+  bottom: -1.5rem;
+  left: -1.5rem;
+  width: 10rem;
+  height: 10rem;
+  max-width: 40vw;
+  max-height: 40vw;
+  object-fit: contain;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Narrower than the wreath's own diameter so long name pairs wrap onto two
+   lines and nest inside the wreath's open center instead of spilling past
+   its edges into the flower clusters -- the overlap the user flagged live
+   (letters crossing directly over roses) happened because unconstrained
+   text at 5rem/desktop was routinely wider than the un-color .blob's own
+   34rem circle. text-shadow is a second, cheaper safety net for whatever
+   overlap remains at extreme name lengths. */
 .content {
   position: relative;
   z-index: 1;
+  max-width: 16rem;
+  margin: 0 auto;
   text-align: center;
 }
 
@@ -58,8 +126,9 @@
   font-family: var(--theme-font-script);
   font-weight: 400;
   font-size: 3rem;
-  line-height: 1.1;
+  line-height: 1.15;
   margin: 0 0 0.75rem;
+  text-shadow: 0 0 0.5rem var(--theme-bg), 0 0 0.5rem var(--theme-bg);
 }
 
 .date {
@@ -72,6 +141,35 @@
 }
 
 @media (min-width: 640px) {
+  .blobColor {
+    width: 44rem;
+    height: 44rem;
+  }
+
+  .sprigColor {
+    width: 8rem;
+    height: 8rem;
+    transform: translate(18rem, -19rem) rotate(8deg);
+  }
+
+  .blobColorCorner {
+    width: 28rem;
+    height: 28rem;
+    top: -4rem;
+    right: -4rem;
+  }
+
+  .sprigColorCorner {
+    width: 12rem;
+    height: 12rem;
+    bottom: -2rem;
+    left: -2rem;
+  }
+
+  .content {
+    max-width: 22rem;
+  }
+
   .names {
     font-size: 4rem;
   }
@@ -82,6 +180,35 @@
 }
 
 @media (min-width: 1024px) {
+  .blobColor {
+    width: 52rem;
+    height: 52rem;
+  }
+
+  .sprigColor {
+    width: 9rem;
+    height: 9rem;
+    transform: translate(21rem, -22rem) rotate(8deg);
+  }
+
+  .blobColorCorner {
+    width: 34rem;
+    height: 34rem;
+    top: -5rem;
+    right: -5rem;
+  }
+
+  .sprigColorCorner {
+    width: 14rem;
+    height: 14rem;
+    bottom: -2.5rem;
+    left: -2.5rem;
+  }
+
+  .content {
+    max-width: 26rem;
+  }
+
   .names {
     font-size: 5rem;
   }

@@ -13,7 +13,7 @@ export const champagneRose: Theme = {
     "--theme-bg": "#F7EFE9",
     "--theme-text": "#4A3B36",
     "--theme-accent": "#C89B85",
-    "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
+    "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",

@@ -18,6 +18,13 @@
   text-align: center;
   color: var(--theme-text);
   background: color-mix(in srgb, var(--theme-bg) 88%, white);
+  /* A near-opaque fill was enough to read as "the card" against a flat
+     page background, but against backgroundTexture.ts's grain it needs a
+     real lift -- a soft shadow is what makes this read as a raised paper
+     sheet rather than a slightly-lighter patch of the same textured
+     surface. Harmless on the (still far more common) flat-background
+     categories too, so left unconditional rather than gated. */
+  box-shadow: 0 1.5rem 3rem -1.5rem rgba(0, 0, 0, 0.25);
 }
 
 .flourishTopLeft,
@@ -44,6 +51,27 @@
   bottom: 0.75rem;
   right: 0.75rem;
   transform: rotate(180deg);
+}
+
+/* Bleeds outward past the card's own edge (negative offset) rather than
+   inward -- lets these read as large, full-presence accents without ever
+   covering the card's own text content, the same overlap problem the
+   Hero wreath had before it was fixed. Composes the shared corner-bleed
+   anchors (Problem 2's anchor system) -- decorAnchors.module.css keeps
+   --decor-inward constant (5rem) across breakpoints so growing --decor-size
+   only ever grows how far the accent bleeds outward, never how far it
+   reaches back in toward the text; that inward-reach-grows-too bug was
+   confirmed live before this composed the shared formula. */
+.flourishTopLeftColor {
+  composes: cornerBleedTopLeft from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-inward: 5rem;
+}
+
+.flourishBottomRightColor {
+  composes: cornerBleedBottomRight from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-inward: 5rem;
 }
 
 /* The decorative tier -- genuine script, generous line-height (headings in
@@ -124,6 +152,11 @@
   .quote {
     font-size: 1.85rem;
   }
+
+  .flourishTopLeftColor,
+  .flourishBottomRightColor {
+    --decor-size: 12rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -146,5 +179,10 @@
 
   .quote {
     font-size: 2.1rem;
+  }
+
+  .flourishTopLeftColor,
+  .flourishBottomRightColor {
+    --decor-size: 15rem;
   }
 }

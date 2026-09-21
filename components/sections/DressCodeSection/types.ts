@@ -1,4 +1,5 @@
 import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+import type { ThemeCategory } from "@/lib/themes/types";
 
 export type DressCodeVariant = "color-palette" | "swatch-grid" | "minimal-stripe";
 
@@ -12,6 +13,7 @@ export interface DressCodeSectionVariantProps {
   description?: string;
   colors: DressCodeColor[];
   styleOverrides?: Record<string, TextStyleOverride>;
+  themeCategory?: ThemeCategory;
 }
 
 export interface DressCodeSectionProps extends DressCodeSectionVariantProps {

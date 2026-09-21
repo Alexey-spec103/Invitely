@@ -13,7 +13,7 @@ export const luxuryChampagnePearl: Theme = {
     "--theme-bg": "#FAF5EC",
     "--theme-text": "#33291F",
     "--theme-accent": "#D8B978",
-    "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
+    "--theme-font-heading": "var(--font-italiana), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },

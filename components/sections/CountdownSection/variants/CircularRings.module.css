@@ -23,6 +23,24 @@
   padding-top: 2.5rem;
 }
 
+/* The category-gated color cap is much larger than the mask it replaces
+   (see .laurelCapColor below), so this wrapper needs more top clearance
+   whenever a color cap is present -- applied unconditionally since the
+   extra gap reads fine even for the plain mask case. Uses the same
+   cap-safe-top formula as decorAnchors.module.css's .capSafeTop, but
+   declared directly here rather than via `composes` -- composed rules land
+   BEFORE this file's own rules in bundle order, so a composed padding-top
+   loses the cascade to this file's own .ringsWrap { padding-top: 2.5rem },
+   which is always also present on the same element and comes later in
+   source order. Confirmed live on DressCode's identical pattern: the
+   composed value was silently discarded. A same-file, later-declared
+   longhand is the only reliable way to win here. */
+.ringsWrapColor {
+  --decor-size: 8rem;
+  --decor-gap: 2rem;
+  padding-top: calc(var(--decor-size) + var(--decor-gap));
+}
+
 /* Same laurel-wreath cap technique as Timeline's spine cap and DressCode's
    ColorPalette -- here marking the countdown ring set as a small
    ceremonial moment rather than a plain row of numbers. */
@@ -43,6 +61,16 @@
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: contain;
   -webkit-mask-position: center;
+}
+
+/* Category-gated full-color swap-in for .laurelCap above -- same spot,
+   same asset as DressCode's ColorPalette cap (both mask the same
+   laurel-wreath.svg today, so reusing one illustrated replacement keeps
+   the two "ceremonial cap" moments visually related). Unmatched categories
+   keep the mask fallback. Composes the shared cap-above anchor. */
+.laurelCapColor {
+  composes: capAbove from "../../decorAnchors.module.css";
+  --decor-size: 8rem;
 }
 
 .rings {
@@ -100,5 +128,13 @@
 
   .label {
     font-size: 0.65rem;
+  }
+
+  .laurelCapColor {
+    --decor-size: 11rem;
+  }
+
+  .ringsWrapColor {
+    --decor-size: 11rem;
   }
 }

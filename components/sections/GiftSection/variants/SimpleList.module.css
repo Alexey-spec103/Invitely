@@ -1,7 +1,54 @@
 .section {
+  position: relative;
   padding: 3rem 1rem;
   color: var(--theme-text);
   text-align: center;
+  overflow: hidden;
+}
+
+/* The category-gated corner accents are large enough that, without this,
+   the title/description can sit in the same vertical band as
+   .accentTopLeft and read as overlapping/illegible -- confirmed live at a
+   ~650px viewport where the description text ran directly under the
+   frame graphic. Composes the shared edge-safe-top formula (Problem 2's
+   anchor system) for the padding; min-height stays a plain, empirically-
+   verified value here (not derived -- see decorAnchors.module.css's own
+   comment on why a min-height formula would be fake-systematic). It's
+   needed independently of padding-top: .accentBottomRight is anchored to
+   the section's own bottom edge, not to the content's height, so a short
+   section (few/no gift items -- confirmed live with an empty preferences
+   list) still let the bottom accent's top edge reach up into the
+   title/description band even with padding-top fixed. */
+.sectionColor {
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+  --decor-gap: 1rem;
+  /* Same cascade pitfall as ColorPalette/CircularRings' *Color wrappers --
+     `composes` lands before this file's own rules in bundle order, so a
+     composed padding-top would lose to .section's own shorthand
+     `padding: 3rem 1rem` (also always present on this element, and later
+     in source order). Declaring padding-top directly here, longhand,
+     reliably wins and leaves the shorthand's other three sides untouched. */
+  padding-top: calc(var(--decor-size) + var(--decor-edge-offset) + var(--decor-gap));
+  min-height: 30rem;
+}
+
+/* Category-gated full-color accents (SimpleList has no other section-level
+   decoration to preserve for unmatched categories, so unlike Hero's
+   BohoAsymmetric there's no mask fallback needed here). Composes the
+   shared corner-edge anchors -- edge offset (1rem) matches
+   BohoAsymmetric's corner accents so every corner-style decoration across
+   the site sits the same distance from its section's edge. */
+.accentTopLeft {
+  composes: cornerEdgeTopLeft from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+}
+
+.accentBottomRight {
+  composes: cornerEdgeBottomRight from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
 }
 
 .title {
@@ -94,5 +141,27 @@
 @media (min-width: 640px) {
   .title {
     font-size: 2.4rem;
+  }
+
+  .accentTopLeft,
+  .accentBottomRight {
+    --decor-size: 14rem;
+  }
+
+  .sectionColor {
+    --decor-size: 14rem;
+    min-height: 40rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .accentTopLeft,
+  .accentBottomRight {
+    --decor-size: 18rem;
+  }
+
+  .sectionColor {
+    --decor-size: 18rem;
+    min-height: 48rem;
   }
 }

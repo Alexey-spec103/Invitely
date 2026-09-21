@@ -12,7 +12,7 @@ export const coastalSandDune: Theme = {
     "--theme-bg": "#F6EFE2",
     "--theme-text": "#3D362A",
     "--theme-accent": "#C9A86A",
-    "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
+    "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },

@@ -22,6 +22,7 @@ import type { BackgroundFill } from "@/lib/backgroundFills";
 import { BanquetNavigatorSection, DEFAULT_BANQUET_NAVIGATOR_VARIANT } from "./BanquetNavigatorSection";
 import type { BanquetNavigatorSectionProps, BanquetTableLookupResult } from "./BanquetNavigatorSection";
 import type { Json } from "@/lib/supabase/database.types";
+import type { ThemeCategory } from "@/lib/themes/types";
 
 export const componentRegistry = {
   hero: HeroSection,
@@ -159,6 +160,33 @@ export function parseSections(raw: Json): SectionConfig[] {
     .sort((a, b) => a.order - b.order);
 }
 
+/**
+ * Content a section is seeded with the moment its Modules-panel switch is
+ * flipped on for the first time (see `toggleSection` in
+ * `app/dashboard/[eventId]/site/actions.ts`) -- without this, "on" silently
+ * meant nothing on the public page until the host separately opened that
+ * section's own card and made an edit (autosave skips the untouched first
+ * render), which is how the RSVP module could show "enabled" in the Modules
+ * list, render fine in the dashboard's own canvas preview, and still never
+ * appear for guests. Only for section types that make sense with zero
+ * owner-authored content -- RSVP/Guestbook collect from guests, Countdown
+ * reads the event date from `context`, Gift's items come from the separate
+ * `gift_preferences` table, Find My Table is a lookup tool. `letter`,
+ * `video`, `timeline` and `map` are deliberately absent: they only mean
+ * anything once the host has written a real note, pasted a real video URL,
+ * or added real events/venues, so they keep needing that edit first --
+ * `sectionWillRender` already gates timeline/map the same way for the same
+ * reason.
+ */
+export const DEFAULT_CONTENT_ON_ENABLE: Partial<Record<SectionType, Record<string, unknown>>> = {
+  rsvp: { title: SECTION_LABELS.rsvp, questions: [] },
+  countdown: { title: SECTION_LABELS.countdown },
+  gift: { title: SECTION_LABELS.gift },
+  dressCode: { title: SECTION_LABELS.dressCode, colors: [] },
+  guestbook: { title: SECTION_LABELS.guestbook },
+  banquetNavigator: { title: SECTION_LABELS.banquetNavigator },
+};
+
 /** `site_config.content` is also a `json` column; only its top-level shape (an object keyed by section type) is checked here. */
 export function parseContent(raw: Json): Record<string, unknown> {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
@@ -175,13 +203,16 @@ export function parseContent(raw: Json): Record<string, unknown> {
  * its own slice.
  */
 export interface RenderSectionContext {
+  hero?: { themeCategory?: ThemeCategory };
+  letter?: { themeCategory?: ThemeCategory };
   rsvp: {
     onSubmit: (input: RsvpFormInput) => Promise<void>;
     defaultGuestName?: string;
     maxPartySize?: number;
   };
-  countdown: { eventDateTime: string };
-  gift: { preferences: GiftPreferenceItem[] };
+  countdown: { eventDateTime: string; themeCategory?: ThemeCategory };
+  gift: { preferences: GiftPreferenceItem[]; themeCategory?: ThemeCategory };
+  dressCode?: { themeCategory?: ThemeCategory };
   guestbook: { messages: GuestbookMessageItem[] };
   banquetNavigator: {
     onLookup: (fullName: string) => Promise<BanquetTableLookupResult>;
@@ -292,6 +323,7 @@ export function renderSection(
           key={section.type}
           variant={section.variant as HeroSectionProps["variant"]}
           {...(data as Omit<HeroSectionProps, "variant">)}
+          themeCategory={context.hero?.themeCategory}
         />
       );
     }
@@ -302,6 +334,7 @@ export function renderSection(
           key={section.type}
           variant={section.variant as LetterSectionProps["variant"]}
           {...(data as Omit<LetterSectionProps, "variant">)}
+          themeCategory={context.letter?.themeCategory}
         />
       );
     }
@@ -346,6 +379,7 @@ export function renderSection(
           variant={section.variant as CountdownSectionProps["variant"]}
           {...(data as Omit<CountdownSectionProps, "variant" | "eventDateTime">)}
           eventDateTime={context.countdown.eventDateTime}
+          themeCategory={context.countdown.themeCategory}
         />
       );
     }
@@ -357,6 +391,7 @@ export function renderSection(
           variant={section.variant as GiftSectionProps["variant"]}
           {...(data as Omit<GiftSectionProps, "variant" | "preferences">)}
           preferences={context.gift.preferences}
+          themeCategory={context.gift.themeCategory}
         />
       );
     }
@@ -367,6 +402,7 @@ export function renderSection(
           key={section.type}
           variant={section.variant as DressCodeSectionProps["variant"]}
           {...(data as Omit<DressCodeSectionProps, "variant">)}
+          themeCategory={context.dressCode?.themeCategory}
         />
       );
     }

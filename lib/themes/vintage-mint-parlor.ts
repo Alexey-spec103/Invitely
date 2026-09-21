@@ -12,7 +12,7 @@ export const vintageMintParlor: Theme = {
     "--theme-bg": "#EDEFE4",
     "--theme-text": "#3B4136",
     "--theme-accent": "#7C9885",
-    "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
+    "--theme-font-heading": "var(--font-italiana), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-parisienne), cursive",
   },

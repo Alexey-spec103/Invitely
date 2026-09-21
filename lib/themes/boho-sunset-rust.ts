@@ -12,7 +12,7 @@ export const bohoSunsetRust: Theme = {
     "--theme-bg": "#F2E2D2",
     "--theme-text": "#4A2E20",
     "--theme-accent": "#D0713F",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

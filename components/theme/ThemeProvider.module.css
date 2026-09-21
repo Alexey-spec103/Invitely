@@ -1,3 +1,27 @@
 .wrapper {
   background-color: var(--theme-bg);
+  /* Two layers: a soft repeating vignette (darkens the edges of each ~900px
+     band a little, never the center where text sits -- adds real depth
+     instead of a flat fill, the "expensive paper" gap the user pointed out
+     weddingpost.ru closes with richer backgrounds) UNDER --theme-texture-
+     image's grain, which is only set for categories piloted in lib/themes/
+     backgroundTexture.ts (unset categories get `none` for that layer, i.e.
+     the same flat color + vignette). Each texture SVG carries its own
+     alpha (darkens on a light theme bg, lightens on a dark one), so plain
+     layering is all that's needed -- see backgroundTexture.ts for why an
+     `overlay` blend-mode approach was tried and dropped for the grain
+     itself.
+     Sized to a fixed 900px band and repeated (not `100% 100%` of the whole
+     multi-section page, and deliberately not `background-attachment:
+     fixed` either -- iOS Safari has a long-standing bug rendering fixed
+     backgrounds incorrectly on scroll, and this is a wedding invitation
+     site guests overwhelmingly open on a phone) -- confirmed live the
+     first version (one huge ellipse across the entire scrollable page) was
+     invisible except right at the very top/bottom of the whole page; this
+     repeats the vignette roughly once per screenful instead, the same
+     plain `background-repeat: repeat` technique the texture layer already
+     uses safely. */
+  background-image: radial-gradient(ellipse 90% 70% at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.05) 100%), var(--theme-texture-image, none);
+  background-repeat: repeat, repeat;
+  background-size: 100% 900px, auto;
 }

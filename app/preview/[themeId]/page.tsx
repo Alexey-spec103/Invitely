@@ -63,7 +63,13 @@ export default async function ThemePreviewPage({ params }: PageProps<"/preview/[
         </Link>
       </div>
       <ThemeProvider theme={theme}>
-        <HeroSection variant={heroVariant} names={[name1, name2]} eventDate={dateLabel} photoUrl={photoUrl} />
+        <HeroSection
+          variant={heroVariant}
+          names={[name1, name2]}
+          eventDate={dateLabel}
+          photoUrl={photoUrl}
+          themeCategory={theme.category}
+        />
       </ThemeProvider>
     </>
   );

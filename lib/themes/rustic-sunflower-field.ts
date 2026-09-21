@@ -12,7 +12,7 @@ export const rusticSunflowerField: Theme = {
     "--theme-bg": "#F3EAC9",
     "--theme-text": "#453A1C",
     "--theme-accent": "#D9A82E",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

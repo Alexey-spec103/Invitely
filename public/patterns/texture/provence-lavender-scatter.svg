@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="760">
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.014 0.8" numOctaves="2" stitchTiles="stitch" result="fiber" seed="67" />
+    <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="2" stitchTiles="stitch" result="speckle" seed="29" />
+    <feBlend in="fiber" in2="speckle" mode="multiply" result="grain" />
+    <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0.1  0 0 0 0 0.06  0 0 0 0 0.16  0 0 0 0.13 0" />
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grain)" />
+  <g>
+    <circle cx="259.8" cy="143.5" r="3.7" fill="#7d6a9e" opacity="0.26" />
+    <circle cx="432.8" cy="146.8" r="3.4" fill="#7d6a9e" opacity="0.22" />
+    <circle cx="459.4" cy="478.1" r="4.4" fill="#7d6a9e" opacity="0.15" />
+    <circle cx="63.1" cy="393.9" r="4.3" fill="#7d6a9e" opacity="0.16" />
+    <circle cx="592.5" cy="254.6" r="3.4" fill="#9583b3" opacity="0.16" />
+    <circle cx="53.9" cy="506.9" r="4.2" fill="#6a5789" opacity="0.27" />
+    <circle cx="341.0" cy="611.0" r="4.3" fill="#6a5789" opacity="0.19" />
+    <circle cx="527.5" cy="595.2" r="2.0" fill="#9583b3" opacity="0.18" />
+    <circle cx="80.7" cy="705.6" r="4.4" fill="#7d6a9e" opacity="0.22" />
+    <circle cx="153.4" cy="141.7" r="2.7" fill="#7d6a9e" opacity="0.24" />
+    <circle cx="397.1" cy="197.1" r="4.2" fill="#9583b3" opacity="0.28" />
+    <circle cx="55.0" cy="731.0" r="2.0" fill="#9583b3" opacity="0.23" />
+    <circle cx="754.0" cy="387.9" r="3.0" fill="#7d6a9e" opacity="0.14" />
+    <circle cx="115.2" cy="510.3" r="2.1" fill="#7d6a9e" opacity="0.27" />
+    <circle cx="723.9" cy="167.4" r="2.7" fill="#9583b3" opacity="0.29" />
+    <circle cx="25.6" cy="529.5" r="2.6" fill="#9583b3" opacity="0.29" />
+    <circle cx="506.2" cy="29.6" r="3.8" fill="#9583b3" opacity="0.25" />
+    <circle cx="241.7" cy="613.1" r="3.4" fill="#6a5789" opacity="0.20" />
+    <circle cx="205.9" cy="154.0" r="3.7" fill="#9583b3" opacity="0.24" />
+    <circle cx="607.3" cy="76.5" r="3.1" fill="#9583b3" opacity="0.25" />
+    <circle cx="341.3" cy="690.4" r="3.0" fill="#9583b3" opacity="0.14" />
+    <circle cx="511.3" cy="74.7" r="3.8" fill="#9583b3" opacity="0.12" />
+    <circle cx="480.1" cy="38.6" r="2.2" fill="#7d6a9e" opacity="0.20" />
+    <circle cx="51.4" cy="34.0" r="2.5" fill="#7d6a9e" opacity="0.19" />
+    <circle cx="107.8" cy="38.2" r="2.2" fill="#6a5789" opacity="0.23" />
+    <circle cx="627.6" cy="526.5" r="2.2" fill="#9583b3" opacity="0.21" />
+  </g>
+</svg>
