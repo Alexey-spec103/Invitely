@@ -255,30 +255,60 @@ export const themes: Record<string, Theme> = {
 export const DEFAULT_THEME_ID = romanticBlush.id;
 
 /** dashboard-audit.md B6: weddingpost.ru's "Популярные"/"Новые" entries rank
- * by real usage/upload date -- neither exists here (all 100 themes shipped
- * in one batch, confirmed via git history), so these are a deliberate
- * editorial curation for visual spread across categories, not a computed
- * metric pretending to be one. */
+ * by real usage/upload date -- neither exists here (all themes shipped in
+ * batches, confirmed via git history), so these are a deliberate editorial
+ * curation for visual spread across categories, not a computed metric
+ * pretending to be one. `ThemeGallery` opens on this "popular" entry by
+ * default, so this list is literally the first thing a visitor sees when
+ * picking a style -- curated from the newest four categories (marble,
+ * cosmic, peony, provence: the most recent design work, with real matched
+ * textures and full decorative-asset coverage) rather than the original
+ * launch batch, so the strongest current work leads instead of getting
+ * buried under 100+ older themes in an unsorted "all styles" grid. */
 export const POPULAR_THEME_IDS: string[] = [
-  "romantic-blush",
-  "modern-mono",
-  "botanical-sage",
-  "gilded-ivory",
-  "coastal-breeze",
-  "boho-terracotta",
-  "luxury-rose-gold",
-  "minimal-ink",
+  "marble-noir-rust",
+  "marble-sage-gold",
+  "marble-champagne-teal",
+  "cosmic-obsidian-starlight",
+  "cosmic-midnight-gold",
+  "cosmic-plum-gold",
+  "peony-blush-burgundy",
+  "peony-sage-clay",
+  "peony-wine-ivory",
+  "provence-lavender-sage",
+  "provence-dusty-lilac",
+  "provence-sage-terracotta",
 ];
 
+/** The "New" filter entry -- every theme from the same most-recent batch as
+ * `POPULAR_THEME_IDS` above (marble/cosmic/peony/provence, added after the
+ * original catalog), so it genuinely reflects what's new rather than a
+ * stale snapshot from an earlier addition. */
 export const NEW_THEME_IDS: string[] = [
-  "romantic-cherry-blossom",
-  "coastal-azure-horizon",
-  "dark-storm-silver",
-  "vintage-amber-glass",
-  "boho-marigold-festival",
-  "rustic-honey-hive",
-  "minimal-porcelain",
-  "luxury-obsidian-copper",
+  "marble-sage-gold",
+  "marble-teal-gold",
+  "marble-noir-rust",
+  "marble-onyx-sage",
+  "marble-ivory-charcoal",
+  "marble-champagne-teal",
+  "cosmic-midnight-gold",
+  "cosmic-violet-silver",
+  "cosmic-indigo-bronze",
+  "cosmic-obsidian-starlight",
+  "cosmic-plum-gold",
+  "cosmic-navy-copper",
+  "peony-blush-burgundy",
+  "peony-terracotta-cream",
+  "peony-dusty-mauve",
+  "peony-sage-clay",
+  "peony-wine-ivory",
+  "peony-champagne-terracotta",
+  "provence-lavender-sage",
+  "provence-coral-sage",
+  "provence-periwinkle-rose",
+  "provence-sage-terracotta",
+  "provence-dusty-lilac",
+  "provence-stone-lavender",
 ];
 
 export const THEME_TAGS: string[] = Array.from(
