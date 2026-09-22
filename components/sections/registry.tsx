@@ -203,7 +203,7 @@ export function parseContent(raw: Json): Record<string, unknown> {
  * its own slice.
  */
 export interface RenderSectionContext {
-  hero?: { themeCategory?: ThemeCategory };
+  hero?: { themeCategory?: ThemeCategory; eyebrow?: string };
   letter?: { themeCategory?: ThemeCategory };
   rsvp: {
     onSubmit: (input: RsvpFormInput) => Promise<{ ok: true } | { ok: false; message: string }>;
@@ -324,6 +324,7 @@ export function renderSection(
           variant={section.variant as HeroSectionProps["variant"]}
           {...(data as Omit<HeroSectionProps, "variant">)}
           themeCategory={context.hero?.themeCategory}
+          eyebrow={context.hero?.eyebrow}
         />
       );
     }

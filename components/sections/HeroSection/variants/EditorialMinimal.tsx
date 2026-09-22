@@ -12,12 +12,12 @@ import styles from "./EditorialMinimal.module.css";
  * this variant is bottom-anchored for the theme gallery's crop (unlike
  * MinimalText/WatercolorBloom's centered variants), matching the existing
  * .rule element's own already-fine positioning. */
-export default function EditorialMinimal({ names, eventDate, styleOverrides }: HeroSectionVariantProps) {
+export default function EditorialMinimal({ names, eventDate, styleOverrides, eyebrow }: HeroSectionVariantProps) {
   return (
     <section className={styles.section}>
       <span className={styles.wave} aria-hidden="true" />
       <div className={styles.block}>
-        <span className={styles.eyebrow}>Save the date</span>
+        <span className={styles.eyebrow}>{eyebrow || "Save the date"}</span>
         <p className={styles.names}>
           <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
           {names[1] && (

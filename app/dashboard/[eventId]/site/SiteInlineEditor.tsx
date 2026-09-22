@@ -6,6 +6,7 @@ import { Undo2, Redo2, Monitor, Smartphone, Tablet } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import { HeroSection } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
+import { getEventType } from "@/lib/eventTypes";
 import { LetterSection } from "@/components/sections/LetterSection";
 import type { LetterVariant } from "@/components/sections/LetterSection";
 import { TimelineSection } from "@/components/sections/TimelineSection";
@@ -1565,6 +1566,7 @@ export default function SiteInlineEditor({
                 eventDate={weddingDataDraft.eventDate}
                 photoUrl={heroVisible.photoUrl}
                 styleOverrides={heroOverrides}
+                eyebrow={getEventType(weddingDataDraft.eventType).heroEyebrow}
               />
             </EditableFieldProvider>
           </div>

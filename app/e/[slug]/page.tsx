@@ -18,6 +18,7 @@ import SitePasswordGate from "./SitePasswordGate";
 import EnvelopeReveal from "@/components/site/EnvelopeReveal";
 import { getInviteDescription, formatEventDate } from "@/lib/socialPreview";
 import { planMeets, BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
+import { getEventType } from "@/lib/eventTypes";
 import PublicSiteBadge from "@/components/site/PublicSiteBadge";
 
 export async function generateMetadata({
@@ -245,7 +246,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
         />
         {sections.map((section, index) => {
           const element = renderSection(section, content, {
-            hero: { themeCategory: theme.category },
+            hero: { themeCategory: theme.category, eyebrow: getEventType(event.event_type).heroEyebrow },
             letter: { themeCategory: theme.category },
             rsvp: { onSubmit: boundSubmitRsvp, defaultGuestName: invitedGuest?.full_name, maxPartySize },
             countdown: { eventDateTime, themeCategory: theme.category },

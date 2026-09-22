@@ -47,10 +47,10 @@
 
 .eyebrow {
   font-family: var(--theme-font-body);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  opacity: 0.6;
+  opacity: 0.92;
   margin-bottom: 1rem;
 }
 
@@ -88,7 +88,7 @@
   font-size: 0.8rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  opacity: 0.7;
+  opacity: 0.92;
   margin-top: 1.25rem;
 }
 

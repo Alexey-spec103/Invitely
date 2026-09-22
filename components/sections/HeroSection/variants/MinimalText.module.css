@@ -56,10 +56,10 @@
   position: relative;
   z-index: 1;
   font-family: var(--theme-font-body);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  opacity: 0.6;
+  opacity: 0.92;
   margin: 0;
 }
 

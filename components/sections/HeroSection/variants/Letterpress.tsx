@@ -5,12 +5,12 @@ import styles from "./Letterpress.module.css";
 /** Archival/letterpress: a double-ruled plate, deliberately monochrome
  * (names in text color, not accent) and all-caps -- reads as ink-on-paper
  * rather than a colorful modern invitation. */
-export default function Letterpress({ names, eventDate, styleOverrides }: HeroSectionVariantProps) {
+export default function Letterpress({ names, eventDate, styleOverrides, eyebrow }: HeroSectionVariantProps) {
   return (
     <section className={styles.section}>
       <div className={styles.plate}>
         <span className={styles.stamp} aria-hidden="true" />
-        <span className={styles.eyebrow}>Save the Date</span>
+        <span className={styles.eyebrow}>{eyebrow || "Save the Date"}</span>
         <p className={styles.names}>
           <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
           {names[1] && (

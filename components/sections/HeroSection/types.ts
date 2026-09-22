@@ -32,6 +32,13 @@ export interface HeroSectionVariantProps {
   names: string[];
   eventDate: string;
   photoUrl?: string;
+  /** Short kicker line above the names, for the few variants with an
+   * eyebrow/kicker slot (HandLetteringHero, EditorialMinimal, Letterpress)
+   * -- from `EventTypeDef.heroEyebrow` (lib/eventTypes.ts), resolved by the
+   * caller since Hero itself has no event-type awareness. Optional with a
+   * wedding-flavored fallback in each variant that uses it, so marketing/
+   * theme-gallery previews (no real event) don't need to pass one. */
+  eyebrow?: string;
   monogramInitials?: string;
   /** Per-instance size/weight/color/align overrides, keyed by field name
    * (e.g. "names", "date"). Rendered unconditionally (this is data, not

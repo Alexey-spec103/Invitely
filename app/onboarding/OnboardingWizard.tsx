@@ -377,6 +377,7 @@ export default function OnboardingWizard() {
                 names={previewNames}
                 eventDate={eventDate || ""}
                 photoUrl={photoUrl || undefined}
+                eyebrow={eventType.heroEyebrow}
               />
             </ThemeProvider>
           </div>
