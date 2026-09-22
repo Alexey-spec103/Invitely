@@ -6,18 +6,24 @@ import { ThemeGalleryCard } from "@/components/theme/ThemeGallery";
 import type { Theme } from "@/lib/themes";
 import styles from "./LandingThemeShowcase.module.css";
 
-/** Hand-picked, not the first 6 in array order -- one per a different
- * category/mood so the teaser reads as "look at the range" rather than
- * accidentally clustering (e.g. every romantic theme sorts together in
- * `lib/themes/index.ts`). All 6 were spot-checked against the crop-fix and
- * marketing chrome from the theme-gallery-card work and render cleanly. */
+/** Hand-picked, not the first N in array order -- spread across the newest
+ * four categories (marble/cosmic/peony/provence: matched textures, full
+ * decorative-asset coverage -- see `lib/themes/index.ts`'s POPULAR_THEME_IDS
+ * comment for why those lead over the original launch batch now) so this
+ * first-impression teaser reads as "look how rich this is" with real color
+ * and decorative variety, rather than accidentally clustering one mood.
+ * 9 (not 6) fills the 3-column grid to a clean 3 rows -- `.grid`'s layout
+ * is plain `repeat(3, ...)` with no assumption baked in about the count. */
 const SHOWCASE_THEME_IDS = [
-  "romantic-blush",
-  "boho-terracotta",
-  "vintage-rosewood",
-  "editorial-noir",
-  "coastal-linen",
-  "gilded-ivory",
+  "cosmic-obsidian-starlight",
+  "marble-noir-rust",
+  "peony-blush-burgundy",
+  "provence-lavender-sage",
+  "marble-champagne-teal",
+  "cosmic-plum-gold",
+  "peony-terracotta-cream",
+  "provence-coral-sage",
+  "marble-onyx-sage",
 ] as const;
 
 interface LandingThemeShowcaseProps {
