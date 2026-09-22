@@ -1,45 +1,50 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
-import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
-import type { HeroVariant } from "@/components/sections/HeroSection";
-import { LetterSection } from "@/components/sections/LetterSection";
-import { TimelineSection } from "@/components/sections/TimelineSection";
+import { HeroSection } from "@/components/sections/HeroSection";
 import { getTheme } from "@/lib/themes";
-import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { previewPhotoFor, previewTargetDateFor, formatPreviewDate } from "@/lib/themes/previewMedia";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
 import styles from "./HeroPhoneShowcase.module.css";
 
-// Same "lead with our newest, most colorful work" call as
-// LandingThemeShowcase.tsx and lib/themes/index.ts's POPULAR_THEME_IDS --
-// this phone mockup is the single most prominent visual on the whole
-// landing page (above the fold, animates through 3 real sections), so it
-// especially shouldn't be showing the plain original default theme.
-const SHOWCASE_THEME_ID = "boho-marigold-festival";
 const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
 
-// Real, finished copy for the Letter/Timeline frames -- matching the same
-// couple/date as the Hero frame, never lorem-ipsum placeholder text, since
-// the whole point of this showcase is "here's what a real Invitely site
-// actually says," not a generic mockup.
-const LETTER_CONTENT = {
-  title: "A Letter to Our Guests",
-  body: "From our very first date to this moment, every step led us here — and we can't wait to celebrate with the people who mean the most to us.",
-  quote:
-    "Love is not about how many days, months, or years you've been together. It's about how much you love each other every single day.",
-  note: "With so much love,",
-  closingLine: "Claire & Nathaniel",
-};
-
-const TIMELINE_CONTENT = {
-  title: "Timeline",
-  events: [
-    { time: "3:00 PM", title: "Guests Arrive", description: "Welcome drinks on the terrace" },
-    { time: "4:00 PM", title: "Ceremony", description: "Exchange of vows under the oak trees" },
-    { time: "5:30 PM", title: "Cocktail Hour", description: "Canapés & champagne toasts" },
-    { time: "7:00 PM", title: "Reception & Dinner", description: "Dinner, speeches, and first dance" },
-  ],
-};
+// Three real, decorated designs -- not the single auto-"recommended" variant
+// per theme (that pick can land on a deliberately sparse composition like
+// hand-lettering, which showed literally no illustrated decoration at all
+// on this exact showcase -- confirmed live, that's what prompted this
+// rewrite). Each entry below is hand-picked for a variant genuinely rich in
+// decoration for that theme, not whatever recommendedHeroVariantFor()
+// would have guessed:
+// - boho-asymmetric: a full-height illustrated vine framing the whole
+//   screen (needs `themeCategory` passed -- BohoAsymmetric.tsx falls back
+//   to a plain tinted mask without it, another thing the previous version
+//   got wrong by never passing themeCategory here at all).
+// - art-deco-crest: pure-CSS geometric zigzag bands + crest, always
+//   present regardless of category -- pairs naturally with marble's
+//   dramatic dark palette.
+// - watercolor-botanical: a CSS-masked branch illustration, always present
+//   regardless of category, tinted to the theme's own accent color.
+const SHOWCASE_FRAMES = [
+  {
+    themeId: "boho-marigold-festival",
+    variant: "boho-asymmetric" as const,
+    frameClass: styles.frameBoho,
+    dotClass: styles.progressDotBoho,
+  },
+  {
+    themeId: "marble-noir-rust",
+    variant: "art-deco-crest" as const,
+    frameClass: styles.frameArtDeco,
+    dotClass: styles.progressDotArtDeco,
+  },
+  {
+    themeId: "provence-lavender-sage",
+    variant: "watercolor-botanical" as const,
+    frameClass: styles.frameWatercolor,
+    dotClass: styles.progressDotWatercolor,
+  },
+];
 
 /** Hero right column: a real Invitely design shown live on a phone -- a
  * clean, modern bezel-less mockup (no physical home button, styled like
@@ -52,28 +57,14 @@ const TIMELINE_CONTENT = {
  *
  * landing-audit.md brand pass: instead of a static screenshot or a real
  * video file, a pure-CSS looped animation auto-advances through three real
- * sections (Hero -> Letter -> Timeline) as if a guest were scrolling
- * through the invitation -- a soft fade/slide/blur crossfade (no JS timers,
- * so it costs nothing at runtime and respects prefers-reduced-motion), plus
- * a small decorative "tap" cursor and shine sweep at each transition so it
- * reads as an interactive product, not a slideshow. */
+ * *designs* (not three sections of one design -- see SHOWCASE_FRAMES'
+ * comment above for why) as if a visitor were browsing the style catalog --
+ * a soft fade/slide/blur crossfade (no JS timers, so it costs nothing at
+ * runtime and respects prefers-reduced-motion), plus a small decorative
+ * "tap" cursor and shine sweep at each transition so it reads as an
+ * interactive product, not a slideshow. */
 export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
   const t = getDictionary(locale).landing.heroPhoneShowcase;
-  const theme = getTheme(SHOWCASE_THEME_ID);
-  const recommended = recommendedHeroVariantFor(theme.id, theme.category);
-  const heroVariant: HeroVariant = HERO_VARIANTS.includes(recommended as HeroVariant)
-    ? (recommended as HeroVariant)
-    : DEFAULT_HERO_VARIANT;
-  const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
-  const targetDate = previewTargetDateFor(theme.id, theme.season);
-  const dateLabel = formatPreviewDate(targetDate);
-
-  // Always a month before the showcased wedding date, whatever that date
-  // happens to be for this theme/season -- never a hardcoded date that
-  // could land after the "wedding" itself and read as backwards.
-  const rsvpDeadlineDate = new Date(targetDate);
-  rsvpDeadlineDate.setMonth(rsvpDeadlineDate.getMonth() - 1);
-  const rsvpDeadline = rsvpDeadlineDate.toISOString().slice(0, 10);
 
   return (
     <div className={styles.stage}>
@@ -88,27 +79,27 @@ export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
             <span className={styles.urlText}>yourname.com</span>
           </div>
           <div className={styles.screenScaleWrap}>
-            <div className={`${styles.frameLayer} ${styles.frameHero}`}>
-              <div className={styles.screenScaleInner}>
-                <ThemeProvider theme={theme}>
-                  <HeroSection variant={heroVariant} names={SHOWCASE_NAMES} eventDate={dateLabel} photoUrl={photoUrl} />
-                </ThemeProvider>
-              </div>
-            </div>
-            <div className={`${styles.frameLayer} ${styles.frameLetter}`}>
-              <div className={styles.screenScaleInner}>
-                <ThemeProvider theme={theme}>
-                  <LetterSection variant="centered-card" rsvpDeadline={rsvpDeadline} locale={locale} {...LETTER_CONTENT} />
-                </ThemeProvider>
-              </div>
-            </div>
-            <div className={`${styles.frameLayer} ${styles.frameTimeline}`}>
-              <div className={styles.screenScaleInner}>
-                <ThemeProvider theme={theme}>
-                  <TimelineSection variant="vertical-line" {...TIMELINE_CONTENT} />
-                </ThemeProvider>
-              </div>
-            </div>
+            {SHOWCASE_FRAMES.map(({ themeId, variant, frameClass }) => {
+              const theme = getTheme(themeId);
+              const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
+              const targetDate = previewTargetDateFor(theme.id, theme.season);
+              const dateLabel = formatPreviewDate(targetDate);
+              return (
+                <div key={themeId} className={`${styles.frameLayer} ${frameClass}`}>
+                  <div className={styles.screenScaleInner}>
+                    <ThemeProvider theme={theme}>
+                      <HeroSection
+                        variant={variant}
+                        names={SHOWCASE_NAMES}
+                        eventDate={dateLabel}
+                        photoUrl={photoUrl}
+                        themeCategory={effectiveDecorCategory(theme)}
+                      />
+                    </ThemeProvider>
+                  </div>
+                </div>
+              );
+            })}
             <span className={styles.shineSweep} aria-hidden="true" />
             <span className={styles.tapCursor} aria-hidden="true" />
           </div>
@@ -116,9 +107,9 @@ export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
       </div>
 
       <div className={styles.progressDots} aria-hidden="true">
-        <span className={`${styles.progressDot} ${styles.progressDotHero}`} />
-        <span className={`${styles.progressDot} ${styles.progressDotLetter}`} />
-        <span className={`${styles.progressDot} ${styles.progressDotTimeline}`} />
+        {SHOWCASE_FRAMES.map(({ themeId, dotClass }) => (
+          <span key={themeId} className={`${styles.progressDot} ${dotClass}`} />
+        ))}
       </div>
 
       <p className={styles.bottomCaption}>{t.bottomCaption}</p>

@@ -155,8 +155,9 @@
   pointer-events: none;
 }
 
-/* Three real sections (Hero/Letter/Timeline) stacked on top of each other,
-   each one a full-bleed absolutely-positioned layer. Only one is ever
+/* Three real designs (boho/art-deco/watercolor, each its own theme+variant
+   -- see HeroPhoneShowcase.tsx's SHOWCASE_FRAMES) stacked on top of each
+   other, each one a full-bleed absolutely-positioned layer. Only one is ever
    visually "in" at a time -- framePlay below fades/slides/blurs each one
    in and out in turn, phase-shifted per layer via animation-delay so a
    single keyframes definition drives all three. */
@@ -172,24 +173,12 @@
   left: 0;
   width: 375px;
   transform-origin: top left;
-  /* Hero and Letter both vertically center their content inside a
-     min-height:100vh flex box, so the shift needed to bring their content
-     into this small crop window depends on each one's own content height
-     (a taller block's top edge sits closer to the 50vh midline, so it
-     needs a smaller shift) -- Timeline's variant, unlike those two, is
-     top-anchored with plain padding rather than centered, so it needs
-     almost no shift at all. All three tuned by eye against a real render
-     rather than guessed, since the same formula doesn't transfer between
-     "centered" and "top-anchored" sections. */
+  /* All three frames are Hero-variant compositions, vertically centered
+     inside a min-height:100vh flex box -- same shift works for all three
+     (unlike the previous Hero/Letter/Timeline version, which needed a
+     different shift per section type). Tuned by eye against a real render,
+     not guessed. */
   transform: scale(calc(100cqw / 375px)) translateY(-40vh);
-}
-
-.frameLetter .screenScaleInner {
-  transform: scale(calc(100cqw / 375px)) translateY(-22vh);
-}
-
-.frameTimeline .screenScaleInner {
-  transform: scale(calc(100cqw / 375px)) translateY(-2vh);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -197,7 +186,7 @@
     animation: framePlay 12s cubic-bezier(0.22, 1, 0.36, 1) infinite;
   }
 
-  .frameHero {
+  .frameBoho {
     animation-delay: 0s;
   }
 
@@ -206,13 +195,13 @@
      `animation-duration` after that -- landing its "visible" window in
      this frame's own third of the loop, every loop. A negative delay does
      the opposite (fast-forwards into the timeline, i.e. wraps to near the
-     *end* of the cycle at t=0), which put Letter/Timeline's visible
+     *end* of the cycle at t=0), which put the 2nd/3rd frames' visible
      windows in the wrong third and left blank gaps between frames. */
-  .frameLetter {
+  .frameArtDeco {
     animation-delay: 4s;
   }
 
-  .frameTimeline {
+  .frameWatercolor {
     animation-delay: 8s;
   }
 
@@ -228,27 +217,27 @@
     animation: dotActive 12s cubic-bezier(0.22, 1, 0.36, 1) infinite;
   }
 
-  .progressDotHero {
+  .progressDotBoho {
     animation-delay: 0s;
   }
 
-  .progressDotLetter {
+  .progressDotArtDeco {
     animation-delay: 4s;
   }
 
-  .progressDotTimeline {
+  .progressDotWatercolor {
     animation-delay: 8s;
   }
 }
 
-/* No motion preference -- just show the Hero frame, the same static shot
+/* No motion preference -- just show the first frame, the same static shot
    weddingpost.ru-style landing pages fall back to. */
 @media (prefers-reduced-motion: reduce) {
-  .frameHero {
+  .frameBoho {
     opacity: 1;
   }
 
-  .progressDotHero {
+  .progressDotBoho {
     opacity: 1;
     background: var(--dash-accent, #e0654a);
   }

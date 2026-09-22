@@ -189,12 +189,19 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
   // ThemeSelectForm sizing, app/dashboard/[eventId]/style/ThemeSelectForm.tsx)
   // rather than squeezing a sidebar+card-grid component into half a narrow
   // column, which was making style names/thumbnails too small to read.
-  const isThemeStep = stepKey === "themeId";
+  //
+  // eventType gets the same wide/no-preview treatment for a different
+  // reason: the side "Preview" panel always renders the same generic
+  // monogram-card mockup on this step regardless of which event type is
+  // picked (nothing about the choice changes it), so it's pure dead weight
+  // here -- confirmed live and flagged directly. Widening the category
+  // grid instead gives the 12 event types more visible room.
+  const hidesPreviewPanel = stepKey === "themeId" || stepKey === "eventType";
 
   return (
     <div
       className={
-        isThemeStep
+        hidesPreviewPanel
           ? "block"
           : "mx-auto grid max-w-3xl gap-8 sm:grid-cols-2 sm:items-center"
       }
@@ -222,7 +229,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                 <p className="mt-1 text-sm text-gray-500">{t.eventTypeStep.subtext}</p>
 
                 <div className="relative mt-4">
-                  <div className="grid max-h-80 grid-cols-2 gap-2 overflow-y-auto pr-1">
+                  <div className="grid max-h-[28rem] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3 lg:grid-cols-4">
                     {EVENT_TYPE_LIST.map((type) => {
                       const Icon = EVENT_TYPE_ICONS[type.icon] ?? CalendarHeart;
                       const isSelected = type.id === eventTypeId;
@@ -376,7 +383,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
         </div>
       </form>
 
-      {!isThemeStep && (
+      {!hidesPreviewPanel && (
         <div className="relative h-[420px] overflow-hidden rounded-xl border border-gray-200 bg-white">
           <span className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500 shadow-sm">
             {t.previewBadge}
