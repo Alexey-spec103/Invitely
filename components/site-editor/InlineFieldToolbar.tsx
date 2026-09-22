@@ -16,9 +16,9 @@ interface InlineFieldToolbarProps {
 }
 
 const iconButtonClass =
-  "flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--dash-text-muted)] hover:bg-white/10 hover:text-[var(--dash-text)]";
+  "flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-transparent text-[var(--dash-text)] hover:border-[var(--dash-border)] hover:bg-white/10";
 const iconButtonActiveClass =
-  "flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]";
+  "flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]";
 
 const ALIGN_OPTIONS = [
   { value: "left", Icon: AlignLeft },
@@ -103,7 +103,7 @@ export default function InlineFieldToolbar({
           onMouseDown={(event) => event.preventDefault()}
           onClick={onDelete}
           title="Delete"
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-red-400 hover:bg-red-500/10"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-transparent text-red-500 hover:border-red-400/40 hover:bg-red-500/10"
         >
           <Trash2 className="h-4 w-4" aria-hidden="true" />
         </button>

@@ -1,0 +1,25 @@
+/* Hover/selected affordance for inline-editable fields -- before this,
+   nothing signaled a field was clickable until the floating toolbar
+   appeared, confirmed as a real clarity complaint ("что внутри, что он
+   делает"). currentColor keeps the outline legible against any theme's
+   own text color instead of a hardcoded one that could blend in. */
+.editableIdle {
+  cursor: text;
+  outline: 1px dashed transparent;
+  outline-offset: 3px;
+  border-radius: 2px;
+  transition: outline-color 120ms ease, background-color 120ms ease;
+}
+
+.editableIdle:hover {
+  outline-color: color-mix(in srgb, currentColor 55%, transparent);
+  background-color: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+.editableSelected {
+  cursor: text;
+  outline: 2px solid var(--theme-accent, #2563eb);
+  outline-offset: 3px;
+  border-radius: 2px;
+  background-color: color-mix(in srgb, var(--theme-accent, #2563eb) 8%, transparent);
+}

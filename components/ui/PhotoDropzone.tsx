@@ -55,7 +55,7 @@ export default function PhotoDropzone({
           void handleFile(e.dataTransfer.files?.[0]);
         }}
         className={
-          "relative mt-1 flex h-40 items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition " +
+          "group relative mt-1 flex h-56 items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition " +
           (isDragging ? "border-rose-400 bg-rose-50" : "border-gray-300 bg-gray-50 hover:border-gray-400")
         }
       >
@@ -78,21 +78,25 @@ export default function PhotoDropzone({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={value} alt="" className="h-full w-full object-cover" />
-              <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/0 opacity-0 transition hover:bg-black/40 hover:opacity-100">
+              {/* Always-visible action bar, not hover-only -- a hidden overlay
+                  never appears at all on touch devices, which is how this
+                  "Remove" control went missing in practice. */}
+              <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-8">
                 <button
                   type="button"
                   onClick={() => inputRef.current?.click()}
-                  className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-gray-900 transition hover:bg-white"
+                  className="rounded-full bg-white px-3.5 py-2 text-sm font-semibold text-gray-900 shadow transition hover:bg-gray-100"
                 >
                   Change photo
                 </button>
                 <button
                   type="button"
                   onClick={() => onChange(undefined)}
-                  className="rounded-full bg-white/90 p-1.5 text-gray-900 transition hover:bg-white"
+                  className="flex items-center gap-1 rounded-full bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow transition hover:bg-red-50"
                   aria-label="Remove photo"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-4 w-4" />
+                  Remove
                 </button>
               </div>
             </motion.div>

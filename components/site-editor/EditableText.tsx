@@ -3,6 +3,7 @@
 import { useEffect, useRef, type CSSProperties, type FocusEvent, type MouseEvent } from "react";
 import { useEditableField } from "./EditableFieldContext";
 import type { TextStyleOverride } from "./EditableFieldContext";
+import editableStyles from "./EditableText.module.css";
 
 type EditableTag = "span" | "p" | "h2" | "div";
 
@@ -129,7 +130,7 @@ export default function EditableText({ field, value, style, as = "span", classNa
   // branch per tag (only 4 exist) sidesteps that without an `any` escape.
   const sharedProps = {
     "data-field": field,
-    className,
+    className: `${className ?? ""} ${isSelected ? editableStyles.editableSelected : editableStyles.editableIdle}`.trim(),
     style: cssStyle,
     contentEditable: isSelected,
     suppressContentEditableWarning: true,

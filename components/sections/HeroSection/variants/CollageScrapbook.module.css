@@ -13,7 +13,7 @@
 
 .print {
   position: relative;
-  width: 14rem;
+  width: 17rem;
   padding: 0.6rem 0.6rem 1.5rem;
   background-color: var(--theme-bg);
   border: 1px solid color-mix(in srgb, var(--theme-text) 15%, transparent);
@@ -80,7 +80,7 @@
 
 @media (min-width: 640px) {
   .print {
-    width: 17rem;
+    width: 20rem;
   }
 
   .note {
@@ -94,7 +94,7 @@
 
 @media (min-width: 1024px) {
   .print {
-    width: 19rem;
+    width: 22rem;
   }
 
   .note {

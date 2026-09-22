@@ -175,13 +175,15 @@ export default function SectionModulesPanel({
                 aria-label={`Turn ${SECTION_LABELS[type]} ${enabled[type] ? "off" : "on"}`}
                 disabled={pendingToggle === type}
                 onClick={() => handleToggle(type, !enabled[type])}
-                className={`relative h-4 w-7 shrink-0 rounded-full transition disabled:opacity-50 ${
-                  enabled[type] ? "bg-[var(--dash-accent)]" : "bg-[var(--dash-border)]"
+                className={`relative h-7 w-12 shrink-0 rounded-full border-2 transition disabled:opacity-50 ${
+                  enabled[type]
+                    ? "border-[var(--dash-accent)] bg-[var(--dash-accent)]"
+                    : "border-[var(--dash-text-muted)] bg-[var(--dash-surface)]"
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition ${
-                    enabled[type] ? "left-3.5" : "left-0.5"
+                  className={`absolute top-0.5 h-5 w-5 rounded-full shadow transition-all ${
+                    enabled[type] ? "right-0.5 bg-white" : "left-0.5 bg-[var(--dash-text-muted)]"
                   }`}
                 />
               </button>
@@ -213,13 +215,15 @@ export default function SectionModulesPanel({
             aria-label={`Turn envelope reveal ${envelopeEnabled ? "off" : "on"}`}
             disabled={envelopePending}
             onClick={() => handleEnvelopeToggle(!envelopeEnabled)}
-            className={`relative h-4 w-7 shrink-0 rounded-full transition disabled:opacity-50 ${
-              envelopeEnabled ? "bg-[var(--dash-accent)]" : "bg-[var(--dash-border)]"
+            className={`relative h-7 w-12 shrink-0 rounded-full border-2 transition disabled:opacity-50 ${
+              envelopeEnabled
+                ? "border-[var(--dash-accent)] bg-[var(--dash-accent)]"
+                : "border-[var(--dash-text-muted)] bg-[var(--dash-surface)]"
             }`}
           >
             <span
-              className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition ${
-                envelopeEnabled ? "left-3.5" : "left-0.5"
+              className={`absolute top-0.5 h-5 w-5 rounded-full shadow transition-all ${
+                envelopeEnabled ? "right-0.5 bg-white" : "left-0.5 bg-[var(--dash-text-muted)]"
               }`}
             />
           </button>

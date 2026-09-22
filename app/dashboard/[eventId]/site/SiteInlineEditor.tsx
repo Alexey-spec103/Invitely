@@ -2205,7 +2205,7 @@ const BLOCK_TYPE_ICON: Record<BlockRowData["type"], string> = {
  * icon (repeatable items only) removes that item outright, the same
  * operation the floating toolbar's own delete button already does. */
 function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   return (
     <div
@@ -2223,15 +2223,15 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
             {blocks.length}
           </span>
         </span>
-        <span className="text-xs text-[var(--dash-text-muted)]">{open ? "Hide" : "Show"}</span>
+        <span className="text-xs font-medium text-[var(--dash-text-muted)]">{open ? "Hide" : "Show"}</span>
       </button>
       {open && (
-        <ul className="mt-3 max-h-64 space-y-0.5 overflow-y-auto">
+        <ul className="mt-3 max-h-80 space-y-1 overflow-y-auto">
           {blocks.map((block) => (
             <li
               key={block.key}
-              className={`group flex items-center justify-between gap-2 rounded-md px-2 py-1 text-xs hover:bg-[var(--dash-surface-2)] ${
-                block.hidden ? "opacity-40" : ""
+              className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-[var(--dash-surface-2)] ${
+                block.hidden ? "opacity-50" : ""
               } ${block.type === "group" ? "mt-1 font-semibold text-[var(--dash-text-muted)]" : ""}`}
             >
               <button
@@ -2244,13 +2244,18 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
                 </span>
                 <span className="truncate text-[var(--dash-text)]">{block.label}</span>
               </button>
-              <span className="hidden shrink-0 items-center gap-1 group-hover:flex">
+              <span className="flex shrink-0 items-center gap-1.5">
                 {block.onToggleHidden && (
                   <button
                     type="button"
                     onClick={block.onToggleHidden}
-                    className="rounded px-1 text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
+                    className={`flex h-7 w-7 items-center justify-center rounded-md border text-base ${
+                      block.hidden
+                        ? "border-[var(--dash-border)] bg-[var(--dash-surface-2)] text-[var(--dash-text-muted)]"
+                        : "border-[var(--dash-accent)]/30 bg-[var(--dash-accent)]/10 text-[var(--dash-accent)]"
+                    } hover:opacity-80`}
                     aria-label={block.hidden ? "Show block" : "Hide block"}
+                    title={block.hidden ? "Show block" : "Hide block"}
                   >
                     {block.hidden ? "🚫" : "👁"}
                   </button>
@@ -2259,8 +2264,9 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
                   <button
                     type="button"
                     onClick={block.onDelete}
-                    className="rounded px-1 text-[var(--dash-text-muted)] hover:text-red-400"
+                    className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] text-base text-[var(--dash-text-muted)] hover:border-red-400 hover:text-red-500"
                     aria-label="Delete"
+                    title="Delete"
                   >
                     🗑
                   </button>
