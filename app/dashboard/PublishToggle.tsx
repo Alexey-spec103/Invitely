@@ -19,14 +19,13 @@ export default function PublishToggle({ eventId, status }: PublishToggleProps) {
   const handleClick = async () => {
     setError(null);
     setIsPending(true);
-    try {
-      await togglePublish(eventId);
+    const result = await togglePublish(eventId);
+    if (result.ok) {
       router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update status");
-    } finally {
-      setIsPending(false);
+    } else {
+      setError(result.message);
     }
+    setIsPending(false);
   };
 
   return (

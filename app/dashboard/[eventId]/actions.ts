@@ -21,11 +21,23 @@ import { HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroS
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import type { SectionConfig } from "@/components/sections/registry";
 
-export async function togglePublish(eventId: string) {
+export async function togglePublish(
+  eventId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
   // Publishing requires a real account, not just any session -- an
   // anonymous trial user can build and preview freely, but guests can only
   // actually see the site once its owner has a real (non-anonymous) account.
-  const user = await requireRealUser();
+  // Returned as a value, not thrown -- Next.js redacts thrown Server Action
+  // error messages to a generic, unhelpful message in production builds
+  // ("Minified React error #441"), which turned this expected, common case
+  // (an anonymous host clicking Publish) into raw React internals shown to
+  // a real customer instead of "Create a free account to continue".
+  let user;
+  try {
+    user = await requireRealUser();
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Not authenticated" };
+  }
   const supabase = await createClient();
 
   const { data: existingEvent, error: fetchError } = await supabase
@@ -36,7 +48,7 @@ export async function togglePublish(eventId: string) {
     .single();
 
   if (fetchError || !existingEvent) {
-    throw new Error(fetchError?.message ?? "Event not found");
+    return { ok: false, message: fetchError?.message ?? "Event not found" };
   }
 
   const nextStatus = existingEvent.status === "published" ? "draft" : "published";
@@ -48,10 +60,11 @@ export async function togglePublish(eventId: string) {
     .eq("owner_id", user.id);
 
   if (updateError) {
-    throw new Error(updateError.message);
+    return { ok: false, message: updateError.message };
   }
 
   revalidatePath(`/dashboard/${eventId}`, "layout");
+  return { ok: true };
 }
 
 interface UpdateThemeInput {
