@@ -168,8 +168,23 @@ export default function OnboardingWizard() {
     }
   };
 
+  // The theme step's own ThemeGalleryCard already renders a live mockup per
+  // card, so the side "Preview" panel below is redundant noise for this one
+  // step -- dropped here and the form widened to fill both columns instead,
+  // giving the gallery real room (matches the dashboard's own unconstrained
+  // ThemeSelectForm sizing, app/dashboard/[eventId]/style/ThemeSelectForm.tsx)
+  // rather than squeezing a sidebar+card-grid component into half a narrow
+  // column, which was making style names/thumbnails too small to read.
+  const isThemeStep = stepKey === "themeId";
+
   return (
-    <div className="grid gap-8 sm:grid-cols-2 sm:items-center">
+    <div
+      className={
+        isThemeStep
+          ? "block"
+          : "mx-auto grid max-w-3xl gap-8 sm:grid-cols-2 sm:items-center"
+      }
+    >
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
@@ -236,7 +251,7 @@ export default function OnboardingWizard() {
 
                 <HowItWorksClip />
 
-                <div className="mt-4 max-h-[26rem] overflow-y-auto pr-1">
+                <div className="mt-4 max-h-[52rem] overflow-y-auto pr-1">
                   <ThemeGallery
                     themes={Object.values(themes)}
                     selectedId={themeId}
@@ -349,21 +364,23 @@ export default function OnboardingWizard() {
         </div>
       </form>
 
-      <div className="relative h-[420px] overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <span className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500 shadow-sm">
-          Preview
-        </span>
-        <div className="absolute top-1/2 left-1/2 w-[200%] -translate-x-1/2 -translate-y-1/2 scale-50">
-          <ThemeProvider theme={selectedTheme}>
-            <HeroSection
-              variant={previewHeroVariant}
-              names={previewNames}
-              eventDate={eventDate || ""}
-              photoUrl={photoUrl || undefined}
-            />
-          </ThemeProvider>
+      {!isThemeStep && (
+        <div className="relative h-[420px] overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <span className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500 shadow-sm">
+            Preview
+          </span>
+          <div className="absolute top-1/2 left-1/2 w-[200%] -translate-x-1/2 -translate-y-1/2 scale-50">
+            <ThemeProvider theme={selectedTheme}>
+              <HeroSection
+                variant={previewHeroVariant}
+                names={previewNames}
+                eventDate={eventDate || ""}
+                photoUrl={photoUrl || undefined}
+              />
+            </ThemeProvider>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
