@@ -385,7 +385,8 @@ function SendInviteMenu({
     setSendingEmail(true);
     try {
       const url = `${window.location.origin}/e/${slug}?invite=${inviteCode}`;
-      await sendGuestInvitationEmail(guestId, url);
+      const result = await sendGuestInvitationEmail(guestId, url);
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
       setEmailError(err instanceof Error ? err.message : "Failed to send email");
@@ -572,11 +573,12 @@ function EditGuestForm({
   const onSubmit = async (values: GuestFormValues) => {
     setFormError(null);
     try {
-      await updateGuest({
+      const result = await updateGuest({
         guestId: guest.id,
         ...values,
         maxPlusOnes: values.maxPlusOnes ? Number(values.maxPlusOnes) : undefined,
       });
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
       onDone();
     } catch (err) {
@@ -728,11 +730,12 @@ export default function GuestManager({
       return;
     }
     try {
-      await addGuest({
+      const result = await addGuest({
         eventId,
         ...values,
         maxPlusOnes: values.maxPlusOnes ? Number(values.maxPlusOnes) : undefined,
       });
+      if (!result.ok) throw new Error(result.message);
       reset();
       router.refresh();
     } catch (err) {
@@ -746,7 +749,8 @@ export default function GuestManager({
     }
     setDeletingId(guestId);
     try {
-      await deleteGuest(guestId);
+      const result = await deleteGuest(guestId);
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Failed to delete");

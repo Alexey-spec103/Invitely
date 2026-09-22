@@ -7,7 +7,10 @@ import type { Json } from "@/lib/supabase/database.types";
 import type { CanvasFrame } from "@/lib/canvas/types";
 import { DEFAULT_THEME_ID } from "@/lib/themes";
 
-async function patchInvitationsContent(eventId: string, patch: Record<string, unknown>) {
+async function patchInvitationsContent(
+  eventId: string,
+  patch: Record<string, unknown>
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -15,7 +18,7 @@ async function patchInvitationsContent(eventId: string, patch: Record<string, un
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -49,13 +52,17 @@ async function patchInvitationsContent(eventId: string, patch: Record<string, un
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${eventId}/paper`);
   revalidatePath(`/dashboard/${eventId}/invitations`);
+  return { ok: true };
 }
 
-export async function updateInvitationBackCanvas(input: { eventId: string; frame: CanvasFrame }) {
-  await patchInvitationsContent(input.eventId, { backCanvas: input.frame as unknown as Json });
+export async function updateInvitationBackCanvas(input: {
+  eventId: string;
+  frame: CanvasFrame;
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  return patchInvitationsContent(input.eventId, { backCanvas: input.frame as unknown as Json });
 }

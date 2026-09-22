@@ -51,7 +51,7 @@ export default function SimpleForm({
         : Math.max(1, Number(partySize) || 1);
       const trimmedAttendeeNames = attendeeNames.slice(0, clampedPartySize - 1).map((name) => name.trim());
 
-      await onSubmit({
+      const result = await onSubmit({
         guestName: guestName.trim(),
         attending,
         partySize: clampedPartySize,
@@ -62,6 +62,7 @@ export default function SimpleForm({
         honeypot,
         formRenderedAt,
       });
+      if (!result.ok) throw new Error(result.message);
       setSubmitted(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

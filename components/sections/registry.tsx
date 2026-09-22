@@ -206,7 +206,7 @@ export interface RenderSectionContext {
   hero?: { themeCategory?: ThemeCategory };
   letter?: { themeCategory?: ThemeCategory };
   rsvp: {
-    onSubmit: (input: RsvpFormInput) => Promise<void>;
+    onSubmit: (input: RsvpFormInput) => Promise<{ ok: true } | { ok: false; message: string }>;
     defaultGuestName?: string;
     maxPartySize?: number;
   };

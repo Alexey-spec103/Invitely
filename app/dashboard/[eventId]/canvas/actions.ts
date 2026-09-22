@@ -5,7 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import type { CanvasFrame } from "@/lib/canvas/types";
 import type { Json } from "@/lib/supabase/database.types";
 
-export async function saveCanvasFrames(eventId: string, frames: CanvasFrame[]) {
+export async function saveCanvasFrames(
+  eventId: string,
+  frames: CanvasFrame[]
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -14,11 +17,12 @@ export async function saveCanvasFrames(eventId: string, frames: CanvasFrame[]) {
     .eq("event_id", eventId);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath(`/dashboard/${eventId}/canvas`);
   revalidatePath("/e/[slug]", "page");
+  return { ok: true };
 }
 
 export async function setLayoutMode(eventId: string, mode: "structured" | "canvas") {

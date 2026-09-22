@@ -37,7 +37,7 @@ export interface RsvpSectionVariantProps {
    * for a guest resolved via their invite link. Undefined when there's no cap to enforce. */
   maxPartySize?: number;
   questions?: RsvpQuestion[];
-  onSubmit: (input: RsvpFormInput) => Promise<void>;
+  onSubmit: (input: RsvpFormInput) => Promise<{ ok: true } | { ok: false; message: string }>;
   styleOverrides?: Record<string, TextStyleOverride>;
 }
 

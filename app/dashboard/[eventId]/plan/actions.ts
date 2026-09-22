@@ -20,12 +20,19 @@ interface UpdatePlanInput {
  * 'Select' buttons"), which meant any signed-in owner could set their own
  * event to Premium for free. Free is still a legitimate no-payment
  * transition (cancelling), so it stays here. */
-export async function updatePlan(input: UpdatePlanInput) {
+export async function updatePlan(
+  input: UpdatePlanInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
   if (input.planId !== DEFAULT_PLAN_ID) {
-    throw new Error("Paid plans are purchased through checkout, not set directly");
+    return { ok: false, message: "Paid plans are purchased through checkout, not set directly" };
   }
 
-  const user = await requireRealUser();
+  let user;
+  try {
+    user = await requireRealUser();
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Not authenticated" };
+  }
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -35,10 +42,11 @@ export async function updatePlan(input: UpdatePlanInput) {
     .eq("owner_id", user.id);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/plan`);
+  return { ok: true };
 }
 
 interface CreateCheckoutSessionInput {
@@ -55,13 +63,20 @@ interface CreateCheckoutSessionInput {
  * webhook (app/api/stripe/webhook/route.ts) knows what to upgrade once
  * Stripe confirms payment -- there's no user session by the time that
  * fires, so this is the only place that link gets made. */
-export async function createCheckoutSession(input: CreateCheckoutSessionInput) {
+export async function createCheckoutSession(
+  input: CreateCheckoutSessionInput
+): Promise<{ ok: true; url: string } | { ok: false; message: string }> {
   const plan = plans[input.planId];
   if (!plan || plan.priceEur <= 0) {
-    throw new Error("Unknown paid plan");
+    return { ok: false, message: "Unknown paid plan" };
   }
 
-  const user = await requireRealUser();
+  let user;
+  try {
+    user = await requireRealUser();
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Not authenticated" };
+  }
   const supabase = await createClient();
 
   const { data: event, error } = await supabase
@@ -72,7 +87,7 @@ export async function createCheckoutSession(input: CreateCheckoutSessionInput) {
     .maybeSingle();
 
   if (error || !event) {
-    throw new Error("Event not found");
+    return { ok: false, message: "Event not found" };
   }
 
   const headerList = await headers();
@@ -105,8 +120,8 @@ export async function createCheckoutSession(input: CreateCheckoutSessionInput) {
   });
 
   if (!session.url) {
-    throw new Error("Failed to create checkout session");
+    return { ok: false, message: "Failed to create checkout session" };
   }
 
-  return { url: session.url };
+  return { ok: true, url: session.url };
 }

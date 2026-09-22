@@ -8,22 +8,27 @@ import { listEvents, deleteEvent } from "@/lib/events";
  * `delete_own_account` Postgres function -- see
  * supabase/migrations/20260910160000_delete_own_account.sql for why that
  * needs a SECURITY DEFINER function rather than a service-role key. */
-export async function deleteOwnAccount() {
+export async function deleteOwnAccount(): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
-  const events = await listEvents(user.id);
-  for (const event of events) {
-    await deleteEvent(event.id, user.id);
+  try {
+    const events = await listEvents(user.id);
+    for (const event of events) {
+      await deleteEvent(event.id, user.id);
+    }
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Failed to delete account" };
   }
 
   const { error } = await supabase.rpc("delete_own_account");
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
+  return { ok: true };
 }

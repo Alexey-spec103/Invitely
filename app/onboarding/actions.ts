@@ -14,7 +14,9 @@ interface CompleteOnboardingInput {
   photoUrl?: string;
 }
 
-export async function completeOnboarding(input: CompleteOnboardingInput) {
+export async function completeOnboarding(
+  input: CompleteOnboardingInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -22,21 +24,25 @@ export async function completeOnboarding(input: CompleteOnboardingInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const type = getEventType(input.eventType);
   const names = type.namesMode === "couple" ? [input.name1, input.name2 ?? ""] : [input.name1];
   const title = type.titleTemplate(names);
 
-  await createEvent(user.id, {
-    eventType: type.id,
-    names,
-    title,
-    eventDate: input.eventDate,
-    themeId: input.themeId,
-    photoUrl: input.photoUrl,
-  });
+  try {
+    await createEvent(user.id, {
+      eventType: type.id,
+      names,
+      title,
+      eventDate: input.eventDate,
+      themeId: input.themeId,
+      photoUrl: input.photoUrl,
+    });
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Failed to save" };
+  }
 
   redirect("/dashboard");
 }

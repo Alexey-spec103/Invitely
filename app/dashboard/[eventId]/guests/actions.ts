@@ -33,8 +33,14 @@ interface AddGuestInput {
   siteEnabled?: boolean;
 }
 
-export async function addGuest(input: AddGuestInput) {
-  assertValidContact(input.email, input.phone);
+export async function addGuest(
+  input: AddGuestInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  try {
+    assertValidContact(input.email, input.phone);
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Invalid contact info" };
+  }
   const supabase = await createClient();
 
   const { error } = await supabase.from("guests").insert({
@@ -49,10 +55,11 @@ export async function addGuest(input: AddGuestInput) {
   });
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/guests`);
+  return { ok: true };
 }
 
 export async function setInvitationSent(guestId: string, sent: boolean) {
@@ -121,7 +128,10 @@ export async function recordInvitationSent(guestId: string, channel: SendChannel
  * only ever sends using an email address on file for a guest the caller
  * actually owns -- RLS on both selects already enforces that, matching
  * every other action in this file. */
-export async function sendGuestInvitationEmail(guestId: string, rsvpUrl: string) {
+export async function sendGuestInvitationEmail(
+  guestId: string,
+  rsvpUrl: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const { data: guest, error: guestError } = await supabase
@@ -131,10 +141,10 @@ export async function sendGuestInvitationEmail(guestId: string, rsvpUrl: string)
     .single();
 
   if (guestError || !guest) {
-    throw new Error(guestError?.message ?? "Guest not found");
+    return { ok: false, message: guestError?.message ?? "Guest not found" };
   }
   if (!guest.email) {
-    throw new Error("This guest has no email on file");
+    return { ok: false, message: "This guest has no email on file" };
   }
 
   const { data: event, error: eventError } = await supabase
@@ -144,7 +154,7 @@ export async function sendGuestInvitationEmail(guestId: string, rsvpUrl: string)
     .single();
 
   if (eventError || !event) {
-    throw new Error(eventError?.message ?? "Event not found");
+    return { ok: false, message: eventError?.message ?? "Event not found" };
   }
 
   await sendEmail({
@@ -154,14 +164,18 @@ export async function sendGuestInvitationEmail(guestId: string, rsvpUrl: string)
   });
 
   await recordInvitationSent(guestId, "email");
+  return { ok: true };
 }
 
-export async function addGuestsBulk(eventId: string, rawText: string) {
+export async function addGuestsBulk(
+  eventId: string,
+  rawText: string
+): Promise<{ ok: true; count: number } | { ok: false; message: string }> {
   const supabase = await createClient();
   const rows = parseGuestLines(rawText);
 
   if (rows.length === 0) {
-    throw new Error("No guest names found — paste one name per line.");
+    return { ok: false, message: "No guest names found — paste one name per line." };
   }
 
   // A bulk paste is forgiving by design (that's the whole point of the
@@ -180,11 +194,11 @@ export async function addGuestsBulk(eventId: string, rawText: string) {
   );
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath(`/dashboard/${eventId}/guests`);
-  return rows.length;
+  return { ok: true, count: rows.length };
 }
 
 interface UpdateGuestInput {
@@ -198,8 +212,14 @@ interface UpdateGuestInput {
   siteEnabled: boolean;
 }
 
-export async function updateGuest(input: UpdateGuestInput) {
-  assertValidContact(input.email, input.phone);
+export async function updateGuest(
+  input: UpdateGuestInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  try {
+    assertValidContact(input.email, input.phone);
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Invalid contact info" };
+  }
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -216,22 +236,26 @@ export async function updateGuest(input: UpdateGuestInput) {
     .eq("id", input.guestId);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath("/dashboard", "layout");
+  return { ok: true };
 }
 
-export async function deleteGuest(guestId: string) {
+export async function deleteGuest(
+  guestId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const { error } = await supabase.from("guests").delete().eq("id", guestId);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath("/dashboard", "layout");
+  return { ok: true };
 }
 
 export async function addGuestAttendee(guestId: string, fullName: string) {
@@ -261,7 +285,10 @@ export async function deleteGuestAttendee(attendeeId: string) {
   revalidatePath("/dashboard", "layout");
 }
 
-export async function toggleGuestbookVisibility(responseId: string, hidden: boolean) {
+export async function toggleGuestbookVisibility(
+  responseId: string,
+  hidden: boolean
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -270,13 +297,17 @@ export async function toggleGuestbookVisibility(responseId: string, hidden: bool
     .eq("id", responseId);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath("/dashboard", "layout");
+  return { ok: true };
 }
 
-export async function setAllGuestbookVisibility(eventId: string, hidden: boolean) {
+export async function setAllGuestbookVisibility(
+  eventId: string,
+  hidden: boolean
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -286,10 +317,11 @@ export async function setAllGuestbookVisibility(eventId: string, hidden: boolean
     .not("comment", "is", null);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath("/dashboard", "layout");
+  return { ok: true };
 }
 
 interface LinkRsvpResponseToGuestInput {
@@ -297,7 +329,9 @@ interface LinkRsvpResponseToGuestInput {
   guestId: string | null;
 }
 
-export async function linkRsvpResponseToGuest(input: LinkRsvpResponseToGuestInput) {
+export async function linkRsvpResponseToGuest(
+  input: LinkRsvpResponseToGuestInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -306,20 +340,24 @@ export async function linkRsvpResponseToGuest(input: LinkRsvpResponseToGuestInpu
     .eq("id", input.responseId);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath("/dashboard", "layout");
+  return { ok: true };
 }
 
-export async function deleteRsvpResponse(responseId: string) {
+export async function deleteRsvpResponse(
+  responseId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const { error } = await supabase.from("rsvp_responses").delete().eq("id", responseId);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath("/dashboard", "layout");
+  return { ok: true };
 }

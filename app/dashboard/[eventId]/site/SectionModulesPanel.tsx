@@ -86,7 +86,8 @@ export default function SectionModulesPanel({
     setEnvelopeEnabled(next);
     setEnvelopePending(true);
     try {
-      await updateEnvelopeReveal(eventId, next);
+      const result = await updateEnvelopeReveal(eventId, next);
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch {
       setEnvelopeEnabled(!next);
@@ -99,7 +100,8 @@ export default function SectionModulesPanel({
     setEnabled((prev) => ({ ...prev, [type]: next }));
     setPendingToggle(type);
     try {
-      await toggleSection(eventId, type, next);
+      const result = await toggleSection(eventId, type, next);
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch {
       setEnabled((prev) => ({ ...prev, [type]: !next }));

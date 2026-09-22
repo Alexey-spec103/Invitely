@@ -25,7 +25,8 @@ export default function SitePasswordGate({ eventId, title }: SitePasswordGatePro
     setError(null);
     setIsSubmitting(true);
     try {
-      await unlockSitePassword(eventId, password);
+      const result = await unlockSitePassword(eventId, password);
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Incorrect password");

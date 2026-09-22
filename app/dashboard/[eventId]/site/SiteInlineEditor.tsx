@@ -457,8 +457,8 @@ const sectionLabels: Record<SectionKey, string> = {
  * fixed here), this editor renders the interactive form for layout/text
  * purposes only. Rejecting (rather than a blocking `alert`) surfaces the
  * message through `SimpleForm`'s own existing error paragraph for free. */
-async function previewOnlySubmit(): Promise<never> {
-  throw new Error("This is a preview — guests submit RSVPs from your live site, not from here.");
+async function previewOnlySubmit(): Promise<{ ok: false; message: string }> {
+  return { ok: false, message: "This is a preview — guests submit RSVPs from your live site, not from here." };
 }
 
 /** Same reasoning as `previewOnlySubmit` above -- the dashboard's live
@@ -559,19 +559,21 @@ export default function SiteInlineEditor({
   const [heroSelectedField, setHeroSelectedField] = useState<string | null>(null);
 
   const { state: weddingDataState, error: weddingDataError } = useAutosave(weddingDataDraft, async (value) => {
-    await updateWeddingData({ eventId, ...value });
+    const result = await updateWeddingData({ eventId, ...value });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const { state: heroState, error: heroError } = useAutosave(
     { photoUrl: heroPhoto, styleOverrides: heroOverrides, hiddenFields: heroHidden },
     async (value) => {
-      await updateHeroSection({
+      const result = await updateHeroSection({
         eventId,
         heroVariant,
         photoUrl: value.photoUrl,
         styleOverrides: value.styleOverrides,
         hiddenFields: value.hiddenFields,
       });
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     }
   );
@@ -610,52 +612,62 @@ export default function SiteInlineEditor({
 
   // --- Letter / Timeline / Map: single draft object each, generic hook. ---
   const letterField = useEditableSection<LetterDraft>(letter.values, async (value) => {
-    await updateLetterSection({ eventId, letterVariant: letter.variant, ...value });
+    const result = await updateLetterSection({ eventId, letterVariant: letter.variant, ...value });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const timelineField = useEditableSection<TimelineDraft>(timeline.values, async (value) => {
-    await updateTimelineSection({
+    const result = await updateTimelineSection({
       eventId,
       timelineVariant: timeline.variant,
       ...value,
       events: value.events.map((event) => ({ ...event, description: event.description ?? "" })),
     });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const mapField = useEditableSection<MapDraft>(map.values, async (value) => {
-    await updateMapSection({ eventId, mapVariant: map.variant, ...value });
+    const result = await updateMapSection({ eventId, mapVariant: map.variant, ...value });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const rsvpField = useEditableSection<RsvpDraft>(rsvp.values, async (value) => {
-    await updateRsvpSection({ eventId, ...value });
+    const result = await updateRsvpSection({ eventId, ...value });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const countdownField = useEditableSection<CountdownDraft>(countdown.values, async (value) => {
-    await updateCountdownSection({ eventId, countdownVariant: countdown.variant, ...value });
+    const result = await updateCountdownSection({ eventId, countdownVariant: countdown.variant, ...value });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const giftField = useEditableSection<GiftDraft>(gift.values, async (value) => {
-    await updateGiftWishesSection({ eventId, giftVariant: gift.variant, ...value });
+    const result = await updateGiftWishesSection({ eventId, giftVariant: gift.variant, ...value });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const dressCodeField = useEditableSection<DressCodeDraft>(dressCode.values, async (value) => {
-    await updateDressCodeSection({ eventId, dressCodeVariant: dressCode.variant, ...value });
+    const result = await updateDressCodeSection({ eventId, dressCodeVariant: dressCode.variant, ...value });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const guestbookField = useEditableSection<GuestbookDraft>(guestbook.values, async (value) => {
-    await updateGuestbookSection({ eventId, guestbookVariant: guestbook.variant, ...value });
+    const result = await updateGuestbookSection({ eventId, guestbookVariant: guestbook.variant, ...value });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const videoField = useEditableSection<VideoDraft>(video.values, async (value) => {
-    await updateVideoSection({ eventId, videoVariant: video.variant, ...value });
+    const result = await updateVideoSection({ eventId, videoVariant: video.variant, ...value });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
   const banquetNavigatorField = useEditableSection<BanquetNavigatorDraft>(banquetNavigator.values, async (value) => {
-    await updateBanquetNavigatorSection({
+    const result = await updateBanquetNavigatorSection({
       eventId,
       banquetNavigatorVariant: "simple-lookup",
       ...value,
     });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
 

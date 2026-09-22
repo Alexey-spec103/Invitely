@@ -25,7 +25,8 @@ export default function DeleteAccountSection({ currentEmail }: DeleteAccountSect
     setError(null);
     setIsDeleting(true);
     try {
-      await deleteOwnAccount();
+      const result = await deleteOwnAccount();
+      if (!result.ok) throw new Error(result.message);
       // The deleted user's JWT stays cryptographically valid until it would
       // naturally expire/refresh -- sign out explicitly so the browser's
       // own session clears immediately instead of waiting on that.

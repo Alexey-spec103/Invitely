@@ -48,7 +48,8 @@ export default function LinkPreviewCard({
 
   const values = useWatch({ control });
   const { state, error } = useAutosave(values, async (v) => {
-    await updateSocialImage(eventId, (v as FormValues).socialImageUrl);
+    const result = await updateSocialImage(eventId, (v as FormValues).socialImageUrl);
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
 

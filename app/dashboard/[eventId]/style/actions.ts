@@ -16,7 +16,9 @@ interface AddThemeSlotInput {
   themeId: string;
 }
 
-export async function addThemeSlot(input: AddThemeSlotInput) {
+export async function addThemeSlot(
+  input: AddThemeSlotInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -24,7 +26,7 @@ export async function addThemeSlot(input: AddThemeSlotInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const [{ data: siteConfig }, { data: existingSlots, error: fetchError }] = await Promise.all([
@@ -33,16 +35,19 @@ export async function addThemeSlot(input: AddThemeSlotInput) {
   ]);
 
   if (fetchError) {
-    throw new Error(fetchError.message);
+    return { ok: false, message: fetchError.message };
   }
 
   // Already the active theme, or already saved as a slot -- nothing to add.
   if (siteConfig?.theme_id === input.themeId || existingSlots?.some((slot) => slot.theme_id === input.themeId)) {
-    return;
+    return { ok: true };
   }
 
   if ((existingSlots?.length ?? 0) >= MAX_EXTRA_SLOTS) {
-    throw new Error(`You can only hold ${MAX_EXTRA_SLOTS} extra design slots at a time -- remove one first.`);
+    return {
+      ok: false,
+      message: `You can only hold ${MAX_EXTRA_SLOTS} extra design slots at a time -- remove one first.`,
+    };
   }
 
   const { error: insertError } = await supabase
@@ -50,10 +55,11 @@ export async function addThemeSlot(input: AddThemeSlotInput) {
     .insert({ event_id: input.eventId, theme_id: input.themeId });
 
   if (insertError) {
-    throw new Error(insertError.message);
+    return { ok: false, message: insertError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/style`);
+  return { ok: true };
 }
 
 interface RemoveThemeSlotInput {
@@ -61,7 +67,9 @@ interface RemoveThemeSlotInput {
   slotId: string;
 }
 
-export async function removeThemeSlot(input: RemoveThemeSlotInput) {
+export async function removeThemeSlot(
+  input: RemoveThemeSlotInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -69,7 +77,7 @@ export async function removeThemeSlot(input: RemoveThemeSlotInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { error } = await supabase
@@ -79,8 +87,9 @@ export async function removeThemeSlot(input: RemoveThemeSlotInput) {
     .eq("event_id", input.eventId);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/style`);
+  return { ok: true };
 }

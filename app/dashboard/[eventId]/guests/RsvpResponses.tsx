@@ -42,7 +42,8 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
     setError(null);
     setPendingId(responseId);
     try {
-      await deleteRsvpResponse(responseId);
+      const result = await deleteRsvpResponse(responseId);
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete");
@@ -55,7 +56,8 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
     setError(null);
     setPendingId(responseId);
     try {
-      await linkRsvpResponseToGuest({ responseId, guestId: value || null });
+      const result = await linkRsvpResponseToGuest({ responseId, guestId: value || null });
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update");
@@ -68,7 +70,8 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
     setError(null);
     setPendingId(responseId);
     try {
-      await toggleGuestbookVisibility(responseId, hidden);
+      const result = await toggleGuestbookVisibility(responseId, hidden);
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update");
@@ -81,7 +84,8 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
     setError(null);
     setBulkPending(hidden ? "hide" : "show");
     try {
-      await setAllGuestbookVisibility(eventId, hidden);
+      const result = await setAllGuestbookVisibility(eventId, hidden);
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update");

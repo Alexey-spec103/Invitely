@@ -81,7 +81,8 @@ export default function DesignSlotsPanel({
     setAddOpen(false);
     startTransition(async () => {
       try {
-        await addThemeSlot({ eventId, themeId });
+        const result = await addThemeSlot({ eventId, themeId });
+        if (!result.ok) throw new Error(result.message);
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to add slot");
@@ -93,7 +94,8 @@ export default function DesignSlotsPanel({
     setError(null);
     startTransition(async () => {
       try {
-        await removeThemeSlot({ eventId, slotId });
+        const result = await removeThemeSlot({ eventId, slotId });
+        if (!result.ok) throw new Error(result.message);
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to remove slot");

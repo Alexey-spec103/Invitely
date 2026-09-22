@@ -98,7 +98,7 @@ function existingSettings(content: Record<string, unknown>): Record<string, unkn
     : {};
 }
 
-export async function updateSiteSettings(input: UpdateSiteSettingsInput) {
+export async function updateSiteSettings(input: UpdateSiteSettingsInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -106,7 +106,7 @@ export async function updateSiteSettings(input: UpdateSiteSettingsInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -146,10 +146,11 @@ export async function updateSiteSettings(input: UpdateSiteSettingsInput) {
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 /** dashboard-audit.md B14 "Превью": the custom social-share image a host can
@@ -158,7 +159,7 @@ export async function updateSiteSettings(input: UpdateSiteSettingsInput) {
  * to the Hero photo when unset). A separate action from updateSiteSettings
  * above -- same content.settings bag, but its own independently-autosaving
  * card -- both merge onto the existing bag rather than replacing it. */
-export async function updateSocialImage(eventId: string, socialImageUrl: string | undefined) {
+export async function updateSocialImage(eventId: string, socialImageUrl: string | undefined): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -166,7 +167,7 @@ export async function updateSocialImage(eventId: string, socialImageUrl: string 
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -199,10 +200,11 @@ export async function updateSocialImage(eventId: string, socialImageUrl: string 
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${eventId}/site`);
+  return { ok: true };
 }
 
 /** Site-wide on/off switch for the envelope-open animation (EnvelopeReveal)
@@ -211,7 +213,7 @@ export async function updateSocialImage(eventId: string, socialImageUrl: string 
  * `sections[]` entry because it has no position in the page flow to drag,
  * just its own toggle in SectionModulesPanel for the same on/off UX as
  * every other module. */
-export async function updateEnvelopeReveal(eventId: string, enabled: boolean) {
+export async function updateEnvelopeReveal(eventId: string, enabled: boolean): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -219,7 +221,7 @@ export async function updateEnvelopeReveal(eventId: string, enabled: boolean) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -252,10 +254,11 @@ export async function updateEnvelopeReveal(eventId: string, enabled: boolean) {
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${eventId}/site`);
+  return { ok: true };
 }
 
 /** The single thing every module card's header switch calls -- on/off is
@@ -275,7 +278,7 @@ export async function updateEnvelopeReveal(eventId: string, enabled: boolean) {
  * untouched first render). Confirmed live: RSVP showed "on" in this list and
  * rendered fine in the dashboard's own canvas preview, yet never appeared on
  * the published `/e/[slug]` page, because only this switch had been used. */
-export async function toggleSection(eventId: string, type: SectionType, enabled: boolean) {
+export async function toggleSection(eventId: string, type: SectionType, enabled: boolean): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -283,7 +286,7 @@ export async function toggleSection(eventId: string, type: SectionType, enabled:
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -326,10 +329,11 @@ export async function toggleSection(eventId: string, type: SectionType, enabled:
       });
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath(`/dashboard/${eventId}/site`);
+  return { ok: true };
 }
 
 /** dashboard-audit.md B12: one shared background field on `SectionConfig`
@@ -343,7 +347,7 @@ export async function updateSectionBackground(
   eventId: string,
   type: SectionType,
   background: BackgroundFill | undefined
-) {
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -351,7 +355,7 @@ export async function updateSectionBackground(
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -362,7 +366,7 @@ export async function updateSectionBackground(
 
   const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
   if (!existingSections.some((section) => section.type === type)) {
-    throw new Error(`Section "${type}" doesn't exist yet`);
+    return { ok: false, message: `Section "${type}" doesn't exist yet` };
   }
 
   const sections = existingSections.map((section) => (section.type === type ? { ...section, background } : section));
@@ -373,10 +377,11 @@ export async function updateSectionBackground(
     .eq("event_id", eventId);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath(`/dashboard/${eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateHeroSectionInput {
@@ -391,7 +396,7 @@ interface UpdateHeroSectionInput {
  * data" form (app/dashboard/[eventId]/WeddingDataForm.tsx, via updateWeddingData)
  * as a single shared source. This only ever touches variant + photo, and reads
  * the event's current names/date to keep content.hero's mirror in sync. */
-export async function updateHeroSection(input: UpdateHeroSectionInput) {
+export async function updateHeroSection(input: UpdateHeroSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -399,7 +404,7 @@ export async function updateHeroSection(input: UpdateHeroSectionInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: event, error: eventError } = await supabase
@@ -410,7 +415,7 @@ export async function updateHeroSection(input: UpdateHeroSectionInput) {
     .single();
 
   if (eventError || !event) {
-    throw new Error(eventError?.message ?? "Event not found");
+    return { ok: false, message: eventError?.message ?? "Event not found" };
   }
 
   const names = event.subtitle_names ?? [];
@@ -457,10 +462,11 @@ export async function updateHeroSection(input: UpdateHeroSectionInput) {
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateTimelineSectionInput {
@@ -472,7 +478,7 @@ interface UpdateTimelineSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateTimelineSection(input: UpdateTimelineSectionInput) {
+export async function updateTimelineSection(input: UpdateTimelineSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -480,7 +486,7 @@ export async function updateTimelineSection(input: UpdateTimelineSectionInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -527,10 +533,11 @@ export async function updateTimelineSection(input: UpdateTimelineSectionInput) {
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateMapSectionInput {
@@ -542,7 +549,7 @@ interface UpdateMapSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateMapSection(input: UpdateMapSectionInput) {
+export async function updateMapSection(input: UpdateMapSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -550,7 +557,7 @@ export async function updateMapSection(input: UpdateMapSectionInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -594,10 +601,11 @@ export async function updateMapSection(input: UpdateMapSectionInput) {
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateCountdownSectionInput {
@@ -608,7 +616,7 @@ interface UpdateCountdownSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateCountdownSection(input: UpdateCountdownSectionInput) {
+export async function updateCountdownSection(input: UpdateCountdownSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -616,7 +624,7 @@ export async function updateCountdownSection(input: UpdateCountdownSectionInput)
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -662,10 +670,11 @@ export async function updateCountdownSection(input: UpdateCountdownSectionInput)
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateGiftWishesSectionInput {
@@ -677,7 +686,7 @@ interface UpdateGiftWishesSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateGiftWishesSection(input: UpdateGiftWishesSectionInput) {
+export async function updateGiftWishesSection(input: UpdateGiftWishesSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -685,7 +694,7 @@ export async function updateGiftWishesSection(input: UpdateGiftWishesSectionInpu
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -732,10 +741,11 @@ export async function updateGiftWishesSection(input: UpdateGiftWishesSectionInpu
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateDressCodeSectionInput {
@@ -748,7 +758,7 @@ interface UpdateDressCodeSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateDressCodeSection(input: UpdateDressCodeSectionInput) {
+export async function updateDressCodeSection(input: UpdateDressCodeSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -756,7 +766,7 @@ export async function updateDressCodeSection(input: UpdateDressCodeSectionInput)
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -804,10 +814,11 @@ export async function updateDressCodeSection(input: UpdateDressCodeSectionInput)
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateVideoSectionInput {
@@ -819,7 +830,7 @@ interface UpdateVideoSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateVideoSection(input: UpdateVideoSectionInput) {
+export async function updateVideoSection(input: UpdateVideoSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -827,7 +838,7 @@ export async function updateVideoSection(input: UpdateVideoSectionInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -874,10 +885,11 @@ export async function updateVideoSection(input: UpdateVideoSectionInput) {
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateGuestbookSectionInput {
@@ -888,7 +900,7 @@ interface UpdateGuestbookSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateGuestbookSection(input: UpdateGuestbookSectionInput) {
+export async function updateGuestbookSection(input: UpdateGuestbookSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -896,7 +908,7 @@ export async function updateGuestbookSection(input: UpdateGuestbookSectionInput)
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -942,10 +954,11 @@ export async function updateGuestbookSection(input: UpdateGuestbookSectionInput)
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateRsvpSectionInput {
@@ -957,7 +970,7 @@ interface UpdateRsvpSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateRsvpSection(input: UpdateRsvpSectionInput) {
+export async function updateRsvpSection(input: UpdateRsvpSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -965,7 +978,7 @@ export async function updateRsvpSection(input: UpdateRsvpSectionInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -1024,10 +1037,11 @@ export async function updateRsvpSection(input: UpdateRsvpSectionInput) {
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateBanquetNavigatorSectionInput {
@@ -1039,7 +1053,7 @@ interface UpdateBanquetNavigatorSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigatorSectionInput) {
+export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigatorSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -1047,7 +1061,7 @@ export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigato
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -1101,10 +1115,11 @@ export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigato
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }
 
 /** Takes the full new module order (drag-and-drop drop result, not an
@@ -1113,7 +1128,10 @@ export async function updateBanquetNavigatorSection(input: UpdateBanquetNavigato
  * is expected to list every section currently in `sections` exactly once;
  * any type this event doesn't have yet (never toggled on) is simply absent
  * from the write, same as before. */
-export async function reorderSections(eventId: string, orderedTypes: SectionType[]) {
+export async function reorderSections(
+  eventId: string,
+  orderedTypes: SectionType[]
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -1121,7 +1139,7 @@ export async function reorderSections(eventId: string, orderedTypes: SectionType
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -1130,7 +1148,7 @@ export async function reorderSections(eventId: string, orderedTypes: SectionType
     .eq("event_id", eventId)
     .maybeSingle();
 
-  if (!existingConfig) return;
+  if (!existingConfig) return { ok: true };
 
   const allSections = parseSections(existingConfig.sections);
   const orderIndex = new Map(orderedTypes.map((type, index) => [type, index]));
@@ -1145,10 +1163,11 @@ export async function reorderSections(eventId: string, orderedTypes: SectionType
     .eq("event_id", eventId);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   revalidatePath(`/dashboard/${eventId}/site`);
+  return { ok: true };
 }
 
 interface UpdateLetterSectionInput {
@@ -1164,7 +1183,7 @@ interface UpdateLetterSectionInput {
   hiddenFields?: string[];
 }
 
-export async function updateLetterSection(input: UpdateLetterSectionInput) {
+export async function updateLetterSection(input: UpdateLetterSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -1172,7 +1191,7 @@ export async function updateLetterSection(input: UpdateLetterSectionInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const { data: existingConfig } = await supabase
@@ -1223,8 +1242,9 @@ export async function updateLetterSection(input: UpdateLetterSectionInput) {
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
 }

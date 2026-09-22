@@ -113,7 +113,8 @@ export default function CanvasEditor({ eventId, initialFrames, hasBasicAccess }:
     setSaveError(null);
     setSaving(true);
     try {
-      await saveCanvasFrames(eventId, frames);
+      const result = await saveCanvasFrames(eventId, frames);
+      if (!result.ok) throw new Error(result.message);
       setShowSavedTick(true);
       setTimeout(() => setShowSavedTick(false), 2000);
     } catch (err) {

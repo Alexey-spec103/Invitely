@@ -30,7 +30,8 @@ export default function SiteSettingsEditForm({ eventId, defaultValues }: SiteSet
 
   const values = useWatch({ control });
   const { state, error } = useAutosave(values, async (v) => {
-    await updateSiteSettings({ eventId, ...(v as SiteSettingsFormValues) });
+    const result = await updateSiteSettings({ eventId, ...(v as SiteSettingsFormValues) });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
 

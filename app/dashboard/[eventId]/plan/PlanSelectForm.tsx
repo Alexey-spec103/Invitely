@@ -35,11 +35,11 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
     if (planId === DEFAULT_PLAN_ID) {
       setSelected(planId);
       startTransition(async () => {
-        try {
-          await updatePlan({ eventId, planId });
+        const result = await updatePlan({ eventId, planId });
+        if (result.ok) {
           router.refresh();
-        } catch (err) {
-          setError(err instanceof Error ? err.message : "Failed to save");
+        } else {
+          setError(result.message);
         }
       });
       return;
@@ -50,11 +50,11 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
     // `selected` (a plan the host hasn't actually paid for yet shouldn't
     // show as chosen while they're still on the Stripe page).
     startTransition(async () => {
-      try {
-        const { url } = await createCheckoutSession({ eventId, planId });
-        window.location.href = url;
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to start checkout");
+      const result = await createCheckoutSession({ eventId, planId });
+      if (result.ok) {
+        window.location.href = result.url;
+      } else {
+        setError(result.message);
       }
     });
   };

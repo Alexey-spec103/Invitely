@@ -162,7 +162,8 @@ export default function OnboardingWizard() {
   const onSubmit = async (values: OnboardingFormValues) => {
     setFormError(null);
     try {
-      await completeOnboarding(values);
+      const result = await completeOnboarding(values);
+      if (!result.ok) throw new Error(result.message);
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Failed to save");
     }

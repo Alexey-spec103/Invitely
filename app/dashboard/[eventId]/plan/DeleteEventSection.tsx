@@ -19,10 +19,11 @@ export default function DeleteEventSection({ eventId, eventTitle }: DeleteEventS
   const handleDelete = async () => {
     setError(null);
     setIsDeleting(true);
-    try {
-      await deleteEventAction(eventId);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete event");
+    // On success, deleteEventAction redirects server-side and this call
+    // never resolves with a value -- only the failure branch is reachable.
+    const result = await deleteEventAction(eventId);
+    if (!result.ok) {
+      setError(result.message);
       setIsDeleting(false);
     }
   };

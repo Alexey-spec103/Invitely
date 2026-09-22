@@ -80,7 +80,9 @@ interface UpdateThemeInput {
  * category here -- otherwise an event would keep whatever Hero layout it
  * was created with forever, silently mismatched with every theme switched
  * to afterward. */
-export async function updateTheme(input: UpdateThemeInput) {
+export async function updateTheme(
+  input: UpdateThemeInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -88,7 +90,7 @@ export async function updateTheme(input: UpdateThemeInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   let heroVariant: HeroVariant = DEFAULT_HERO_VARIANT;
@@ -147,7 +149,7 @@ export async function updateTheme(input: UpdateThemeInput) {
       });
 
   if (configError) {
-    throw new Error(configError.message);
+    return { ok: false, message: configError.message };
   }
 
   // dashboard-audit.md B11: a best-effort log of past theme choices (their
@@ -176,6 +178,7 @@ export async function updateTheme(input: UpdateThemeInput) {
   }
 
   revalidatePath(`/dashboard/${input.eventId}`);
+  return { ok: true };
 }
 
 interface UpdateWeddingDataInput {
@@ -189,7 +192,9 @@ interface UpdateWeddingDataInput {
   venueAddress?: string;
 }
 
-export async function updateWeddingData(input: UpdateWeddingDataInput) {
+export async function updateWeddingData(
+  input: UpdateWeddingDataInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -197,7 +202,7 @@ export async function updateWeddingData(input: UpdateWeddingDataInput) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
   const type = getEventType(input.eventType);
@@ -218,7 +223,7 @@ export async function updateWeddingData(input: UpdateWeddingDataInput) {
     .eq("owner_id", user.id);
 
   if (error) {
-    throw new Error(error.message);
+    return { ok: false, message: error.message };
   }
 
   // The public site's hero section reads names/date from site_config.content.hero,
@@ -250,14 +255,17 @@ export async function updateWeddingData(input: UpdateWeddingDataInput) {
       .eq("event_id", input.eventId);
 
     if (contentError) {
-      throw new Error(contentError.message);
+      return { ok: false, message: contentError.message };
     }
   }
 
   revalidatePath(`/dashboard/${input.eventId}`, "layout");
+  return { ok: true };
 }
 
-export async function deleteEventAction(eventId: string) {
+export async function deleteEventAction(
+  eventId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -265,10 +273,14 @@ export async function deleteEventAction(eventId: string) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Not authenticated");
+    return { ok: false, message: "Not authenticated" };
   }
 
-  await deleteEvent(eventId, user.id);
+  try {
+    await deleteEvent(eventId, user.id);
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "Failed to delete event" };
+  }
 
   redirect("/dashboard");
 }

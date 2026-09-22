@@ -12,7 +12,7 @@ export async function submitRsvp(
   guestId: string | null,
   maxPlusOnes: number | null,
   input: RsvpFormInput
-) {
+): Promise<{ ok: true } | { ok: false; message: string }> {
   // Anti-spam: a filled honeypot or a submission faster than any human could
   // plausibly manage is treated as spam and silently dropped -- returning
   // normally (not throwing) so a bot gets no signal it was rejected, rather
@@ -22,10 +22,10 @@ export async function submitRsvp(
   // bypass); undefined/missing values (e.g. a future non-SimpleForm variant
   // that doesn't send them) are treated as passing, not as spam.
   if (input.honeypot) {
-    return;
+    return { ok: true };
   }
   if (input.formRenderedAt != null && Date.now() - input.formRenderedAt < 1500) {
-    return;
+    return { ok: true };
   }
 
   const supabase = await createClient();
@@ -92,9 +92,12 @@ export async function submitRsvp(
     // rsvp_responses, so it's safe to name the real cause instead of the
     // generic message below.
     if (error.code === "42501") {
-      throw new Error("This site isn't published yet, so RSVPs can't be submitted. Ask your host to publish it.");
+      return {
+        ok: false,
+        message: "This site isn't published yet, so RSVPs can't be submitted. Ask your host to publish it.",
+      };
     }
-    throw new Error("We couldn't submit your RSVP. Please try again in a moment.");
+    return { ok: false, message: "We couldn't submit your RSVP. Please try again in a moment." };
   }
 
   // Sync guest_attendees to the party's real names, but only when the guest
@@ -152,6 +155,8 @@ export async function submitRsvp(
       console.error("submitRsvp confirmation email failed", emailError);
     }
   }
+
+  return { ok: true };
 }
 
 export async function lookupGuestTable(eventId: string, fullName: string): Promise<BanquetTableLookupResult> {
@@ -175,7 +180,10 @@ export async function lookupGuestTable(eventId: string, fullName: string): Promi
  * the site-password migration), only the opaque unlock token the function
  * returns on a correct guess. That token becomes the cookie value page.tsx
  * checks on future visits, so the guest isn't asked again. */
-export async function unlockSitePassword(eventId: string, password: string) {
+export async function unlockSitePassword(
+  eventId: string,
+  password: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const { data: token, error } = await supabase.rpc("verify_site_password", {
@@ -184,7 +192,7 @@ export async function unlockSitePassword(eventId: string, password: string) {
   });
 
   if (error || !token) {
-    throw new Error("Incorrect password");
+    return { ok: false, message: "Incorrect password" };
   }
 
   const cookieStore = await cookies();
@@ -195,4 +203,5 @@ export async function unlockSitePassword(eventId: string, password: string) {
     path: "/",
     maxAge: 60 * 60 * 24 * 180, // 180 days
   });
+  return { ok: true };
 }

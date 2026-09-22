@@ -200,7 +200,8 @@ export default function PaperConstructor({
   const redoBackCanvas = () => setCanvasHistoryIndex((idx) => Math.min(canvasHistory.length - 1, idx + 1));
 
   const { state: canvasSaveState, error: canvasSaveError } = useAutosave(backCanvasFrame, async (frame) => {
-    await updateInvitationBackCanvas({ eventId, frame });
+    const result = await updateInvitationBackCanvas({ eventId, frame });
+    if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
 

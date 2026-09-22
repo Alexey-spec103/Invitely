@@ -56,11 +56,11 @@ export default function ThemeSelectForm({
     setSelected(themeId);
     setError(null);
     startTransition(async () => {
-      try {
-        await updateTheme({ eventId, themeId });
+      const result = await updateTheme({ eventId, themeId });
+      if (result.ok) {
         router.refresh();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to save");
+      } else {
+        setError(result.message);
       }
     });
   };

@@ -49,7 +49,8 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
   const { state, error } = useAutosave(
     values,
     async (v) => {
-      await updateWeddingData({ eventId, eventType, ...(v as WeddingDataFormValues) });
+      const result = await updateWeddingData({ eventId, eventType, ...(v as WeddingDataFormValues) });
+      if (!result.ok) throw new Error(result.message);
       router.refresh();
     },
     { enabled: isValid }

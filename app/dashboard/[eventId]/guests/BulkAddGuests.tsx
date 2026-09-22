@@ -41,8 +41,9 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
     setAddedCount(null);
     setSubmitting(true);
     try {
-      const count = await addGuestsBulk(eventId, text);
-      setAddedCount(count);
+      const result = await addGuestsBulk(eventId, text);
+      if (!result.ok) throw new Error(result.message);
+      setAddedCount(result.count);
       setText("");
       router.refresh();
     } catch (err) {
