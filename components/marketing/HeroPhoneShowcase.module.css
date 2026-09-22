@@ -173,12 +173,19 @@
   left: 0;
   width: 375px;
   transform-origin: top left;
-  /* All three frames are Hero-variant compositions, vertically centered
-     inside a min-height:100vh flex box -- same shift works for all three
-     (unlike the previous Hero/Letter/Timeline version, which needed a
-     different shift per section type). Tuned by eye against a real render,
-     not guessed. */
+  /* Each frame is a different section type (Hero/Letter/Timeline), each
+     vertically centered inside its own min-height:100vh flex box at a
+     different natural height -- so each needs its own upward shift to land
+     its content in view. Tuned by eye against a real render, not guessed. */
   transform: scale(calc(100cqw / 375px)) translateY(-40vh);
+}
+
+.frameArtDeco .screenScaleInner {
+  transform: scale(calc(100cqw / 375px)) translateY(-22vh);
+}
+
+.frameWatercolor .screenScaleInner {
+  transform: scale(calc(100cqw / 375px)) translateY(-2vh);
 }
 
 @media (prefers-reduced-motion: no-preference) {

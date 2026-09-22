@@ -1,5 +1,7 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import { HeroSection } from "@/components/sections/HeroSection";
+import { LetterSection } from "@/components/sections/LetterSection";
+import { TimelineSection } from "@/components/sections/TimelineSection";
 import { getTheme } from "@/lib/themes";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { previewPhotoFor, previewTargetDateFor, formatPreviewDate } from "@/lib/themes/previewMedia";
@@ -9,38 +11,68 @@ import styles from "./HeroPhoneShowcase.module.css";
 
 const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
 
-// Three real, decorated designs -- not the single auto-"recommended" variant
-// per theme (that pick can land on a deliberately sparse composition like
-// hand-lettering, which showed literally no illustrated decoration at all
-// on this exact showcase -- confirmed live, that's what prompted this
-// rewrite). Each entry below is hand-picked for a variant genuinely rich in
-// decoration for that theme, not whatever recommendedHeroVariantFor()
-// would have guessed:
-// - boho-asymmetric: a full-height illustrated vine framing the whole
+// Real, finished copy for the Letter/Timeline frames -- never lorem-ipsum
+// placeholder text, matching the same couple across every frame regardless
+// of which theme/section that frame happens to show.
+const LETTER_CONTENT = {
+  title: "A Letter to Our Guests",
+  body: "From our very first date to this moment, every step led us here — and we can't wait to celebrate with the people who mean the most to us.",
+  quote:
+    "Love is not about how many days, months, or years you've been together. It's about how much you love each other every single day.",
+  note: "With so much love,",
+  closingLine: "Claire & Nathaniel",
+};
+
+const TIMELINE_CONTENT = {
+  title: "Timeline",
+  events: [
+    { time: "3:00 PM", title: "Guests Arrive", description: "Welcome drinks on the terrace" },
+    { time: "4:00 PM", title: "Ceremony", description: "Exchange of vows under the oak trees" },
+    { time: "5:30 PM", title: "Cocktail Hour", description: "Canapés & champagne toasts" },
+    { time: "7:00 PM", title: "Reception & Dinner", description: "Dinner, speeches, and first dance" },
+  ],
+};
+
+// Three real, decorated designs, each showing a DIFFERENT section type --
+// combines two earlier iterations of this component rather than picking one:
+// the original version cycled Hero->Letter->Timeline of one single theme
+// (showed section variety, not design variety); the version right before
+// this one cycled three themes' Hero only (showed design variety, not
+// section variety -- "only shows the main page," per direct feedback).
+// Each entry is hand-picked for a variant genuinely rich in decoration, not
+// whatever the recommended-variant algorithm would have guessed (confirmed
+// live -- boho-marigold-festival's own recommended Hero variant rendered
+// with zero illustrated decoration at all, which is what prompted picking
+// explicit variants everywhere in this file rather than trusting the
+// per-theme "recommended" pick for a showcase specifically):
+// - Hero/boho-asymmetric: a full-height illustrated vine framing the whole
 //   screen (needs `themeCategory` passed -- BohoAsymmetric.tsx falls back
-//   to a plain tinted mask without it, another thing the previous version
-//   got wrong by never passing themeCategory here at all).
-// - art-deco-crest: pure-CSS geometric zigzag bands + crest, always
-//   present regardless of category -- pairs naturally with marble's
-//   dramatic dark palette.
-// - watercolor-botanical: a CSS-masked branch illustration, always present
-//   regardless of category, tinted to the theme's own accent color.
+//   to a plain tinted mask without it).
+// - Letter/ornate-border: a framed, decorated card -- pairs naturally with
+//   marble's dramatic dark palette.
+// - Timeline/vertical-line: clean and legible at this small mockup size;
+//   Timeline has no full-color illustrated decor system of its own (only
+//   Hero/Letter/Gift/DressCode/Countdown do), so the decoration here comes
+//   from provence's own soft palette rather than an added illustration.
 const SHOWCASE_FRAMES = [
   {
     themeId: "boho-marigold-festival",
+    section: "hero" as const,
     variant: "boho-asymmetric" as const,
     frameClass: styles.frameBoho,
     dotClass: styles.progressDotBoho,
   },
   {
     themeId: "marble-noir-rust",
-    variant: "art-deco-crest" as const,
+    section: "letter" as const,
+    variant: "ornate-border" as const,
     frameClass: styles.frameArtDeco,
     dotClass: styles.progressDotArtDeco,
   },
   {
     themeId: "provence-lavender-sage",
-    variant: "watercolor-botanical" as const,
+    section: "timeline" as const,
+    variant: "vertical-line" as const,
     frameClass: styles.frameWatercolor,
     dotClass: styles.progressDotWatercolor,
   },
@@ -57,12 +89,13 @@ const SHOWCASE_FRAMES = [
  *
  * landing-audit.md brand pass: instead of a static screenshot or a real
  * video file, a pure-CSS looped animation auto-advances through three real
- * *designs* (not three sections of one design -- see SHOWCASE_FRAMES'
- * comment above for why) as if a visitor were browsing the style catalog --
- * a soft fade/slide/blur crossfade (no JS timers, so it costs nothing at
- * runtime and respects prefers-reduced-motion), plus a small decorative
- * "tap" cursor and shine sweep at each transition so it reads as an
- * interactive product, not a slideshow. */
+ * designs, each a different section type (see SHOWCASE_FRAMES' comment
+ * above) as if a visitor were browsing both the style catalog and a real
+ * invitation's different pages -- a soft fade/slide/blur crossfade (no JS
+ * timers, so it costs nothing at runtime and respects
+ * prefers-reduced-motion), plus a small decorative "tap" cursor and shine
+ * sweep at each transition so it reads as an interactive product, not a
+ * slideshow. */
 export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
   const t = getDictionary(locale).landing.heroPhoneShowcase;
 
@@ -79,23 +112,42 @@ export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
             <span className={styles.urlText}>yourname.com</span>
           </div>
           <div className={styles.screenScaleWrap}>
-            {SHOWCASE_FRAMES.map(({ themeId, variant, frameClass }) => {
+            {SHOWCASE_FRAMES.map(({ themeId, section, variant, frameClass }) => {
               const theme = getTheme(themeId);
-              const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
               const targetDate = previewTargetDateFor(theme.id, theme.season);
               const dateLabel = formatPreviewDate(targetDate);
+
+              let content: React.ReactNode;
+              if (section === "hero") {
+                const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
+                content = (
+                  <HeroSection
+                    variant={variant}
+                    names={SHOWCASE_NAMES}
+                    eventDate={dateLabel}
+                    photoUrl={photoUrl}
+                    themeCategory={effectiveDecorCategory(theme)}
+                  />
+                );
+              } else if (section === "letter") {
+                const rsvpDeadlineDate = new Date(targetDate);
+                rsvpDeadlineDate.setMonth(rsvpDeadlineDate.getMonth() - 1);
+                content = (
+                  <LetterSection
+                    variant={variant}
+                    rsvpDeadline={rsvpDeadlineDate.toISOString().slice(0, 10)}
+                    locale={locale}
+                    {...LETTER_CONTENT}
+                  />
+                );
+              } else {
+                content = <TimelineSection variant={variant} {...TIMELINE_CONTENT} />;
+              }
+
               return (
                 <div key={themeId} className={`${styles.frameLayer} ${frameClass}`}>
                   <div className={styles.screenScaleInner}>
-                    <ThemeProvider theme={theme}>
-                      <HeroSection
-                        variant={variant}
-                        names={SHOWCASE_NAMES}
-                        eventDate={dateLabel}
-                        photoUrl={photoUrl}
-                        themeCategory={effectiveDecorCategory(theme)}
-                      />
-                    </ThemeProvider>
+                    <ThemeProvider theme={theme}>{content}</ThemeProvider>
                   </div>
                 </div>
               );
