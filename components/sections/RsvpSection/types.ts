@@ -1,4 +1,5 @@
 import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+import type { Locale } from "@/lib/i18n/locales";
 
 export type RsvpVariant = "simple-form";
 
@@ -39,6 +40,16 @@ export interface RsvpSectionVariantProps {
   questions?: RsvpQuestion[];
   onSubmit: (input: RsvpFormInput) => Promise<{ ok: true } | { ok: false; message: string }>;
   styleOverrides?: Record<string, TextStyleOverride>;
+  /** Resolves the guest-facing UI chrome locale (labels, buttons, built-in
+   * validation/success copy) -- never applied to `title`/`description`/
+   * `questions` above, which are the host's own typed content and stay
+   * exactly as written regardless of locale. A locale string, not the
+   * dictionary object itself: `Dictionary`'s formatting entries are plain
+   * functions, and a Server Component can't pass a function across the
+   * boundary to this "use client" component -- confirmed live (a runtime
+   * React serialization error, not a build-time type error). Every variant
+   * resolves its own dictionary locally via `getDictionary(locale)`. */
+  locale: Locale;
 }
 
 export interface RsvpSectionProps extends RsvpSectionVariantProps {

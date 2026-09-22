@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import type { RsvpSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./SimpleForm.module.css";
 
 export default function SimpleForm({
@@ -15,7 +16,9 @@ export default function SimpleForm({
   questions,
   onSubmit,
   styleOverrides,
+  locale,
 }: RsvpSectionVariantProps) {
+  const t = getDictionary(locale).rsvp;
   const { editable } = useEditableField();
   const [guestName, setGuestName] = useState(defaultGuestName ?? "");
   const [attending, setAttending] = useState<boolean | null>(null);
@@ -39,7 +42,7 @@ export default function SimpleForm({
     event.preventDefault();
 
     if (!guestName.trim() || attending === null) {
-      setError("Please fill in your name and let us know if you can make it.");
+      setError(t.missingFieldsError);
       return;
     }
 
@@ -65,7 +68,7 @@ export default function SimpleForm({
       if (!result.ok) throw new Error(result.message);
       setSubmitted(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setPending(false);
     }
@@ -78,9 +81,7 @@ export default function SimpleForm({
           <span className={styles.flourishTopLeft} aria-hidden="true" />
           <span className={styles.flourishBottomRight} aria-hidden="true" />
           <p className={styles.successMessage}>
-            {attending
-              ? "You're on the list! We can't wait to celebrate with you. \u{1F389}"
-              : "Thanks for letting us know — you'll be missed!"}
+            {attending ? t.successAttending : t.successDeclining}
           </p>
         </div>
       </section>
@@ -116,7 +117,7 @@ export default function SimpleForm({
 
           <div className={styles.field}>
             <label className={styles.label} htmlFor="rsvp-guest-name">
-              Your name
+              {t.yourName}
             </label>
             <input
               id="rsvp-guest-name"
@@ -128,21 +129,21 @@ export default function SimpleForm({
           </div>
 
           <div className={styles.field}>
-            <span className={styles.label}>Will you be joining us?</span>
+            <span className={styles.label}>{t.willYouJoin}</span>
             <div className={styles.attendingToggle}>
               <button
                 type="button"
                 className={attending === true ? styles.toggleButtonActive : styles.toggleButton}
                 onClick={() => setAttending(true)}
               >
-                Joyfully accepts
+                {t.accepts}
               </button>
               <button
                 type="button"
                 className={attending === false ? styles.toggleButtonActive : styles.toggleButton}
                 onClick={() => setAttending(false)}
               >
-                Regretfully declines
+                {t.declines}
               </button>
             </div>
           </div>
@@ -150,7 +151,7 @@ export default function SimpleForm({
           {attending === true && (
             <div className={styles.field}>
               <label className={styles.label} htmlFor="rsvp-party-size">
-                Number of guests (including you)
+                {t.numberOfGuests}
               </label>
               <input
                 id="rsvp-party-size"
@@ -161,24 +162,20 @@ export default function SimpleForm({
                 value={partySize}
                 onChange={(event) => setPartySize(event.target.value)}
               />
-              {maxPartySize && (
-                <p className={styles.optional}>
-                  Up to {maxPartySize} {maxPartySize === 1 ? "guest" : "guests"} total, including you.
-                </p>
-              )}
+              {maxPartySize && <p className={styles.optional}>{t.upToGuestsTotal(maxPartySize)}</p>}
             </div>
           )}
 
           {attending === true && maxPartySize && Number(partySize) > 1 && (
             <div className={styles.field}>
               <span className={styles.label}>
-                Who else is coming? <span className={styles.optional}>(optional)</span>
+                {t.whoElseIsComing} <span className={styles.optional}>{t.optional}</span>
               </span>
               {Array.from({ length: Math.min(Number(partySize), maxPartySize) - 1 }).map((_, index) => (
                 <input
                   key={index}
                   type="text"
-                  placeholder={`Guest ${index + 2} name`}
+                  placeholder={t.guestNamePlaceholder(index + 2)}
                   className={styles.input}
                   style={{ marginTop: index > 0 ? 8 : 0 }}
                   value={attendeeNames[index] ?? ""}
@@ -196,7 +193,7 @@ export default function SimpleForm({
 
           <div className={styles.field}>
             <label className={styles.label} htmlFor="rsvp-allergies">
-              Allergies or dietary needs <span className={styles.optional}>(optional)</span>
+              {t.allergiesOrDietary} <span className={styles.optional}>{t.optional}</span>
             </label>
             <input
               id="rsvp-allergies"
@@ -221,7 +218,7 @@ export default function SimpleForm({
                     setAnswers((prev) => ({ ...prev, [question.id]: event.target.value }))
                   }
                 >
-                  <option value="">Select...</option>
+                  <option value="">{t.selectPlaceholder}</option>
                   {question.options.map((option) => (
                     <option key={option} value={option}>
                       {option}
@@ -244,7 +241,7 @@ export default function SimpleForm({
 
           <div className={styles.field}>
             <label className={styles.label} htmlFor="rsvp-comment">
-              Message <span className={styles.optional}>(optional)</span>
+              {t.message} <span className={styles.optional}>{t.optional}</span>
             </label>
             <textarea
               id="rsvp-comment"
@@ -258,7 +255,7 @@ export default function SimpleForm({
           {error && <p className={styles.error}>{error}</p>}
 
           <button type="submit" disabled={pending} className={styles.submitButton}>
-            {pending ? "Sending..." : "Send RSVP"}
+            {pending ? t.sending : t.sendRsvp}
           </button>
         </form>
       </div>

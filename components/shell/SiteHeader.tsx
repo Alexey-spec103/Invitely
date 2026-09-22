@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
+import LanguageSwitcher from "@/components/site/LanguageSwitcher";
 import styles from "./SiteHeader.module.css";
 
 interface SiteHeaderProps {
@@ -8,9 +11,26 @@ interface SiteHeaderProps {
   calendarHref: string;
   musicUrl?: string;
   eventTitle?: string;
+  locale: Locale;
+  availableLocales: readonly Locale[];
 }
 
-export default function SiteHeader({ sections, calendarHref, musicUrl, eventTitle }: SiteHeaderProps) {
+// `dict` is never passed as a prop -- its string-formatting entries are
+// plain functions, and a Server Component can't send a function across the
+// boundary to a "use client" component (confirmed live: React throws a
+// serialization error at runtime, not a build-time type error, since
+// `Dictionary`'s shape is still perfectly valid TypeScript). `locale` (a
+// plain string) crosses fine; every client component that needs translated
+// text resolves its own dictionary locally from that instead.
+export default function SiteHeader({
+  sections,
+  calendarHref,
+  musicUrl,
+  eventTitle,
+  locale,
+  availableLocales,
+}: SiteHeaderProps) {
+  const dict = getDictionary(locale);
   const [menuOpen, setMenuOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -42,7 +62,7 @@ export default function SiteHeader({ sections, calendarHref, musicUrl, eventTitl
     setPlaying(!playing);
   };
 
-  const shareText = eventTitle ? `You're invited: ${eventTitle}` : "You're invited!";
+  const shareText = dict.siteHeader.shareText(eventTitle);
 
   const handleShareClick = async () => {
     if (typeof navigator !== "undefined" && navigator.share) {
@@ -72,7 +92,7 @@ export default function SiteHeader({ sections, calendarHref, musicUrl, eventTitl
         <button
           type="button"
           className={styles.menuButton}
-          aria-label="Menu"
+          aria-label={dict.siteHeader.menu}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
         >
@@ -87,7 +107,7 @@ export default function SiteHeader({ sections, calendarHref, musicUrl, eventTitl
               type="button"
               className={styles.iconButton}
               onClick={toggleMusic}
-              aria-label={playing ? "Pause music" : "Play music"}
+              aria-label={playing ? dict.siteHeader.pauseMusic : dict.siteHeader.playMusic}
             >
               {playing ? "⏸" : "▶"}
             </button>
@@ -97,7 +117,7 @@ export default function SiteHeader({ sections, calendarHref, musicUrl, eventTitl
               type="button"
               className={styles.iconButton}
               onClick={handleShareClick}
-              aria-label="Share"
+              aria-label={dict.siteHeader.share}
               aria-expanded={shareOpen}
             >
               ⤴
@@ -105,7 +125,7 @@ export default function SiteHeader({ sections, calendarHref, musicUrl, eventTitl
             {shareOpen && (
               <div className={styles.sharePanel}>
                 <button type="button" className={styles.shareItem} onClick={copyLink}>
-                  {copied ? "Link copied!" : "Copy link"}
+                  {copied ? dict.siteHeader.linkCopied : dict.siteHeader.copyLink}
                 </button>
                 <a
                   className={styles.shareItem}
@@ -133,7 +153,7 @@ export default function SiteHeader({ sections, calendarHref, musicUrl, eventTitl
             )}
           </div>
           <a href={calendarHref} download className={styles.calendarButton}>
-            Add to calendar
+            {dict.siteHeader.addToCalendar}
           </a>
         </div>
       </div>
@@ -150,6 +170,11 @@ export default function SiteHeader({ sections, calendarHref, musicUrl, eventTitl
               {section.label}
             </a>
           ))}
+          <LanguageSwitcher
+            currentLocale={locale}
+            availableLocales={availableLocales}
+            label={dict.languageSwitcher.label}
+          />
         </nav>
       )}
 

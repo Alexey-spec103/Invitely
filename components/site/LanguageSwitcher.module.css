@@ -1,0 +1,40 @@
+.wrap {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--theme-accent) 15%, transparent);
+}
+
+.label {
+  display: block;
+  font-family: var(--theme-font-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--theme-text);
+  opacity: 0.7;
+  margin-bottom: 0.5rem;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.option,
+.optionActive {
+  font-family: var(--theme-font-body);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 30%, transparent);
+  background: transparent;
+  color: var(--theme-text);
+  cursor: pointer;
+}
+
+.optionActive {
+  background: var(--theme-accent);
+  color: var(--theme-bg);
+  border-color: var(--theme-accent);
+}

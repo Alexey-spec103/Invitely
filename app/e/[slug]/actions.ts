@@ -6,13 +6,17 @@ import type { RsvpFormInput } from "@/components/sections/RsvpSection";
 import type { BanquetTableLookupResult } from "@/components/sections/BanquetNavigatorSection";
 import type { Json } from "@/lib/supabase/database.types";
 import { sendEmail } from "@/lib/email";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 export async function submitRsvp(
   eventId: string,
   guestId: string | null,
   maxPlusOnes: number | null,
+  locale: Locale,
   input: RsvpFormInput
 ): Promise<{ ok: true } | { ok: false; message: string }> {
+  const t = getDictionary(locale).rsvp;
   // Anti-spam: a filled honeypot or a submission faster than any human could
   // plausibly manage is treated as spam and silently dropped -- returning
   // normally (not throwing) so a bot gets no signal it was rejected, rather
@@ -92,12 +96,9 @@ export async function submitRsvp(
     // rsvp_responses, so it's safe to name the real cause instead of the
     // generic message below.
     if (error.code === "42501") {
-      return {
-        ok: false,
-        message: "This site isn't published yet, so RSVPs can't be submitted. Ask your host to publish it.",
-      };
+      return { ok: false, message: t.notPublishedError };
     }
-    return { ok: false, message: "We couldn't submit your RSVP. Please try again in a moment." };
+    return { ok: false, message: t.submitFailedError };
   }
 
   // Sync guest_attendees to the party's real names, but only when the guest

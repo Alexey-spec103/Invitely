@@ -4,6 +4,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { Theme } from "@/lib/themes/types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 import styles from "./EnvelopeReveal.module.css";
 
 interface EnvelopeRevealProps {
@@ -13,6 +15,7 @@ interface EnvelopeRevealProps {
   eventDate: string;
   monogramInitials?: string;
   guestName?: string;
+  locale: Locale;
 }
 
 // Same local derivation as MonogramCenter/MonogramCrest -- no shared helper
@@ -43,7 +46,9 @@ export default function EnvelopeReveal({
   eventDate,
   monogramInitials,
   guestName,
+  locale,
 }: EnvelopeRevealProps) {
+  const dict = getDictionary(locale);
   const storageKey = `invitely:envelopeOpened:${eventId}`;
   const [visible, setVisible] = useState(true);
   const [opening, setOpening] = useState(false);
@@ -127,7 +132,7 @@ export default function EnvelopeReveal({
           style={{ pointerEvents: opening ? "none" : undefined }}
           role="button"
           tabIndex={0}
-          aria-label={`Open your invitation${coupleLabel ? ` from ${coupleLabel}` : ""}`}
+          aria-label={dict.envelopeReveal.openInvitation(coupleLabel)}
           onClick={open}
           onKeyDown={(event) => {
             if (event.key === "Enter" || event.key === " ") {
@@ -158,8 +163,8 @@ export default function EnvelopeReveal({
             {coupleLabel && eventDate ? " · " : ""}
             {eventDate}
           </p>
-          {guestName && <p className={styles.guestLine}>An invitation for {guestName}</p>}
-          <p className={styles.hint}>Tap to open</p>
+          {guestName && <p className={styles.guestLine}>{dict.envelopeReveal.invitationFor(guestName)}</p>}
+          <p className={styles.hint}>{dict.envelopeReveal.tapToOpen}</p>
         </div>
       </motion.div>
     </>

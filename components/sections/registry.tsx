@@ -23,6 +23,7 @@ import { BanquetNavigatorSection, DEFAULT_BANQUET_NAVIGATOR_VARIANT } from "./Ba
 import type { BanquetNavigatorSectionProps, BanquetTableLookupResult } from "./BanquetNavigatorSection";
 import type { Json } from "@/lib/supabase/database.types";
 import type { ThemeCategory } from "@/lib/themes/types";
+import type { Locale } from "@/lib/i18n/locales";
 
 export const componentRegistry = {
   hero: HeroSection,
@@ -304,7 +305,8 @@ export function applyHiddenFields<T extends object>(data: T, hiddenFields: unkno
 export function renderSection(
   section: SectionConfig,
   content: Record<string, unknown>,
-  context: RenderSectionContext
+  context: RenderSectionContext,
+  locale: Locale
 ) {
   const rawData = content[section.type];
   if (!rawData || typeof rawData !== "object") {
@@ -365,10 +367,11 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as RsvpSectionProps["variant"]}
-          {...(data as Omit<RsvpSectionProps, "variant" | "onSubmit" | "defaultGuestName" | "maxPartySize">)}
+          {...(data as Omit<RsvpSectionProps, "variant" | "onSubmit" | "defaultGuestName" | "maxPartySize" | "locale">)}
           onSubmit={context.rsvp.onSubmit}
           defaultGuestName={context.rsvp.defaultGuestName}
           maxPartySize={context.rsvp.maxPartySize}
+          locale={locale}
         />
       );
     }

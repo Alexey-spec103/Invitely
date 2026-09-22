@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Undo2, Redo2, Monitor, Smartphone, Tablet } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { HeroSection } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import { getEventType } from "@/lib/eventTypes";
@@ -1722,6 +1723,12 @@ export default function SiteInlineEditor({
                 styleOverrides={rsvpField.draft.styleOverrides}
                 questions={rsvpQuestionsForRender(rsvpVisible.questions)}
                 onSubmit={previewOnlySubmit}
+                // Dashboard preview always shows English RSVP chrome --
+                // this canvas is the host's own editing view, not what a
+                // guest in their chosen language sees; a host-facing locale
+                // picker for their own preview is a separate follow-up, not
+                // part of this guest-facing-site i18n pass.
+                locale={DEFAULT_LOCALE}
               />
             </EditableFieldProvider>
           </div>

@@ -21,6 +21,8 @@ import { planMeets, BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 import { getEventType } from "@/lib/eventTypes";
 import PublicSiteBadge from "@/components/site/PublicSiteBadge";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
+import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
+import { SUPPORTED_LOCALES } from "@/lib/i18n/locales";
 
 export async function generateMetadata({
   params,
@@ -83,6 +85,13 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
   if (!event || !event.site_config) {
     notFound();
   }
+
+  // Guest-facing UI chrome locale -- see resolveGuestLocale.ts's own comment
+  // for the priority order (guest's own explicit choice, then geo-IP, then
+  // English) and for why events.supported_locales isn't consulted yet.
+  // Resolved this early (not just before render) so the bound submitRsvp
+  // Server Action below can localize its own error messages too.
+  const locale = await resolveGuestLocale();
 
   // Password protection: a hashed-password gate on top of the existing
   // publish gate above (an unpublished event is already invisible to guests
@@ -147,7 +156,8 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
     null,
     event.id,
     invitedGuest?.id ?? null,
-    invitedGuest?.max_plus_ones ?? null
+    invitedGuest?.max_plus_ones ?? null,
+    locale
   );
   const maxPartySize =
     invitedGuest?.max_plus_ones != null ? invitedGuest.max_plus_ones + 1 : undefined;
@@ -240,6 +250,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           eventDate={envelopeDate}
           monogramInitials={envelopeMonogramInitials}
           guestName={invitedGuest?.full_name}
+          locale={locale}
         />
       )}
       {isCanvasMode && <CanvasRenderer frames={parseCanvasFrames(event.site_config.canvas)} />}
@@ -249,6 +260,8 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           calendarHref={`/e/${slug}/calendar.ics`}
           musicUrl={musicUrl}
           eventTitle={event.title}
+          locale={locale}
+          availableLocales={SUPPORTED_LOCALES}
         />
         {sections.map((section, index) => {
           const element = renderSection(section, content, {
@@ -260,7 +273,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
             dressCode: { themeCategory: decorCategory },
             guestbook: { messages: guestbookMessages },
             banquetNavigator: { onLookup: boundLookupGuestTable, assignedTableName },
-          });
+          }, locale);
           if (!element) {
             return null;
           }
