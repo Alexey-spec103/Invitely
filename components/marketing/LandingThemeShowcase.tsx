@@ -13,9 +13,12 @@ import styles from "./LandingThemeShowcase.module.css";
  * first-impression teaser reads as "look how rich this is" with real color
  * and decorative variety, rather than accidentally clustering one mood.
  * 9 (not 6) fills the 3-column grid to a clean 3 rows -- `.grid`'s layout
- * is plain `repeat(3, ...)` with no assumption baked in about the count. */
+ * is plain `repeat(3, ...)` with no assumption baked in about the count.
+ * Opens on a warm, colorful boho pick rather than a dark/moody one (the
+ * grid reads left-to-right, top-to-bottom, so the very first card sets the
+ * tone before a visitor even reaches the marble/cosmic entries). */
 const SHOWCASE_THEME_IDS = [
-  "cosmic-obsidian-starlight",
+  "boho-marigold-festival",
   "marble-noir-rust",
   "peony-blush-burgundy",
   "provence-lavender-sage",

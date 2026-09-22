@@ -264,8 +264,12 @@ export const DEFAULT_THEME_ID = romanticBlush.id;
  * cosmic, peony, provence: the most recent design work, with real matched
  * textures and full decorative-asset coverage) rather than the original
  * launch batch, so the strongest current work leads instead of getting
- * buried under 100+ older themes in an unsorted "all styles" grid. */
+ * buried under 100+ older themes in an unsorted "all styles" grid. Leads
+ * with a warm, colorful boho pick specifically -- the marble/cosmic entries
+ * right after it are deliberately darker/moodier, so opening on one of
+ * those first made the whole rail read as dark before a visitor scrolled. */
 export const POPULAR_THEME_IDS: string[] = [
+  "boho-marigold-festival",
   "marble-noir-rust",
   "marble-sage-gold",
   "marble-champagne-teal",
