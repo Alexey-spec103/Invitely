@@ -1,40 +1,65 @@
+/* Every color falls back through var(--theme-*, var(--dash-*)) so this one
+   component works unstyled-drift-free in two different contexts: the
+   guest-facing public site (wrapped in ThemeProvider, --theme-* set) and the
+   marketing landing page header (no ThemeProvider -- --dash-accent-text etc.
+   are the global fallback tokens already used site-wide, see globals.css). */
 .wrap {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid color-mix(in srgb, var(--theme-accent) 15%, transparent);
+  position: relative;
 }
 
-.label {
-  display: block;
-  font-family: var(--theme-font-body);
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--theme-text);
-  opacity: 0.7;
-  margin-bottom: 0.5rem;
-}
-
-.list {
+.trigger {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--theme-accent, var(--dash-accent-text, #c2410c));
+  background: transparent;
+  color: var(--theme-text, var(--dash-accent-text, #c2410c));
+  font-family: var(--theme-font-body, inherit);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 9rem;
+  padding: 0.4rem;
+  border-radius: 12px;
+  background: var(--theme-bg, #fff);
+  border: 1px solid color-mix(in srgb, var(--theme-accent, var(--dash-accent-text, #c2410c)) 20%, transparent);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
 }
 
 .option,
 .optionActive {
-  font-family: var(--theme-font-body);
-  font-size: 0.75rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--theme-accent) 30%, transparent);
+  text-align: left;
+  font-family: var(--theme-font-body, inherit);
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: none;
   background: transparent;
-  color: var(--theme-text);
+  color: var(--theme-text, #1c1917);
   cursor: pointer;
 }
 
+.option:hover {
+  background: color-mix(in srgb, var(--theme-accent, var(--dash-accent-text, #c2410c)) 10%, transparent);
+}
+
 .optionActive {
-  background: var(--theme-accent);
-  color: var(--theme-bg);
-  border-color: var(--theme-accent);
+  background: var(--theme-accent, var(--dash-accent-text, #c2410c));
+  color: var(--theme-bg, #fff);
+  font-weight: 600;
 }

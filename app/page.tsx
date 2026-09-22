@@ -31,6 +31,10 @@ import PlatformFanSection from "@/components/marketing/PlatformFanSection";
 import HowItWorksSection from "@/components/marketing/HowItWorksSection";
 import GuestTrackingSection from "@/components/marketing/GuestTrackingSection";
 import SiteOrPaperSection from "@/components/marketing/SiteOrPaperSection";
+import LanguageSwitcher from "@/components/site/LanguageSwitcher";
+import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { SUPPORTED_LOCALES } from "@/lib/i18n/locales";
 
 const themeCount = Object.keys(themes).length;
 const fontCount = CANVAS_FONTS.length;
@@ -137,6 +141,8 @@ export default async function Home() {
   const finalCtaLabel = user ? "Go to dashboard" : "Create your website";
 
   const showcaseThemes = Object.values(themes);
+  const locale = await resolveGuestLocale();
+  const languageLabel = getDictionary(locale).languageSwitcher.label;
 
   return (
     <div className="bg-white font-sans">
@@ -178,6 +184,7 @@ export default async function Home() {
               </a>
             </nav>
             <div className="flex items-center gap-3 sm:gap-4">
+              <LanguageSwitcher currentLocale={locale} availableLocales={SUPPORTED_LOCALES} label={languageLabel} />
               <MobileNav showLogin={!user} />
               {!user && (
                 <Link

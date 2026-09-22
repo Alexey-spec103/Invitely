@@ -102,6 +102,11 @@ export default function SiteHeader({
         </button>
 
         <div className={styles.actions}>
+          <LanguageSwitcher
+            currentLocale={locale}
+            availableLocales={availableLocales}
+            label={dict.languageSwitcher.label}
+          />
           {musicUrl && (
             <button
               type="button"
@@ -170,11 +175,6 @@ export default function SiteHeader({
               {section.label}
             </a>
           ))}
-          <LanguageSwitcher
-            currentLocale={locale}
-            availableLocales={availableLocales}
-            label={dict.languageSwitcher.label}
-          />
         </nav>
       )}
 

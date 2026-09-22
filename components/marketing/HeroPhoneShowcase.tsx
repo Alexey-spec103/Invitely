@@ -8,7 +8,12 @@ import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { previewPhotoFor, previewTargetDateFor, formatPreviewDate } from "@/lib/themes/previewMedia";
 import styles from "./HeroPhoneShowcase.module.css";
 
-const SHOWCASE_THEME_ID = "romantic-blush";
+// Same "lead with our newest, most colorful work" call as
+// LandingThemeShowcase.tsx and lib/themes/index.ts's POPULAR_THEME_IDS --
+// this phone mockup is the single most prominent visual on the whole
+// landing page (above the fold, animates through 3 real sections), so it
+// especially shouldn't be showing the plain original default theme.
+const SHOWCASE_THEME_ID = "boho-marigold-festival";
 const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
 
 // Real, finished copy for the Letter/Timeline frames -- matching the same
