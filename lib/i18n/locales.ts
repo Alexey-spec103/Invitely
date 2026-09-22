@@ -31,6 +31,22 @@ export function isSupportedLocale(value: string): value is Locale {
   return (SUPPORTED_LOCALES as readonly string[]).includes(value);
 }
 
+/** BCP-47 tag for `Intl`/`toLocaleDateString` calls, keyed by our own
+ * `Locale` type -- LetterSection's RSVP-deadline date (e.g. "December 31,
+ * 2026") was hardcoded to "en-US" regardless of the guest's actual language
+ * before this existed; use this instead of a bare Locale string anywhere a
+ * date/number needs real locale-aware formatting. */
+export const LOCALE_TO_BCP47: Record<Locale, string> = {
+  en: "en-US",
+  de: "de-DE",
+  fr: "fr-FR",
+  es: "es-ES",
+  it: "it-IT",
+  pl: "pl-PL",
+  ru: "ru-RU",
+  uk: "uk-UA",
+};
+
 /** Vercel injects `x-vercel-ip-country` (ISO 3166-1 alpha-2) on every
  * request to a deployed app, free, no third-party geo-IP service needed --
  * see resolveLocale.ts. Only used to pick a sensible *default* the first

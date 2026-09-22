@@ -4,13 +4,15 @@ import type { GiftSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import { CORNER_PAIR_DECOR } from "@/lib/themes/decorMotifs";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./SimpleList.module.css";
 
 /** No pre-existing decoration to preserve here for any category (unlike
  * Hero/Countdown/DressCode, which mask-fallback), so unmatched categories
  * simply render nothing extra -- no regression risk. */
-export default function SimpleList({ title, description, preferences, styleOverrides, themeCategory }: GiftSectionVariantProps) {
+export default function SimpleList({ title, description, preferences, styleOverrides, themeCategory, locale }: GiftSectionVariantProps) {
   const { editable } = useEditableField();
+  const t = getDictionary(locale).gift;
   const accentAssets = themeCategory ? CORNER_PAIR_DECOR[themeCategory] : undefined;
   return (
     <section className={accentAssets ? `${styles.section} ${styles.sectionColor}` : styles.section}>
@@ -44,7 +46,7 @@ export default function SimpleList({ title, description, preferences, styleOverr
               {item.description && <p className={styles.cardDescription}>{item.description}</p>}
               {item.url && (
                 <a href={item.url} target="_blank" rel="noreferrer" className={styles.cardLink}>
-                  View
+                  {t.viewLink}
                 </a>
               )}
             </div>

@@ -3,10 +3,12 @@
 import type { GiftSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./MinimalRows.module.css";
 
-export default function MinimalRows({ title, description, preferences, styleOverrides }: GiftSectionVariantProps) {
+export default function MinimalRows({ title, description, preferences, styleOverrides, locale }: GiftSectionVariantProps) {
   const { editable } = useEditableField();
+  const t = getDictionary(locale).gift;
   return (
     <section className={styles.section}>
       {(title || editable) && (
@@ -34,7 +36,7 @@ export default function MinimalRows({ title, description, preferences, styleOver
               </div>
               {item.url && (
                 <a href={item.url} target="_blank" rel="noreferrer" className={styles.rowLink}>
-                  View
+                  {t.viewLink}
                 </a>
               )}
             </div>

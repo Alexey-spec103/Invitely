@@ -6,6 +6,8 @@ import EnvelopeCardPreview from "@/components/paper/EnvelopeCardPreview";
 import { getTheme } from "@/lib/themes";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { previewPhotoFor, previewTargetDateFor, formatPreviewDate } from "@/lib/themes/previewMedia";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 import styles from "./SiteOrPaperSection.module.css";
 
 // Same theme + couple as the rest of the landing page, for the same "one
@@ -18,7 +20,8 @@ const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
  * rendered twice at laptop + phone size on the left, and the same real
  * InvitationCardPreview/EnvelopeCardPreview used elsewhere on this page
  * stacked on the right. See docs/research/landing-audit.md priority 10. */
-export default function SiteOrPaperSection() {
+export default function SiteOrPaperSection({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale).landing.siteOrPaper;
   const theme = getTheme(SHOWCASE_THEME_ID);
   const recommended = recommendedHeroVariantFor(theme.id, theme.category);
   const heroVariant: HeroVariant = HERO_VARIANTS.includes(recommended as HeroVariant)
@@ -37,8 +40,8 @@ export default function SiteOrPaperSection() {
 
   return (
     <div className={styles.layout}>
-      <h2 className={styles.heading}>A website invitation, and/or paper</h2>
-      <p className={styles.subtext}>Not an either-or — most couples use both.</p>
+      <h2 className={styles.heading}>{t.heading}</h2>
+      <p className={styles.subtext}>{t.subtext}</p>
 
       <div className={styles.columns}>
         <div className={styles.column}>
@@ -62,16 +65,17 @@ export default function SiteOrPaperSection() {
               </div>
             </div>
           </div>
-          <h3 className={styles.columnTitle}>Website invitation</h3>
-          <p className={styles.columnSubtext}>Simple and fast — invite every guest, wherever they live.</p>
+          <h3 className={styles.columnTitle}>{t.website.title}</h3>
+          <p className={styles.columnSubtext}>{t.website.subtext}</p>
           <ul className={styles.bullets}>
-            <li>One link works on any phone, tablet, or laptop</li>
-            <li>Update anything — everyone sees the latest version instantly</li>
+            {t.website.bullets.map((bullet) => (
+              <li key={bullet}>{bullet}</li>
+            ))}
           </ul>
         </div>
 
         <div className={styles.orBadge} aria-hidden="true">
-          AND/OR
+          {t.orBadge}
         </div>
 
         <div className={styles.column}>
@@ -83,11 +87,12 @@ export default function SiteOrPaperSection() {
               <InvitationCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} side="front" />
             </div>
           </div>
-          <h3 className={styles.columnTitle}>Paper invitations</h3>
-          <p className={styles.columnSubtext}>A keepsake for your closest family and friends.</p>
+          <h3 className={styles.columnTitle}>{t.paper.title}</h3>
+          <p className={styles.columnSubtext}>{t.paper.subtext}</p>
           <ul className={styles.bullets}>
-            <li>Print-ready PDF invitations, envelopes, and program cards</li>
-            <li>Each guest gets a personal QR code — their RSVP auto-matches</li>
+            {t.paper.bullets.map((bullet) => (
+              <li key={bullet}>{bullet}</li>
+            ))}
           </ul>
         </div>
       </div>

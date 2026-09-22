@@ -3,20 +3,22 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Palette, PenLine, Share2 } from "lucide-react";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
-const STEPS = [
-  { icon: Palette, title: "Pick a style", text: "Browse styles until one feels right — swap it any time." },
-  { icon: PenLine, title: "Add your details", text: "Names, date, a photo if you want one. That's it." },
-  { icon: Share2, title: "Share your site", text: "Get a live link guests can open on their phone." },
-];
+// Icons only -- title/text come from dict.onboarding.howItWorks.steps
+// (same order: Pick a style, Add your details, Share your site), zipped by
+// index below.
+const STEP_ICONS = [Palette, PenLine, Share2];
 
 /** A tiny, always-available "how it works" explainer for non-technical
  * visitors landing on the style gallery for the first time -- three quick
  * steps instead of a recorded screencast (no video hosting/autoplay-policy
  * risk, same reassurance). Collapsible so it doesn't eat space for anyone
  * who already gets it. */
-export default function HowItWorksClip() {
+export default function HowItWorksClip({ locale }: { locale: Locale }) {
   const [open, setOpen] = useState(true);
+  const t = getDictionary(locale).onboarding.howItWorks;
 
   return (
     <div className="mt-3 rounded-lg border border-rose-100 bg-rose-50/60 p-3">
@@ -25,8 +27,8 @@ export default function HowItWorksClip() {
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between text-left text-xs font-semibold text-rose-700"
       >
-        <span>✨ New here? Here&apos;s how it works</span>
-        <span className="text-rose-400">{open ? "Hide" : "Show"}</span>
+        <span>{t.toggleLabel}</span>
+        <span className="text-rose-400">{open ? t.hide : t.show}</span>
       </button>
 
       {open && (
@@ -36,7 +38,9 @@ export default function HowItWorksClip() {
           transition={{ duration: 0.2 }}
           className="mt-2 grid grid-cols-3 gap-2"
         >
-          {STEPS.map(({ icon: Icon, title, text }, i) => (
+          {t.steps.map(({ title, text }, i) => {
+            const Icon = STEP_ICONS[i];
+            return (
             <motion.div
               key={title}
               initial={{ opacity: 0, y: 6 }}
@@ -48,7 +52,8 @@ export default function HowItWorksClip() {
               <p className="mt-1 text-[11px] font-semibold text-gray-900">{title}</p>
               <p className="mt-0.5 text-[10px] leading-tight text-gray-500">{text}</p>
             </motion.div>
-          ))}
+            );
+          })}
         </motion.div>
       )}
     </div>

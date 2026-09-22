@@ -5,9 +5,11 @@ import type { CountdownSectionVariantProps } from "../types";
 import { getCountdownParts, type CountdownParts } from "@/lib/countdown";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./SimpleDigits.module.css";
 
-export default function SimpleDigits({ title, eventDateTime, styleOverrides }: CountdownSectionVariantProps) {
+export default function SimpleDigits({ title, eventDateTime, styleOverrides, locale }: CountdownSectionVariantProps) {
+  const t = getDictionary(locale).countdown;
   const { editable } = useEditableField();
   // Null until mount: computing this during the server render would embed a
   // Date.now() snapshot that won't match the client's hydration-time value,
@@ -48,32 +50,32 @@ export default function SimpleDigits({ title, eventDateTime, styleOverrides }: C
       )}
 
       {parts.past ? (
-        <p className={styles.reached}>Thank you for celebrating with us!</p>
+        <p className={styles.reached}>{t.reachedPast}</p>
       ) : parts.reached ? (
-        <p className={styles.reached}>Today&apos;s the day!</p>
+        <p className={styles.reached}>{t.reachedToday}</p>
       ) : (
         <div className={styles.digits}>
           <span className={styles.cornerMark} data-pos="tl" aria-hidden="true" />
           <span className={styles.cornerMark} data-pos="br" aria-hidden="true" />
           <div className={styles.digit}>
             <span className={styles.number}>{parts.weeks}</span>
-            <span className={styles.label}>Weeks</span>
+            <span className={styles.label}>{t.weeks}</span>
           </div>
           <div className={styles.digit}>
             <span className={styles.number}>{parts.days}</span>
-            <span className={styles.label}>Days</span>
+            <span className={styles.label}>{t.days}</span>
           </div>
           <div className={styles.digit}>
             <span className={styles.number}>{parts.hours}</span>
-            <span className={styles.label}>Hours</span>
+            <span className={styles.label}>{t.hours}</span>
           </div>
           <div className={styles.digit}>
             <span className={styles.number}>{parts.minutes}</span>
-            <span className={styles.label}>Minutes</span>
+            <span className={styles.label}>{t.minutes}</span>
           </div>
           <div className={styles.digit}>
             <span className={styles.number}>{parts.seconds}</span>
-            <span className={styles.label}>Seconds</span>
+            <span className={styles.label}>{t.seconds}</span>
           </div>
         </div>
       )}

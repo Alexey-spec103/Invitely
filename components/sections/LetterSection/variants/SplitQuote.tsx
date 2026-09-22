@@ -1,10 +1,13 @@
 import type { LetterSectionVariantProps } from "../types";
+import type { Locale } from "@/lib/i18n/locales";
+import { LOCALE_TO_BCP47 } from "@/lib/i18n/locales";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import EditableText from "@/components/site-editor/EditableText";
 import styles from "./SplitQuote.module.css";
 
-function formatDeadline(isoDate: string) {
+function formatDeadline(isoDate: string, locale: Locale) {
   const date = new Date(`${isoDate}T00:00:00`);
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  return date.toLocaleDateString(LOCALE_TO_BCP47[locale], { year: "numeric", month: "long", day: "numeric" });
 }
 
 function isDeadlineUpcoming(isoDate: string): boolean {
@@ -20,7 +23,9 @@ export default function SplitQuote({
   rsvpDeadline,
   closingLine,
   styleOverrides,
+  locale,
 }: LetterSectionVariantProps) {
+  const t = getDictionary(locale).letter;
   return (
     <section className={styles.section}>
       <div className={styles.grid}>
@@ -37,7 +42,7 @@ export default function SplitQuote({
             </p>
           )}
           {rsvpDeadline && isDeadlineUpcoming(rsvpDeadline) && (
-            <p className={styles.deadline}>Please confirm by {formatDeadline(rsvpDeadline)}</p>
+            <p className={styles.deadline}>{t.confirmBy(formatDeadline(rsvpDeadline, locale))}</p>
           )}
           {closingLine && (
             <p className={styles.closingLine}>

@@ -336,8 +336,9 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as LetterSectionProps["variant"]}
-          {...(data as Omit<LetterSectionProps, "variant">)}
+          {...(data as Omit<LetterSectionProps, "variant" | "locale">)}
           themeCategory={context.letter?.themeCategory}
+          locale={locale}
         />
       );
     }
@@ -357,7 +358,8 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as MapSectionProps["variant"]}
-          {...(data as Omit<MapSectionProps, "variant">)}
+          {...(data as Omit<MapSectionProps, "variant" | "locale">)}
+          locale={locale}
         />
       );
     }
@@ -381,9 +383,10 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as CountdownSectionProps["variant"]}
-          {...(data as Omit<CountdownSectionProps, "variant" | "eventDateTime">)}
+          {...(data as Omit<CountdownSectionProps, "variant" | "eventDateTime" | "locale">)}
           eventDateTime={context.countdown.eventDateTime}
           themeCategory={context.countdown.themeCategory}
+          locale={locale}
         />
       );
     }
@@ -393,9 +396,10 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as GiftSectionProps["variant"]}
-          {...(data as Omit<GiftSectionProps, "variant" | "preferences">)}
+          {...(data as Omit<GiftSectionProps, "variant" | "preferences" | "locale">)}
           preferences={context.gift.preferences}
           themeCategory={context.gift.themeCategory}
+          locale={locale}
         />
       );
     }
@@ -416,8 +420,9 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as GuestbookSectionProps["variant"]}
-          {...(data as Omit<GuestbookSectionProps, "variant" | "messages">)}
+          {...(data as Omit<GuestbookSectionProps, "variant" | "messages" | "locale">)}
           messages={context.guestbook.messages}
+          locale={locale}
         />
       );
     }
@@ -427,7 +432,8 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as VideoSectionProps["variant"]}
-          {...(data as Omit<VideoSectionProps, "variant">)}
+          {...(data as Omit<VideoSectionProps, "variant" | "locale">)}
+          locale={locale}
         />
       );
     }
@@ -437,9 +443,10 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as BanquetNavigatorSectionProps["variant"]}
-          {...(data as Omit<BanquetNavigatorSectionProps, "variant" | "onLookup" | "assignedTableName">)}
+          {...(data as Omit<BanquetNavigatorSectionProps, "variant" | "onLookup" | "assignedTableName" | "locale">)}
           onLookup={context.banquetNavigator.onLookup}
           assignedTableName={context.banquetNavigator.assignedTableName}
+          locale={locale}
         />
       );
     }

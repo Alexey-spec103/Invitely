@@ -1609,6 +1609,7 @@ export default function SiteInlineEditor({
               <LetterSection
                 variant={letter.variant}
                 {...applyHiddenFields(letterField.draft, letterField.draft.hiddenFields)}
+                locale={DEFAULT_LOCALE}
               />
             </EditableFieldProvider>
           </div>
@@ -1666,7 +1667,11 @@ export default function SiteInlineEditor({
         <SectionBackground fill={getSectionBackground("map")}>
           <div ref={mapRef}>
             <EditableFieldProvider value={mapContext}>
-              <MapSection variant={map.variant} {...applyHiddenFields(mapField.draft, mapField.draft.hiddenFields)} />
+              <MapSection
+                variant={map.variant}
+                {...applyHiddenFields(mapField.draft, mapField.draft.hiddenFields)}
+                locale={DEFAULT_LOCALE}
+              />
             </EditableFieldProvider>
           </div>
         </SectionBackground>
@@ -1760,6 +1765,7 @@ export default function SiteInlineEditor({
                 title={countdownVisible.title}
                 eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
                 styleOverrides={countdownField.draft.styleOverrides}
+                locale={DEFAULT_LOCALE}
               />
             </EditableFieldProvider>
           </div>
@@ -1786,6 +1792,7 @@ export default function SiteInlineEditor({
                 description={giftVisible.description}
                 styleOverrides={giftField.draft.styleOverrides}
                 preferences={giftPreferencesForRender(gift.preferences)}
+                locale={DEFAULT_LOCALE}
               />
             </EditableFieldProvider>
           </div>
@@ -1846,6 +1853,7 @@ export default function SiteInlineEditor({
                 title={guestbookVisible.title}
                 styleOverrides={guestbookField.draft.styleOverrides}
                 messages={guestbook.messages}
+                locale={DEFAULT_LOCALE}
               />
             </EditableFieldProvider>
           </div>
@@ -1874,6 +1882,7 @@ export default function SiteInlineEditor({
                 title={videoVisible.title}
                 videoUrl={videoVisible.videoUrl}
                 styleOverrides={videoField.draft.styleOverrides}
+                locale={DEFAULT_LOCALE}
               />
             </EditableFieldProvider>
           </div>
@@ -1906,6 +1915,7 @@ export default function SiteInlineEditor({
                 description={banquetNavigatorVisible.description}
                 styleOverrides={banquetNavigatorField.draft.styleOverrides}
                 onLookup={previewOnlyLookup}
+                locale={DEFAULT_LOCALE}
               />
             </EditableFieldProvider>
           </div>

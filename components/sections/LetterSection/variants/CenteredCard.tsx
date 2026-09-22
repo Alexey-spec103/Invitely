@@ -1,11 +1,14 @@
 import type { LetterSectionVariantProps } from "../types";
+import type { Locale } from "@/lib/i18n/locales";
+import { LOCALE_TO_BCP47 } from "@/lib/i18n/locales";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import EditableText from "@/components/site-editor/EditableText";
 import { CORNER_PAIR_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import styles from "./CenteredCard.module.css";
 
-function formatDeadline(isoDate: string) {
+function formatDeadline(isoDate: string, locale: Locale) {
   const date = new Date(`${isoDate}T00:00:00`);
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  return date.toLocaleDateString(LOCALE_TO_BCP47[locale], { year: "numeric", month: "long", day: "numeric" });
 }
 
 /** A guest visiting after the stated deadline (very ordinary once RSVPs
@@ -28,7 +31,9 @@ export default function CenteredCard({
   closingLine,
   styleOverrides,
   themeCategory,
+  locale,
 }: LetterSectionVariantProps) {
+  const t = getDictionary(locale).letter;
   // Same category -> asset pairing as GiftSection/SimpleList's corner
   // accents (both read from CORNER_PAIR_DECOR), so every twin-corner spot
   // across the site reads as the same design system. Unmatched categories
@@ -84,7 +89,7 @@ export default function CenteredCard({
         )}
         {/* Derived display text, not a raw content field -- not independently editable. */}
         {rsvpDeadline && isDeadlineUpcoming(rsvpDeadline) && (
-          <p className={styles.deadline}>Please confirm by {formatDeadline(rsvpDeadline)}</p>
+          <p className={styles.deadline}>{t.confirmBy(formatDeadline(rsvpDeadline, locale))}</p>
         )}
         {closingLine && (
           <p className={styles.closingLine}>

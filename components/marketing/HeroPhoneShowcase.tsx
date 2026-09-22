@@ -6,6 +6,8 @@ import { TimelineSection } from "@/components/sections/TimelineSection";
 import { getTheme } from "@/lib/themes";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { previewPhotoFor, previewTargetDateFor, formatPreviewDate } from "@/lib/themes/previewMedia";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 import styles from "./HeroPhoneShowcase.module.css";
 
 // Same "lead with our newest, most colorful work" call as
@@ -55,7 +57,8 @@ const TIMELINE_CONTENT = {
  * so it costs nothing at runtime and respects prefers-reduced-motion), plus
  * a small decorative "tap" cursor and shine sweep at each transition so it
  * reads as an interactive product, not a slideshow. */
-export default function HeroPhoneShowcase() {
+export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale).landing.heroPhoneShowcase;
   const theme = getTheme(SHOWCASE_THEME_ID);
   const recommended = recommendedHeroVariantFor(theme.id, theme.category);
   const heroVariant: HeroVariant = HERO_VARIANTS.includes(recommended as HeroVariant)
@@ -74,7 +77,7 @@ export default function HeroPhoneShowcase() {
 
   return (
     <div className={styles.stage}>
-      <p className={styles.topCaption}>Brides of 2027, you&apos;re going to love this 🥹💍</p>
+      <p className={styles.topCaption}>{t.topCaption}</p>
 
       <div className={styles.device}>
         <div className={styles.dynamicIsland} aria-hidden="true" />
@@ -95,7 +98,7 @@ export default function HeroPhoneShowcase() {
             <div className={`${styles.frameLayer} ${styles.frameLetter}`}>
               <div className={styles.screenScaleInner}>
                 <ThemeProvider theme={theme}>
-                  <LetterSection variant="centered-card" rsvpDeadline={rsvpDeadline} {...LETTER_CONTENT} />
+                  <LetterSection variant="centered-card" rsvpDeadline={rsvpDeadline} locale={locale} {...LETTER_CONTENT} />
                 </ThemeProvider>
               </div>
             </div>
@@ -118,7 +121,7 @@ export default function HeroPhoneShowcase() {
         <span className={`${styles.progressDot} ${styles.progressDotTimeline}`} />
       </div>
 
-      <p className={styles.bottomCaption}>The invitations your friends will screenshot</p>
+      <p className={styles.bottomCaption}>{t.bottomCaption}</p>
     </div>
   );
 }

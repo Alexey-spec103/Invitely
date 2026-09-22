@@ -41,4 +41,250 @@ export const es: Dictionary = {
   languageSwitcher: {
     label: "Idioma",
   },
+  countdown: {
+    weeks: "Semanas",
+    days: "Días",
+    hours: "Horas",
+    minutes: "Minutos",
+    seconds: "Segundos",
+    daysAbbr: "días",
+    hoursAbbr: "h",
+    minutesAbbr: "min",
+    secondsAbbr: "s",
+    reachedToday: "¡Hoy es el gran día!",
+    reachedPast: "¡Gracias por celebrar con nosotros!",
+  },
+  gift: {
+    viewLink: "Ver",
+  },
+  guestbook: {
+    empty: "Los mensajes de tus invitados aparecerán aquí.",
+  },
+  video: {
+    iframeTitleFallback: "Video",
+  },
+  letter: {
+    confirmBy: (date) => `Por favor confirma antes del ${date}`,
+  },
+  map: {
+    mapTitle: (venueName) => `Mapa: ${venueName}`,
+  },
+  banquetNavigator: {
+    yourName: "Tu nombre",
+    findMyTable: "Buscar mi mesa",
+    looking: "Buscando...",
+    missingNameError: "Escribe el nombre al que se envió tu invitación.",
+    lookupFailedError: "Algo salió mal. Inténtalo de nuevo en un momento.",
+    seatedAt: (tableName) => `Estás sentado en ${tableName}`,
+    resultSeatedAt: (guestName, tableName) => `${guestName} está sentado en ${tableName}`,
+    resultNotFound: (guestName) => `No encontramos una mesa para "${guestName}" todavía; consulta con los anfitriones.`,
+  },
+  landing: {
+    topBar: "Visa / Mastercard / PayPal aceptados · Entrega instantánea — envía tu enlace de invitación a cualquier parte del mundo",
+    nav: { constructor: "Constructor", themes: "Temas", whatsIncluded: "Qué incluye", pricing: "Precios", login: "Iniciar sesión" },
+    mobileNav: { openMenu: "Abrir menú", closeMenu: "Cerrar menú" },
+    cta: {
+      primary: "Crea tus invitaciones",
+      primaryLoggedIn: "Ir al panel",
+      constructor: "Empezar a crear",
+      constructorLoggedIn: "Ir al panel",
+      final: "Crea tu sitio web",
+    },
+    hero: {
+      eyebrow: "Una plataforma de eventos, no solo una invitación",
+      headline: "Tu evento, con el estilo exacto que imaginaste",
+      accent: "con efecto wow",
+      subtext:
+        "Un hermoso sitio web de evento, invitaciones de papel a juego y organización de invitados — un solo estilo, en todas partes donde tus invitados lo vean. Empieza con un tema de diseñador, o crea el tuyo desde un lienzo en blanco.",
+      checklistThemes: (themeCount) => `${themeCount} temas de diseñador — o crea el tuyo desde un lienzo en blanco`,
+      checklistFonts: (fontCount) => `Mueve lo que quieras, ${fontCount}+ fuentes, cualquier color que te guste`,
+      checklistRsvp: "Seguimiento de confirmaciones con tus propias preguntas",
+      checklistPaper: "Invitaciones de papel personalizadas con códigos QR",
+      seeConstructor: "Ver el constructor →",
+    },
+    heroPhoneShowcase: {
+      topCaption: "Novias de 2027, esto os va a encantar \u{1F97A}\u{1F48D}",
+      bottomCaption: "Las invitaciones que tus amigos van a capturar",
+    },
+    statBar: { themes: "temas de diseñador", fonts: "fuentes en el constructor", modules: "módulos del sitio", oneLink: "enlace para todo" },
+    platformFan: {
+      heading: "Una plataforma de boda, no solo una invitación",
+      subtext: "Desde el sitio de invitación y la comunicación con tus invitados hasta un banquete totalmente diseñado — tarjetas de mesa incluidas.",
+    },
+    eventTypes: {
+      eyebrow: "No solo bodas",
+      heading: "Cada celebración tiene su propio sitio",
+      subtext:
+        "Elige primero tu tipo de evento, y todo lo demás — el texto, los campos, hasta cómo se llama la herramienta de asientos — se adapta a partir de ahí.",
+      cta: "Elegir tipo de evento",
+      items: [
+        { label: "Boda", blurb: "La razón por la que existe toda esta plataforma." },
+        { label: "Cumpleaños", blurb: "Cuenta atrás, fotos y una lista de regalos sin incomodidad." },
+        { label: "Evento corporativo", blurb: "Comparte la agenda, obtén un conteo real para el catering." },
+        { label: "Graduación", blurb: "Detalles de la ceremonia y la recepción, un solo enlace." },
+        { label: "Aniversario", blurb: "No importan los años, siempre merece un sitio como es debido." },
+        { label: "Baby shower", blurb: "Enlaces a la lista de regalos y un libro de visitas lleno de deseos." },
+        { label: "Quinceañera", blurb: "Corte de honor, código de vestimenta y programa de baile." },
+        { label: "Jubilación", blurb: "Brindar por una carrera, no solo repartir un pastel." },
+        { label: "Fiesta infantil", blurb: "Temas divertidos, confirmaciones que los padres realmente rellenan." },
+        { label: "Fiesta navideña", blurb: "Detalles de la fiesta de oficina, código de vestimenta incluido." },
+        { label: "Compromiso", blurb: "Comparte la noticia, guarda el sitio de la boda para más adelante." },
+        { label: "Cualquier otra cosa", blurb: "Sea lo que sea, empieza igual: elige un tema." },
+      ],
+    },
+    constructorSection: {
+      eyebrow: "El constructor de verdad",
+      heading: "No solo un selector de temas — un lienzo",
+      subtext: (fontCount) =>
+        `Elige un tema de diseñador para empezar rápido, y luego mueve lo que quieras: arrastra texto y fotos a cualquier parte de la página, elige entre ${fontCount}+ fuentes, escoge cualquier color, superpón elementos, y deshaz los cambios si cambias de opinión. El diseño exacto que creas también se traslada a tus invitaciones impresas.`,
+      features: [
+        { title: "Fuentes seleccionadas", description: "Manuscrita, serif, gruesa o fina — cambia todo el aspecto con un clic." },
+        { title: "Cualquier color que te guste", description: "Crea tu propia paleta para que coincida exactamente con los colores de tu boda." },
+        { title: "Variaciones seleccionadas por diseñadores", description: "O empieza con combinaciones de color y patrón, elegidas a mano por nuestros diseñadores." },
+        { title: "Texto flexible, en cualquier lugar", description: "Edita, redimensiona, añade y mueve cualquier texto en tu diseño." },
+        { title: "Extras de papel y tarjetas de banquete", description: "Diseña el frente y el reverso de tu invitación, además de tarjetas de banquete a juego." },
+        { title: "Activa o desactiva módulos del sitio", description: "Activa o desactiva la cuenta atrás, el programa, las confirmaciones, el mapa y más, por sitio." },
+      ],
+    },
+    howItWorksSection: {
+      heading: "Cómo funciona el constructor",
+      subtext: "Todo lo de abajo ocurre en vivo, directamente en tu navegador — sin descargas, nada que aprender.",
+      steps: [
+        {
+          title: "Personaliza tu diseño",
+          bullets: [
+            "Elige entre 100 temas de diseñador, o empieza desde un lienzo en blanco",
+            "Cada tema viene totalmente coordinado en color, listo para usar",
+            "Cambia de estilo cuando quieras — tu contenido se mantiene",
+          ],
+        },
+        {
+          title: "Edita cualquier texto, a tu manera",
+          bullets: [
+            "Elige entre 149+ fuentes, cada una previsualizada en su propia tipografía",
+            "Cambia color, tamaño, espaciado y alineación",
+            "Haz clic en cualquier texto del lienzo para editarlo al instante",
+          ],
+        },
+        {
+          title: "Añade fotos, vídeo y más",
+          bullets: [
+            "Sube tus propias fotos a cualquier parte del diseño",
+            "Añade un clip de vídeo para dar vida a vuestra historia",
+            "Coloca un código QR que enlace a tu sitio, o a la invitación de un invitado",
+          ],
+        },
+        {
+          title: "Activa y desactiva módulos",
+          bullets: [
+            "Cuenta atrás, confirmaciones, lista de regalos, código de vestimenta y más",
+            "Cada uno tiene su propio interruptor",
+            "Muestra a los invitados solo lo relevante para tu evento",
+          ],
+        },
+      ],
+    },
+    guestTracking: {
+      eyebrow: "Más allá de la invitación",
+      heading: "Envíala a cualquier parte, sigue cada respuesta",
+      subtext:
+        "Comparte tu único enlace por WhatsApp, SMS, correo electrónico, o como tus invitados realmente revisen sus mensajes. Cada confirmación va directamente a tu lista de invitados — quién viene, quién no ha respondido aún, y a quién te falta invitar.",
+    },
+    siteOrPaper: {
+      heading: "Una invitación web, y/o de papel",
+      subtext: "No es uno u otro — la mayoría de las parejas usan ambos.",
+      orBadge: "Y/O",
+      website: {
+        title: "Invitación web",
+        subtext: "Simple y rápido — invita a cada persona, viva donde viva.",
+        bullets: [
+          "Un solo enlace funciona en cualquier móvil, tablet o portátil",
+          "Actualiza lo que quieras — todos ven la última versión al instante",
+        ],
+      },
+      paper: {
+        title: "Invitaciones de papel",
+        subtext: "Un recuerdo para tu familia y amigos más cercanos.",
+        bullets: [
+          "Invitaciones, sobres y tarjetas de programa en PDF listos para imprimir",
+          "Cada invitado recibe un código QR personal — su confirmación se vincula automáticamente",
+        ],
+      },
+    },
+    themesSection: {
+      heading: "Elige tu estilo",
+      subtext:
+        "El mismo tema se traslada a tu sitio, invitaciones de papel y tarjetas de banquete — o sáltatelo por completo y diseña desde cero en el constructor.",
+    },
+    whatsIncluded: {
+      heading: "Qué incluye",
+      subtext: "Cada sitio viene con estos bloques — combínalos para contar tu historia.",
+      modules: [
+        { title: "Constructor de arrastrar y soltar", description: "Mueve cualquier texto o foto, elige cualquier fuente o color, y deshaz/rehaz sobre la marcha." },
+        { title: "Introducción principal", description: "Vuestros nombres, la fecha del evento y una foto — varios diseños para elegir." },
+        { title: "Carta a tus invitados", description: "Una nota personal, deseos de regalo y fecha límite de confirmación en una sola tarjeta." },
+        { title: "Programa del evento", description: "Organiza el día, minuto a minuto — desde el primer brindis hasta el último baile." },
+        { title: "Lugar y mapa", description: "Muestra a los invitados exactamente adónde ir, con un mapa interactivo." },
+        { title: "Confirmación con preguntas personalizadas", description: "Pregunta sobre comidas, bebidas o transporte — los invitados confirman online, directo a tu lista." },
+        { title: "Cuenta atrás", description: "Genera expectación con una cuenta atrás en vivo hasta el gran día." },
+        { title: "Muro de libro de visitas", description: "Los buenos deseos que dejan los invitados al confirmar, mostrados como un muro público en tu sitio." },
+        { title: "Vídeo", description: "Incrusta un vídeo de YouTube o Vimeo — vuestra propuesta, vuestra historia, vuestra elección." },
+        { title: "Invitaciones de papel", description: "Invitaciones, sobres y tarjetas de programa en PDF listos para imprimir, personalizados por invitado con un código QR." },
+        { title: "Organización del banquete", description: "Asigna mesas — por nombre, no solo por número — y genera tarjetas de mesa y de sitio para imprimir." },
+        { title: "Dominio personalizado", description: "Apunta tu propio dominio a tu sitio, o conserva el enlace legible que te damos gratis." },
+      ],
+    },
+    pricing: {
+      heading: "El constructor siempre es gratis",
+      subtext: "Diseña tu sitio, invita a tus invitados y sigue las confirmaciones sin coste. Paga solo si quieres un dominio personalizado, invitaciones de papel u organización de banquete.",
+      free: "Gratis",
+      whatYouGet: "Lo que obtienes",
+      whatThisAdds: "Lo que añade",
+      badgeFree: "Siempre gratis",
+      badgePremium: "Elimina la marca de agua",
+    },
+    finalCta: {
+      heading: "Gratis para empezar",
+      subtext: "No se requiere tarjeta de crédito. Crea tu sitio y publícalo cuando estés listo/a.",
+    },
+    footer: {
+      tagline: "Sitios web de eventos, listos en minutos.",
+      product: "Producto",
+      legalAccount: "Legal y cuenta",
+      login: "Iniciar sesión",
+      signUp: "Registrarse",
+      terms: "Términos del servicio",
+      privacy: "Política de privacidad",
+      rightsReserved: "© 2026 Invitely. Todos los derechos reservados.",
+      paymentAccepted: "Visa / Mastercard / PayPal aceptados",
+    },
+  },
+  onboarding: {
+    stepOf: (current, total) => `Paso ${current} de ${total}`,
+    back: "Atrás",
+    next: "Siguiente",
+    createSite: "Crear mi sitio",
+    saving: "Guardando...",
+    saveFailed: "No se pudo guardar",
+    previewBadge: "Vista previa",
+    eventTypeStep: { heading: "\u{1F389} ¿Qué estáis celebrando?", subtext: "Esto determina las siguientes preguntas." },
+    styleStep: { heading: "\u{1F3A8} Elige tu estilo", subtext: "Siempre puedes cambiarlo o diseñar el tuyo propio más tarde." },
+    photo: { label: "\u{1F4F7} Añadir una foto (opcional)", help: "Aparece en los diseños de foto de tu sitio — siempre puedes añadirla o cambiarla más tarde." },
+    validation: {
+      pickEventType: "Elige un tipo de evento",
+      pickStyle: "Elige un estilo",
+      enterName: "Introduce un nombre",
+      enterDate: "Introduce una fecha",
+    },
+    howItWorks: {
+      toggleLabel: "\u{2728} ¿Nuevo/a aquí? Así funciona",
+      show: "Mostrar",
+      hide: "Ocultar",
+      steps: [
+        { title: "Elige un estilo", text: "Explora estilos hasta que uno te convenza — cámbialo cuando quieras." },
+        { title: "Añade tus datos", text: "Nombres, fecha, una foto si quieres. Eso es todo." },
+        { title: "Comparte tu sitio", text: "Obtén un enlace en vivo que los invitados pueden abrir en su móvil." },
+      ],
+    },
+  },
 };

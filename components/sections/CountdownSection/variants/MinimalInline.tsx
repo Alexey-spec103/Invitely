@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { CountdownSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./MinimalInline.module.css";
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24;
@@ -27,7 +28,8 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export default function MinimalInline({ title, eventDateTime, styleOverrides }: CountdownSectionVariantProps) {
+export default function MinimalInline({ title, eventDateTime, styleOverrides, locale }: CountdownSectionVariantProps) {
+  const t = getDictionary(locale).countdown;
   const { editable } = useEditableField();
   const [parts, setParts] = useState<ReturnType<typeof getTimeParts> | null>(null);
 
@@ -62,22 +64,22 @@ export default function MinimalInline({ title, eventDateTime, styleOverrides }: 
       )}
 
       {parts.past ? (
-        <p className={styles.reached}>Thank you for celebrating with us!</p>
+        <p className={styles.reached}>{t.reachedPast}</p>
       ) : parts.reached ? (
-        <p className={styles.reached}>Today&apos;s the day!</p>
+        <p className={styles.reached}>{t.reachedToday}</p>
       ) : (
         <>
           <span className={styles.ghostNumber} aria-hidden="true">
             {pad(parts.days)}
           </span>
           <p className={styles.inline}>
-            {pad(parts.days)} <span className={styles.label}>days</span>
+            {pad(parts.days)} <span className={styles.label}>{t.daysAbbr}</span>
             <span className={styles.divider}>·</span>
-            {pad(parts.hours)} <span className={styles.label}>hrs</span>
+            {pad(parts.hours)} <span className={styles.label}>{t.hoursAbbr}</span>
             <span className={styles.divider}>·</span>
-            {pad(parts.minutes)} <span className={styles.label}>min</span>
+            {pad(parts.minutes)} <span className={styles.label}>{t.minutesAbbr}</span>
             <span className={styles.divider}>·</span>
-            {pad(parts.seconds)} <span className={styles.label}>sec</span>
+            {pad(parts.seconds)} <span className={styles.label}>{t.secondsAbbr}</span>
           </p>
         </>
       )}

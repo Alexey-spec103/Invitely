@@ -41,4 +41,250 @@ export const fr: Dictionary = {
   languageSwitcher: {
     label: "Langue",
   },
+  countdown: {
+    weeks: "Semaines",
+    days: "Jours",
+    hours: "Heures",
+    minutes: "Minutes",
+    seconds: "Secondes",
+    daysAbbr: "j",
+    hoursAbbr: "h",
+    minutesAbbr: "min",
+    secondsAbbr: "s",
+    reachedToday: "C'est aujourd'hui le grand jour !",
+    reachedPast: "Merci d'avoir célébré avec nous !",
+  },
+  gift: {
+    viewLink: "Voir",
+  },
+  guestbook: {
+    empty: "Les messages de vos invités apparaîtront ici.",
+  },
+  video: {
+    iframeTitleFallback: "Vidéo",
+  },
+  letter: {
+    confirmBy: (date) => `Merci de confirmer avant le ${date}`,
+  },
+  map: {
+    mapTitle: (venueName) => `Carte : ${venueName}`,
+  },
+  banquetNavigator: {
+    yourName: "Votre nom",
+    findMyTable: "Trouver ma table",
+    looking: "Recherche en cours...",
+    missingNameError: "Indiquez le nom auquel votre invitation a été envoyée.",
+    lookupFailedError: "Une erreur est survenue. Veuillez réessayer dans un instant.",
+    seatedAt: (tableName) => `Vous êtes placé(e) à ${tableName}`,
+    resultSeatedAt: (guestName, tableName) => `${guestName} est placé(e) à ${tableName}`,
+    resultNotFound: (guestName) => `Nous n'avons pas trouvé de table pour « ${guestName} » — renseignez-vous auprès de vos hôtes.`,
+  },
+  landing: {
+    topBar: "Visa / Mastercard / PayPal acceptés · Livraison instantanée — envoyez votre lien d'invitation partout dans le monde",
+    nav: { constructor: "Constructeur", themes: "Thèmes", whatsIncluded: "Inclus", pricing: "Tarifs", login: "Connexion" },
+    mobileNav: { openMenu: "Ouvrir le menu", closeMenu: "Fermer le menu" },
+    cta: {
+      primary: "Créer vos invitations",
+      primaryLoggedIn: "Aller au tableau de bord",
+      constructor: "Commencer",
+      constructorLoggedIn: "Aller au tableau de bord",
+      final: "Créer votre site",
+    },
+    hero: {
+      eyebrow: "Une plateforme événementielle, pas juste une invitation",
+      headline: "Votre événement, à l'image exacte de vos envies",
+      accent: "avec un effet wahou",
+      subtext:
+        "Un magnifique site événementiel, des invitations papier assorties et un plan de table — un seul style, partout où vos invités le voient. Partez d'un thème de designer, ou composez le vôtre à partir d'une toile vierge.",
+      checklistThemes: (themeCount) => `${themeCount} thèmes de designer — ou créez le vôtre à partir d'une toile vierge`,
+      checklistFonts: (fontCount) => `Déplacez tout, ${fontCount}+ polices, toutes les couleurs que vous aimez`,
+      checklistRsvp: "Suivi des réponses avec vos propres questions",
+      checklistPaper: "Invitations papier personnalisées avec QR codes",
+      seeConstructor: "Voir le constructeur →",
+    },
+    heroPhoneShowcase: {
+      topCaption: "Futures mariées de 2027, vous allez adorer \u{1F97A}\u{1F48D}",
+      bottomCaption: "Les invitations que vos amis vont capturer en photo",
+    },
+    statBar: { themes: "thèmes de designer", fonts: "polices dans le constructeur", modules: "modules de site", oneLink: "lien pour tout" },
+    platformFan: {
+      heading: "Une plateforme de mariage, pas seulement une invitation",
+      subtext: "De votre site d'invitation et de la communication avec vos invités jusqu'à un banquet entièrement stylisé — cartes de placement incluses.",
+    },
+    eventTypes: {
+      eyebrow: "Pas seulement des mariages",
+      heading: "Chaque célébration a son propre site",
+      subtext:
+        "Choisissez d'abord votre type d'événement, et tout le reste — les mots, les champs, même le nom de l'outil de placement — s'adapte en conséquence.",
+      cta: "Choisir mon type d'événement",
+      items: [
+        { label: "Mariage", blurb: "Celui pour lequel toute cette plateforme a été conçue." },
+        { label: "Anniversaire", blurb: "Un compte à rebours, des photos, et une liste de cadeaux sans gêne." },
+        { label: "Événement d'entreprise", blurb: "Partagez le programme, obtenez un vrai décompte pour le traiteur." },
+        { label: "Remise de diplôme", blurb: "Détails de la cérémonie et de la réception, un seul lien." },
+        { label: "Anniversaire de couple", blurb: "Peu importe le nombre d'années, ça mérite un vrai site." },
+        { label: "Baby shower", blurb: "Liens vers la liste de naissance et un livre d'or plein de vœux." },
+        { label: "Quinceañera", blurb: "Cour d'honneur, code vestimentaire et programme de danse." },
+        { label: "Départ à la retraite", blurb: "Célébrer une carrière, pas juste distribuer un gâteau." },
+        { label: "Fête d'enfants", blurb: "Thèmes ludiques, des réponses que les parents remplissent vraiment." },
+        { label: "Fête de fin d'année", blurb: "Détails de la fête au bureau, code vestimentaire inclus." },
+        { label: "Fiançailles", blurb: "Annoncez la nouvelle, gardez le site du mariage pour plus tard." },
+        { label: "Autre chose", blurb: "Quoi que ce soit, ça commence toujours pareil : choisir un thème." },
+      ],
+    },
+    constructorSection: {
+      eyebrow: "Le vrai constructeur",
+      heading: "Pas juste un choix de thème — une toile complète",
+      subtext: (fontCount) =>
+        `Choisissez un thème de designer pour démarrer vite, puis déplacez tout : glissez le texte et les photos n'importe où sur la page, choisissez parmi ${fontCount}+ polices, prenez la couleur de votre choix, superposez les éléments, et annulez si vous changez d'avis. Le design exact que vous créez se retrouve aussi sur vos invitations imprimées.`,
+      features: [
+        { title: "Polices sélectionnées", description: "Script, serif, gras ou fin — changez tout le look en un clic." },
+        { title: "Toutes les couleurs que vous aimez", description: "Créez votre propre palette pour correspondre exactement aux couleurs de votre mariage." },
+        { title: "Variations sélectionnées par nos designers", description: "Ou partez de combinaisons de couleurs et de motifs, choisies à la main par nos designers." },
+        { title: "Texte flexible, partout", description: "Modifiez, redimensionnez, ajoutez et déplacez n'importe quel texte sur votre design." },
+        { title: "Options papier & cartes de banquet", description: "Concevez le recto et le verso de votre invitation, ainsi que les cartes de banquet assorties." },
+        { title: "Activez ou désactivez les modules du site", description: "Activez ou désactivez le compte à rebours, le programme, les réponses, la carte, et plus, par site." },
+      ],
+    },
+    howItWorksSection: {
+      heading: "Comment fonctionne le constructeur",
+      subtext: "Tout ce qui suit se passe en direct, dans votre navigateur — aucun téléchargement, rien à apprendre.",
+      steps: [
+        {
+          title: "Personnalisez votre design",
+          bullets: [
+            "Choisissez parmi 100 thèmes de designer, ou partez d'une toile vierge",
+            "Chaque thème est déjà entièrement harmonisé en couleurs, prêt à l'emploi",
+            "Changez de style à tout moment — votre contenu est conservé",
+          ],
+        },
+        {
+          title: "Modifiez tout le texte, à votre façon",
+          bullets: [
+            "Choisissez parmi 149+ polices, chacune prévisualisée dans sa propre typographie",
+            "Changez la couleur, la taille, l'espacement et l'alignement",
+            "Cliquez sur n'importe quel texte sur la toile pour le modifier instantanément",
+          ],
+        },
+        {
+          title: "Ajoutez photos, vidéo, et plus",
+          bullets: [
+            "Téléchargez vos propres photos n'importe où sur le design",
+            "Ajoutez un extrait vidéo pour donner vie à votre histoire",
+            "Ajoutez un QR code menant à votre site, ou à l'invitation d'un invité",
+          ],
+        },
+        {
+          title: "Activez et désactivez les modules",
+          bullets: [
+            "Compte à rebours, réponses, liste de cadeaux, code vestimentaire, et plus",
+            "Chaque module a son propre interrupteur",
+            "Montrez à vos invités uniquement ce qui concerne votre événement",
+          ],
+        },
+      ],
+    },
+    guestTracking: {
+      eyebrow: "Au-delà de l'invitation",
+      heading: "Envoyez-le partout, suivez chaque réponse",
+      subtext:
+        "Partagez votre lien unique via WhatsApp, SMS, e-mail, ou comme vos invités consultent réellement leurs messages. Chaque réponse revient directement dans votre liste d'invités — qui vient, qui n'a pas encore répondu, et qui reste à inviter.",
+    },
+    siteOrPaper: {
+      heading: "Une invitation en ligne, et/ou en papier",
+      subtext: "Ce n'est pas l'un ou l'autre — la plupart des couples utilisent les deux.",
+      orBadge: "ET/OU",
+      website: {
+        title: "Invitation en ligne",
+        subtext: "Simple et rapide — invitez chaque personne, où qu'elle vive.",
+        bullets: [
+          "Un seul lien fonctionne sur tout téléphone, tablette ou ordinateur",
+          "Mettez tout à jour — chacun voit instantanément la dernière version",
+        ],
+      },
+      paper: {
+        title: "Invitations papier",
+        subtext: "Un souvenir pour votre famille et vos amis les plus proches.",
+        bullets: [
+          "Invitations, enveloppes et programmes PDF prêts à imprimer",
+          "Chaque invité reçoit un QR code personnel — sa réponse se lie automatiquement",
+        ],
+      },
+    },
+    themesSection: {
+      heading: "Choisissez votre style",
+      subtext:
+        "Le même thème se retrouve sur votre site, vos invitations papier et vos cartes de banquet — ou passez-le complètement et concevez tout depuis zéro dans le constructeur.",
+    },
+    whatsIncluded: {
+      heading: "Ce qui est inclus",
+      subtext: "Chaque site est livré avec ces blocs — combinez-les pour raconter votre histoire.",
+      modules: [
+        { title: "Constructeur glisser-déposer", description: "Déplacez n'importe quel texte ou photo, choisissez une police ou une couleur, et annulez/rétablissez à volonté." },
+        { title: "Introduction Hero", description: "Vos noms, la date de l'événement et une photo — plusieurs mises en page au choix." },
+        { title: "Lettre à vos invités", description: "Un mot personnel, des vœux de cadeaux et la date limite de réponse dans une seule carte." },
+        { title: "Programme de l'événement", description: "Organisez la journée, minute par minute — du premier toast à la dernière danse." },
+        { title: "Lieu & plan", description: "Montrez exactement à vos invités où aller, avec une carte interactive." },
+        { title: "Réponses avec questions personnalisées", description: "Demandez pour les repas, boissons ou transport — les invités confirment en ligne, directement dans votre liste." },
+        { title: "Compte à rebours", description: "Créez l'anticipation avec un compte à rebours en direct jusqu'au grand jour." },
+        { title: "Mur du livre d'or", description: "Les vœux laissés par les invités lors de leur réponse, affichés sur un mur public de votre site." },
+        { title: "Vidéo", description: "Intégrez une vidéo YouTube ou Vimeo — votre demande en mariage, votre histoire, votre choix." },
+        { title: "Invitations papier", description: "Invitations, enveloppes et programmes PDF prêts à imprimer, personnalisés par invité avec un QR code." },
+        { title: "Placement au banquet", description: "Attribuez les tables — par nom, pas juste par nombre — et générez des cartes de table et de place à imprimer." },
+        { title: "Domaine personnalisé", description: "Pointez votre propre domaine vers votre site, ou gardez le lien lisible que nous vous offrons gratuitement." },
+      ],
+    },
+    pricing: {
+      heading: "Le constructeur est toujours gratuit",
+      subtext: "Concevez votre site, invitez vos invités et suivez les réponses gratuitement. Payez uniquement si vous voulez un domaine personnalisé, des invitations papier ou un placement au banquet.",
+      free: "Gratuit",
+      whatYouGet: "Ce que vous obtenez",
+      whatThisAdds: "Ce que cela ajoute",
+      badgeFree: "Toujours gratuit",
+      badgePremium: "Retire le filigrane",
+    },
+    finalCta: {
+      heading: "Gratuit pour commencer",
+      subtext: "Aucune carte bancaire requise. Créez votre site et publiez-le quand vous serez prêt.",
+    },
+    footer: {
+      tagline: "Sites événementiels, en ligne en quelques minutes.",
+      product: "Produit",
+      legalAccount: "Mentions légales & compte",
+      login: "Connexion",
+      signUp: "Inscription",
+      terms: "Conditions d'utilisation",
+      privacy: "Politique de confidentialité",
+      rightsReserved: "© 2026 Invitely. Tous droits réservés.",
+      paymentAccepted: "Visa / Mastercard / PayPal acceptés",
+    },
+  },
+  onboarding: {
+    stepOf: (current, total) => `Étape ${current} sur ${total}`,
+    back: "Retour",
+    next: "Suivant",
+    createSite: "Créer mon site",
+    saving: "Enregistrement...",
+    saveFailed: "Échec de l'enregistrement",
+    previewBadge: "Aperçu",
+    eventTypeStep: { heading: "\u{1F389} Que célébrez-vous ?", subtext: "Cela détermine les questions que nous posons ensuite." },
+    styleStep: { heading: "\u{1F3A8} Choisissez votre style", subtext: "Vous pourrez toujours en changer ou créer le vôtre plus tard." },
+    photo: { label: "\u{1F4F7} Ajouter une photo (facultatif)", help: "Apparaît dans les mises en page photo de votre site — vous pourrez toujours l'ajouter ou la changer plus tard." },
+    validation: {
+      pickEventType: "Choisissez un type d'événement",
+      pickStyle: "Choisissez un style",
+      enterName: "Entrez un nom",
+      enterDate: "Entrez une date",
+    },
+    howItWorks: {
+      toggleLabel: "\u{2728} Nouveau ici ? Voici comment ça marche",
+      show: "Afficher",
+      hide: "Masquer",
+      steps: [
+        { title: "Choisissez un style", text: "Parcourez les styles jusqu'à trouver le bon — changez à tout moment." },
+        { title: "Ajoutez vos détails", text: "Noms, date, une photo si vous voulez. C'est tout." },
+        { title: "Partagez votre site", text: "Obtenez un lien en direct que vos invités peuvent ouvrir sur leur téléphone." },
+      ],
+    },
+  },
 };

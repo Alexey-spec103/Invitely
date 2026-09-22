@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +30,8 @@ import { themes, DEFAULT_THEME_ID, getTheme } from "@/lib/themes";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { EVENT_TYPE_LIST, DEFAULT_EVENT_TYPE_ID, getEventType } from "@/lib/eventTypes";
 import { completeOnboarding } from "./actions";
+import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 const EVENT_TYPE_ICONS: Record<string, LucideIcon> = {
   Heart,
@@ -45,22 +47,29 @@ const EVENT_TYPE_ICONS: Record<string, LucideIcon> = {
   CalendarHeart,
 };
 
-const onboardingSchema = z
-  .object({
-    eventType: z.string().min(1, "Pick an event type"),
-    themeId: z.string().min(1, "Pick a style"),
-    name1: z.string().min(1, "Enter a name"),
-    name2: z.string(),
-    photoUrl: z.string(),
-    eventDate: z.string().min(1, "Enter a date"),
-  })
-  .superRefine((data, ctx) => {
-    if (getEventType(data.eventType).namesMode === "couple" && !data.name2?.trim()) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a name", path: ["name2"] });
-    }
-  });
+// Built per-locale (see buildOnboardingSchema below, called via useMemo keyed
+// on `dict`) rather than as a single module-level constant, since every
+// validation message needs to come out in the guest's own language -- the
+// shape (which fields, which are required) never changes across locales,
+// only the messages do.
+function buildOnboardingSchema(t: Dictionary["onboarding"]) {
+  return z
+    .object({
+      eventType: z.string().min(1, t.validation.pickEventType),
+      themeId: z.string().min(1, t.validation.pickStyle),
+      name1: z.string().min(1, t.validation.enterName),
+      name2: z.string(),
+      photoUrl: z.string(),
+      eventDate: z.string().min(1, t.validation.enterDate),
+    })
+    .superRefine((data, ctx) => {
+      if (getEventType(data.eventType).namesMode === "couple" && !data.name2?.trim()) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: t.validation.enterName, path: ["name2"] });
+      }
+    });
+}
 
-type OnboardingFormValues = z.infer<typeof onboardingSchema>;
+type OnboardingFormValues = z.infer<ReturnType<typeof buildOnboardingSchema>>;
 
 const STEPS = ["eventType", "themeId", "names", "eventDate"] as const;
 type StepKey = (typeof STEPS)[number];
@@ -86,11 +95,15 @@ function resolveInitialThemeId(requested: string | null): string {
  * `completeOnboarding` call after the last step, straight into the
  * dashboard. Account creation is a separate, later, dismissible prompt
  * (`AnonymousAccountBanner`), not a step in here. */
-export default function OnboardingWizard() {
+export default function OnboardingWizard({ locale }: { locale: Locale }) {
   const searchParams = useSearchParams();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [formError, setFormError] = useState<string | null>(null);
+
+  const dict = getDictionary(locale);
+  const t = dict.onboarding;
+  const onboardingSchema = useMemo(() => buildOnboardingSchema(t), [t]);
 
   const {
     register,
@@ -165,7 +178,7 @@ export default function OnboardingWizard() {
       const result = await completeOnboarding(values);
       if (!result.ok) throw new Error(result.message);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to save");
+      setFormError(err instanceof Error ? err.message : t.saveFailed);
     }
   };
 
@@ -192,7 +205,7 @@ export default function OnboardingWizard() {
         noValidate
       >
         <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-          Step {step + 1} of {STEPS.length}
+          {t.stepOf(step + 1, STEPS.length)}
         </p>
 
         <motion.div
@@ -204,9 +217,9 @@ export default function OnboardingWizard() {
             {stepKey === "eventType" && (
               <div className="mt-4">
                 <label className="block text-lg font-semibold text-gray-900">
-                  🎉 What are you celebrating?
+                  {t.eventTypeStep.heading}
                 </label>
-                <p className="mt-1 text-sm text-gray-500">This shapes the questions we ask next.</p>
+                <p className="mt-1 text-sm text-gray-500">{t.eventTypeStep.subtext}</p>
 
                 <div className="relative mt-4">
                   <div className="grid max-h-80 grid-cols-2 gap-2 overflow-y-auto pr-1">
@@ -245,12 +258,10 @@ export default function OnboardingWizard() {
 
             {stepKey === "themeId" && (
               <div className="mt-4">
-                <label className="block text-lg font-semibold text-gray-900">🎨 Pick your style</label>
-                <p className="mt-1 text-sm text-gray-500">
-                  You can always change this or design your own later.
-                </p>
+                <label className="block text-lg font-semibold text-gray-900">{t.styleStep.heading}</label>
+                <p className="mt-1 text-sm text-gray-500">{t.styleStep.subtext}</p>
 
-                <HowItWorksClip />
+                <HowItWorksClip locale={locale} />
 
                 <div className="mt-4 max-h-[52rem] overflow-y-auto pr-1">
                   <ThemeGallery
@@ -299,8 +310,8 @@ export default function OnboardingWizard() {
                       <PhotoDropzone
                         value={field.value || undefined}
                         onChange={(url) => field.onChange(url ?? "")}
-                        label="📷 Add a photo (optional)"
-                        helpText="Shows up on your site's photo layouts — you can always add or change it later."
+                        label={t.photo.label}
+                        helpText={t.photo.help}
                       />
                     )}
                   />
@@ -338,7 +349,7 @@ export default function OnboardingWizard() {
             disabled={step === 0}
             className="text-sm font-medium text-gray-500 transition hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-0"
           >
-            Back
+            {t.back}
           </button>
 
           {isLastStep ? (
@@ -349,7 +360,7 @@ export default function OnboardingWizard() {
               whileTap={{ scale: 0.97 }}
               className="rounded-full bg-rose-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? "Saving..." : "Create my site"}
+              {isSubmitting ? t.saving : t.createSite}
             </motion.button>
           ) : (
             <motion.button
@@ -359,7 +370,7 @@ export default function OnboardingWizard() {
               whileTap={{ scale: 0.97 }}
               className="rounded-full bg-rose-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-rose-700"
             >
-              Next
+              {t.next}
             </motion.button>
           )}
         </div>
@@ -368,7 +379,7 @@ export default function OnboardingWizard() {
       {!isThemeStep && (
         <div className="relative h-[420px] overflow-hidden rounded-xl border border-gray-200 bg-white">
           <span className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500 shadow-sm">
-            Preview
+            {t.previewBadge}
           </span>
           <div className="absolute top-1/2 left-1/2 w-[200%] -translate-x-1/2 -translate-y-1/2 scale-50">
             <ThemeProvider theme={selectedTheme}>

@@ -6,9 +6,17 @@ import { getCountdownParts, type CountdownParts } from "@/lib/countdown";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import { CAP_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./CircularRings.module.css";
 
-export default function CircularRings({ title, eventDateTime, styleOverrides, themeCategory }: CountdownSectionVariantProps) {
+export default function CircularRings({
+  title,
+  eventDateTime,
+  styleOverrides,
+  themeCategory,
+  locale,
+}: CountdownSectionVariantProps) {
+  const t = getDictionary(locale).countdown;
   const { editable } = useEditableField();
   const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
   // Categories with no full-color CAP_DECOR entry (currently modern/minimal
@@ -48,9 +56,9 @@ export default function CircularRings({ title, eventDateTime, styleOverrides, th
       )}
 
       {parts.past ? (
-        <p className={styles.reached}>Thank you for celebrating with us!</p>
+        <p className={styles.reached}>{t.reachedPast}</p>
       ) : parts.reached ? (
-        <p className={styles.reached}>Today&apos;s the day!</p>
+        <p className={styles.reached}>{t.reachedToday}</p>
       ) : (
         <div className={capAsset ? `${styles.ringsWrap} ${styles.ringsWrapColor}` : styles.ringsWrap}>
           {capAsset ? (
@@ -69,23 +77,23 @@ export default function CircularRings({ title, eventDateTime, styleOverrides, th
           <div className={styles.rings}>
             <div className={styles.ring}>
               <span className={styles.number}>{parts.weeks}</span>
-              <span className={styles.label}>Weeks</span>
+              <span className={styles.label}>{t.weeks}</span>
             </div>
             <div className={styles.ring}>
               <span className={styles.number}>{parts.days}</span>
-              <span className={styles.label}>Days</span>
+              <span className={styles.label}>{t.days}</span>
             </div>
             <div className={styles.ring}>
               <span className={styles.number}>{parts.hours}</span>
-              <span className={styles.label}>Hours</span>
+              <span className={styles.label}>{t.hours}</span>
             </div>
             <div className={styles.ring}>
               <span className={styles.number}>{parts.minutes}</span>
-              <span className={styles.label}>Minutes</span>
+              <span className={styles.label}>{t.minutes}</span>
             </div>
             <div className={styles.ring}>
               <span className={styles.number}>{parts.seconds}</span>
-              <span className={styles.label}>Seconds</span>
+              <span className={styles.label}>{t.seconds}</span>
             </div>
           </div>
         </div>

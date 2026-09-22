@@ -1,8 +1,10 @@
 import type { MapSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./SideBySideCards.module.css";
 
-export default function SideBySideCards({ title, venues, styleOverrides }: MapSectionVariantProps) {
+export default function SideBySideCards({ title, venues, styleOverrides, locale }: MapSectionVariantProps) {
+  const t = getDictionary(locale).map;
   return (
     <section className={styles.section}>
       <div className={styles.stack}>
@@ -35,7 +37,7 @@ export default function SideBySideCards({ title, venues, styleOverrides }: MapSe
                   <iframe
                     className={styles.map}
                     src={src}
-                    title={`Map: ${venue.name}`}
+                    title={t.mapTitle(venue.name)}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     allowFullScreen

@@ -10,21 +10,20 @@
  * WhatsApp/SMS/email (SendInviteMenu in GuestManager.tsx) -- no Telegram,
  * corrected after the dashboard-audit.md D2 sweep found the screenshot and
  * copy here had drifted to a channel that was never actually built. */
-export default function GuestTrackingSection() {
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
+
+export default function GuestTrackingSection({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale).landing.guestTracking;
+
   return (
     <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
       <div>
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
-          Beyond the invitation
+          {t.eyebrow}
         </p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
-          Send it anywhere, track every reply
-        </h2>
-        <p className="mt-4 max-w-md text-stone-600">
-          Share your one link over WhatsApp, SMS, email, or however your guests actually check
-          messages. Every RSVP flows straight back into your guest list — who&apos;s coming, who
-          hasn&apos;t answered yet, and who you still need to invite.
-        </p>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900">{t.heading}</h2>
+        <p className="mt-4 max-w-md text-stone-600">{t.subtext}</p>
 
         <div className="mt-8 overflow-hidden rounded-xl border border-stone-200 shadow-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}

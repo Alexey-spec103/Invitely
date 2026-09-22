@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import type { BanquetNavigatorSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./SimpleLookup.module.css";
 
 export default function SimpleLookup({
@@ -13,8 +14,10 @@ export default function SimpleLookup({
   assignedTableName,
   onLookup,
   styleOverrides,
+  locale,
 }: BanquetNavigatorSectionVariantProps) {
   const { editable } = useEditableField();
+  const t = getDictionary(locale).banquetNavigator;
   const [name, setName] = useState("");
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<{ tableName: string | null; searchedFor: string } | null>(null);
@@ -23,7 +26,7 @@ export default function SimpleLookup({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!name.trim()) {
-      setError("Enter the name your invitation was sent to.");
+      setError(t.missingNameError);
       return;
     }
     setError(null);
@@ -32,7 +35,7 @@ export default function SimpleLookup({
       const outcome = await onLookup(name.trim());
       setResult({ tableName: outcome.found ? outcome.tableName : null, searchedFor: name.trim() });
     } catch {
-      setError("Something went wrong. Please try again in a moment.");
+      setError(t.lookupFailedError);
     } finally {
       setPending(false);
     }
@@ -53,9 +56,7 @@ export default function SimpleLookup({
         )}
 
         {assignedTableName ? (
-          <p className={styles.tableAnswer}>
-            You&apos;re seated at <strong>{assignedTableName}</strong>
-          </p>
+          <p className={styles.tableAnswer}>{t.seatedAt(assignedTableName)}</p>
         ) : (
           <>
             <form className={styles.form} onSubmit={handleSubmit}>
@@ -63,24 +64,18 @@ export default function SimpleLookup({
                 type="text"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                placeholder="Your name"
+                placeholder={t.yourName}
                 className={styles.input}
-                aria-label="Your name"
+                aria-label={t.yourName}
               />
               <button type="submit" disabled={pending} className={styles.submitButton}>
-                {pending ? "Looking..." : "Find my table"}
+                {pending ? t.looking : t.findMyTable}
               </button>
             </form>
             {error && <p className={styles.error}>{error}</p>}
             {result && (
               <p className={styles.tableAnswer}>
-                {result.tableName ? (
-                  <>
-                    {result.searchedFor} is seated at <strong>{result.tableName}</strong>
-                  </>
-                ) : (
-                  <>We couldn&apos;t find a table for &ldquo;{result.searchedFor}&rdquo; yet — check with the host.</>
-                )}
+                {result.tableName ? t.resultSeatedAt(result.searchedFor, result.tableName) : t.resultNotFound(result.searchedFor)}
               </p>
             )}
           </>

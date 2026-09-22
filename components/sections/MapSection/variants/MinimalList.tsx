@@ -1,8 +1,10 @@
 import type { MapSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./MinimalList.module.css";
 
-export default function MinimalList({ title, venues, styleOverrides }: MapSectionVariantProps) {
+export default function MinimalList({ title, venues, styleOverrides, locale }: MapSectionVariantProps) {
+  const t = getDictionary(locale).map;
   return (
     <section className={styles.section}>
       <div className={styles.stack}>
@@ -38,7 +40,7 @@ export default function MinimalList({ title, venues, styleOverrides }: MapSectio
                 <iframe
                   className={styles.map}
                   src={src}
-                  title={`Map: ${venue.name}`}
+                  title={t.mapTitle(venue.name)}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   allowFullScreen

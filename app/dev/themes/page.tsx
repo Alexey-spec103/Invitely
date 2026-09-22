@@ -5,6 +5,7 @@ import { MapSection } from "@/components/sections/MapSection";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import AuthNav from "@/components/site/AuthNav";
 import { themes } from "@/lib/themes";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 
 const names = ["Anna", "Igor"];
 const eventDate = "September 12, 2026";
@@ -47,6 +48,7 @@ export default function ThemesPage() {
               title="Dear guest!"
               body={`We're so happy you'll be with us on this important day.\n\nEverything you need to know about our wedding — the time, the place, and the schedule — will be here soon. For now, just save the date and celebrate the moment with us.`}
               quote="Love is when two people become one, without ceasing to be themselves"
+              locale={DEFAULT_LOCALE}
             />
 
             <TimelineSection
@@ -59,6 +61,7 @@ export default function ThemesPage() {
               variant="embed-static"
               title="How to get there"
               venues={[{ name: "Ulbrokas Pērle", address: "Institūta iela 3, Rīga" }]}
+              locale={DEFAULT_LOCALE}
             />
           </ThemeProvider>
         </div>

@@ -39,79 +39,14 @@ import { SUPPORTED_LOCALES } from "@/lib/i18n/locales";
 const themeCount = Object.keys(themes).length;
 const fontCount = CANVAS_FONTS.length;
 
-const heroChecklist = [
-  { icon: Palette, text: `${themeCount} designer themes — or build your own from a blank canvas` },
-  { icon: Wand2, text: `Drag anything, ${fontCount}+ fonts, any color you like` },
-  { icon: ClipboardCheck, text: "RSVP tracking with your own custom questions" },
-  { icon: Printer, text: "Personalized paper invitations with QR codes" },
-];
-
-const statBar = [
-  { value: `${themeCount}`, label: "designer themes" },
-  { value: `${fontCount}+`, label: "fonts in the constructor" },
-  { value: "12", label: "site modules" },
-  { value: "1", label: "link for everything" },
-];
-
-const constructorFeatures = [
-  {
-    icon: Type,
-    title: `${fontCount}+ curated fonts`,
-    description: "Script, serif, bold, or thin — swap the whole look with one click.",
-  },
-  {
-    icon: Palette,
-    title: "Any color you like",
-    description: "Build your own palette to match your exact wedding colors.",
-  },
-  {
-    icon: Wand2,
-    title: "Designer-curated variations",
-    description: "Or start from color and pattern combinations, hand-picked by our designers.",
-  },
-  {
-    icon: Pencil,
-    title: "Flexible text, anywhere",
-    description: "Edit, resize, add, and move any text on your chosen design.",
-  },
-  {
-    icon: Printer,
-    title: "Paper add-ons & banquet cards",
-    description: "Design the front and back of your invitation, plus matching banquet cards.",
-  },
-  {
-    icon: Sliders,
-    title: "Toggle site modules on and off",
-    description: "Turn the countdown, schedule, RSVP, map, and more on or off, per site.",
-  },
-];
-
-const modules = [
-  { icon: Wand2, title: "Drag-and-drop constructor", description: "Move any text or photo, pick any font or color, and undo/redo as you go." },
-  { icon: Sparkles, title: "Hero intro", description: "Your names, event date, and photo — several layouts to choose from." },
-  { icon: Mail, title: "Letter to your guests", description: "A personal note, gift wishes, and RSVP deadline in one card." },
-  { icon: Clock, title: "Event schedule", description: "Lay out the day, minute by minute — from the first toast to the last dance." },
-  { icon: MapPin, title: "Venue & map", description: "Show guests exactly where to go, with an interactive map." },
-  { icon: ClipboardCheck, title: "RSVP with custom questions", description: "Ask about meals, drinks, or transport — guests confirm online, straight to your list." },
-  { icon: Timer, title: "Countdown timer", description: "Build anticipation with a live countdown to the big day." },
-  { icon: MessagesSquare, title: "Guestbook wall", description: "Well-wishes guests leave at RSVP, shown as a public wall on your site." },
-  { icon: Video, title: "Video", description: "Embed a YouTube or Vimeo video — your proposal, your story, your choice." },
-  { icon: Printer, title: "Paper invitations", description: "Print-ready PDF invites, envelopes, and program cards, personalized per guest with a QR code." },
-  { icon: Users2, title: "Banquet seating", description: "Assign tables — by name, not just headcount — and generate table & place cards to print." },
-  { icon: Globe, title: "Custom domain", description: "Point your own domain at your site, or keep the readable link we give you free." },
-];
-
-// Factual, not promotional -- the free tier really is unlimited to use, and
-// the only thing Premium actually does today is remove the watermark from
-// personalized/banquet materials (see lib/plans.ts's own comment) -- not an
-// "unlocks paper invitations" claim, since those already work on every
-// plan. No fabricated "-20%"-style discount badges either: unlike
-// weddingpost.ru's pricing section, nothing here is ever actually
-// discounted, so a strikethrough price would be a fake one.
-const planBadges: Record<string, string> = {
-  free: "Always free",
-  premium: "Removes the watermark",
-};
+// Icon-only lookup tables -- the translated title/description text for each
+// entry now lives in lib/i18n/translations/*.ts's `landing` namespace
+// (indexed positionally against these arrays, built inside Home() once
+// `t` is resolved) since it depends on the request's locale, not something
+// module-level constants can hold.
+const HERO_CHECKLIST_ICONS = [Palette, Wand2, ClipboardCheck, Printer];
+const CONSTRUCTOR_FEATURE_ICONS = [Type, Palette, Wand2, Pencil, Printer, Sliders];
+const MODULE_ICONS = [Wand2, Sparkles, Mail, Clock, MapPin, ClipboardCheck, Timer, MessagesSquare, Video, Printer, Users2, Globe];
 
 // Each paid tier's own `features` array starts with "Everything in ..." for
 // the /dashboard/[eventId]/plan page's cumulative comparison -- on the
@@ -128,6 +63,12 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const showcaseThemes = Object.values(themes);
+  const locale = await resolveGuestLocale();
+  const dict = getDictionary(locale);
+  const languageLabel = dict.languageSwitcher.label;
+  const t = dict.landing;
+
   const ctaHref = user ? "/dashboard" : "/onboarding";
   // One primary-button style everywhere (see globals.css's shared
   // --dash-accent), but a distinct verb-led label per section for a
@@ -136,13 +77,47 @@ export default async function Home() {
   // repeated. A returning logged-in user always sees "Go to dashboard"
   // instead -- accurate for them, and not the target of this pass (that's
   // a separate header/logo rework, not done yet).
-  const ctaLabel = user ? "Go to dashboard" : "Create your invitations";
-  const constructorCtaLabel = user ? "Go to dashboard" : "Start building";
-  const finalCtaLabel = user ? "Go to dashboard" : "Create your website";
+  const ctaLabel = user ? t.cta.primaryLoggedIn : t.cta.primary;
+  const constructorCtaLabel = user ? t.cta.constructorLoggedIn : t.cta.constructor;
+  const finalCtaLabel = user ? t.cta.primaryLoggedIn : t.cta.final;
 
-  const showcaseThemes = Object.values(themes);
-  const locale = await resolveGuestLocale();
-  const languageLabel = getDictionary(locale).languageSwitcher.label;
+  const heroChecklist = [
+    { icon: HERO_CHECKLIST_ICONS[0], text: t.hero.checklistThemes(themeCount) },
+    { icon: HERO_CHECKLIST_ICONS[1], text: t.hero.checklistFonts(fontCount) },
+    { icon: HERO_CHECKLIST_ICONS[2], text: t.hero.checklistRsvp },
+    { icon: HERO_CHECKLIST_ICONS[3], text: t.hero.checklistPaper },
+  ];
+
+  const statBar = [
+    { value: `${themeCount}`, label: t.statBar.themes },
+    { value: `${fontCount}+`, label: t.statBar.fonts },
+    { value: "12", label: t.statBar.modules },
+    { value: "1", label: t.statBar.oneLink },
+  ];
+
+  const constructorFeatures = t.constructorSection.features.map((feature, index) => ({
+    icon: CONSTRUCTOR_FEATURE_ICONS[index],
+    title: feature.title,
+    description: feature.description,
+  }));
+
+  const modules = t.whatsIncluded.modules.map((module, index) => ({
+    icon: MODULE_ICONS[index],
+    title: module.title,
+    description: module.description,
+  }));
+
+  // Factual, not promotional -- the free tier really is unlimited to use, and
+  // the only thing Premium actually does today is remove the watermark from
+  // personalized/banquet materials (see lib/plans.ts's own comment) -- not an
+  // "unlocks paper invitations" claim, since those already work on every
+  // plan. No fabricated "-20%"-style discount badges either: unlike
+  // weddingpost.ru's pricing section, nothing here is ever actually
+  // discounted, so a strikethrough price would be a fake one.
+  const planBadges: Record<string, string> = {
+    free: t.pricing.badgeFree,
+    premium: t.pricing.badgePremium,
+  };
 
   return (
     <div className="bg-white font-sans">
@@ -156,8 +131,7 @@ export default async function Home() {
           like the original while scrolling, instead of scrolling away. */}
       <div className="sticky top-0 z-40">
         <div className="bg-gradient-to-r from-violet-300 to-pink-300 py-2 text-center text-xs font-medium text-white sm:text-sm">
-          Visa / Mastercard / PayPal accepted · Instant delivery — send your invite link anywhere
-          in the world
+          {t.topBar}
         </div>
         <header className="relative border-b border-stone-100 bg-white/80 backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4">
@@ -171,27 +145,27 @@ export default async function Home() {
             </Link>
             <nav className="hidden items-center gap-8 text-sm font-medium text-stone-600 sm:flex">
               <a href="#constructor" className="transition-colors hover:text-stone-900">
-                Constructor
+                {t.nav.constructor}
               </a>
               <a href="#themes" className="transition-colors hover:text-stone-900">
-                Themes
+                {t.nav.themes}
               </a>
               <a href="#whats-included" className="transition-colors hover:text-stone-900">
-                What&apos;s included
+                {t.nav.whatsIncluded}
               </a>
               <a href="#pricing" className="transition-colors hover:text-stone-900">
-                Pricing
+                {t.nav.pricing}
               </a>
             </nav>
             <div className="flex items-center gap-3 sm:gap-4">
               <LanguageSwitcher currentLocale={locale} availableLocales={SUPPORTED_LOCALES} label={languageLabel} />
-              <MobileNav showLogin={!user} />
+              <MobileNav showLogin={!user} locale={locale} />
               {!user && (
                 <Link
                   href="/login"
                   className="hidden text-sm font-medium text-stone-600 transition-colors hover:text-stone-900 sm:inline"
                 >
-                  Login
+                  {t.nav.login}
                 </Link>
               )}
               <Link
@@ -222,10 +196,10 @@ export default async function Home() {
               <InvitelyLogo className="relative h-16 w-16 rotate-[-8deg] shadow-lg shadow-orange-900/15 sm:h-20 sm:w-20" />
             </div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
-              An event platform, not just an invitation
+              {t.hero.eyebrow}
             </p>
             <h1 className="mt-3 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
-              Your event, styled exactly how you imagined it
+              {t.hero.headline}
             </h1>
             {/* landing-audit.md priority 18: the one deliberately "fancy"
                 element on the screen, matching weddingpost.ru's own pink→
@@ -236,13 +210,9 @@ export default async function Home() {
               className="mt-2 inline-block bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-4xl text-transparent"
               style={{ fontFamily: "var(--font-alex-brush), cursive" }}
             >
-              with a wow effect
+              {t.hero.accent}
             </p>
-            <p className="mt-6 max-w-md text-lg text-stone-600">
-              A beautiful event website, matching paper invitations, and guest seating — one
-              style, everywhere your guests see it. Start from a designer theme, or drag your own
-              together from a blank canvas.
-            </p>
+            <p className="mt-6 max-w-md text-lg text-stone-600">{t.hero.subtext}</p>
             <ul className="mt-8 space-y-3">
               {heroChecklist.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-center gap-3 text-stone-700">
@@ -265,12 +235,12 @@ export default async function Home() {
                 href="#constructor"
                 className="text-sm font-bold uppercase tracking-wide text-[var(--dash-accent-text)] transition-colors hover:text-red-700"
               >
-                See the constructor →
+                {t.hero.seeConstructor}
               </a>
             </div>
           </div>
 
-          <HeroPhoneShowcase />
+          <HeroPhoneShowcase locale={locale} />
         </div>
 
         <div className="border-t border-orange-100/80 bg-white/60">
@@ -286,12 +256,12 @@ export default async function Home() {
       </section>
 
       <div className="landing-reveal">
-        <EventTypesSection ctaHref={ctaHref} />
+        <EventTypesSection ctaHref={ctaHref} locale={locale} />
       </div>
 
       <section className="landing-reveal border-t border-stone-100 py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <PlatformFanSection />
+          <PlatformFanSection locale={locale} />
         </div>
       </section>
 
@@ -299,17 +269,12 @@ export default async function Home() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
-              The real constructor
+              {t.constructorSection.eyebrow}
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
-              Not just a theme picker — a canvas
+              {t.constructorSection.heading}
             </h2>
-            <p className="mt-4 max-w-md text-stone-600">
-              Pick a designer theme to start fast, then move anything: drag text and photos
-              anywhere on the page, pick from {fontCount}+ fonts, choose any color, layer
-              elements front to back, and undo your way back if you change your mind. The exact
-              design you build carries over to your printed invitations too.
-            </p>
+            <p className="mt-4 max-w-md text-stone-600">{t.constructorSection.subtext(fontCount)}</p>
             <div className="mt-8">
               <Link
                 href={ctaHref}
@@ -338,24 +303,21 @@ export default async function Home() {
       </section>
 
       <div className="landing-reveal">
-        <HowItWorksSection ctaHref={ctaHref} ctaLabel={constructorCtaLabel} />
+        <HowItWorksSection ctaHref={ctaHref} ctaLabel={constructorCtaLabel} locale={locale} />
       </div>
 
       <section className="landing-reveal border-t border-stone-100 py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <SiteOrPaperSection />
+          <SiteOrPaperSection locale={locale} />
         </div>
       </section>
 
       <section id="themes" className="landing-reveal scroll-mt-[120px] border-t border-stone-100 bg-stone-50 py-24">
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
-            Choose your style
+            {t.themesSection.heading}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">
-            The same theme carries through your site, paper invitations, and banquet cards — or
-            skip it entirely and design from scratch in the constructor.
-          </p>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">{t.themesSection.subtext}</p>
           <div className="mt-16">
             <LandingThemeShowcase themes={showcaseThemes} />
           </div>
@@ -365,11 +327,9 @@ export default async function Home() {
       <section id="whats-included" className="landing-reveal scroll-mt-[120px] py-24">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
-            What&apos;s included
+            {t.whatsIncluded.heading}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">
-            Every site comes with these building blocks — mix and match to tell your story.
-          </p>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">{t.whatsIncluded.subtext}</p>
           {/* landing-audit.md polish pass, item 4: 12 identical cards single-file
               on mobile read as a long, monotonous scroll -- 2 columns from the
               smallest breakpoint up (matching EventTypesSection's own grid)
@@ -394,19 +354,16 @@ export default async function Home() {
 
       <section className="landing-reveal border-t border-stone-100 py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <GuestTrackingSection />
+          <GuestTrackingSection locale={locale} />
         </div>
       </section>
 
       <section id="pricing" className="landing-reveal scroll-mt-[120px] border-t border-stone-100 bg-stone-50 py-24">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
-            The constructor is always free
+            {t.pricing.heading}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">
-            Design your site, invite guests, and track RSVPs at no cost. Pay only when you want a
-            custom domain, paper invitations, or banquet seating.
-          </p>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">{t.pricing.subtext}</p>
           <div className="mt-16 grid gap-6 sm:grid-cols-3">
             {Object.values(plans).map((plan) => (
               <div
@@ -420,10 +377,10 @@ export default async function Home() {
                 )}
                 <p className="text-sm font-semibold text-stone-900">{plan.name}</p>
                 <p className="mt-2 text-3xl font-semibold text-stone-900">
-                  {plan.priceEur === 0 ? "Free" : `€${plan.priceEur}`}
+                  {plan.priceEur === 0 ? t.pricing.free : `€${plan.priceEur}`}
                 </p>
                 <p className="mt-2 text-xs uppercase tracking-wide text-stone-400">
-                  {plan.id === "free" ? "What you get" : "What this adds"}
+                  {plan.id === "free" ? t.pricing.whatYouGet : t.pricing.whatThisAdds}
                 </p>
                 <ul className="mt-3 space-y-2 text-sm text-stone-600">
                   {planHighlights[plan.id].map((feature) => (
@@ -438,10 +395,8 @@ export default async function Home() {
 
       <section className="landing-reveal border-t border-stone-100 bg-gradient-to-b from-white to-orange-50 py-24 text-center">
         <div className="mx-auto max-w-2xl px-6">
-          <h2 className="text-3xl font-semibold tracking-tight text-stone-900">Free to start</h2>
-          <p className="mt-4 text-lg text-stone-600">
-            No credit card required. Create your site and publish it whenever you&apos;re ready.
-          </p>
+          <h2 className="text-3xl font-semibold tracking-tight text-stone-900">{t.finalCta.heading}</h2>
+          <p className="mt-4 text-lg text-stone-600">{t.finalCta.subtext}</p>
           <div className="mt-8">
             <Link
               href={ctaHref}
@@ -473,67 +428,67 @@ export default async function Home() {
                 <InvitelyLogo className="h-5 w-5" />
                 Invitely
               </p>
-              <p className="mt-2 text-sm text-stone-400">Event websites, live in minutes.</p>
+              <p className="mt-2 text-sm text-stone-400">{t.footer.tagline}</p>
               <div className="mt-6 flex items-center gap-3 text-xs font-semibold tracking-wide text-stone-400">
                 <span className="rounded border border-stone-700 px-2 py-1">VISA</span>
                 <span className="rounded border border-stone-700 px-2 py-1">MASTERCARD</span>
                 <span className="rounded border border-stone-700 px-2 py-1">PAYPAL</span>
               </div>
-              <p className="mt-2 text-xs text-stone-500">Visa / Mastercard / PayPal accepted</p>
+              <p className="mt-2 text-xs text-stone-500">{t.footer.paymentAccepted}</p>
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Product</p>
+              <p className="text-sm font-semibold text-white">{t.footer.product}</p>
               <ul className="mt-3 space-y-2 text-sm text-stone-400">
                 <li>
                   <a href="#constructor" className="transition-colors hover:text-white">
-                    Constructor
+                    {t.nav.constructor}
                   </a>
                 </li>
                 <li>
                   <a href="#themes" className="transition-colors hover:text-white">
-                    Themes
+                    {t.nav.themes}
                   </a>
                 </li>
                 <li>
                   <a href="#whats-included" className="transition-colors hover:text-white">
-                    What&apos;s included
+                    {t.nav.whatsIncluded}
                   </a>
                 </li>
                 <li>
                   <a href="#pricing" className="transition-colors hover:text-white">
-                    Pricing
+                    {t.nav.pricing}
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Legal & account</p>
+              <p className="text-sm font-semibold text-white">{t.footer.legalAccount}</p>
               <ul className="mt-3 space-y-2 text-sm text-stone-400">
                 <li>
                   <Link href="/terms" className="transition-colors hover:text-white">
-                    Terms of service
+                    {t.footer.terms}
                   </Link>
                 </li>
                 <li>
                   <Link href="/privacy" className="transition-colors hover:text-white">
-                    Privacy policy
+                    {t.footer.privacy}
                   </Link>
                 </li>
                 <li>
                   <Link href="/login" className="transition-colors hover:text-white">
-                    Login
+                    {t.footer.login}
                   </Link>
                 </li>
                 <li>
                   <Link href="/signup" className="transition-colors hover:text-white">
-                    Sign up
+                    {t.footer.signUp}
                   </Link>
                 </li>
               </ul>
             </div>
           </div>
           <div className="mt-12 flex flex-col gap-2 border-t border-stone-800 pt-6 text-sm text-stone-500 sm:flex-row sm:items-center sm:justify-between">
-            <p>© 2026 Invitely. All rights reserved.</p>
+            <p>{t.footer.rightsReserved}</p>
             <a href="mailto:support@invitely.app" className="transition-colors hover:text-stone-300">
               support@invitely.app
             </a>

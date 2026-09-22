@@ -41,4 +41,250 @@ export const de: Dictionary = {
   languageSwitcher: {
     label: "Sprache",
   },
+  countdown: {
+    weeks: "Wochen",
+    days: "Tage",
+    hours: "Stunden",
+    minutes: "Minuten",
+    seconds: "Sekunden",
+    daysAbbr: "Tage",
+    hoursAbbr: "Std",
+    minutesAbbr: "Min",
+    secondsAbbr: "Sek",
+    reachedToday: "Heute ist der große Tag!",
+    reachedPast: "Danke, dass du mit uns gefeiert hast!",
+  },
+  gift: {
+    viewLink: "Ansehen",
+  },
+  guestbook: {
+    empty: "Hier erscheinen die Glückwünsche eurer Gäste.",
+  },
+  video: {
+    iframeTitleFallback: "Video",
+  },
+  letter: {
+    confirmBy: (date) => `Bitte bestätige bis zum ${date}`,
+  },
+  map: {
+    mapTitle: (venueName) => `Karte: ${venueName}`,
+  },
+  banquetNavigator: {
+    yourName: "Dein Name",
+    findMyTable: "Meinen Tisch finden",
+    looking: "Wird gesucht...",
+    missingNameError: "Gib den Namen ein, an den deine Einladung gerichtet war.",
+    lookupFailedError: "Etwas ist schiefgelaufen. Bitte versuche es gleich noch einmal.",
+    seatedAt: (tableName) => `Du sitzt an ${tableName}`,
+    resultSeatedAt: (guestName, tableName) => `${guestName} sitzt an ${tableName}`,
+    resultNotFound: (guestName) => `Wir konnten für „${guestName}" noch keinen Tisch finden — frag beim Gastgeber nach.`,
+  },
+  landing: {
+    topBar: "Visa / Mastercard / PayPal werden akzeptiert · Sofortige Zustellung — versende deinen Einladungslink überallhin",
+    nav: { constructor: "Baukasten", themes: "Designs", whatsIncluded: "Leistungen", pricing: "Preise", login: "Anmelden" },
+    mobileNav: { openMenu: "Menü öffnen", closeMenu: "Menü schließen" },
+    cta: {
+      primary: "Einladungen erstellen",
+      primaryLoggedIn: "Zum Dashboard",
+      constructor: "Jetzt loslegen",
+      constructorLoggedIn: "Zum Dashboard",
+      final: "Website erstellen",
+    },
+    hero: {
+      eyebrow: "Eine Event-Plattform, nicht nur eine Einladung",
+      headline: "Dein Event, gestaltet genau so, wie du es dir vorgestellt hast",
+      accent: "mit Wow-Effekt",
+      subtext:
+        "Eine wunderschöne Event-Website, dazu passende Papiereinladungen und Sitzordnung — ein Stil, überall wo deine Gäste ihn sehen. Starte mit einem Designer-Theme oder gestalte alles frei auf einer leeren Fläche.",
+      checklistThemes: (themeCount) => `${themeCount} Designer-Themes — oder gestalte dein eigenes auf einer leeren Fläche`,
+      checklistFonts: (fontCount) => `Alles frei verschiebbar, ${fontCount}+ Schriftarten, jede Farbe, die du möchtest`,
+      checklistRsvp: "Zusagen-Tracking mit eigenen Fragen",
+      checklistPaper: "Personalisierte Papiereinladungen mit QR-Codes",
+      seeConstructor: "Baukasten ansehen →",
+    },
+    heroPhoneShowcase: {
+      topCaption: "Bräute 2027, das wird euch gefallen \u{1F97A}\u{1F48D}",
+      bottomCaption: "Die Einladungen, die eure Freunde screenshotten werden",
+    },
+    statBar: { themes: "Designer-Themes", fonts: "Schriftarten im Baukasten", modules: "Website-Module", oneLink: "Link für alles" },
+    platformFan: {
+      heading: "Eine Hochzeitsplattform, nicht nur eine Einladung",
+      subtext: "Von der Einladungs-Website und Gästekommunikation bis zum durchgestylten Bankett — Sitzkarten inklusive.",
+    },
+    eventTypes: {
+      eyebrow: "Nicht nur Hochzeiten",
+      heading: "Jede Feier bekommt ihre eigene Website",
+      subtext:
+        "Wähle zuerst deinen Event-Typ, und alles Weitere — die Texte, die Felder, sogar wie das Sitzplan-Tool heißt — richtet sich danach.",
+      cta: "Event-Typ wählen",
+      items: [
+        { label: "Hochzeit", blurb: "Der Anlass, um den sich diese ganze Plattform dreht." },
+        { label: "Geburtstag", blurb: "Countdown, Fotos und eine Geschenkliste ohne Peinlichkeiten." },
+        { label: "Firmenevent", blurb: "Agenda teilen, echte Teilnehmerzahl fürs Catering." },
+        { label: "Abschlussfeier", blurb: "Zeremonie und Feier, ein Link." },
+        { label: "Jubiläum", blurb: "Egal wie viele Jahre — eine richtige Website ist es wert." },
+        { label: "Babyparty", blurb: "Wunschlisten-Links und ein Gästebuch voller Glückwünsche." },
+        { label: "Quinceañera", blurb: "Ehrenhof, Dresscode und Tanzprogramm." },
+        { label: "Ruhestand", blurb: "Auf eine Karriere anstoßen, nicht nur Kuchen verteilen." },
+        { label: "Kinderparty", blurb: "Verspielte Designs, Zusagen, die Eltern wirklich ausfüllen." },
+        { label: "Feiertagsparty", blurb: "Details zur Büroparty, Dresscode inklusive." },
+        { label: "Verlobung", blurb: "Die Neuigkeit teilen, die Hochzeitswebsite für später aufheben." },
+        { label: "Etwas anderes", blurb: "Was auch immer es ist — es fängt immer gleich an: ein Design wählen." },
+      ],
+    },
+    constructorSection: {
+      eyebrow: "Der echte Baukasten",
+      heading: "Nicht nur ein Theme-Picker — eine ganze Leinwand",
+      subtext: (fontCount) =>
+        `Wähle ein Designer-Theme für einen schnellen Start, dann verschiebe alles frei: Text und Fotos überall auf der Seite platzieren, aus ${fontCount}+ Schriftarten wählen, jede Farbe nutzen, Elemente stapeln und bei Bedarf rückgängig machen. Das genaue Design überträgt sich auch auf deine gedruckten Einladungen.`,
+      features: [
+        { title: "Kuratierte Schriftarten", description: "Skript, Serif, fett oder dünn — der ganze Look ändert sich mit einem Klick." },
+        { title: "Jede Farbe, die du möchtest", description: "Baue deine eigene Palette, passend zu deinen Hochzeitsfarben." },
+        { title: "Designer-kuratierte Varianten", description: "Oder starte mit Farb- und Musterkombinationen, handverlesen von unseren Designern." },
+        { title: "Flexibler Text, überall", description: "Bearbeite, skaliere, füge hinzu und verschiebe jeden Text im gewählten Design." },
+        { title: "Papier-Extras & Bankett-Karten", description: "Gestalte Vorder- und Rückseite deiner Einladung, plus passende Bankett-Karten." },
+        { title: "Website-Module ein-/ausschalten", description: "Countdown, Programm, Zusagen, Karte und mehr pro Website ein- oder ausschalten." },
+      ],
+    },
+    howItWorksSection: {
+      heading: "So funktioniert der Baukasten",
+      subtext: "Alles unten passiert live, direkt in deinem Browser — kein Download, nichts zu lernen.",
+      steps: [
+        {
+          title: "Gestalte dein Design",
+          bullets: [
+            "Wähle aus 100 Designer-Themes oder starte mit einer leeren Fläche",
+            "Jedes Theme ist bereits vollständig farblich abgestimmt, sofort einsatzbereit",
+            "Wechsle jederzeit den Stil — dein Inhalt bleibt erhalten",
+          ],
+        },
+        {
+          title: "Bearbeite jeden Text, wie du willst",
+          bullets: [
+            "Wähle aus 149+ Schriftarten, jede in ihrer eigenen Schrift vorschauend",
+            "Ändere Farbe, Größe, Abstand und Ausrichtung",
+            "Klicke auf beliebigen Text auf der Leinwand, um ihn sofort zu bearbeiten",
+          ],
+        },
+        {
+          title: "Füge Fotos, Video und mehr hinzu",
+          bullets: [
+            "Lade deine eigenen Fotos überall im Design hoch",
+            "Füge einen Videoclip hinzu, um eure Geschichte lebendig zu machen",
+            "Platziere einen QR-Code zu deiner Website oder zur Einladung eines Gastes",
+          ],
+        },
+        {
+          title: "Module ein- und ausschalten",
+          bullets: [
+            "Countdown, Zusagen, Geschenkwünsche, Dresscode und mehr",
+            "Jedes Modul hat seinen eigenen Ein-/Aus-Schalter",
+            "Zeige Gästen nur, was für dein Event relevant ist",
+          ],
+        },
+      ],
+    },
+    guestTracking: {
+      eyebrow: "Mehr als nur die Einladung",
+      heading: "Überall versenden, jede Antwort verfolgen",
+      subtext:
+        "Teile deinen einen Link über WhatsApp, SMS, E-Mail — wie auch immer deine Gäste Nachrichten wirklich lesen. Jede Zusage fließt direkt in deine Gästeliste zurück — wer kommt, wer noch nicht geantwortet hat, und wen du noch einladen musst.",
+    },
+    siteOrPaper: {
+      heading: "Website-Einladung und/oder Papier",
+      subtext: "Kein Entweder-Oder — die meisten Paare nutzen beides.",
+      orBadge: "UND/ODER",
+      website: {
+        title: "Website-Einladung",
+        subtext: "Einfach und schnell — lade jeden Gast ein, egal wo er lebt.",
+        bullets: [
+          "Ein Link funktioniert auf jedem Handy, Tablet oder Laptop",
+          "Alles aktualisieren — jeder sieht sofort die neueste Version",
+        ],
+      },
+      paper: {
+        title: "Papiereinladungen",
+        subtext: "Ein Andenken für eure engste Familie und Freunde.",
+        bullets: [
+          "Druckfertige PDF-Einladungen, Umschläge und Programmkarten",
+          "Jeder Gast erhält einen persönlichen QR-Code — die Zusage wird automatisch zugeordnet",
+        ],
+      },
+    },
+    themesSection: {
+      heading: "Wähle deinen Stil",
+      subtext:
+        "Das gleiche Theme zieht sich durch deine Website, Papiereinladungen und Bankett-Karten — oder überspringe es ganz und gestalte von Grund auf im Baukasten.",
+    },
+    whatsIncluded: {
+      heading: "Das ist alles enthalten",
+      subtext: "Jede Website kommt mit diesen Bausteinen — kombiniere sie, um deine Geschichte zu erzählen.",
+      modules: [
+        { title: "Drag-and-Drop-Baukasten", description: "Verschiebe jeden Text oder jedes Foto, wähle Schrift oder Farbe, und mach alles rückgängig." },
+        { title: "Hero-Intro", description: "Eure Namen, das Datum und ein Foto — mehrere Layouts zur Auswahl." },
+        { title: "Brief an eure Gäste", description: "Eine persönliche Nachricht, Geschenkwünsche und Zusagefrist auf einer Karte." },
+        { title: "Ablaufplan", description: "Der Tag, Minute für Minute — vom ersten Toast bis zum letzten Tanz." },
+        { title: "Location & Karte", description: "Zeige Gästen genau, wohin sie müssen, mit einer interaktiven Karte." },
+        { title: "Zusagen mit eigenen Fragen", description: "Frage nach Essen, Getränken oder Transport — Gäste bestätigen online, direkt in deine Liste." },
+        { title: "Countdown-Timer", description: "Baue Vorfreude auf mit einem Live-Countdown bis zum großen Tag." },
+        { title: "Gästebuch-Wand", description: "Glückwünsche, die Gäste bei der Zusage hinterlassen, als öffentliche Wand auf deiner Website." },
+        { title: "Video", description: "Binde ein YouTube- oder Vimeo-Video ein — euer Antrag, eure Geschichte, eure Wahl." },
+        { title: "Papiereinladungen", description: "Druckfertige PDF-Einladungen, Umschläge und Programmkarten, personalisiert pro Gast mit QR-Code." },
+        { title: "Bankett-Sitzordnung", description: "Weise Tische zu — nach Namen, nicht nur nach Kopfzahl — und erstelle Tisch- und Platzkarten zum Drucken." },
+        { title: "Eigene Domain", description: "Verweise deine eigene Domain auf deine Website, oder behalte den lesbaren Link, den wir dir kostenlos geben." },
+      ],
+    },
+    pricing: {
+      heading: "Der Baukasten ist immer kostenlos",
+      subtext: "Gestalte deine Website, lade Gäste ein und verfolge Zusagen kostenlos. Zahle nur, wenn du eine eigene Domain, Papiereinladungen oder Bankett-Sitzordnung möchtest.",
+      free: "Kostenlos",
+      whatYouGet: "Was du bekommst",
+      whatThisAdds: "Was das hinzufügt",
+      badgeFree: "Immer kostenlos",
+      badgePremium: "Entfernt das Wasserzeichen",
+    },
+    finalCta: {
+      heading: "Kostenlos starten",
+      subtext: "Keine Kreditkarte nötig. Erstelle deine Website und veröffentliche sie, wann immer du bereit bist.",
+    },
+    footer: {
+      tagline: "Event-Websites, live in Minuten.",
+      product: "Produkt",
+      legalAccount: "Rechtliches & Konto",
+      login: "Anmelden",
+      signUp: "Registrieren",
+      terms: "Nutzungsbedingungen",
+      privacy: "Datenschutz",
+      rightsReserved: "© 2026 Invitely. Alle Rechte vorbehalten.",
+      paymentAccepted: "Visa / Mastercard / PayPal werden akzeptiert",
+    },
+  },
+  onboarding: {
+    stepOf: (current, total) => `Schritt ${current} von ${total}`,
+    back: "Zurück",
+    next: "Weiter",
+    createSite: "Website erstellen",
+    saving: "Wird gespeichert...",
+    saveFailed: "Speichern fehlgeschlagen",
+    previewBadge: "Vorschau",
+    eventTypeStep: { heading: "\u{1F389} Was feiert ihr?", subtext: "Das bestimmt, was wir als Nächstes fragen." },
+    styleStep: { heading: "\u{1F3A8} Wähle deinen Stil", subtext: "Du kannst das jederzeit ändern oder später dein eigenes gestalten." },
+    photo: { label: "\u{1F4F7} Foto hinzufügen (optional)", help: "Erscheint in den Foto-Layouts deiner Website — du kannst es jederzeit hinzufügen oder ändern." },
+    validation: {
+      pickEventType: "Wähle einen Event-Typ",
+      pickStyle: "Wähle einen Stil",
+      enterName: "Namen eingeben",
+      enterDate: "Datum eingeben",
+    },
+    howItWorks: {
+      toggleLabel: "\u{2728} Neu hier? So funktioniert's",
+      show: "Zeigen",
+      hide: "Ausblenden",
+      steps: [
+        { title: "Stil wählen", text: "Stöbere durch die Stile, bis einer passt — jederzeit wechselbar." },
+        { title: "Details hinzufügen", text: "Namen, Datum, ein Foto, wenn du willst. Das war's." },
+        { title: "Website teilen", text: "Erhalte einen Live-Link, den Gäste auf dem Handy öffnen können." },
+      ],
+    },
+  },
 };

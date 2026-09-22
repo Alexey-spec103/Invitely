@@ -10,6 +10,8 @@ import PlaceCardPreview from "@/components/paper/PlaceCardPreview";
 import { getTheme } from "@/lib/themes";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { previewPhotoFor, previewTargetDateFor, formatPreviewDate } from "@/lib/themes/previewMedia";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 import styles from "./PlatformFanSection.module.css";
 
 // Same theme + couple as HeroPhoneShowcase, on purpose: this section's whole
@@ -47,7 +49,8 @@ const TABLE_GUESTS = ["Emma Carter", "Jack Carter", "Olivia Bennett", "Noah Benn
  * dress-code card, and banquet table/place cards. Every item here is a real
  * themed preview component (the same ones the paper editor and banquet
  * downloads use), not an illustration standing in for the product. */
-export default function PlatformFanSection() {
+export default function PlatformFanSection({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale).landing.platformFan;
   const theme = getTheme(SHOWCASE_THEME_ID);
   const recommended = recommendedHeroVariantFor(theme.id, theme.category);
   const heroVariant: HeroVariant = HERO_VARIANTS.includes(recommended as HeroVariant)
@@ -65,11 +68,8 @@ export default function PlatformFanSection() {
   return (
     <div className={styles.layout}>
       <div className={styles.text}>
-        <h2 className={styles.heading}>A wedding platform, not just an invitation</h2>
-        <p className={styles.subtext}>
-          From your invitation website and guest messaging to a fully styled banquet — seating
-          cards included.
-        </p>
+        <h2 className={styles.heading}>{t.heading}</h2>
+        <p className={styles.subtext}>{t.subtext}</p>
       </div>
 
       <div className={styles.fanWrap}>
