@@ -13,7 +13,7 @@ export const botanicalFern: Theme = {
     "--theme-text": "#33402F",
     "--theme-accent": "#6C8354",
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
+    "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },

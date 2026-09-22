@@ -5,12 +5,16 @@ import type { CountdownSectionVariantProps } from "../types";
 import { getCountdownParts, type CountdownParts } from "@/lib/countdown";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
-import { CAP_DECOR } from "@/lib/themes/decorMotifs";
+import { CAP_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import styles from "./CircularRings.module.css";
 
 export default function CircularRings({ title, eventDateTime, styleOverrides, themeCategory }: CountdownSectionVariantProps) {
   const { editable } = useEditableField();
   const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
+  // Categories with no full-color CAP_DECOR entry (currently modern/minimal
+  // only) get their own hand-authored mask accent instead of the fully
+  // generic laurel-wreath fallback -- see decorMotifs.ts's own comment.
+  const maskAccent = !capAsset && themeCategory ? CATEGORY_MASK_ACCENT[themeCategory] : undefined;
   const [parts, setParts] = useState<CountdownParts | null>(null);
 
   useEffect(() => {
@@ -52,7 +56,15 @@ export default function CircularRings({ title, eventDateTime, styleOverrides, th
           {capAsset ? (
             <img className={styles.laurelCapColor} src={capAsset} alt="" aria-hidden="true" />
           ) : (
-            <span className={styles.laurelCap} aria-hidden="true" />
+            <span
+              className={styles.laurelCap}
+              style={
+                maskAccent
+                  ? { maskImage: `url(${maskAccent})`, WebkitMaskImage: `url(${maskAccent})` }
+                  : undefined
+              }
+              aria-hidden="true"
+            />
           )}
           <div className={styles.rings}>
             <div className={styles.ring}>

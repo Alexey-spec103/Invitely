@@ -3,12 +3,16 @@
 import type { DressCodeSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
-import { CAP_DECOR } from "@/lib/themes/decorMotifs";
+import { CAP_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import styles from "./ColorPalette.module.css";
 
 export default function ColorPalette({ title, description, colors, styleOverrides, themeCategory }: DressCodeSectionVariantProps) {
   const { editable } = useEditableField();
   const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
+  // Categories with no full-color CAP_DECOR entry (currently modern/minimal
+  // only) get their own hand-authored mask accent instead of the fully
+  // generic laurel-wreath fallback -- see decorMotifs.ts's own comment.
+  const maskAccent = !capAsset && themeCategory ? CATEGORY_MASK_ACCENT[themeCategory] : undefined;
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>
@@ -24,7 +28,15 @@ export default function ColorPalette({ title, description, colors, styleOverride
         {capAsset ? (
           <img className={styles.laurelCapColor} src={capAsset} alt="" aria-hidden="true" />
         ) : (
-          <span className={styles.laurelCap} aria-hidden="true" />
+          <span
+            className={styles.laurelCap}
+            style={
+              maskAccent
+                ? { maskImage: `url(${maskAccent})`, WebkitMaskImage: `url(${maskAccent})` }
+                : undefined
+            }
+            aria-hidden="true"
+          />
         )}
         <div className={styles.swatches}>
           {colors.map((color, index) => (

@@ -7,6 +7,7 @@ import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import ThemeProvider from "@/components/theme/ThemeProvider";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 
 /** The scannable-QR destination for ThemeGalleryCard's "scan to preview"
  * corner badge (dashboard-audit.md-style honesty check: reuses the exact
@@ -68,7 +69,7 @@ export default async function ThemePreviewPage({ params }: PageProps<"/preview/[
           names={[name1, name2]}
           eventDate={dateLabel}
           photoUrl={photoUrl}
-          themeCategory={theme.category}
+          themeCategory={effectiveDecorCategory(theme)}
         />
       </ThemeProvider>
     </>

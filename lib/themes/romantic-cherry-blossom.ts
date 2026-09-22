@@ -13,7 +13,7 @@ export const romanticCherryBlossom: Theme = {
     "--theme-text": "#4A2E33",
     "--theme-accent": "#E0A8B5",
     "--theme-font-heading": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
+    "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",
   },
 };

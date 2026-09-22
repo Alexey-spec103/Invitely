@@ -1,6 +1,6 @@
 import type { LetterSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
-import { CORNER_PAIR_DECOR } from "@/lib/themes/decorMotifs";
+import { CORNER_PAIR_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import styles from "./CenteredCard.module.css";
 
 function formatDeadline(isoDate: string) {
@@ -34,6 +34,17 @@ export default function CenteredCard({
   // across the site reads as the same design system. Unmatched categories
   // keep the original theme-accent-tinted mask (safe for any palette).
   const flourishAssets = themeCategory ? CORNER_PAIR_DECOR[themeCategory] : undefined;
+  // Categories with no full-color CORNER_PAIR_DECOR entry (currently
+  // modern/minimal only) get their own hand-authored mask accent instead of
+  // the fully generic corner-flourish fallback -- see decorMotifs.ts's own
+  // comment. Reused for both corners (rotated 180deg for the second, same
+  // as the plain corner-flourish fallback already does) rather than a
+  // second distinct asset, matching how restrained these two categories'
+  // own decor is everywhere else in the site.
+  const maskAccent = !flourishAssets && themeCategory ? CATEGORY_MASK_ACCENT[themeCategory] : undefined;
+  const maskAccentStyle = maskAccent
+    ? { maskImage: `url(${maskAccent})`, WebkitMaskImage: `url(${maskAccent})` }
+    : undefined;
   return (
     <section className={styles.section}>
       <div className={styles.card}>
@@ -44,8 +55,8 @@ export default function CenteredCard({
           </>
         ) : (
           <>
-            <span className={styles.flourishTopLeft} aria-hidden="true" />
-            <span className={styles.flourishBottomRight} aria-hidden="true" />
+            <span className={styles.flourishTopLeft} style={maskAccentStyle} aria-hidden="true" />
+            <span className={styles.flourishBottomRight} style={maskAccentStyle} aria-hidden="true" />
           </>
         )}
         <h2 className={styles.title}>

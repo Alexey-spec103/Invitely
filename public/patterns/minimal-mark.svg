@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <!-- Minimal category's own accent mark, matching the "hairline tick"
+       vocabulary already established in
+       public/patterns/texture/minimal-hairline-scatter.svg (short, thin,
+       sparse strokes): one deliberate composition instead of scattered
+       background noise, a single long hairline with two short ticks
+       crossing it near one end, evoking a minimal measure/rule mark rather
+       than an illustration. currentColor plus opacity, the same mask-tint
+       technique as every other accent here (adapts to any theme's accent
+       color automatically). Deliberately the most restrained mark in the
+       whole set, matching this category's own "lightest touch of any
+       category" design language (see backgroundTexture.ts). -->
+  <line x1="10" y1="46" x2="54" y2="18" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.8" />
+  <line x1="16" y1="40" x2="24" y2="35" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.5" />
+  <line x1="22" y1="44" x2="30" y2="39" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.5" />
+</svg>

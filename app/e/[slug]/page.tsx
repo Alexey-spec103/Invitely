@@ -20,6 +20,7 @@ import { getInviteDescription, formatEventDate } from "@/lib/socialPreview";
 import { planMeets, BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 import { getEventType } from "@/lib/eventTypes";
 import PublicSiteBadge from "@/components/site/PublicSiteBadge";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 
 export async function generateMetadata({
   params,
@@ -224,6 +225,11 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
     typeof heroContent.monogramInitials === "string" ? heroContent.monogramInitials : undefined;
   const envelopeRevealEnabled = typeof settings.envelopeRevealEnabled === "boolean" ? settings.envelopeRevealEnabled : true;
 
+  // `luxury` themes resolve to a same-lightness substitute category here
+  // (see decorMotifs.ts's own comment) so every luxury event still gets a
+  // real decorative asset instead of the plain accent-tinted mask fallback.
+  const decorCategory = effectiveDecorCategory(theme);
+
   return (
     <>
       {envelopeRevealEnabled && (
@@ -246,12 +252,12 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
         />
         {sections.map((section, index) => {
           const element = renderSection(section, content, {
-            hero: { themeCategory: theme.category, eyebrow: getEventType(event.event_type).heroEyebrow },
-            letter: { themeCategory: theme.category },
+            hero: { themeCategory: decorCategory, eyebrow: getEventType(event.event_type).heroEyebrow },
+            letter: { themeCategory: decorCategory },
             rsvp: { onSubmit: boundSubmitRsvp, defaultGuestName: invitedGuest?.full_name, maxPartySize },
-            countdown: { eventDateTime, themeCategory: theme.category },
-            gift: { preferences: giftItems, themeCategory: theme.category },
-            dressCode: { themeCategory: theme.category },
+            countdown: { eventDateTime, themeCategory: decorCategory },
+            gift: { preferences: giftItems, themeCategory: decorCategory },
+            dressCode: { themeCategory: decorCategory },
             guestbook: { messages: guestbookMessages },
             banquetNavigator: { onLookup: boundLookupGuestTable, assignedTableName },
           });

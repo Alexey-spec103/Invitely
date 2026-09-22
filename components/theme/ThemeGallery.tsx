@@ -13,6 +13,7 @@ import {
 } from "@/lib/themes";
 import type { Theme, ThemeCategory, ThemeSeason } from "@/lib/themes";
 import { useFavoriteThemes } from "@/lib/useFavoriteThemes";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { CATEGORY_STYLE_ICONS, LAYOUT_STYLE_ICONS } from "@/components/icons/StyleFilterIcons";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { highlightFeaturesFor } from "@/lib/themes/highlightFeatures";
@@ -468,7 +469,7 @@ export function ThemeGalleryCard({
                   names={[name1, name2]}
                   eventDate={dateLabel}
                   photoUrl={photoUrl}
-                  themeCategory={theme.category}
+                  themeCategory={effectiveDecorCategory(theme)}
                 />
               </div>
             </div>
@@ -493,7 +494,7 @@ export function ThemeGalleryCard({
                   names={[name1, name2]}
                   eventDate={dateLabel}
                   photoUrl={photoUrl}
-                  themeCategory={theme.category}
+                  themeCategory={effectiveDecorCategory(theme)}
                 />
               </div>
             </div>

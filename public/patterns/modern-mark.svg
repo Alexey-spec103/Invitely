@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <!-- Modern category's own accent mark, matching the "grid mark" vocabulary
+       already established in public/patterns/texture/modern-grid-mark-scatter.svg
+       (small outlined/filled squares, some on-axis, some rotated 45 degrees
+       to a diamond), scaled up from scattered background noise into one
+       deliberate small composition. Uses currentColor with varying opacity
+       for the same mask-tint technique every other accent in this directory
+       uses (a theme-accent-colored background clipped through this SVG as a
+       CSS mask), so it adapts to any theme's accent color automatically;
+       no per-theme color tuning needed, unlike the multi-hue Recraft assets
+       in patterns/color/. -->
+  <rect x="16" y="16" width="22" height="22" stroke="currentColor" stroke-width="1.25" opacity="0.85" />
+  <rect x="34" y="34" width="11" height="11" transform="rotate(45 39.5 39.5)" fill="currentColor" opacity="0.65" />
+  <rect x="8" y="42" width="6" height="6" transform="rotate(45 11 45)" fill="currentColor" opacity="0.45" />
+</svg>
