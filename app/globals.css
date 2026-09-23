@@ -68,7 +68,12 @@ html {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  /* shadcn's init overwrote this to `var(--font-sans)` -- a circular
+     reference (nothing ever defines --font-sans itself), which silently
+     invalidated the whole html{font-family} declaration and dropped the
+     page to a generic system sans-serif. Restored to our real Geist Sans
+     variable (see app/layout.tsx). */
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);

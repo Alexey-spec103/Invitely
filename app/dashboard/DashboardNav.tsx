@@ -68,15 +68,16 @@ export default function DashboardNav({ eventId, eventType }: DashboardNavProps) 
           <Link
             key={item.href}
             href={item.href}
+            aria-current={isActive ? "page" : undefined}
             className={
               isActive
-                ? `flex flex-none items-center gap-2.5 whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-semibold ${accent.bg} ${accent.text}`
+                ? `flex flex-none items-center gap-3 whitespace-nowrap rounded-xl px-4 py-3 text-base font-semibold transition-colors ${accent.bg} ${accent.text}`
                 : isConstructor
-                  ? "flex flex-none items-center gap-2.5 whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-medium text-neutral-400 hover:bg-white/5 hover:text-neutral-100"
-                  : "flex flex-none items-center gap-2.5 whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                  ? "flex flex-none items-center gap-3 whitespace-nowrap rounded-xl px-4 py-3 text-base font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-neutral-100"
+                  : "flex flex-none items-center gap-3 whitespace-nowrap rounded-xl px-4 py-3 text-base font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
             }
           >
-            <Icon className="h-6 w-6 shrink-0" />
+            <Icon className="h-7 w-7 shrink-0" />
             {item.label}
           </Link>
         );

@@ -1474,8 +1474,6 @@ export default function SiteInlineEditor({
 
   return (
     <div className="flex flex-col gap-3">
-      <EditableBlocksPanel blocks={blocks} />
-
       {/* dashboard-audit.md B10: weddingpost.ru's own top bar centers big
           round undo/redo arrows -- these drive the same per-section stack
           Ctrl+Z already used, just exposed as clickable buttons too. */}
@@ -1992,6 +1990,14 @@ export default function SiteInlineEditor({
           </div>
         </div>
       </div>
+
+      {/* Moved below the live preview it's an alternative to (was above it,
+          ahead of the caption that describes the preview -- confirmed live
+          as a real "how do these connect?" confusion). Same fields, same
+          click-to-jump behavior, just now reads as "prefer a list instead
+          of clicking the page above? here it is" rather than a floating,
+          unexplained panel. */}
+      <EditableBlocksPanel blocks={blocks} />
     </div>
   );
 }
@@ -2241,7 +2247,12 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
         <span className="text-xs font-medium text-[var(--dash-text-muted)]">{open ? "Hide" : "Show"}</span>
       </button>
       {open && (
-        <ul className="mt-3 max-h-80 space-y-1 overflow-y-auto">
+        <>
+          <p className="mt-1.5 text-xs text-[var(--dash-text-muted)]">
+            Every text and photo from the site above, in one list — click a row to jump straight to it, or 👁 to
+            hide/show it without deleting what you typed.
+          </p>
+          <ul className="mt-3 max-h-80 space-y-1 overflow-y-auto">
           {blocks.map((block) => (
             <li
               key={block.key}
@@ -2289,7 +2300,8 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
               </span>
             </li>
           ))}
-        </ul>
+          </ul>
+        </>
       )}
     </div>
   );

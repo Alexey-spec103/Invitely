@@ -17,6 +17,7 @@ export default function PlaceCardPreview({ theme, guestName, locked }: PlaceCard
   return (
     <ThemeProvider theme={theme}>
       <div className={styles.face} style={{ containerType: "inline-size" }}>
+        <div className={styles.border} aria-hidden="true" />
         <p className={styles.guestName}>{guestName}</p>
         {/* Place cards are small and already carry very little else on
             them -- a full-density tile would drown out the one line of

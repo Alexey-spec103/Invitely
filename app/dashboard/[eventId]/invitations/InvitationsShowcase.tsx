@@ -9,6 +9,7 @@ import DressCodeCardPreview, { type DressCodeCardColor } from "@/components/pape
 import TableCardPreview from "@/components/paper/TableCardPreview";
 import PlaceCardPreview from "@/components/paper/PlaceCardPreview";
 import TableNumberCardPreview from "@/components/paper/TableNumberCardPreview";
+import PhoneHeroPhoto from "./PhoneHeroPhoto";
 import { formatEventDate } from "@/components/paper/formatEventDate";
 import type { Theme } from "@/lib/themes";
 import type { TableCardData } from "@/components/pdf/TableCardDocument";
@@ -176,8 +177,14 @@ export default function InvitationsShowcase({
         </div>
 
         <div className="flex flex-col items-center">
+          {/* Distinct label, separate from "Your complete kit" / "download
+              ... as a print-ready PDF" above -- this card is the one thing
+              in this panel that ISN'T a PDF, and reading the two as one
+              collection is exactly what made a phone showing up here look
+              like a mistake. */}
+          <p className="self-center text-xs font-semibold uppercase tracking-wide text-gray-400">Your live site</p>
           <div
-            className="relative w-44 overflow-hidden rounded-[2rem] border-[6px] border-gray-900 bg-gray-900 shadow-xl sm:w-52"
+            className="relative mt-2 w-44 overflow-hidden rounded-[2rem] border-[6px] border-gray-900 bg-gray-900 shadow-xl sm:w-52"
             style={{ aspectRatio: "375 / 750" }}
           >
             <ThemeProvider theme={theme}>
@@ -185,10 +192,7 @@ export default function InvitationsShowcase({
                 className="absolute inset-0 flex flex-col items-center justify-center gap-2 overflow-hidden px-4 text-center"
                 style={{ backgroundColor: "var(--theme-bg)", color: "var(--theme-text)" }}
               >
-                {heroPhotoUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={heroPhotoUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                )}
+                {heroPhotoUrl && <PhoneHeroPhoto src={heroPhotoUrl} />}
                 <div className={heroPhotoUrl ? "relative z-10 rounded-md bg-black/35 px-3 py-2 text-white" : "relative z-10"}>
                   <p style={{ fontFamily: "var(--theme-font-heading)" }} className="text-lg font-semibold">
                     {names[0]}

@@ -11,6 +11,17 @@
   overflow: hidden;
 }
 
+/* Same thin theme-accent frame every sibling card (invitation, table,
+   table-number) already carries -- place cards were the one card left with
+   zero decoration, reading as a generic name tag rather than part of the
+   same design as everything else in the kit. */
+.border {
+  position: absolute;
+  inset: 6%;
+  border: 1px solid var(--theme-accent);
+  pointer-events: none;
+}
+
 .guestName {
   margin: 0;
   font-family: var(--theme-font-heading);
