@@ -62,6 +62,8 @@ import {
 import { updateWeddingData } from "../actions";
 import SectionToggleSwitch from "./SectionToggleSwitch";
 import { MODULE_ICONS } from "./SectionModulesPanel";
+import TimelineEventsManager from "./TimelineEventsManager";
+import QuoteSuggestionPicker from "@/components/site-editor/QuoteSuggestionPicker";
 import type { Theme } from "@/lib/themes";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 
@@ -294,12 +296,34 @@ function setHidden<T extends { hiddenFields?: string[] }>(obj: T, field: string,
  * текст блока"), not a generated name. */
 interface BlockRowData {
   key: string;
-  type: "text" | "image" | "auto" | "group";
+  type: "text" | "image" | "auto" | "group" | "sectionHeader";
   label: string;
   hidden: boolean;
   onSelect: () => void;
   onToggleHidden?: () => void;
   onDelete?: () => void;
+  /** Only meaningful for "sectionHeader" rows -- the section's own
+   * MODULE_ICONS emoji, so this list reads as the same "section" concept
+   * as the live preview's own SectionHeader and the Modules panel, not a
+   * third, disconnected labeling scheme. */
+  icon?: string;
+}
+
+/** One divider row marking where a section's fields start in the
+ * otherwise-flat Editable Blocks list -- added because the list had no
+ * section identity at all (grouping only existed for repeatable *items*
+ * within a section, e.g. "Event 2"), so "which rows are Timeline?" wasn't
+ * answerable without reading every label. Non-interactive: `onSelect` is a
+ * no-op, this row exists purely to be *read*, not clicked. */
+function sectionHeaderRow(key: string, label: string, icon: string | undefined): BlockRowData {
+  return {
+    key: `section-${key}`,
+    type: "sectionHeader",
+    label,
+    hidden: false,
+    onSelect: () => {},
+    icon,
+  };
 }
 
 /** Builds everything about a row except `onSelect` -- deliberately takes no
@@ -1092,6 +1116,10 @@ export default function SiteInlineEditor({
   // showed live between a "Групповой элемент" row and the text rows next to
   // it -- confirmed in Chrome this session, not guessed.
   const blocksRaw: BlockRowData[] = [
+    // Hero has no MODULE_ICONS entry (it's always on, no toggle row in the
+    // Modules panel either) -- matches that same convention here: a plain
+    // label, no icon, rather than inventing one just for this list.
+    sectionHeaderRow("hero", "Hero", undefined),
     {
       ...makeRow({
         field: "names.0",
@@ -1144,6 +1172,7 @@ export default function SiteInlineEditor({
     // passed to `.map()`, no matter how deeply the actual `.current` read is
     // nested inside it (confirmed live: only the `.map()`-built rows were
     // flagged, identical plain-array-literal rows elsewhere were not).
+    sectionHeaderRow("letter", sectionLabels.letter, MODULE_ICONS.letter),
     {
       ...makeRow({
         field: "title",
@@ -1229,6 +1258,7 @@ export default function SiteInlineEditor({
       },
     },
 
+    sectionHeaderRow("timeline", sectionLabels.timeline, MODULE_ICONS.timeline),
     {
       ...makeRow({
         field: "title",
@@ -1274,6 +1304,7 @@ export default function SiteInlineEditor({
       ),
     ]),
 
+    sectionHeaderRow("map", sectionLabels.map, MODULE_ICONS.map),
     {
       ...makeRow({
         field: "title",
@@ -1319,6 +1350,7 @@ export default function SiteInlineEditor({
       ),
     ]),
 
+    sectionHeaderRow("rsvp", sectionLabels.rsvp, MODULE_ICONS.rsvp),
     {
       ...makeRow({
         field: "title",
@@ -1376,6 +1408,7 @@ export default function SiteInlineEditor({
       },
     ]),
 
+    sectionHeaderRow("countdown", sectionLabels.countdown, MODULE_ICONS.countdown),
     {
       ...makeRow({
         field: "title",
@@ -1391,6 +1424,7 @@ export default function SiteInlineEditor({
       },
     },
 
+    sectionHeaderRow("gift", sectionLabels.gift, MODULE_ICONS.gift),
     {
       ...makeRow({
         field: "title",
@@ -1420,6 +1454,7 @@ export default function SiteInlineEditor({
       },
     },
 
+    sectionHeaderRow("dressCode", sectionLabels.dressCode, MODULE_ICONS.dressCode),
     {
       ...makeRow({
         field: "title",
@@ -1477,6 +1512,7 @@ export default function SiteInlineEditor({
       },
     ]),
 
+    sectionHeaderRow("guestbook", sectionLabels.guestbook, MODULE_ICONS.guestbook),
     {
       ...makeRow({
         field: "title",
@@ -1492,6 +1528,7 @@ export default function SiteInlineEditor({
       },
     },
 
+    sectionHeaderRow("video", sectionLabels.video, MODULE_ICONS.video),
     {
       ...makeRow({
         field: "title",
@@ -1507,6 +1544,7 @@ export default function SiteInlineEditor({
       },
     },
 
+    sectionHeaderRow("banquetNavigator", sectionLabels.banquetNavigator, MODULE_ICONS.banquetNavigator),
     {
       ...makeRow({
         field: "title",
@@ -1694,10 +1732,16 @@ export default function SiteInlineEditor({
           state={letterField.state}
           error={letterField.error}
           extra={
-            <SectionBackgroundButton
-              value={getSectionBackground("letter")}
-              onChange={(fill) => handleBackgroundChange("letter", fill)}
-            />
+            <>
+              <QuoteSuggestionPicker
+                onSelect={(quote) => letterField.setDraft((prev) => ({ ...prev, quote }))}
+                onClear={() => letterField.setDraft((prev) => ({ ...prev, quote: "" }))}
+              />
+              <SectionBackgroundButton
+                value={getSectionBackground("letter")}
+                onChange={(fill) => handleBackgroundChange("letter", fill)}
+              />
+            </>
           }
         />
         {isSectionOn("letter", letter.enabled) ? (
@@ -1744,19 +1788,11 @@ export default function SiteInlineEditor({
                 </EditableFieldProvider>
               </div>
             </SectionBackground>
-            <div className="flex justify-center pb-6" onClick={(event) => event.stopPropagation()}>
-              <button
-                type="button"
-                onClick={() =>
-                  timelineField.setDraft((prev) => ({
-                    ...prev,
-                    events: [...prev.events, { time: "", title: "New event", description: "" }],
-                  }))
-                }
-                className="dash-btn dash-btn-neutral text-xs"
-              >
-                + Add event
-              </button>
+            <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
+              <TimelineEventsManager
+                events={timelineField.draft.events}
+                onChange={(events) => timelineField.setDraft((prev) => ({ ...prev, events }))}
+              />
             </div>
           </>
         ) : (
@@ -1816,7 +1852,7 @@ export default function SiteInlineEditor({
                     return { ...prev, venues: [...prev.venues, seeded] };
                   })
                 }
-                className="dash-btn dash-btn-neutral text-xs"
+                className="dash-btn dash-btn-primary"
               >
                 + Add venue
               </button>
@@ -2230,7 +2266,7 @@ function RsvpQuestionsManager({
         <button
           type="button"
           onClick={() => onChange([...questions, { id: makeQuestionId(), label: "New question", type: "text", options: "" }])}
-          className="dash-btn dash-btn-neutral text-xs"
+          className="dash-btn dash-btn-primary"
         >
           + Add question
         </button>
@@ -2242,7 +2278,7 @@ function RsvpQuestionsManager({
               { id: makeQuestionId(), label: "Meal preference", type: "choice", options: "Chicken, Fish, Vegetarian" },
             ])
           }
-          className="dash-btn dash-btn-neutral text-xs"
+          className="dash-btn dash-btn-secondary"
         >
           + Meal preference
         </button>
@@ -2331,7 +2367,7 @@ function DressCodeColorsManager({
         <button
           type="button"
           onClick={() => onChange([...colors, { hex: "#000000", label: "New color" }])}
-          className="dash-btn dash-btn-neutral text-xs"
+          className="dash-btn dash-btn-primary"
         >
           + Add color
         </button>
@@ -2428,6 +2464,10 @@ const BLOCK_TYPE_ICON: Record<BlockRowData["type"], string> = {
   image: "🖼",
   auto: "🖊",
   group: "⊞",
+  // Unused directly -- a "sectionHeader" row renders its own `block.icon`
+  // (the section's real MODULE_ICONS emoji) instead, see the render branch
+  // below. Present only so this Record stays exhaustive over every type.
+  sectionHeader: "",
 };
 
 /** dashboard-audit.md A3: "Editable blocks" -- a flat, counted list of every
@@ -2467,7 +2507,23 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
             hide/show it without deleting what you typed.
           </p>
           <ul className="mt-3 max-h-80 space-y-1 overflow-y-auto">
-          {blocks.map((block) => (
+          {blocks.map((block) => {
+            if (block.type === "sectionHeader") {
+              return (
+                <li
+                  key={block.key}
+                  className="mt-3 flex items-center gap-2 border-b border-[var(--dash-border)] px-2 pb-1 text-xs font-bold uppercase tracking-wide text-[var(--dash-accent)] first:mt-0"
+                >
+                  {block.icon && (
+                    <span aria-hidden="true" className="text-sm leading-none">
+                      {block.icon}
+                    </span>
+                  )}
+                  {block.label}
+                </li>
+              );
+            }
+            return (
             <li
               key={block.key}
               className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-[var(--dash-surface-2)] ${
@@ -2513,7 +2569,8 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
                 )}
               </span>
             </li>
-          ))}
+            );
+          })}
           </ul>
         </>
       )}

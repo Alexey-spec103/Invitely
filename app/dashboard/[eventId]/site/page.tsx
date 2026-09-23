@@ -436,6 +436,10 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
             title: "🧩 Turn modules on or off",
             body: "Countdown, RSVP, gift wishes, dress code and more each have their own on/off switch inside their card.",
           },
+          {
+            title: "🔎 Can't find something?",
+            body: "Open Editable blocks below the preview — it lists every text and photo on your site, grouped by section, so you can jump straight to it.",
+          },
         ]}
       />
 

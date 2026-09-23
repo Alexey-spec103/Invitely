@@ -5,7 +5,12 @@
    own text color instead of a hardcoded one that could blend in. */
 .editableIdle {
   cursor: text;
-  outline: 1px dashed transparent;
+  /* Visible at rest, not just on hover -- a hover-only outline meant
+     nothing signaled a field was editable until a user happened to mouse
+     over it, a real discoverability complaint ("подсветить блоки чтобы
+     сразу было видно"). Low opacity at rest so a whole page of text
+     doesn't read as "boxes everywhere"; hover below still intensifies. */
+  outline: 1px dashed color-mix(in srgb, currentColor 22%, transparent);
   outline-offset: 3px;
   border-radius: 2px;
   transition: outline-color 120ms ease, background-color 120ms ease;
