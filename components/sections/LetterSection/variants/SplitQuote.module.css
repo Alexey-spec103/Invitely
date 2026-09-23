@@ -46,10 +46,12 @@
 }
 
 .deadline {
+  /* impeccable audit: full sentence ("Please confirm by..."), not a short
+     label -- dropped text-transform: uppercase, see CenteredCard's .deadline
+     comment for why. */
   font-family: var(--theme-font-body);
   font-size: 0.75rem;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--theme-accent);
   margin: 0 0 1rem;
 }

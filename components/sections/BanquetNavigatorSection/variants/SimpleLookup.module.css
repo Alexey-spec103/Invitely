@@ -91,7 +91,7 @@
   border-radius: 999px;
   border: none;
   background: var(--theme-accent);
-  color: var(--theme-bg);
+  color: var(--theme-accent-contrast);
   cursor: pointer;
   white-space: nowrap;
   transition: opacity 0.15s ease;

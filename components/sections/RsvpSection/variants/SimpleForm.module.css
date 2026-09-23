@@ -134,7 +134,7 @@
 
 .toggleButtonActive {
   background: var(--theme-accent);
-  color: var(--theme-bg);
+  color: var(--theme-accent-contrast);
   border-color: var(--theme-accent);
 }
 
@@ -153,7 +153,7 @@
   border-radius: 999px;
   border: none;
   background: var(--theme-accent);
-  color: var(--theme-bg);
+  color: var(--theme-accent-contrast);
   cursor: pointer;
   transition: opacity 0.15s ease;
 }

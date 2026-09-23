@@ -94,7 +94,7 @@
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
   background: var(--theme-accent);
-  color: var(--theme-bg);
+  color: var(--theme-accent-contrast);
   text-decoration: none;
   white-space: nowrap;
 }
