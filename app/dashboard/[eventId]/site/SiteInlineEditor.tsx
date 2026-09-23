@@ -180,6 +180,7 @@ interface SiteInlineEditorProps {
   theme: Theme;
   heroVariant: HeroVariant;
   heroPhotoUrl: string;
+  heroEyebrow?: string;
   heroStyleOverrides?: StyleOverrides;
   heroHiddenFields?: string[];
   weddingData: WeddingDataDraft;
@@ -510,6 +511,7 @@ export default function SiteInlineEditor({
   theme,
   heroVariant,
   heroPhotoUrl,
+  heroEyebrow: heroEyebrowProp,
   heroStyleOverrides,
   heroHiddenFields,
   weddingData,
@@ -634,6 +636,13 @@ export default function SiteInlineEditor({
   // drafts, two different save actions, so it can't use useEditableSection. ---
   const [weddingDataDraft, setWeddingDataDraft] = useState<WeddingDataDraft>(weddingData);
   const [heroPhoto, setHeroPhoto] = useState(heroPhotoUrl);
+  // Was a fixed, non-editable string derived purely from event type
+  // ("We're getting married" / "Save the date" / ...) -- a real complaint
+  // ("нельзя поменять язык, оно тоже должно редактироваться"): a host
+  // couldn't reword it or translate it. Now a real content.hero field, same
+  // save path as photoUrl; empty means "still using the event-type
+  // default", resolved below where HeroSection is rendered.
+  const [heroEyebrow, setHeroEyebrow] = useState(heroEyebrowProp ?? "");
   const [heroOverrides, setHeroOverrides] = useState<StyleOverrides | undefined>(heroStyleOverrides);
   const [heroHidden, setHeroHidden] = useState<string[]>(heroHiddenFields ?? []);
   const [heroSelectedField, setHeroSelectedField] = useState<string | null>(null);
@@ -644,12 +653,13 @@ export default function SiteInlineEditor({
     router.refresh();
   });
   const { state: heroState, error: heroError } = useAutosave(
-    { photoUrl: heroPhoto, styleOverrides: heroOverrides, hiddenFields: heroHidden },
+    { photoUrl: heroPhoto, eyebrow: heroEyebrow, styleOverrides: heroOverrides, hiddenFields: heroHidden },
     async (value) => {
       const result = await updateHeroSection({
         eventId,
         heroVariant,
         photoUrl: value.photoUrl,
+        eyebrow: value.eyebrow,
         styleOverrides: value.styleOverrides,
         hiddenFields: value.hiddenFields,
       });
@@ -659,6 +669,10 @@ export default function SiteInlineEditor({
   );
 
   const heroCommitText = useCallback((field: string, value: string) => {
+    if (field === "eyebrow") {
+      setHeroEyebrow(value);
+      return;
+    }
     setWeddingDataDraft((prev) => {
       if (field === "names.0") return { ...prev, name1: value };
       if (field === "names.1") return { ...prev, name2: value };
@@ -1152,6 +1166,20 @@ export default function SiteInlineEditor({
           },
         ]
       : []),
+    {
+      ...makeRow({
+        field: "eyebrow",
+        label: heroEyebrow,
+        placeholder: "Hero eyebrow (e.g. \"We're getting married\")",
+        type: "text",
+        hiddenFields: heroHidden,
+        commitHidden: heroCommitHidden,
+      }),
+      onSelect: () => {
+        setHeroSelectedField("eyebrow");
+        scrollToField(heroRef.current, "eyebrow");
+      },
+    },
     {
       ...makeRow({
         field: "photoUrl",
@@ -1698,7 +1726,7 @@ export default function SiteInlineEditor({
                 eventDate={weddingDataDraft.eventDate}
                 photoUrl={heroVisible.photoUrl}
                 styleOverrides={heroOverrides}
-                eyebrow={getEventType(weddingDataDraft.eventType).heroEyebrow}
+                eyebrow={heroEyebrow || getEventType(weddingDataDraft.eventType).heroEyebrow}
                 themeCategory={decorCategory}
               />
             </EditableFieldProvider>

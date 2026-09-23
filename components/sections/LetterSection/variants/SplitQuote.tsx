@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/i18n/locales";
 import { LOCALE_TO_BCP47 } from "@/lib/i18n/locales";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./SplitQuote.module.css";
 
 function formatDeadline(isoDate: string, locale: Locale) {
@@ -26,27 +27,48 @@ export default function SplitQuote({
   locale,
 }: LetterSectionVariantProps) {
   const t = getDictionary(locale).letter;
+  const { editable } = useEditableField();
   return (
     <section className={styles.section}>
       <div className={styles.grid}>
         <div className={styles.text}>
           <h2 className={styles.title}>
-            <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+            <EditableText
+              field="title"
+              value={title}
+              style={styleOverrides?.["title"]}
+              placeholder="Write a title for your letter…"
+            />
           </h2>
           <p className={styles.body}>
-            <EditableText field="body" value={body} style={styleOverrides?.["body"]} />
+            <EditableText
+              field="body"
+              value={body}
+              style={styleOverrides?.["body"]}
+              placeholder="Write a welcome message to your guests…"
+            />
           </p>
-          {note && (
+          {(note || editable) && (
             <p className={styles.note}>
-              <EditableText field="note" value={note} style={styleOverrides?.["note"]} />
+              <EditableText
+                field="note"
+                value={note ?? ""}
+                style={styleOverrides?.["note"]}
+                placeholder="A short extra note (optional)…"
+              />
             </p>
           )}
           {rsvpDeadline && isDeadlineUpcoming(rsvpDeadline) && (
             <p className={styles.deadline}>{t.confirmBy(formatDeadline(rsvpDeadline, locale))}</p>
           )}
-          {closingLine && (
+          {(closingLine || editable) && (
             <p className={styles.closingLine}>
-              <EditableText field="closingLine" value={closingLine} style={styleOverrides?.["closingLine"]} />
+              <EditableText
+                field="closingLine"
+                value={closingLine ?? ""}
+                style={styleOverrides?.["closingLine"]}
+                placeholder="Sign off — e.g. “With love, the two of us”…"
+              />
             </p>
           )}
         </div>
@@ -62,7 +84,12 @@ export default function SplitQuote({
             </span>
           )}
           <p className={styles.quote}>
-            <EditableText field="quote" value={quote} style={styleOverrides?.["quote"]} />
+            <EditableText
+              field="quote"
+              value={quote}
+              style={styleOverrides?.["quote"]}
+              placeholder="Add a quote (optional)…"
+            />
           </p>
         </div>
       </div>

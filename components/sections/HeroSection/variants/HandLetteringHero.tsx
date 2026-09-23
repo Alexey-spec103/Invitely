@@ -32,7 +32,9 @@ export default function HandLetteringHero({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={photoUrl} alt="" className={styles.photo} />
       )}
-      <span className={styles.eyebrow}>{eyebrow || "We're getting married"}</span>
+      <span className={styles.eyebrow}>
+        <EditableText field="eyebrow" value={eyebrow || "We're getting married"} style={styleOverrides?.["eyebrow"]} />
+      </span>
       <p className={styles.names}>
         <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
         {names[1] && (

@@ -20,6 +20,15 @@ interface EditableTextProps {
   style?: TextStyleOverride;
   as?: EditableTag;
   className?: string;
+  /** Shown in place of the value when empty AND in the dashboard editor
+   * only (never on the public site -- a guest seeing "Write your welcome
+   * message..." on a host's unfinished field would read as broken, not
+   * helpful). An empty field otherwise has zero width/height and no visual
+   * cue at all that it's there to be filled in -- confirmed live as a real
+   * "не понятно что там можно писать" complaint, worst on fields that
+   * render truly blank. Disappears the instant the field is selected,
+   * same as a native `<input placeholder>`. */
+  placeholder?: string;
 }
 
 function overrideToStyle(override: TextStyleOverride | undefined): CSSProperties {
@@ -45,7 +54,7 @@ function overrideToStyle(override: TextStyleOverride | undefined): CSSProperties
  * plain text node would -- no extra DOM, no behavior change. Inside a
  * provider, it becomes click-to-select + contentEditable, matching the
  * interaction confirmed live on weddingpost.ru's own constructor. */
-export default function EditableText({ field, value, style, as = "span", className }: EditableTextProps) {
+export default function EditableText({ field, value, style, as = "span", className, placeholder }: EditableTextProps) {
   const { editable, selectedField, selectField, commitText } = useEditableField();
   const cssStyle = overrideToStyle(style);
   const nodeRef = useRef<HTMLElement | null>(null);
@@ -125,18 +134,22 @@ export default function EditableText({ field, value, style, as = "span", classNa
     }
   };
 
+  const showPlaceholder = !isSelected && !value && !!placeholder;
+
   // A variable tag name in JSX forces TS to intersect every possible
   // intrinsic element's ref type, which doesn't typecheck -- one explicit
   // branch per tag (only 4 exist) sidesteps that without an `any` escape.
   const sharedProps = {
     "data-field": field,
-    className: `${className ?? ""} ${isSelected ? editableStyles.editableSelected : editableStyles.editableIdle}`.trim(),
+    className: `${className ?? ""} ${isSelected ? editableStyles.editableSelected : editableStyles.editableIdle} ${
+      showPlaceholder ? editableStyles.editablePlaceholder : ""
+    }`.trim(),
     style: cssStyle,
     contentEditable: isSelected,
     suppressContentEditableWarning: true,
     onClick: handleClick,
     onBlur: handleBlur,
-    children: isSelected ? undefined : value,
+    children: isSelected ? undefined : showPlaceholder ? placeholder : value,
   };
 
   switch (as) {

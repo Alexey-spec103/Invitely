@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,12 +39,33 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
   const {
     register,
     control,
-    formState: { errors, isValid },
+    reset,
+    formState: { errors, isValid, isDirty },
   } = useForm<WeddingDataFormValues>({
     resolver: zodResolver(weddingDataFormSchema),
     defaultValues,
     mode: "onChange",
   });
+
+  // This form's own state is a SEPARATE copy of names/date/venue from
+  // SiteInlineEditor's inline canvas editing (both write through the same
+  // updateWeddingData action, but neither reads the other's live state) --
+  // `defaultValues` only seeds react-hook-form once, at mount. Without this,
+  // an inline name edit's own successful save (which calls router.refresh(),
+  // re-rendering this component with fresh `defaultValues`) could leave this
+  // form still holding the pre-edit name in its untouched inputs; if its own
+  // autosave effect re-fires for any reason afterward, it would silently
+  // resave that stale name right back over the just-made edit. Confirmed
+  // live: an inline Hero name edit reverted after a few seconds. Resyncing
+  // whenever fresh props arrive -- but only while the host hasn't actually
+  // started typing into this specific form -- closes that race without ever
+  // discarding an in-progress edit made here.
+  useEffect(() => {
+    if (!isDirty) {
+      reset(defaultValues);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues, reset]);
 
   const values = useWatch({ control });
   const { state, error } = useAutosave(

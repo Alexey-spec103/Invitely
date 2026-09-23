@@ -28,3 +28,23 @@
   border-radius: 2px;
   background-color: color-mix(in srgb, var(--theme-accent, #2563eb) 8%, transparent);
 }
+
+/* A field with nothing typed into it yet -- combined with .editableIdle
+   above, but stronger: a blank field has zero width/height and no visual
+   cue that it's there at all, worse than a filled one that's merely hard
+   to notice. A dashed, padded box with its own instruction text reads as
+   an obvious "click to write" target, the same role PhotoDropzone's own
+   empty-state box already plays for photo fields -- text fields had
+   nothing equivalent before this. */
+.editablePlaceholder {
+  display: inline-block;
+  font-style: italic;
+  opacity: 0.55;
+  outline-style: dashed;
+  outline-color: color-mix(in srgb, currentColor 40%, transparent);
+  padding: 0.15em 0.5em;
+}
+
+.editablePlaceholder:hover {
+  opacity: 0.8;
+}

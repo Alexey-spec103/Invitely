@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/i18n/locales";
 import { LOCALE_TO_BCP47 } from "@/lib/i18n/locales";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import { CORNER_PAIR_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import styles from "./CenteredCard.module.css";
 
@@ -34,6 +35,12 @@ export default function CenteredCard({
   locale,
 }: LetterSectionVariantProps) {
   const t = getDictionary(locale).letter;
+  // note/closingLine below stay mounted whenever the dashboard editor is
+  // active, even with nothing typed yet -- otherwise a host has no element
+  // to click on to write a first one at all (confirmed live: with `editable`
+  // false they simply never rendered). The public site keeps the original
+  // "only if there's real text" behavior via `note && ...`.
+  const { editable } = useEditableField();
   // Same category -> asset pairing as GiftSection/SimpleList's corner
   // accents (both read from CORNER_PAIR_DECOR), so every twin-corner spot
   // across the site reads as the same design system. Unmatched categories
@@ -65,10 +72,20 @@ export default function CenteredCard({
           </>
         )}
         <h2 className={styles.title}>
-          <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+          <EditableText
+            field="title"
+            value={title}
+            style={styleOverrides?.["title"]}
+            placeholder="Write a title for your letter…"
+          />
         </h2>
         <p className={styles.body}>
-          <EditableText field="body" value={body} style={styleOverrides?.["body"]} />
+          <EditableText
+            field="body"
+            value={body}
+            style={styleOverrides?.["body"]}
+            placeholder="Write a welcome message to your guests…"
+          />
         </p>
         <p className={styles.quote}>
           {/* dashboard-audit.md finding #4: the decorative « » marks used to
@@ -79,21 +96,36 @@ export default function CenteredCard({
               so a host can still click into this field in the dashboard
               editor to write a first quote at all. */}
           {quote && "«"}
-          <EditableText field="quote" value={quote} style={styleOverrides?.["quote"]} />
+          <EditableText
+            field="quote"
+            value={quote}
+            style={styleOverrides?.["quote"]}
+            placeholder="Add a quote (optional)…"
+          />
           {quote && "»"}
         </p>
-        {note && (
+        {(note || editable) && (
           <p className={styles.note}>
-            <EditableText field="note" value={note} style={styleOverrides?.["note"]} />
+            <EditableText
+              field="note"
+              value={note ?? ""}
+              style={styleOverrides?.["note"]}
+              placeholder="A short extra note (optional)…"
+            />
           </p>
         )}
         {/* Derived display text, not a raw content field -- not independently editable. */}
         {rsvpDeadline && isDeadlineUpcoming(rsvpDeadline) && (
           <p className={styles.deadline}>{t.confirmBy(formatDeadline(rsvpDeadline, locale))}</p>
         )}
-        {closingLine && (
+        {(closingLine || editable) && (
           <p className={styles.closingLine}>
-            <EditableText field="closingLine" value={closingLine} style={styleOverrides?.["closingLine"]} />
+            <EditableText
+              field="closingLine"
+              value={closingLine ?? ""}
+              style={styleOverrides?.["closingLine"]}
+              placeholder="Sign off — e.g. “With love, the two of us”…"
+            />
           </p>
         )}
       </div>

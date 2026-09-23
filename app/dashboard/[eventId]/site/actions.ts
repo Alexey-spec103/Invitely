@@ -388,6 +388,7 @@ interface UpdateHeroSectionInput {
   eventId: string;
   heroVariant: HeroVariant;
   photoUrl?: string;
+  eyebrow?: string;
   styleOverrides?: Record<string, TextStyleOverride>;
   hiddenFields?: string[];
 }
@@ -441,6 +442,7 @@ export async function updateHeroSection(input: UpdateHeroSectionInput): Promise<
       names,
       eventDate: event.event_date,
       photoUrl: input.photoUrl ?? "",
+      eyebrow: input.eyebrow ?? "",
       styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "hero"),
       hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "hero"),
     },

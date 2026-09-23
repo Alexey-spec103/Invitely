@@ -17,7 +17,9 @@ export default function EditorialMinimal({ names, eventDate, styleOverrides, eye
     <section className={styles.section}>
       <span className={styles.wave} aria-hidden="true" />
       <div className={styles.block}>
-        <span className={styles.eyebrow}>{eyebrow || "Save the date"}</span>
+        <span className={styles.eyebrow}>
+          <EditableText field="eyebrow" value={eyebrow || "Save the date"} style={styleOverrides?.["eyebrow"]} />
+        </span>
         <p className={styles.names}>
           <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
           {names[1] && (

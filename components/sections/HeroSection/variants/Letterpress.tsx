@@ -10,7 +10,9 @@ export default function Letterpress({ names, eventDate, styleOverrides, eyebrow 
     <section className={styles.section}>
       <div className={styles.plate}>
         <span className={styles.stamp} aria-hidden="true" />
-        <span className={styles.eyebrow}>{eyebrow || "Save the Date"}</span>
+        <span className={styles.eyebrow}>
+          <EditableText field="eyebrow" value={eyebrow || "Save the Date"} style={styleOverrides?.["eyebrow"]} />
+        </span>
         <p className={styles.names}>
           <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
           {names[1] && (

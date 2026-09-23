@@ -5,6 +5,7 @@ import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { DEFAULT_HERO_VARIANT, HERO_VARIANTS } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import type { Json } from "@/lib/supabase/database.types";
+import { QUOTE_SUGGESTIONS } from "@/lib/quoteSuggestions";
 
 // `site_password_hash` is deliberately excluded: its column-level SELECT is
 // revoked from anon/authenticated at the DB level (see the site-password
@@ -149,6 +150,16 @@ export async function createEvent(userId: string, input: CreateEventInput) {
         names: input.names,
         eventDate: input.eventDate,
         photoUrl: input.photoUrl ?? "",
+      },
+      // A blank quote field gives a new host no sense of what belongs
+      // there ("сделать понятно что там можно что-то писать") -- seeding
+      // one real example up front, freely editable or removable (the
+      // Letter SectionHeader's "Suggest a quote" picker already has a
+      // "Clear quote" option), beats an empty box with no cue at all.
+      // Picked once here, not at render time, so it stays stable across
+      // reloads instead of changing every time the page is fetched.
+      letter: {
+        quote: QUOTE_SUGGESTIONS[Math.floor(Math.random() * QUOTE_SUGGESTIONS.length)],
       },
     } as unknown as Json,
   });

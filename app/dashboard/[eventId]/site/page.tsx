@@ -87,6 +87,7 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
       ? (content.hero as Record<string, unknown>)
       : {};
   const heroPhotoUrl = typeof heroContent.photoUrl === "string" ? heroContent.photoUrl : "";
+  const heroEyebrow = typeof heroContent.eyebrow === "string" ? heroContent.eyebrow : "";
   const heroStyleOverrides = extractStyleOverrides(heroContent);
   const heroHiddenFields = extractHiddenFields(heroContent);
   const letterContent =
@@ -587,6 +588,7 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
               theme={theme}
               heroVariant={heroVariant}
               heroPhotoUrl={heroPhotoUrl}
+              heroEyebrow={heroEyebrow}
               heroStyleOverrides={heroStyleOverrides}
               heroHiddenFields={heroHiddenFields}
               weddingData={{

@@ -234,6 +234,11 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
   const envelopeMonogramInitials =
     typeof heroContent.monogramInitials === "string" ? heroContent.monogramInitials : undefined;
   const envelopeRevealEnabled = typeof settings.envelopeRevealEnabled === "boolean" ? settings.envelopeRevealEnabled : true;
+  // A host's own custom wording (or translation) now wins over the
+  // event-type default -- content.hero.eyebrow only exists once a host has
+  // actually edited the field (updateHeroSection), same "empty means still
+  // using the default" convention as photoUrl.
+  const customEyebrow = typeof heroContent.eyebrow === "string" && heroContent.eyebrow ? heroContent.eyebrow : undefined;
 
   // `luxury` themes resolve to a same-lightness substitute category here
   // (see decorMotifs.ts's own comment) so every luxury event still gets a
@@ -265,7 +270,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
         />
         {sections.map((section, index) => {
           const element = renderSection(section, content, {
-            hero: { themeCategory: decorCategory, eyebrow: getEventType(event.event_type).heroEyebrow },
+            hero: { themeCategory: decorCategory, eyebrow: customEyebrow ?? getEventType(event.event_type).heroEyebrow },
             letter: { themeCategory: decorCategory },
             rsvp: { onSubmit: boundSubmitRsvp, defaultGuestName: invitedGuest?.full_name, maxPartySize },
             countdown: { eventDateTime, themeCategory: decorCategory },
