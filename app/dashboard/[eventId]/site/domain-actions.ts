@@ -21,6 +21,14 @@ export async function requestDomainVerification(input: RequestDomainVerification
 
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
   const { error } = await supabase
     .from("events")
     .update({
@@ -43,6 +51,14 @@ interface CheckDomainVerificationInput {
 
 export async function checkDomainVerification(input: CheckDomainVerificationInput) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
 
   const { data: event, error } = await supabase
     .from("events")
@@ -96,6 +112,14 @@ interface ClearDomainVerificationInput {
 
 export async function clearDomainVerification(input: ClearDomainVerificationInput) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
 
   const { error } = await supabase
     .from("events")

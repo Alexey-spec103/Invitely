@@ -43,6 +43,14 @@ export async function addGuest(
   }
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
   const { error } = await supabase.from("guests").insert({
     event_id: input.eventId,
     full_name: input.fullName,
@@ -64,6 +72,14 @@ export async function addGuest(
 
 export async function setInvitationSent(guestId: string, sent: boolean) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
 
   // A manual "mark as not sent" also clears the channel record -- otherwise
   // toggling it back on later would misleadingly still show whichever
@@ -93,6 +109,14 @@ export type SendChannel = "link" | "sms" | "whatsapp" | "email";
  * channel history stay in sync regardless of which action set them. */
 export async function recordInvitationSent(guestId: string, channel: SendChannel) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
 
   const { data: guest, error: fetchError } = await supabase
     .from("guests")
@@ -134,6 +158,14 @@ export async function sendGuestInvitationEmail(
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
   const { data: guest, error: guestError } = await supabase
     .from("guests")
     .select("full_name, email, event_id")
@@ -172,6 +204,15 @@ export async function addGuestsBulk(
   rawText: string
 ): Promise<{ ok: true; count: number } | { ok: false; message: string }> {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
   const rows = parseGuestLines(rawText);
 
   if (rows.length === 0) {
@@ -222,6 +263,14 @@ export async function updateGuest(
   }
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
   const { error } = await supabase
     .from("guests")
     .update({
@@ -248,6 +297,14 @@ export async function deleteGuest(
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
   const { error } = await supabase.from("guests").delete().eq("id", guestId);
 
   if (error) {
@@ -260,6 +317,14 @@ export async function deleteGuest(
 
 export async function addGuestAttendee(guestId: string, fullName: string) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
 
   const { error } = await supabase.from("guest_attendees").insert({
     guest_id: guestId,
@@ -276,6 +341,14 @@ export async function addGuestAttendee(guestId: string, fullName: string) {
 export async function deleteGuestAttendee(attendeeId: string) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
   const { error } = await supabase.from("guest_attendees").delete().eq("id", attendeeId);
 
   if (error) {
@@ -290,6 +363,14 @@ export async function toggleGuestbookVisibility(
   hidden: boolean
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
 
   const { error } = await supabase
     .from("rsvp_responses")
@@ -309,6 +390,14 @@ export async function setAllGuestbookVisibility(
   hidden: boolean
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
 
   const { error } = await supabase
     .from("rsvp_responses")
@@ -334,6 +423,14 @@ export async function linkRsvpResponseToGuest(
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
   const { error } = await supabase
     .from("rsvp_responses")
     .update({ guest_id: input.guestId })
@@ -351,6 +448,14 @@ export async function deleteRsvpResponse(
   responseId: string
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
 
   const { error } = await supabase.from("rsvp_responses").delete().eq("id", responseId);
 
