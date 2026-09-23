@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { Undo2, Redo2, Monitor, Smartphone, Tablet } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
@@ -1715,6 +1715,19 @@ export default function SiteInlineEditor({
           <div
             ref={scrollAreaRef}
             className="relative max-h-[85vh] overflow-y-auto rounded-2xl"
+            // Every section's CSS uses `min-height: var(--section-min-height,
+            // 100svh)` -- on the public site that variable is unset, so it
+            // correctly falls back to the real page viewport. In here,
+            // 100svh would mean the REAL browser window, not this frame's
+            // own 85vh cap, so a full-height Hero photo (or any other
+            // full-height section) rendered taller than the visible frame,
+            // with its own names/date -- anchored to the bottom on several
+            // variants -- pushed below the fold. Flagged live: "hero photo
+            // половину обрезанный" (the hero photo looks half cropped) --
+            // a host saw the photo but not their own names without
+            // scrolling. Matching this to the frame's own max-height makes
+            // every section size to exactly what's actually visible.
+            style={{ "--section-min-height": "85vh" } as CSSProperties}
             onClick={clearSelection}
           >
             <ThemeProvider theme={theme}>

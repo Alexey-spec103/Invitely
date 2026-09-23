@@ -20,10 +20,18 @@
   margin: 0 auto 2rem;
 }
 
+/* Was `minmax(6rem, 1fr)` -- with `auto-fit`, the `1fr` upper bound lets
+   grid stretch each track to fill any leftover row space, so with only 1-2
+   colors added (the common case right after picking one) each swatch
+   ballooned to fill nearly the whole section width/height (`.chip`'s
+   `aspect-ratio: 1` scales height right along with it). Flagged live:
+   "квадраты огромный первый" (the squares are huge). Fixed-size tracks +
+   centering keep every swatch the same size regardless of how many exist. */
 .grid {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+  grid-template-columns: repeat(auto-fit, 6rem);
+  justify-content: center;
   gap: 1rem;
   max-width: 32rem;
   margin: 0 auto;
@@ -88,6 +96,7 @@
   }
 
   .grid {
+    grid-template-columns: repeat(auto-fit, 7rem);
     max-width: 40rem;
   }
 }
