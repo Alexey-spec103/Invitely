@@ -60,6 +60,20 @@
   -webkit-mask-position: center;
 }
 
+/* Full-color Recraft illustration variant for .sprig above -- same tucked-
+   corner spot, enlarged for a real illustration (same ratio every other
+   cap-decor swap in this codebase uses). */
+.sprigColor {
+  position: absolute;
+  bottom: -1.5rem;
+  right: -2rem;
+  width: 6.5rem;
+  height: 6.5rem;
+  transform: rotate(12deg);
+  object-fit: contain;
+  pointer-events: none;
+}
+
 .note {
   font-family: var(--theme-font-script);
   color: var(--theme-accent);
@@ -83,6 +97,11 @@
     width: 20rem;
   }
 
+  .sprigColor {
+    width: 8rem;
+    height: 8rem;
+  }
+
   .note {
     font-size: 2.25rem;
   }
@@ -95,6 +114,11 @@
 @media (min-width: 1024px) {
   .print {
     width: 22rem;
+  }
+
+  .sprigColor {
+    width: 9rem;
+    height: 9rem;
   }
 
   .note {

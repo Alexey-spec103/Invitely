@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { CORNER_PAIR_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./WatercolorBotanical.module.css";
 
 /** dashboard-audit.md C8: "watercolor botanical" -- a distinct technique
@@ -13,11 +14,21 @@ import styles from "./WatercolorBotanical.module.css";
  * doubled. Same crop-safe "centered by the flex parent, nudged with
  * transform" technique as .branch (see that rule's own comment on why an
  * explicit top/left here would fall outside the theme gallery's crop). */
-export default function WatercolorBotanical({ names, eventDate, styleOverrides }: HeroSectionVariantProps) {
+export default function WatercolorBotanical({ names, eventDate, styleOverrides, themeCategory }: HeroSectionVariantProps) {
+  const decor = themeCategory ? CORNER_PAIR_DECOR[themeCategory] : undefined;
   return (
     <section className={styles.section}>
-      <span className={styles.branchBack} aria-hidden="true" />
-      <span className={styles.branch} aria-hidden="true" />
+      {decor ? (
+        <>
+          <img className={styles.branchColor} src={decor[0]} alt="" aria-hidden="true" />
+          <img className={styles.branchBackColor} src={decor[1]} alt="" aria-hidden="true" />
+        </>
+      ) : (
+        <>
+          <span className={styles.branchBack} aria-hidden="true" />
+          <span className={styles.branch} aria-hidden="true" />
+        </>
+      )}
       <div className={styles.content}>
         <p className={styles.names}>
           <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />

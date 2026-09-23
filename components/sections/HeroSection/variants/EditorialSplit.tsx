@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { CAP_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./EditorialSplit.module.css";
 
 function getInitials(names: string[]): [string, string] {
@@ -14,10 +15,12 @@ export default function EditorialSplit({
   photoUrl,
   monogramInitials,
   styleOverrides,
+  themeCategory,
 }: HeroSectionVariantProps) {
   const [initialA, initialB] = monogramInitials?.trim()
     ? [monogramInitials.trim().charAt(0).toUpperCase(), monogramInitials.trim().charAt(1)?.toUpperCase() ?? ""]
     : getInitials(names);
+  const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
 
   return (
     <section className={styles.section}>
@@ -31,7 +34,11 @@ export default function EditorialSplit({
           {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
         </p>
         <p className={styles.date}>{eventDate}</p>
-        <span className={styles.sprig} aria-hidden="true" />
+        {capAsset ? (
+          <img className={styles.sprigColor} src={capAsset} alt="" aria-hidden="true" />
+        ) : (
+          <span className={styles.sprig} aria-hidden="true" />
+        )}
         <span className={`${styles.bigLetter} ${styles.bigLetterSecond}`} aria-hidden="true">
           {initialB}
         </span>

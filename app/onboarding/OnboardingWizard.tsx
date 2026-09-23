@@ -28,6 +28,7 @@ import PhotoDropzone from "@/components/ui/PhotoDropzone";
 import HowItWorksClip from "./HowItWorksClip";
 import { themes, DEFAULT_THEME_ID, getTheme } from "@/lib/themes";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { EVENT_TYPE_LIST, DEFAULT_EVENT_TYPE_ID, getEventType } from "@/lib/eventTypes";
 import { completeOnboarding } from "./actions";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
@@ -396,6 +397,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                 eventDate={eventDate || ""}
                 photoUrl={photoUrl || undefined}
                 eyebrow={eventType.heroEyebrow}
+                themeCategory={effectiveDecorCategory(selectedTheme)}
               />
             </ThemeProvider>
           </div>

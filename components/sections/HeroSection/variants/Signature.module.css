@@ -35,6 +35,16 @@
   -webkit-mask-position: center;
 }
 
+/* Full-color Recraft illustration variant -- same in-flow slot as .sprig
+   above, just larger (a small tinted mask and a full illustration read at
+   very different natural sizes, same ratio CircularRings' cap swap uses). */
+.sprigColor {
+  display: block;
+  width: 5rem;
+  height: 5rem;
+  object-fit: contain;
+}
+
 .names {
   font-family: var(--theme-font-script);
   font-size: 3.25rem;
@@ -71,6 +81,11 @@
   .sprig {
     width: 3rem;
     height: 5rem;
+  }
+
+  .sprigColor {
+    width: 6.5rem;
+    height: 6.5rem;
   }
 
   .names {

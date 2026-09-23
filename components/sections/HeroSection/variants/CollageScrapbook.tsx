@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { CAP_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./CollageScrapbook.module.css";
 
 /** Collage/scrapbook: a tilted "photo print" with a washi-tape corner and
@@ -10,13 +11,19 @@ export default function CollageScrapbook({
   eventDate,
   photoUrl,
   styleOverrides,
+  themeCategory,
 }: HeroSectionVariantProps) {
+  const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
   return (
     <section className={styles.section}>
       {photoUrl && (
         <div className={styles.print}>
           <span className={styles.tape} aria-hidden="true" />
-          <span className={styles.sprig} aria-hidden="true" />
+          {capAsset ? (
+            <img className={styles.sprigColor} src={capAsset} alt="" aria-hidden="true" />
+          ) : (
+            <span className={styles.sprig} aria-hidden="true" />
+          )}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photoUrl} alt="" className={styles.photo} />
         </div>

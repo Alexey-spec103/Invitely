@@ -60,6 +60,35 @@
   -webkit-mask-position: center;
 }
 
+/* Full-color Recraft illustration variant -- same off-center corner
+   placement as WatercolorBloom's own .blobColorCorner/.sprigColorCorner
+   (this branch's cornflower/eucalyptus pair is a solid cluster too, not an
+   open-center ring, so it needs the same clear-of-center treatment). */
+.branchColor {
+  position: absolute;
+  top: -3rem;
+  right: -3rem;
+  width: 22rem;
+  height: 22rem;
+  max-width: 70vw;
+  max-height: 70vw;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.branchBackColor {
+  position: absolute;
+  bottom: -1.5rem;
+  left: -1.5rem;
+  width: 14rem;
+  height: 14rem;
+  max-width: 50vw;
+  max-height: 50vw;
+  object-fit: contain;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
 .content {
   position: relative;
   z-index: 1;
@@ -84,6 +113,20 @@
 }
 
 @media (min-width: 640px) {
+  .branchColor {
+    width: 28rem;
+    height: 28rem;
+    top: -4rem;
+    right: -4rem;
+  }
+
+  .branchBackColor {
+    width: 17rem;
+    height: 17rem;
+    bottom: -2rem;
+    left: -2rem;
+  }
+
   .names {
     font-size: 4rem;
   }
@@ -94,6 +137,20 @@
 }
 
 @media (min-width: 1024px) {
+  .branchColor {
+    width: 34rem;
+    height: 34rem;
+    top: -5rem;
+    right: -5rem;
+  }
+
+  .branchBackColor {
+    width: 19rem;
+    height: 19rem;
+    bottom: -2.5rem;
+    left: -2.5rem;
+  }
+
   .names {
     font-size: 5rem;
   }

@@ -32,6 +32,20 @@
   -webkit-mask-position: center;
 }
 
+/* Full-color Recraft illustration variant for .moon above -- same top-right
+   corner spot, enlarged (a flat tinted mask and a real illustration read at
+   very different natural sizes, same ratio every other cap-decor swap in
+   this codebase uses). */
+.moonColor {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 6.5rem;
+  height: 6.5rem;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 /* A small circular "locket" photo above the eyebrow -- additive, not a
    replacement for the moon/swash flourishes, since the hand-lettered script
    stays the composition's whole point. */
@@ -109,6 +123,13 @@
     height: 4.5rem;
   }
 
+  .moonColor {
+    top: 1rem;
+    right: 1rem;
+    width: 8.5rem;
+    height: 8.5rem;
+  }
+
   .photo {
     width: 7rem;
     height: 7rem;
@@ -127,5 +148,10 @@
   .swash {
     width: 12rem;
     height: 2.2rem;
+  }
+
+  .moonColor {
+    width: 10rem;
+    height: 10rem;
   }
 }

@@ -63,6 +63,7 @@ import { updateWeddingData } from "../actions";
 import SectionToggleSwitch from "./SectionToggleSwitch";
 import { MODULE_ICONS } from "./SectionModulesPanel";
 import type { Theme } from "@/lib/themes";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 
 type StyleOverrides = Record<string, TextStyleOverride>;
 
@@ -501,6 +502,15 @@ export default function SiteInlineEditor({
   allSections,
 }: SiteInlineEditorProps) {
   const router = useRouter();
+  // The constructor preview never passed `themeCategory` down to any
+  // section variant, so every category-gated Recraft illustration (the
+  // "beautiful side elements" the user asked about) silently fell back to
+  // the plain accent-tinted mask HERE ONLY -- the public /e/[slug] page
+  // already passes this correctly. Confirmed live: a HandLetteringHero
+  // instance rendered its .moon fallback span, not .moonColor, even though
+  // CAP_DECOR has a real romantic entry. Computed once and threaded to
+  // every section below that accepts it.
+  const decorCategory = effectiveDecorCategory(theme);
   // dashboard-audit.md B12: one handler for every section's background
   // button -- looks up the section's current fill from the raw parsed
   // array (see the prop's own comment) and saves a new one through the one
@@ -1651,6 +1661,7 @@ export default function SiteInlineEditor({
                 photoUrl={heroVisible.photoUrl}
                 styleOverrides={heroOverrides}
                 eyebrow={getEventType(weddingDataDraft.eventType).heroEyebrow}
+                themeCategory={decorCategory}
               />
             </EditableFieldProvider>
           </div>
@@ -1697,6 +1708,7 @@ export default function SiteInlineEditor({
                   variant={letter.variant}
                   {...applyHiddenFields(letterField.draft, letterField.draft.hiddenFields)}
                   locale={DEFAULT_LOCALE}
+                  themeCategory={decorCategory}
                 />
               </EditableFieldProvider>
             </div>
@@ -1887,6 +1899,7 @@ export default function SiteInlineEditor({
                   eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
                   styleOverrides={countdownField.draft.styleOverrides}
                   locale={DEFAULT_LOCALE}
+                  themeCategory={decorCategory}
                 />
               </EditableFieldProvider>
             </div>
@@ -1922,6 +1935,7 @@ export default function SiteInlineEditor({
                     styleOverrides={giftField.draft.styleOverrides}
                     preferences={giftPreferencesForRender(gift.preferences)}
                     locale={DEFAULT_LOCALE}
+                    themeCategory={decorCategory}
                   />
                 </EditableFieldProvider>
               </div>
@@ -1960,6 +1974,7 @@ export default function SiteInlineEditor({
                     description={dressCodeVisible.description}
                     colors={dressCodeVisible.colors}
                     styleOverrides={dressCodeField.draft.styleOverrides}
+                    themeCategory={decorCategory}
                   />
                 </EditableFieldProvider>
               </div>
