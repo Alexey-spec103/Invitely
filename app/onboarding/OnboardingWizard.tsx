@@ -211,7 +211,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
         className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
         noValidate
       >
-        <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
           {t.stepOf(step + 1, STEPS.length)}
         </p>
 
