@@ -55,6 +55,35 @@
   transform: rotate(180deg);
 }
 
+/* Full-color Recraft illustration variant -- composes the shared corner-bleed
+   anchors (decorAnchors.module.css) instead of the flat accent-tinted mask
+   above, for categories with a matching CORNER_PAIR_DECOR/CATEGORY_MASK_ACCENT
+   entry. --decor-inward kept smaller than the frame's own padding so the
+   illustration never reaches over the names/date in .content. */
+.flourishColorTl {
+  composes: cornerBleedTopLeft from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 3rem;
+}
+
+.flourishColorTr {
+  composes: cornerBleedTopRight from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 3rem;
+}
+
+.flourishColorBl {
+  composes: cornerBleedBottomLeft from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 3rem;
+}
+
+.flourishColorBr {
+  composes: cornerBleedBottomRight from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 3rem;
+}
+
 .content {
   text-align: center;
   padding: 2rem;
@@ -91,6 +120,14 @@
     height: 6.5rem;
   }
 
+  .flourishColorTl,
+  .flourishColorTr,
+  .flourishColorBl,
+  .flourishColorBr {
+    --decor-size: 8rem;
+    --decor-inward: 4rem;
+  }
+
   .names {
     font-size: 3.5rem;
   }
@@ -104,6 +141,14 @@
   .flourish {
     width: 8rem;
     height: 8rem;
+  }
+
+  .flourishColorTl,
+  .flourishColorTr,
+  .flourishColorBl,
+  .flourishColorBr {
+    --decor-size: 9.5rem;
+    --decor-inward: 4.5rem;
   }
 
   .names {

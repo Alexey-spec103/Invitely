@@ -69,6 +69,32 @@
   pointer-events: none;
 }
 
+/* TopRight/BottomLeft siblings -- added for the 4-corner Hero frames
+   (BotanicalFrame, VintageOrnamental) that decorate every corner, not just
+   the diagonal pair Letter/Gift use. Same formula, mirrored. */
+.cornerBleedTopRight {
+  position: absolute;
+  top: calc(-1 * (var(--decor-size) - var(--decor-inward, 5rem)));
+  right: calc(-1 * (var(--decor-size) - var(--decor-inward, 5rem)));
+  width: var(--decor-size);
+  height: var(--decor-size);
+  object-fit: contain;
+  object-position: top right;
+  pointer-events: none;
+}
+
+.cornerBleedBottomLeft {
+  position: absolute;
+  bottom: calc(-1 * (var(--decor-size) - var(--decor-inward, 5rem)));
+  left: calc(-1 * (var(--decor-size) - var(--decor-inward, 5rem)));
+  width: var(--decor-size);
+  height: var(--decor-size);
+  object-fit: contain;
+  object-position: bottom left;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
 /* --- corner-pair-edge: two accents anchored just inside their container's
    own edge (positive offset), for a container with no card/frame to bleed
    past (Gift's whole section). The container needs BOTH real top padding

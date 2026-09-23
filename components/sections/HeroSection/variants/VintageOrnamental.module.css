@@ -60,6 +60,33 @@
   transform: rotate(180deg);
 }
 
+/* Full-color Recraft illustration variant, see BotanicalFrame.module.css's
+   matching comment -- kept --decor-inward smaller than that sibling since
+   this frame nests a second inner border the illustration shouldn't cross. */
+.flourishColorTl {
+  composes: cornerBleedTopLeft from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 2.5rem;
+}
+
+.flourishColorTr {
+  composes: cornerBleedTopRight from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 2.5rem;
+}
+
+.flourishColorBl {
+  composes: cornerBleedBottomLeft from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 2.5rem;
+}
+
+.flourishColorBr {
+  composes: cornerBleedBottomRight from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 2.5rem;
+}
+
 /* Plain rectangle -- the surrounding double-ruled frame + corner flourishes
    already are the "decorative kant", so the photo itself stays a flat inset
    rather than adding a second competing border. A faint sepia tint nods to
@@ -101,6 +128,14 @@
     padding: 2.75rem 2rem;
   }
 
+  .flourishColorTl,
+  .flourishColorTr,
+  .flourishColorBl,
+  .flourishColorBr {
+    --decor-size: 8rem;
+    --decor-inward: 3.5rem;
+  }
+
   .names {
     font-size: 3.25rem;
   }
@@ -111,6 +146,14 @@
 }
 
 @media (min-width: 1024px) {
+  .flourishColorTl,
+  .flourishColorTr,
+  .flourishColorBl,
+  .flourishColorBr {
+    --decor-size: 9.5rem;
+    --decor-inward: 4rem;
+  }
+
   .names {
     font-size: 3.75rem;
   }
