@@ -1037,7 +1037,7 @@ export default function SiteInlineEditor({
   // of its own sub-fields, the same adjacency weddingpost.ru's own tree
   // showed live between a "Групповой элемент" row and the text rows next to
   // it -- confirmed in Chrome this session, not guessed.
-  const blocks: BlockRowData[] = [
+  const blocksRaw: BlockRowData[] = [
     {
       ...makeRow({
         field: "names.0",
@@ -1456,6 +1456,21 @@ export default function SiteInlineEditor({
       },
     },
   ];
+
+  // `key` above is each field's raw content-path (e.g. "title",
+  // "description"), which repeats across sections -- Letter, RSVP,
+  // Countdown, Gift, DressCode, and Guestbook all have their own "title".
+  // Confirmed live as a real React duplicate-key warning. De-duped here
+  // (index suffix on repeats only) rather than threading a section prefix
+  // through all 26 makeRow call sites above.
+  const seenBlockKeys = new Set<string>();
+  const blocks: BlockRowData[] = blocksRaw.map((block, index) => {
+    if (!seenBlockKeys.has(block.key)) {
+      seenBlockKeys.add(block.key);
+      return block;
+    }
+    return { ...block, key: `${block.key}#${index}` };
+  });
 
   return (
     <div className="flex flex-col gap-3">
