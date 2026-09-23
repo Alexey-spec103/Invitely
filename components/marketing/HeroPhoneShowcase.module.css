@@ -42,6 +42,14 @@
   color: #5c4632;
 }
 
+/* Positioned ancestor for .paperStack below -- the phone alone doesn't need
+   a wrapper, but the paper card peeking out from behind it needs something
+   to anchor to that isn't .stage itself (.stage centers .device via flex,
+   so .device's own edges aren't at fixed coordinates within .stage). */
+.deviceWrap {
+  position: relative;
+}
+
 /* A clean, modern device mockup -- rounded bezel, no physical home button --
    instead of a stock photo of a hand holding an old-style iPhone. */
 .device {
@@ -92,6 +100,45 @@
   border-radius: 999px;
   background: #000;
   z-index: 5;
+}
+
+/* The matching paper invitation, peeking out from behind the phone's
+   bottom-left corner -- real InvitationCardPreview, same theme as whichever
+   frame the phone is currently showing. Sized off the card's own real
+   proportions (420:595, same ratio SiteOrPaperSection uses) rather than an
+   arbitrary box. Sits behind the phone in stacking order (z-index) and in
+   depth (scaled down, tilted away) so it reads as "also on the table," not
+   competing with the phone for attention. */
+.paperStack {
+  position: absolute;
+  bottom: -6%;
+  left: -16%;
+  width: 40%;
+  aspect-ratio: 420 / 595;
+  z-index: -1;
+  filter: drop-shadow(0 18px 30px rgba(58, 40, 20, 0.28));
+}
+
+.paperLayer {
+  /* grid, not block: InvitationCardPreview's FlipCard renders its faces
+     `position: absolute`, which contributes zero height to a block-level
+     parent's normal flow and would otherwise collapse this box to 0px --
+     same fix as SiteOrPaperSection's .paperItem (see its own comment). */
+  display: grid;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  transform: rotate(-9deg);
+  background: #fff;
+}
+
+@media (min-width: 640px) {
+  .paperStack {
+    bottom: -4%;
+    left: -19%;
+  }
 }
 
 .homeIndicator {
@@ -193,6 +240,15 @@
     animation: framePlay 12s cubic-bezier(0.22, 1, 0.36, 1) infinite;
   }
 
+  /* Own keyframes, not a reuse of framePlay -- an animated `transform`
+     replaces any static transform on the same element for as long as the
+     animation runs, which would have silently dropped .paperLayer's
+     rotate(-9deg) tilt. paperFramePlay bakes the same rotation into every
+     step instead. */
+  .paperLayer {
+    animation: paperFramePlay 12s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
   .frameBoho {
     animation-delay: 0s;
   }
@@ -274,6 +330,36 @@
   100% {
     opacity: 0;
     transform: translateY(-22px) scale(0.96);
+    filter: blur(8px);
+  }
+}
+
+/* Same crossfade as framePlay, with .paperLayer's rotate(-9deg) tilt baked
+   into every step -- see the comment on .paperLayer's animation rule. */
+@keyframes paperFramePlay {
+  0% {
+    opacity: 0;
+    transform: rotate(-9deg) translateY(14px) scale(0.96);
+    filter: blur(8px);
+  }
+  7% {
+    opacity: 1;
+    transform: rotate(-9deg) translateY(0) scale(1);
+    filter: blur(0);
+  }
+  26% {
+    opacity: 1;
+    transform: rotate(-9deg) translateY(0) scale(1);
+    filter: blur(0);
+  }
+  33% {
+    opacity: 0;
+    transform: rotate(-9deg) translateY(-14px) scale(0.96);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-9deg) translateY(-14px) scale(0.96);
     filter: blur(8px);
   }
 }
