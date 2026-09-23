@@ -12,7 +12,11 @@ export const luxuryRoseGold: Theme = {
   vars: {
     "--theme-bg": "#FBF0EC",
     "--theme-text": "#3C2A26",
-    "--theme-accent": "#C98F84",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 2.42:1 against this theme's own #FBF0EC bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.08:1.
+    "--theme-accent": "#BE786B",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-parisienne), cursive",

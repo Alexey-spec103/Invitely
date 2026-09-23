@@ -11,7 +11,11 @@ export const minimalClayLine: Theme = {
   vars: {
     "--theme-bg": "#F6F1EC",
     "--theme-text": "#302620",
-    "--theme-accent": "#B98A6A",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 2.71:1 against this theme's own #F6F1EC bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.08:1.
+    "--theme-accent": "#B27F5C",
     "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",

@@ -11,7 +11,11 @@ export const romanticAntiqueRose: Theme = {
   vars: {
     "--theme-bg": "#F7EDE9",
     "--theme-text": "#45322E",
-    "--theme-accent": "#B97C6E",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 2.96:1 against this theme's own #F7EDE9 bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.06:1.
+    "--theme-accent": "#B7796B",
     "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-parisienne), cursive",

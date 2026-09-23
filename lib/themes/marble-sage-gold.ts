@@ -12,7 +12,11 @@ export const marbleSageGold: Theme = {
   vars: {
     "--theme-bg": "#EDEEE7",
     "--theme-text": "#2E3A32",
-    "--theme-accent": "#B8935A",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 2.44:1 against this theme's own #EDEEE7 bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.06:1.
+    "--theme-accent": "#A78148",
     "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
     "--theme-font-script": "var(--font-parisienne), cursive",

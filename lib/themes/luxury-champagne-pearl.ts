@@ -12,7 +12,11 @@ export const luxuryChampagnePearl: Theme = {
   vars: {
     "--theme-bg": "#FAF5EC",
     "--theme-text": "#33291F",
-    "--theme-accent": "#D8B978",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 1.74:1 against this theme's own #FAF5EC bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.09:1.
+    "--theme-accent": "#AE8632",
     "--theme-font-heading": "var(--font-italiana), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",

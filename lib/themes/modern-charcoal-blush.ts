@@ -12,7 +12,11 @@ export const modernCharcoalBlush: Theme = {
   vars: {
     "--theme-bg": "#F7F5F3",
     "--theme-text": "#1F1F1F",
-    "--theme-accent": "#D98A8A",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 2.43:1 against this theme's own #F7F5F3 bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.01:1.
+    "--theme-accent": "#D17373",
     "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-space-grotesk), system-ui, sans-serif",

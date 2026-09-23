@@ -11,7 +11,11 @@ export const bohoMarigoldFestival: Theme = {
   vars: {
     "--theme-bg": "#F3E7CE",
     "--theme-text": "#4A3818",
-    "--theme-accent": "#D68A2E",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 2.27:1 against this theme's own #F3E7CE bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.07:1.
+    "--theme-accent": "#B77524",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-caveat), cursive",

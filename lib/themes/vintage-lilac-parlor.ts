@@ -11,7 +11,11 @@ export const vintageLilacParlor: Theme = {
   vars: {
     "--theme-bg": "#F1ECEF",
     "--theme-text": "#3B3441",
-    "--theme-accent": "#A08BB5",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 2.62:1 against this theme's own #F1ECEF bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.03:1.
+    "--theme-accent": "#967FAD",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",

@@ -11,7 +11,11 @@ export const coastalSeafoamBreeze: Theme = {
   vars: {
     "--theme-bg": "#EFF6F2",
     "--theme-text": "#223832",
-    "--theme-accent": "#5FA893",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 2.55:1 against this theme's own #EFF6F2 bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.02:1.
+    "--theme-accent": "#549A86",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",

@@ -11,7 +11,11 @@ export const minimalSageLine: Theme = {
   vars: {
     "--theme-bg": "#F5F6F1",
     "--theme-text": "#2A2E24",
-    "--theme-accent": "#93A583",
+    // Contrast audit (automated, same technique as romantic-blush's earlier
+    // manual fix): measured 2.43:1 against this theme's own #F5F6F1 bg --
+    // below the 3:1 floor even for large/decorative text. Deepened within the
+    // same hue and saturation (not re-picked), now passes 3.05:1.
+    "--theme-accent": "#7E946B",
     "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-script": "var(--font-alex-brush), cursive",
