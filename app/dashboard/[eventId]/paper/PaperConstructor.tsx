@@ -286,7 +286,16 @@ export default function PaperConstructor({
       className={
         isBackCanvasActive
           ? "mt-6 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:flex sm:items-start sm:gap-6"
-          : "mt-6 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:grid sm:grid-cols-[minmax(0,160px)_minmax(0,240px)_1fr] sm:items-start sm:gap-6"
+          : /* Was `[..._minmax(0,240px)_1fr]` -- the middle column (the
+             actual print-card preview, capped at 240px) got the SMALLEST
+             of the two flexible slots, while the largest (1fr) went to a
+             couple lines of "edit this elsewhere" help text. Flagged live:
+             "надо бумагу сделать больше... чтобы понятно было и удобно
+             было редактировать" (make the paper preview bigger, so it's
+             clear and easy to work with). Swapping which column gets 1fr
+             (paired with a bigger base render size below) gives the actual
+             preview the room, not the caption next to it. */
+            "mt-6 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:grid sm:grid-cols-[minmax(0,160px)_1fr_minmax(0,260px)] sm:items-start sm:gap-6"
       }
     >
       <nav className={isBackCanvasActive ? "flex-none space-y-4 sm:w-40" : "space-y-4"}>
@@ -339,8 +348,8 @@ export default function PaperConstructor({
           <div>
             <div className="flex justify-center overflow-hidden rounded-md bg-[var(--dash-surface-2)] p-4">
               <div
-                className="grid overflow-hidden rounded-md shadow-md transition-[width] duration-200"
-                style={{ aspectRatio: activeMedia.aspectRatio, width: `${200 * zoom}px` }}
+                className="grid w-full max-w-[420px] overflow-hidden rounded-md shadow-md transition-[width] duration-200"
+                style={{ aspectRatio: activeMedia.aspectRatio, width: `${320 * zoom}px` }}
               >
                 {activeMedia.id === "invitation-front" && (
                   <InvitationCardPreview

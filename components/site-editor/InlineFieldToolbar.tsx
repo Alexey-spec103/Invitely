@@ -50,14 +50,27 @@ export default function InlineFieldToolbar({
       onMouseDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
     >
-      <input
-        type="number"
-        value={override?.fontSize ?? ""}
-        placeholder="Auto"
-        onChange={(event) => onUpdate({ fontSize: event.target.value ? Number(event.target.value) : undefined })}
-        className="w-16 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-sm text-[var(--dash-text)]"
-        title="Font size (px)"
-      />
+      {/* Was just a bare "Auto" placeholder with no visible unit -- read
+          live as an unlabeled mystery box (the hover-only title tooltip
+          doesn't help on touch, and nobody hovers a field they don't
+          already suspect does something). The "Aa" + "px" make it legible
+          as a font-size control at a glance, matching this pass's "make
+          controls self-evident" rule everywhere else. */}
+      <label className="flex items-center gap-1 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] pl-2 pr-1.5" title="Font size (px)">
+        <span aria-hidden="true" className="text-xs font-semibold text-[var(--dash-text-muted)]">
+          Aa
+        </span>
+        <input
+          type="number"
+          value={override?.fontSize ?? ""}
+          placeholder="Auto"
+          onChange={(event) => onUpdate({ fontSize: event.target.value ? Number(event.target.value) : undefined })}
+          className="w-12 bg-transparent py-1.5 text-sm text-[var(--dash-text)] outline-none"
+        />
+        <span aria-hidden="true" className="text-xs text-[var(--dash-text-muted)]">
+          px
+        </span>
+      </label>
       <input
         type="color"
         value={override?.color ?? "#000000"}
