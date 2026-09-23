@@ -42,3 +42,7 @@ next-env.d.ts
 
 # playwright-cli local session output (snapshots, console logs)
 .playwright-cli/
+
+# impeccable's platform-specific engine binary -- re-downloaded per
+# machine by `npx impeccable install`, not meant to be committed
+.claude/skills/impeccable/scripts/bin/
