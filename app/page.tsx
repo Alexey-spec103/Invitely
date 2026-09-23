@@ -130,7 +130,12 @@ export default async function Home() {
           the header (one shared sticky wrapper) so it stays pinned exactly
           like the original while scrolling, instead of scrolling away. */}
       <div className="sticky top-0 z-40">
-        <div className="bg-gradient-to-r from-violet-300 to-pink-300 py-2 text-center text-xs font-medium text-white sm:text-sm">
+        {/* impeccable audit: the previous violet-300/pink-300 pair failed
+            WCAG contrast for the white text (1.8:1, needs 4.5:1) -- darkened
+            within the same hue family (see the accent below) rather than
+            picking new colors, so this stays "the same recognizable
+            decorative accent" the original comment intended. */}
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 py-2 text-center text-xs font-medium text-white sm:text-sm">
           {t.topBar}
         </div>
         <header className="relative border-b border-stone-100 bg-white/80 backdrop-blur">
@@ -205,9 +210,14 @@ export default async function Home() {
                 element on the screen, matching weddingpost.ru's own pink→
                 purple→blue script accent -- a narrow, scoped exception to
                 the single-CTA-color cleanup above (this is decorative text,
-                not a button/interactive element). */}
+                not a button/interactive element). impeccable audit: the
+                original 400-shade stops measured ~1.7:1 against the cream
+                page background (needs 3:1 at this size) -- darkened one step
+                to 600 within the same pink/purple/blue family rather than
+                changing the palette, so it's still the same accent, just
+                legible. */}
             <p
-              className="mt-2 inline-block bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-4xl text-transparent"
+              className="mt-2 inline-block bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-4xl text-transparent"
               style={{ fontFamily: "var(--font-alex-brush), cursive" }}
             >
               {t.hero.accent}

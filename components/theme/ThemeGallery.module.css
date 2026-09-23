@@ -368,7 +368,7 @@
 }
 
 .qrCaption {
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: #44403c;
@@ -570,7 +570,7 @@
 .domainCaption {
   font-family: var(--theme-font-body);
   color: var(--theme-text);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   text-align: center;
   opacity: 0.55;
   padding: 0.5rem 0.6rem 0;
@@ -588,7 +588,7 @@
 
 .tagPill {
   font-family: var(--theme-font-body);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   color: var(--theme-text);
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
@@ -598,7 +598,7 @@
 .customizeCaption {
   font-family: var(--theme-font-body);
   color: var(--theme-text);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   text-align: center;
   opacity: 0.55;
   padding: 0.5rem 0.6rem 0.75rem;
@@ -620,7 +620,7 @@
 
 .cardFeatures {
   margin-top: 0.2rem;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
