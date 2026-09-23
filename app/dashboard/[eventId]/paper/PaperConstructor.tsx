@@ -19,6 +19,7 @@ import TableCardPreview from "@/components/paper/TableCardPreview";
 import PlaceCardPreview from "@/components/paper/PlaceCardPreview";
 import TableNumberCardPreview from "@/components/paper/TableNumberCardPreview";
 import PremiumUpgradeNote from "@/components/paper/PremiumUpgradeNote";
+import PremiumUpgradeModal from "@/components/ui/PremiumUpgradeModal";
 import type { TableCardData } from "@/components/pdf/TableCardDocument";
 
 interface PaperConstructorProps {
@@ -229,6 +230,14 @@ export default function PaperConstructor({
 
   const [pendingDownload, setPendingDownload] = useState<"seatingChart" | "placeCards" | "tableNumbers" | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  // dashboard-audit.md follow-up: a locked download used to just silently
+  // generate a watermarked PDF -- the only "this needs payment" signal was
+  // a small caption *below* the button, easy to miss. Now clicking a locked
+  // download opens PremiumUpgradeModal first; "Continue with watermark"
+  // there is what actually triggers the real download function.
+  const [pendingUpgradePrompt, setPendingUpgradePrompt] = useState<
+    "seatingChart" | "placeCards" | "tableNumbers" | null
+  >(null);
 
   const downloadSeatingChart = async () => {
     setDownloadError(null);
@@ -279,6 +288,26 @@ export default function PaperConstructor({
     } finally {
       setPendingDownload(null);
     }
+  };
+
+  const downloadActions = {
+    seatingChart: downloadSeatingChart,
+    placeCards: downloadPlaceCards,
+    tableNumbers: downloadTableNumbers,
+  } as const;
+
+  const handleDownloadClick = (id: "seatingChart" | "placeCards" | "tableNumbers") => {
+    if (locked) {
+      setPendingUpgradePrompt(id);
+      return;
+    }
+    downloadActions[id]();
+  };
+
+  const upgradePromptCopy: Record<"seatingChart" | "placeCards" | "tableNumbers", string> = {
+    seatingChart: "Downloading the seating chart",
+    placeCards: "Downloading place cards",
+    tableNumbers: "Downloading table numbers",
   };
 
   return (
@@ -491,7 +520,7 @@ export default function PaperConstructor({
                 </p>
                 <button
                   type="button"
-                  onClick={downloadSeatingChart}
+                  onClick={() => handleDownloadClick("seatingChart")}
                   disabled={pendingDownload !== null}
                   className="dash-btn dash-btn-primary"
                 >
@@ -508,7 +537,7 @@ export default function PaperConstructor({
                 </p>
                 <button
                   type="button"
-                  onClick={downloadPlaceCards}
+                  onClick={() => handleDownloadClick("placeCards")}
                   disabled={pendingDownload !== null}
                   className="dash-btn dash-btn-primary"
                 >
@@ -528,7 +557,7 @@ export default function PaperConstructor({
                 </p>
                 <button
                   type="button"
-                  onClick={downloadTableNumbers}
+                  onClick={() => handleDownloadClick("tableNumbers")}
                   disabled={pendingDownload !== null}
                   className="dash-btn dash-btn-primary"
                 >
@@ -543,6 +572,16 @@ export default function PaperConstructor({
           </div>
         </>
       )}
+      <PremiumUpgradeModal
+        open={pendingUpgradePrompt !== null}
+        onClose={() => setPendingUpgradePrompt(null)}
+        eventId={eventId}
+        action={pendingUpgradePrompt ? upgradePromptCopy[pendingUpgradePrompt] : ""}
+        canContinueAnyway
+        onContinueAnyway={() => {
+          if (pendingUpgradePrompt) downloadActions[pendingUpgradePrompt]();
+        }}
+      />
     </div>
   );
 }
