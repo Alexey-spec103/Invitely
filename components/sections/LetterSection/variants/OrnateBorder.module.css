@@ -61,11 +61,15 @@
 }
 
 .title {
+  /* Host-editable free text (EditableText), not a fixed short label --
+     forcing uppercase risks the same all-caps-body legibility issue this
+     family's own .deadline already had fixed (see CenteredCard's .deadline
+     comment). None of this variant's 3 siblings force .title uppercase
+     either, so this also brings OrnateBorder in line with them. */
   font-family: var(--theme-font-heading);
   font-weight: 400;
   font-size: 1.6rem;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   margin: 0 0 1.25rem;
 }
 
