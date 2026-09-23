@@ -57,8 +57,11 @@ import {
   updateVideoSection,
   updateBanquetNavigatorSection,
   updateSectionBackground,
+  toggleSection,
 } from "./actions";
 import { updateWeddingData } from "../actions";
+import SectionToggleSwitch from "./SectionToggleSwitch";
+import { MODULE_ICONS } from "./SectionModulesPanel";
 import type { Theme } from "@/lib/themes";
 
 type StyleOverrides = Record<string, TextStyleOverride>;
@@ -307,15 +310,22 @@ interface BlockRowData {
 function makeRow(opts: {
   field: string;
   label: string;
+  /** direct feedback: a bare "(empty)" row gives no clue which field it
+   * is or what it's for once there are a dozen of them stacked in the
+   * list -- "Letter title (empty)" tells you both what to click and what
+   * you'll be typing. Required, not optional: every call site names its
+   * own field so this can never silently regress back to "(empty)". */
+  placeholder: string;
   type: "text" | "image" | "auto";
   hiddenFields: string[] | undefined;
   commitHidden: (field: string, hidden: boolean) => void;
 }): Omit<BlockRowData, "onSelect"> {
   const hidden = (opts.hiddenFields ?? []).includes(opts.field);
+  const trimmed = opts.label.trim();
   return {
     key: opts.field,
     type: opts.type,
-    label: opts.label.trim() || "(empty)",
+    label: trimmed || `${opts.placeholder} (empty)`,
     hidden,
     onToggleHidden: () => opts.commitHidden(opts.field, !hidden),
   };
@@ -512,6 +522,40 @@ export default function SiteInlineEditor({
       })();
     },
     [eventId, router]
+  );
+  // Local optimistic overlay on top of each section's `enabled` prop --
+  // same reason SectionModulesPanel keeps its own `enabled` state instead
+  // of reading straight from props: an instant toggle response, corrected
+  // only if the server write actually fails. Both panels call the exact
+  // same toggleSection action, so a toggle from either place is the same
+  // write, not two competing states -- router.refresh() after a successful
+  // toggle re-syncs SectionModulesPanel's own copy too.
+  const [sectionEnabledOverride, setSectionEnabledOverride] = useState<Partial<Record<SectionKey, boolean>>>({});
+  const [togglePending, setTogglePending] = useState<SectionKey | null>(null);
+  const handleToggleSection = useCallback(
+    (type: SectionKey, next: boolean) => {
+      setSectionEnabledOverride((prev) => ({ ...prev, [type]: next }));
+      setTogglePending(type);
+      void (async () => {
+        try {
+          const result = await toggleSection(eventId, type, next);
+          if (!result.ok) {
+            setSectionEnabledOverride((prev) => ({ ...prev, [type]: !next }));
+          } else {
+            router.refresh();
+          }
+        } catch {
+          setSectionEnabledOverride((prev) => ({ ...prev, [type]: !next }));
+        } finally {
+          setTogglePending(null);
+        }
+      })();
+    },
+    [eventId, router]
+  );
+  const isSectionOn = useCallback(
+    (type: SectionKey, propEnabled: boolean) => sectionEnabledOverride[type] ?? propEnabled,
+    [sectionEnabledOverride]
   );
   // dashboard-audit.md B10: weddingpost.ru's own device switcher just
   // reflows the same live page at a different width, not a second mockup --
@@ -1042,6 +1086,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "names.0",
         label: weddingDataDraft.name1,
+        placeholder: "First partner's name",
         type: "auto",
         hiddenFields: heroHidden,
         commitHidden: heroCommitHidden,
@@ -1057,6 +1102,7 @@ export default function SiteInlineEditor({
             ...makeRow({
               field: "names.1",
               label: weddingDataDraft.name2,
+              placeholder: "Second partner's name",
               type: "auto" as const,
               hiddenFields: heroHidden,
               commitHidden: heroCommitHidden,
@@ -1072,6 +1118,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "photoUrl",
         label: "Hero photo",
+        placeholder: "Hero photo",
         type: "image",
         hiddenFields: heroHidden,
         commitHidden: heroCommitHidden,
@@ -1091,6 +1138,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: letterField.draft.title,
+        placeholder: `${sectionLabels.letter} title`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1104,6 +1152,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "body",
         label: letterField.draft.body,
+        placeholder: `${sectionLabels.letter} body`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1117,6 +1166,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "quote",
         label: letterField.draft.quote,
+        placeholder: `${sectionLabels.letter} quote`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1130,6 +1180,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "note",
         label: letterField.draft.note,
+        placeholder: `${sectionLabels.letter} note`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1143,6 +1194,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "rsvpDeadline",
         label: letterField.draft.rsvpDeadline,
+        placeholder: `${sectionLabels.letter} RSVP deadline`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1156,6 +1208,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "closingLine",
         label: letterField.draft.closingLine,
+        placeholder: `${sectionLabels.letter} signature`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1170,6 +1223,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: timelineField.draft.title,
+        placeholder: `${sectionLabels.timeline} title`,
         type: "text",
         hiddenFields: timelineField.draft.hiddenFields,
         commitHidden: timelineField.commitHidden,
@@ -1197,6 +1251,7 @@ export default function SiteInlineEditor({
           ...makeRow({
             field: `events.${index}.${subfield}`,
             label: event[subfield] ?? "",
+            placeholder: `Event ${index + 1} ${subfield}`,
             type: "text",
             hiddenFields: timelineField.draft.hiddenFields,
             commitHidden: timelineField.commitHidden,
@@ -1213,6 +1268,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: mapField.draft.title,
+        placeholder: `${sectionLabels.map} title`,
         type: "text",
         hiddenFields: mapField.draft.hiddenFields,
         commitHidden: mapField.commitHidden,
@@ -1240,6 +1296,7 @@ export default function SiteInlineEditor({
           ...makeRow({
             field: `venues.${index}.${subfield}`,
             label: venue[subfield],
+            placeholder: `Venue ${index + 1} ${subfield}`,
             type: "text",
             hiddenFields: mapField.draft.hiddenFields,
             commitHidden: mapField.commitHidden,
@@ -1256,6 +1313,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: rsvpField.draft.title,
+        placeholder: `${sectionLabels.rsvp} title`,
         type: "text",
         hiddenFields: rsvpField.draft.hiddenFields,
         commitHidden: rsvpField.commitHidden,
@@ -1269,6 +1327,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "description",
         label: rsvpField.draft.description,
+        placeholder: `${sectionLabels.rsvp} description`,
         type: "text",
         hiddenFields: rsvpField.draft.hiddenFields,
         commitHidden: rsvpField.commitHidden,
@@ -1295,6 +1354,7 @@ export default function SiteInlineEditor({
         ...makeRow({
           field: `questions.${index}.label`,
           label: question.label,
+          placeholder: `Question ${index + 1}`,
           type: "text",
           hiddenFields: rsvpField.draft.hiddenFields,
           commitHidden: rsvpField.commitHidden,
@@ -1310,6 +1370,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: countdownField.draft.title,
+        placeholder: `${sectionLabels.countdown} title`,
         type: "text",
         hiddenFields: countdownField.draft.hiddenFields,
         commitHidden: countdownField.commitHidden,
@@ -1324,6 +1385,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: giftField.draft.title,
+        placeholder: `${sectionLabels.gift} title`,
         type: "text",
         hiddenFields: giftField.draft.hiddenFields,
         commitHidden: giftField.commitHidden,
@@ -1337,6 +1399,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "description",
         label: giftField.draft.description,
+        placeholder: `${sectionLabels.gift} description`,
         type: "text",
         hiddenFields: giftField.draft.hiddenFields,
         commitHidden: giftField.commitHidden,
@@ -1351,6 +1414,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: dressCodeField.draft.title,
+        placeholder: `${sectionLabels.dressCode} title`,
         type: "text",
         hiddenFields: dressCodeField.draft.hiddenFields,
         commitHidden: dressCodeField.commitHidden,
@@ -1364,6 +1428,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "description",
         label: dressCodeField.draft.description,
+        placeholder: `${sectionLabels.dressCode} description`,
         type: "text",
         hiddenFields: dressCodeField.draft.hiddenFields,
         commitHidden: dressCodeField.commitHidden,
@@ -1390,6 +1455,7 @@ export default function SiteInlineEditor({
         ...makeRow({
           field: `colors.${index}.label`,
           label: color.label ?? "",
+          placeholder: `Color ${index + 1} name`,
           type: "text",
           hiddenFields: dressCodeField.draft.hiddenFields,
           commitHidden: dressCodeField.commitHidden,
@@ -1405,6 +1471,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: guestbookField.draft.title,
+        placeholder: `${sectionLabels.guestbook} title`,
         type: "text",
         hiddenFields: guestbookField.draft.hiddenFields,
         commitHidden: guestbookField.commitHidden,
@@ -1419,6 +1486,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: videoField.draft.title,
+        placeholder: `${sectionLabels.video} title`,
         type: "text",
         hiddenFields: videoField.draft.hiddenFields,
         commitHidden: videoField.commitHidden,
@@ -1433,6 +1501,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "title",
         label: banquetNavigatorField.draft.title,
+        placeholder: `${sectionLabels.banquetNavigator} title`,
         type: "text",
         hiddenFields: banquetNavigatorField.draft.hiddenFields,
         commitHidden: banquetNavigatorField.commitHidden,
@@ -1446,6 +1515,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "description",
         label: banquetNavigatorField.draft.description,
+        placeholder: `${sectionLabels.banquetNavigator} description`,
         type: "text",
         hiddenFields: banquetNavigatorField.draft.hiddenFields,
         commitHidden: banquetNavigatorField.commitHidden,
@@ -1606,7 +1676,10 @@ export default function SiteInlineEditor({
 
         <SectionHeader
           label={sectionLabels.letter}
-          enabled={letter.enabled}
+          icon={MODULE_ICONS.letter}
+          enabled={isSectionOn("letter", letter.enabled)}
+          onToggle={(next) => handleToggleSection("letter", next)}
+          togglePending={togglePending === "letter"}
           state={letterField.state}
           error={letterField.error}
           extra={
@@ -1616,21 +1689,28 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("letter")}>
-          <div ref={letterRef}>
-            <EditableFieldProvider value={letterContext}>
-              <LetterSection
-                variant={letter.variant}
-                {...applyHiddenFields(letterField.draft, letterField.draft.hiddenFields)}
-                locale={DEFAULT_LOCALE}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
+        {isSectionOn("letter", letter.enabled) ? (
+          <SectionBackground fill={getSectionBackground("letter")}>
+            <div ref={letterRef}>
+              <EditableFieldProvider value={letterContext}>
+                <LetterSection
+                  variant={letter.variant}
+                  {...applyHiddenFields(letterField.draft, letterField.draft.hiddenFields)}
+                  locale={DEFAULT_LOCALE}
+                />
+              </EditableFieldProvider>
+            </div>
+          </SectionBackground>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.letter} />
+        )}
 
         <SectionHeader
           label={sectionLabels.timeline}
-          enabled={timeline.enabled}
+          icon={MODULE_ICONS.timeline}
+          enabled={isSectionOn("timeline", timeline.enabled)}
+          onToggle={(next) => handleToggleSection("timeline", next)}
+          togglePending={togglePending === "timeline"}
           state={timelineField.state}
           error={timelineField.error}
           extra={
@@ -1640,34 +1720,43 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("timeline")}>
-          <div ref={timelineRef}>
-            <EditableFieldProvider value={timelineContext}>
-              <TimelineSection
-                variant={timeline.variant}
-                {...applyHiddenFields(timelineField.draft, timelineField.draft.hiddenFields)}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
-        <div className="flex justify-center pb-6" onClick={(event) => event.stopPropagation()}>
-          <button
-            type="button"
-            onClick={() =>
-              timelineField.setDraft((prev) => ({
-                ...prev,
-                events: [...prev.events, { time: "", title: "New event", description: "" }],
-              }))
-            }
-            className="dash-btn dash-btn-neutral text-xs"
-          >
-            + Add event
-          </button>
-        </div>
+        {isSectionOn("timeline", timeline.enabled) ? (
+          <>
+            <SectionBackground fill={getSectionBackground("timeline")}>
+              <div ref={timelineRef}>
+                <EditableFieldProvider value={timelineContext}>
+                  <TimelineSection
+                    variant={timeline.variant}
+                    {...applyHiddenFields(timelineField.draft, timelineField.draft.hiddenFields)}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+            <div className="flex justify-center pb-6" onClick={(event) => event.stopPropagation()}>
+              <button
+                type="button"
+                onClick={() =>
+                  timelineField.setDraft((prev) => ({
+                    ...prev,
+                    events: [...prev.events, { time: "", title: "New event", description: "" }],
+                  }))
+                }
+                className="dash-btn dash-btn-neutral text-xs"
+              >
+                + Add event
+              </button>
+            </div>
+          </>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.timeline} />
+        )}
 
         <SectionHeader
           label={sectionLabels.map}
-          enabled={map.enabled}
+          icon={MODULE_ICONS.map}
+          enabled={isSectionOn("map", map.enabled)}
+          onToggle={(next) => handleToggleSection("map", next)}
+          togglePending={togglePending === "map"}
           state={mapField.state}
           error={mapField.error}
           extra={
@@ -1677,51 +1766,60 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("map")}>
-          <div ref={mapRef}>
-            <EditableFieldProvider value={mapContext}>
-              <MapSection
-                variant={map.variant}
-                {...applyHiddenFields(mapField.draft, mapField.draft.hiddenFields)}
-                locale={DEFAULT_LOCALE}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
-        <div className="flex justify-center pb-6" onClick={(event) => event.stopPropagation()}>
-          <button
-            type="button"
-            onClick={() =>
-              mapField.setDraft((prev) => {
-                // First venue on the block starts from Wedding Data's own
-                // venue name/city/address instead of a placeholder -- an
-                // untouched "New venue" / "" pair isn't just a cosmetic
-                // placeholder, it becomes a literal Google Maps text query
-                // ("New venue, ") that resolves to a real, unrelated
-                // business somewhere in the world rather than the wedding's
-                // actual location. Only the very first venue gets this --
-                // a second/third venue has no single "the" venue to infer
-                // from Wedding Data, so it falls back to the old placeholder.
-                const isFirstVenue = prev.venues.length === 0;
-                const address = [weddingDataDraft.venueAddress, weddingDataDraft.venueCity]
-                  .filter(Boolean)
-                  .join(", ");
-                const seeded =
-                  isFirstVenue && (weddingDataDraft.venueName || address)
-                    ? { name: weddingDataDraft.venueName || "New venue", address }
-                    : { name: "New venue", address: "" };
-                return { ...prev, venues: [...prev.venues, seeded] };
-              })
-            }
-            className="dash-btn dash-btn-neutral text-xs"
-          >
-            + Add venue
-          </button>
-        </div>
+        {isSectionOn("map", map.enabled) ? (
+          <>
+            <SectionBackground fill={getSectionBackground("map")}>
+              <div ref={mapRef}>
+                <EditableFieldProvider value={mapContext}>
+                  <MapSection
+                    variant={map.variant}
+                    {...applyHiddenFields(mapField.draft, mapField.draft.hiddenFields)}
+                    locale={DEFAULT_LOCALE}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+            <div className="flex justify-center pb-6" onClick={(event) => event.stopPropagation()}>
+              <button
+                type="button"
+                onClick={() =>
+                  mapField.setDraft((prev) => {
+                    // First venue on the block starts from Wedding Data's own
+                    // venue name/city/address instead of a placeholder -- an
+                    // untouched "New venue" / "" pair isn't just a cosmetic
+                    // placeholder, it becomes a literal Google Maps text query
+                    // ("New venue, ") that resolves to a real, unrelated
+                    // business somewhere in the world rather than the wedding's
+                    // actual location. Only the very first venue gets this --
+                    // a second/third venue has no single "the" venue to infer
+                    // from Wedding Data, so it falls back to the old placeholder.
+                    const isFirstVenue = prev.venues.length === 0;
+                    const address = [weddingDataDraft.venueAddress, weddingDataDraft.venueCity]
+                      .filter(Boolean)
+                      .join(", ");
+                    const seeded =
+                      isFirstVenue && (weddingDataDraft.venueName || address)
+                        ? { name: weddingDataDraft.venueName || "New venue", address }
+                        : { name: "New venue", address: "" };
+                    return { ...prev, venues: [...prev.venues, seeded] };
+                  })
+                }
+                className="dash-btn dash-btn-neutral text-xs"
+              >
+                + Add venue
+              </button>
+            </div>
+          </>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.map} />
+        )}
 
         <SectionHeader
           label={sectionLabels.rsvp}
-          enabled={rsvp.enabled}
+          icon={MODULE_ICONS.rsvp}
+          enabled={isSectionOn("rsvp", rsvp.enabled)}
+          onToggle={(next) => handleToggleSection("rsvp", next)}
+          togglePending={togglePending === "rsvp"}
           state={rsvpField.state}
           error={rsvpField.error}
           extra={
@@ -1731,36 +1829,45 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("rsvp")}>
-          <div ref={rsvpRef}>
-            <EditableFieldProvider value={rsvpContext}>
-              <RsvpSection
-                variant="simple-form"
-                title={rsvpVisible.title}
-                description={rsvpVisible.description}
-                styleOverrides={rsvpField.draft.styleOverrides}
-                questions={rsvpQuestionsForRender(rsvpVisible.questions)}
-                onSubmit={previewOnlySubmit}
-                // Dashboard preview always shows English RSVP chrome --
-                // this canvas is the host's own editing view, not what a
-                // guest in their chosen language sees; a host-facing locale
-                // picker for their own preview is a separate follow-up, not
-                // part of this guest-facing-site i18n pass.
-                locale={DEFAULT_LOCALE}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
-        <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
-          <RsvpQuestionsManager
+        {isSectionOn("rsvp", rsvp.enabled) ? (
+          <>
+            <SectionBackground fill={getSectionBackground("rsvp")}>
+              <div ref={rsvpRef}>
+                <EditableFieldProvider value={rsvpContext}>
+                  <RsvpSection
+                    variant="simple-form"
+                    title={rsvpVisible.title}
+                    description={rsvpVisible.description}
+                    styleOverrides={rsvpField.draft.styleOverrides}
+                    questions={rsvpQuestionsForRender(rsvpVisible.questions)}
+                    onSubmit={previewOnlySubmit}
+                    // Dashboard preview always shows English RSVP chrome --
+                    // this canvas is the host's own editing view, not what a
+                    // guest in their chosen language sees; a host-facing locale
+                    // picker for their own preview is a separate follow-up, not
+                    // part of this guest-facing-site i18n pass.
+                    locale={DEFAULT_LOCALE}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+            <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
+              <RsvpQuestionsManager
             questions={rsvpField.draft.questions}
             onChange={(questions) => rsvpField.setDraft((prev) => ({ ...prev, questions }))}
           />
-        </div>
+            </div>
+          </>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.rsvp} />
+        )}
 
         <SectionHeader
           label={sectionLabels.countdown}
-          enabled={countdown.enabled}
+          icon={MODULE_ICONS.countdown}
+          enabled={isSectionOn("countdown", countdown.enabled)}
+          onToggle={(next) => handleToggleSection("countdown", next)}
+          togglePending={togglePending === "countdown"}
           state={countdownField.state}
           error={countdownField.error}
           extra={
@@ -1770,23 +1877,30 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("countdown")}>
-          <div ref={countdownRef}>
-            <EditableFieldProvider value={countdownContext}>
-              <CountdownSection
-                variant={countdown.variant}
-                title={countdownVisible.title}
-                eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
-                styleOverrides={countdownField.draft.styleOverrides}
-                locale={DEFAULT_LOCALE}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
+        {isSectionOn("countdown", countdown.enabled) ? (
+          <SectionBackground fill={getSectionBackground("countdown")}>
+            <div ref={countdownRef}>
+              <EditableFieldProvider value={countdownContext}>
+                <CountdownSection
+                  variant={countdown.variant}
+                  title={countdownVisible.title}
+                  eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
+                  styleOverrides={countdownField.draft.styleOverrides}
+                  locale={DEFAULT_LOCALE}
+                />
+              </EditableFieldProvider>
+            </div>
+          </SectionBackground>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.countdown} />
+        )}
 
         <SectionHeader
           label={sectionLabels.gift}
-          enabled={gift.enabled}
+          icon={MODULE_ICONS.gift}
+          enabled={isSectionOn("gift", gift.enabled)}
+          onToggle={(next) => handleToggleSection("gift", next)}
+          togglePending={togglePending === "gift"}
           state={giftField.state}
           error={giftField.error}
           extra={
@@ -1796,27 +1910,36 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("gift")}>
-          <div ref={giftRef}>
-            <EditableFieldProvider value={giftContext}>
-              <GiftSection
-                variant={gift.variant}
-                title={giftVisible.title}
-                description={giftVisible.description}
-                styleOverrides={giftField.draft.styleOverrides}
-                preferences={giftPreferencesForRender(gift.preferences)}
-                locale={DEFAULT_LOCALE}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
-        <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
-          <GiftWishesManager eventId={eventId} preferences={gift.preferences} />
-        </div>
+        {isSectionOn("gift", gift.enabled) ? (
+          <>
+            <SectionBackground fill={getSectionBackground("gift")}>
+              <div ref={giftRef}>
+                <EditableFieldProvider value={giftContext}>
+                  <GiftSection
+                    variant={gift.variant}
+                    title={giftVisible.title}
+                    description={giftVisible.description}
+                    styleOverrides={giftField.draft.styleOverrides}
+                    preferences={giftPreferencesForRender(gift.preferences)}
+                    locale={DEFAULT_LOCALE}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+            <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
+              <GiftWishesManager eventId={eventId} preferences={gift.preferences} />
+            </div>
+          </>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.gift} />
+        )}
 
         <SectionHeader
           label={sectionLabels.dressCode}
-          enabled={dressCode.enabled}
+          icon={MODULE_ICONS.dressCode}
+          enabled={isSectionOn("dressCode", dressCode.enabled)}
+          onToggle={(next) => handleToggleSection("dressCode", next)}
+          togglePending={togglePending === "dressCode"}
           state={dressCodeField.state}
           error={dressCodeField.error}
           extra={
@@ -1826,29 +1949,38 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("dressCode")}>
-          <div ref={dressCodeRef}>
-            <EditableFieldProvider value={dressCodeContext}>
-              <DressCodeSection
-                variant={dressCode.variant}
-                title={dressCodeVisible.title}
-                description={dressCodeVisible.description}
-                colors={dressCodeVisible.colors}
-                styleOverrides={dressCodeField.draft.styleOverrides}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
-        <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
-          <DressCodeColorsManager
+        {isSectionOn("dressCode", dressCode.enabled) ? (
+          <>
+            <SectionBackground fill={getSectionBackground("dressCode")}>
+              <div ref={dressCodeRef}>
+                <EditableFieldProvider value={dressCodeContext}>
+                  <DressCodeSection
+                    variant={dressCode.variant}
+                    title={dressCodeVisible.title}
+                    description={dressCodeVisible.description}
+                    colors={dressCodeVisible.colors}
+                    styleOverrides={dressCodeField.draft.styleOverrides}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+            <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
+              <DressCodeColorsManager
             colors={dressCodeField.draft.colors}
             onChange={(colors) => dressCodeField.setDraft((prev) => ({ ...prev, colors }))}
           />
-        </div>
+            </div>
+          </>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.dressCode} />
+        )}
 
         <SectionHeader
           label={sectionLabels.guestbook}
-          enabled={guestbook.enabled}
+          icon={MODULE_ICONS.guestbook}
+          enabled={isSectionOn("guestbook", guestbook.enabled)}
+          onToggle={(next) => handleToggleSection("guestbook", next)}
+          togglePending={togglePending === "guestbook"}
           state={guestbookField.state}
           error={guestbookField.error}
           extra={
@@ -1858,26 +1990,35 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("guestbook")}>
-          <div ref={guestbookRef}>
-            <EditableFieldProvider value={guestbookContext}>
-              <GuestbookSection
-                variant={guestbook.variant}
-                title={guestbookVisible.title}
-                styleOverrides={guestbookField.draft.styleOverrides}
-                messages={guestbook.messages}
-                locale={DEFAULT_LOCALE}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
-        <div className="px-4 pb-6 text-xs text-[var(--dash-text-muted)]" onClick={(event) => event.stopPropagation()}>
-          Messages come from guests&apos; RSVP comments. Hide or show individual messages from the Guests tab.
-        </div>
+        {isSectionOn("guestbook", guestbook.enabled) ? (
+          <>
+            <SectionBackground fill={getSectionBackground("guestbook")}>
+              <div ref={guestbookRef}>
+                <EditableFieldProvider value={guestbookContext}>
+                  <GuestbookSection
+                    variant={guestbook.variant}
+                    title={guestbookVisible.title}
+                    styleOverrides={guestbookField.draft.styleOverrides}
+                    messages={guestbook.messages}
+                    locale={DEFAULT_LOCALE}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+            <div className="px-4 pb-6 text-xs text-[var(--dash-text-muted)]" onClick={(event) => event.stopPropagation()}>
+              Messages come from guests&apos; RSVP comments. Hide or show individual messages from the Guests tab.
+            </div>
+          </>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.guestbook} />
+        )}
 
         <SectionHeader
           label={sectionLabels.video}
-          enabled={video.enabled}
+          icon={MODULE_ICONS.video}
+          enabled={isSectionOn("video", video.enabled)}
+          onToggle={(next) => handleToggleSection("video", next)}
+          togglePending={togglePending === "video"}
           state={videoField.state}
           error={videoField.error}
           extra={
@@ -1887,29 +2028,38 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("video")}>
-          <div ref={videoRef}>
-            <EditableFieldProvider value={videoContext}>
-              <VideoSection
-                variant={video.variant}
-                title={videoVisible.title}
-                videoUrl={videoVisible.videoUrl}
-                styleOverrides={videoField.draft.styleOverrides}
-                locale={DEFAULT_LOCALE}
+        {isSectionOn("video", video.enabled) ? (
+          <>
+            <SectionBackground fill={getSectionBackground("video")}>
+              <div ref={videoRef}>
+                <EditableFieldProvider value={videoContext}>
+                  <VideoSection
+                    variant={video.variant}
+                    title={videoVisible.title}
+                    videoUrl={videoVisible.videoUrl}
+                    styleOverrides={videoField.draft.styleOverrides}
+                    locale={DEFAULT_LOCALE}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+            <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
+              <VideoUrlManager
+                videoUrl={videoField.draft.videoUrl}
+                onChange={(videoUrl) => videoField.setDraft((prev) => ({ ...prev, videoUrl }))}
               />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
-        <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
-          <VideoUrlManager
-            videoUrl={videoField.draft.videoUrl}
-            onChange={(videoUrl) => videoField.setDraft((prev) => ({ ...prev, videoUrl }))}
-          />
-        </div>
+            </div>
+          </>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.video} />
+        )}
 
         <SectionHeader
           label={banquetNavigator.seatingLabel}
-          enabled={banquetNavigator.enabled}
+          icon={MODULE_ICONS.banquetNavigator}
+          enabled={isSectionOn("banquetNavigator", banquetNavigator.enabled)}
+          onToggle={(next) => handleToggleSection("banquetNavigator", next)}
+          togglePending={togglePending === "banquetNavigator"}
           state={banquetNavigatorField.state}
           error={banquetNavigatorField.error}
           extra={
@@ -1919,20 +2069,24 @@ export default function SiteInlineEditor({
             />
           }
         />
-        <SectionBackground fill={getSectionBackground("banquetNavigator")}>
-          <div ref={banquetNavigatorRef}>
-            <EditableFieldProvider value={banquetNavigatorContext}>
-              <BanquetNavigatorSection
-                variant="simple-lookup"
-                title={banquetNavigatorVisible.title}
-                description={banquetNavigatorVisible.description}
-                styleOverrides={banquetNavigatorField.draft.styleOverrides}
-                onLookup={previewOnlyLookup}
-                locale={DEFAULT_LOCALE}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
+        {isSectionOn("banquetNavigator", banquetNavigator.enabled) ? (
+          <SectionBackground fill={getSectionBackground("banquetNavigator")}>
+            <div ref={banquetNavigatorRef}>
+              <EditableFieldProvider value={banquetNavigatorContext}>
+                <BanquetNavigatorSection
+                  variant="simple-lookup"
+                  title={banquetNavigatorVisible.title}
+                  description={banquetNavigatorVisible.description}
+                  styleOverrides={banquetNavigatorField.draft.styleOverrides}
+                  onLookup={previewOnlyLookup}
+                  locale={DEFAULT_LOCALE}
+                />
+              </EditableFieldProvider>
+            </div>
+          </SectionBackground>
+        ) : (
+          <CollapsedSectionNote label={banquetNavigator.seatingLabel} />
+        )}
       </ThemeProvider>
 
       {selection && toolbarPos && (
@@ -2171,40 +2325,85 @@ function DressCodeColorsManager({
   );
 }
 
-/** Whether a section is on/off is now controlled exclusively by
- * SectionModulesPanel (dashboard-audit.md A1) -- this header used to carry
- * its own duplicate toggle switch, which meant two different controls could
- * disagree about the same section's enabled state. Only a plain, non-
- * interactive "Off" badge remains here, so an editor mid-edit can still see
- * at a glance that a section won't show on the live site without a second
- * place to change it. */
+/** direct feedback: sections scrolling past in the preview read as one
+ * undifferentiated wall -- no clear "you've now entered Letter" moment, and
+ * the only way to turn a section off lived in a completely separate panel
+ * above the preview (SectionModulesPanel), which meant a host reading
+ * through the actual page had no way to act on what they were looking at.
+ * This header is now the boundary AND the control: a full-width colored top
+ * border plus a big icon+label make every section change unmistakable while
+ * scrolling, and the toggle right here calls the exact same toggleSection
+ * action SectionModulesPanel uses (see handleToggleSection below) -- one
+ * source of truth, just two places to reach it, matching how weddingpost.ru
+ * itself lets you turn a block off from inside the block. Hero has none of
+ * this (no `onToggle` passed): it's always on, unchanged from before. */
 function SectionHeader({
   label,
+  icon,
   enabled,
+  onToggle,
+  togglePending,
   state,
   error,
   extra,
 }: {
   label: string;
+  icon?: string;
   enabled?: boolean;
+  onToggle?: (next: boolean) => void;
+  togglePending?: boolean;
   state: AutosaveState;
   error: string | null;
   extra?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between border-t border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-2">
-      <div className="flex items-center gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">{label}</span>
+    <div
+      className={`flex flex-wrap items-center justify-between gap-3 border-t-4 px-4 py-3.5 transition-colors ${
+        enabled === false ? "border-t-[var(--dash-border)] bg-[var(--dash-surface)]" : "border-t-[var(--dash-accent)] bg-[var(--dash-surface-2)]"
+      }`}
+    >
+      <div className="flex items-center gap-2.5">
+        {icon && (
+          <span aria-hidden="true" className="text-lg leading-none">
+            {icon}
+          </span>
+        )}
+        <span className="text-sm font-bold uppercase tracking-wide text-[var(--dash-text)]">{label}</span>
         {enabled === false && (
-          <span className="rounded-full bg-[var(--dash-border)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
-            Off
+          <span className="rounded-full bg-[var(--dash-border)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
+            Off — guests won&apos;t see this
           </span>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         {extra}
         <AutosaveStatus state={state} error={error} />
+        {onToggle && enabled !== undefined && (
+          <SectionToggleSwitch
+            checked={enabled}
+            onChange={onToggle}
+            disabled={togglePending}
+            label={`Turn ${label} ${enabled ? "off" : "on"}`}
+          />
+        )}
       </div>
+    </div>
+  );
+}
+
+/** What a section becomes when its SectionHeader toggle is off -- replaces
+ * the full min-height:100vh render (and any manager UI below it) with one
+ * short line, instead of a tall, grey, half-dead-looking section still
+ * taking up a full screen of scroll. Nothing is deleted: the section's own
+ * draft content is untouched, this is purely what's on screen. */
+function CollapsedSectionNote({ label }: { label: string }) {
+  return (
+    <div
+      className="px-4 py-5 text-center text-xs text-[var(--dash-text-muted)]"
+      onClick={(event) => event.stopPropagation()}
+    >
+      {label} is off, so guests won&apos;t see it — nothing you&apos;ve written here is lost. Flip the switch above to
+      bring it back.
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { reorderSections, toggleSection, updateEnvelopeReveal } from "./actions";
 import { SECTION_LABELS, SECTION_ORDER, type SectionConfig, type SectionType } from "@/components/sections/registry";
 import { BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
+import SectionToggleSwitch from "./SectionToggleSwitch";
 
 // Every toggleable module, in the app's canonical order -- not derived from
 // the `sections` prop, because a module never toggled on yet for this event
@@ -33,7 +34,7 @@ interface SectionModulesPanelProps {
 // set (dashboard-audit.md 3.3), not something to copy pixel-for-pixel.
 // Hero has no row here (no icon needed): it's always on, matching
 // SiteInlineEditor's existing "no toggle for Hero" convention.
-const MODULE_ICONS: Partial<Record<SectionType, string>> = {
+export const MODULE_ICONS: Partial<Record<SectionType, string>> = {
   letter: "💌",
   timeline: "🗓️",
   map: "📍",
@@ -168,25 +169,12 @@ export default function SectionModulesPanel({
                   </button>
                 )}
               </span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={enabled[type]}
-                aria-label={`Turn ${SECTION_LABELS[type]} ${enabled[type] ? "off" : "on"}`}
+              <SectionToggleSwitch
+                checked={enabled[type]}
+                onChange={(next) => handleToggle(type, next)}
                 disabled={pendingToggle === type}
-                onClick={() => handleToggle(type, !enabled[type])}
-                className={`relative h-7 w-12 shrink-0 rounded-full border-2 transition disabled:opacity-50 ${
-                  enabled[type]
-                    ? "border-[var(--dash-accent)] bg-[var(--dash-accent)]"
-                    : "border-[var(--dash-text-muted)] bg-[var(--dash-surface)]"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 h-5 w-5 rounded-full shadow transition-all ${
-                    enabled[type] ? "right-0.5 bg-white" : "left-0.5 bg-[var(--dash-text-muted)]"
-                  }`}
-                />
-              </button>
+                label={`Turn ${SECTION_LABELS[type]} ${enabled[type] ? "off" : "on"}`}
+              />
             </div>
             {isGated && expandedGateInfo === type && (
               <p className="border-t border-[var(--dash-border)] px-3 py-2 text-xs text-[var(--dash-text-muted)]">
@@ -208,25 +196,12 @@ export default function SectionModulesPanel({
             <span aria-hidden="true">✉️</span>
             Envelope reveal
           </span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={envelopeEnabled}
-            aria-label={`Turn envelope reveal ${envelopeEnabled ? "off" : "on"}`}
+          <SectionToggleSwitch
+            checked={envelopeEnabled}
+            onChange={handleEnvelopeToggle}
             disabled={envelopePending}
-            onClick={() => handleEnvelopeToggle(!envelopeEnabled)}
-            className={`relative h-7 w-12 shrink-0 rounded-full border-2 transition disabled:opacity-50 ${
-              envelopeEnabled
-                ? "border-[var(--dash-accent)] bg-[var(--dash-accent)]"
-                : "border-[var(--dash-text-muted)] bg-[var(--dash-surface)]"
-            }`}
-          >
-            <span
-              className={`absolute top-0.5 h-5 w-5 rounded-full shadow transition-all ${
-                envelopeEnabled ? "right-0.5 bg-white" : "left-0.5 bg-[var(--dash-text-muted)]"
-              }`}
-            />
-          </button>
+            label={`Turn envelope reveal ${envelopeEnabled ? "off" : "on"}`}
+          />
         </div>
         <p className="px-3 pb-1 text-xs text-[var(--dash-text-muted)]">
           A brief animated envelope guests tap open before seeing your site.
