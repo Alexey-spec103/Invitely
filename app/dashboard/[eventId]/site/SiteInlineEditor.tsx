@@ -64,6 +64,7 @@ import SectionToggleSwitch from "./SectionToggleSwitch";
 import { MODULE_ICONS } from "./SectionModulesPanel";
 import TimelineEventsManager from "./TimelineEventsManager";
 import QuoteSuggestionPicker from "@/components/site-editor/QuoteSuggestionPicker";
+import { DRESS_CODE_PALETTE } from "@/lib/dressCodePalette";
 import type { Theme } from "@/lib/themes";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 
@@ -2391,7 +2392,27 @@ function DressCodeColorsManager({
           </div>
         ))}
       </div>
-      <div className="mt-3">
+      {/* Quick-pick from popular wedding/event colors -- saves typing a hex
+          code for the most commonly requested tones ("самые популярные и
+          лучшие цвета"), without taking away the custom color/hex inputs
+          above for anything not on this list. */}
+      <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
+        Popular colors
+      </p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {DRESS_CODE_PALETTE.map((swatch) => (
+          <button
+            key={swatch.hex}
+            type="button"
+            title={swatch.label}
+            aria-label={`Add ${swatch.label}`}
+            onClick={() => onChange([...colors, { hex: swatch.hex, label: swatch.label }])}
+            className="h-8 w-8 shrink-0 rounded-full border border-[var(--dash-border)] transition hover:scale-110 hover:border-[var(--dash-accent)]"
+            style={{ backgroundColor: swatch.hex }}
+          />
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => onChange([...colors, { hex: "#000000", label: "New color" }])}
@@ -2399,6 +2420,7 @@ function DressCodeColorsManager({
         >
           + Add color
         </button>
+        <span className="text-xs text-[var(--dash-text-muted)]">or pick a popular one above</span>
       </div>
     </div>
   );

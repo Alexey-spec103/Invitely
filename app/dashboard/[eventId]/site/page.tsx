@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { TriangleAlert } from "lucide-react";
+import { TriangleAlert, ExternalLink } from "lucide-react";
 import { getAuthedUser } from "@/lib/session";
 import { getEventById } from "@/lib/events";
 import { createClient } from "@/lib/supabase/server";
@@ -627,12 +627,19 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
               allSections={allSections}
             />
         </div>
+        {/* Was a tiny underlined text link -- easy to miss entirely next to
+            the device-frame preview above it, same "make the real action
+            obvious" fix as every other CTA this pass (Publish site,
+            +Add event/venue/question/color). A host wants to see the whole
+            site the way a guest actually will, full-width and full-height,
+            not just the capped device-frame preview. */}
         <a
           href={`/e/${event.slug}`}
           target="_blank"
           rel="noreferrer"
-          className="mt-3 block text-center text-xs text-[var(--dash-accent)] underline underline-offset-2"
+          className="dash-btn dash-btn-primary mt-3 flex w-full items-center justify-center gap-2"
         >
+          <ExternalLink className="h-4 w-4" aria-hidden="true" />
           Open full preview in a new tab
         </a>
       </div>

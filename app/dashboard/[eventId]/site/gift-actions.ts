@@ -15,6 +15,14 @@ interface AddGiftPreferenceInput {
 export async function addGiftPreference(input: AddGiftPreferenceInput) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
   const { count } = await supabase
     .from("gift_preferences")
     .select("*", { count: "exact", head: true })
@@ -49,6 +57,14 @@ interface UpdateGiftPreferenceInput {
 export async function updateGiftPreference(input: UpdateGiftPreferenceInput) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
   const { error } = await supabase
     .from("gift_preferences")
     .update({
@@ -69,6 +85,14 @@ export async function updateGiftPreference(input: UpdateGiftPreferenceInput) {
 
 export async function deleteGiftPreference(giftId: string) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
 
   const { error } = await supabase.from("gift_preferences").delete().eq("id", giftId);
 

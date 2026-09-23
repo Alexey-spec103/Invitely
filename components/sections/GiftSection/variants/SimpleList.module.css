@@ -82,9 +82,15 @@
   flex-direction: column;
   gap: 0.5rem;
   padding: 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent);
+  /* Was a 25% border + 70% of the section's OWN --theme-bg -- since the
+     card sits directly on that same background, that background value
+     barely differed from the section behind it, so cards read as flat,
+     hard to tell apart from the page (flagged live: "более контрастный
+     цвет" -- needs more contrast). A real accent tint gives the card its
+     own visible surface instead of an almost-transparent copy of the page. */
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, transparent);
   border-radius: 0.3rem;
-  background: color-mix(in srgb, var(--theme-bg) 70%, transparent);
+  background: color-mix(in srgb, var(--theme-accent) 8%, var(--theme-bg));
 }
 
 /* Same corner-flourish mask used across Hero/Letter/Map -- one corner per
