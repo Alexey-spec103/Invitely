@@ -150,9 +150,34 @@
 }
 
 .resultsCount {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   font-size: 0.8rem;
   color: #6b7280;
   margin-bottom: 0.75rem;
+}
+
+/* Low-key nudge toward the hover-pan animation above -- easy to miss
+   entirely otherwise, same discoverability principle as every other
+   affordance surfaced this pass. A thin dot separator keeps it reading as
+   a second clause of the same line rather than a competing headline. */
+.hoverHint {
+  position: relative;
+  padding-left: 0.75rem;
+  color: #9ca3af;
+}
+
+.hoverHint::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateY(-50%);
 }
 
 .grid {
@@ -565,6 +590,40 @@
 
 .phoneScaleInner[data-anchor="spread"] {
   transform: scale(calc(100cqw / 375px));
+}
+
+/* Hovering a card slowly pans the real Hero render top-to-bottom instead of
+ * sitting on the one fixed crop -- flagged live: a host only ever saw the
+ * single cropped slice each card rests on, never the rest of that theme's
+ * own composition (corner flourishes, a bottom-anchored caption, whatever
+ * sits above/below the resting anchor). The scale factor is identical at
+ * every point in the sweep (same container width throughout), only
+ * translateY moves, so this reuses the exact same crop-scale transform each
+ * panel already applies at rest -- hover just animates it instead of
+ * holding it still. Respects reduced-motion: the resting crop (already a
+ * real, considered composition, not an empty state) is what motion-averse
+ * visitors see, same as before this change. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes theme-card-pan {
+    0%,
+    100% {
+      transform: scale(calc(100cqw / 375px)) translateY(-4vh);
+    }
+    50% {
+      transform: scale(calc(100cqw / 375px)) translateY(-82vh);
+    }
+  }
+
+  .card:hover .desktopScaleInner,
+  .card:focus-visible .desktopScaleInner,
+  .cardSelected:hover .desktopScaleInner,
+  .cardSelected:focus-visible .desktopScaleInner,
+  .card:hover .phoneScaleInner,
+  .card:focus-visible .phoneScaleInner,
+  .cardSelected:hover .phoneScaleInner,
+  .cardSelected:focus-visible .phoneScaleInner {
+    animation: theme-card-pan 6.5s cubic-bezier(0.45, 0, 0.15, 1) infinite;
+  }
 }
 
 .domainCaption {

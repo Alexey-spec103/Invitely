@@ -291,6 +291,7 @@ export default function ThemeGallery({
       <div className={styles.gallery}>
         <p className={styles.resultsCount}>
           {filtered.length} {filtered.length === 1 ? "style" : "styles"}
+          <span className={styles.hoverHint}>Hover a style to preview it</span>
         </p>
         <div className={styles.grid}>
           {visible.map((theme) => (
