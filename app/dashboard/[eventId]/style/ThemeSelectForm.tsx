@@ -68,7 +68,7 @@ export default function ThemeSelectForm({
   return (
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="border-l-4 border-[var(--dash-accent)] pl-4">
+        <div>
           <h1 className="dash-h1 text-gray-900">Style</h1>
           <p className="mt-1 text-sm text-gray-500">Let&apos;s find the style and design for your event.</p>
           <p className="mt-1 text-xs text-gray-400">Everything here can be customized further in the constructor.</p>

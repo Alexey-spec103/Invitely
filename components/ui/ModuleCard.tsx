@@ -28,7 +28,8 @@ interface ModuleCardProps {
    * of `enabled` -- drives the "Not set yet" nudge shown only while on. */
   configured?: boolean;
   /** Visually promotes this one card above the rest of an otherwise-uniform
-   * stack -- bigger icon tile, serif title, coral left-border accent. Meant
+   * stack -- bigger icon tile, serif title, accent-colored border + tinted
+   * background instead of a plain outline. Meant
    * for exactly one card per stack (Wedding data on the Site tab): the
    * thing every other module actually depends on, not just another item in
    * the list. */
@@ -100,7 +101,7 @@ export default function ModuleCard({
       id={id}
       className={
         emphasized
-          ? "scroll-mt-6 rounded-[22px] border border-[var(--dash-border)] border-l-4 border-l-[var(--dash-accent)] bg-[var(--dash-surface)] p-6"
+          ? "scroll-mt-6 rounded-[22px] border-2 border-[var(--dash-accent)] bg-[color-mix(in_srgb,var(--dash-accent)_5%,var(--dash-surface))] p-6"
           : "scroll-mt-6 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5"
       }
     >

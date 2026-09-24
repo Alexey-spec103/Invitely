@@ -33,7 +33,7 @@ export default function MobileNav({ showLogin, locale }: MobileNavProps) {
   ];
 
   return (
-    <div className="sm:hidden">
+    <div className="md:hidden">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
