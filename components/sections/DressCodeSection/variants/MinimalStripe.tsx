@@ -21,7 +21,11 @@ export default function MinimalStripe({ title, description, colors, styleOverrid
       <div className={styles.stripeWrap}>
         <span className={styles.stripeCapLeft} aria-hidden="true" />
         <span className={styles.stripeCapRight} aria-hidden="true" />
-        <div className={styles.stripe} aria-hidden="true">
+        <div
+          className={styles.stripe}
+          role="img"
+          aria-label={colors.map((color) => color.label || color.hex).join(", ")}
+        >
           {colors.map((color, index) => (
             <span
               key={`${color.hex}-${index}`}
@@ -31,13 +35,6 @@ export default function MinimalStripe({ title, description, colors, styleOverrid
           ))}
         </div>
       </div>
-
-      <p className={styles.labels}>
-        {colors
-          .map((color) => color.label)
-          .filter(Boolean)
-          .join(" · ")}
-      </p>
     </section>
   );
 }

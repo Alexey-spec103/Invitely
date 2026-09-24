@@ -6,6 +6,10 @@ import { useEditableField } from "@/components/site-editor/EditableFieldContext"
 import { CAP_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import styles from "./ColorPalette.module.css";
 
+// dashboard-audit.md follow-up: no name label under each chip -- same fix
+// as SwatchGrid's own (see that file's comment). The color is the point;
+// an unnamed swatch used to print the literal string "New color".
+
 export default function ColorPalette({ title, description, colors, styleOverrides, themeCategory }: DressCodeSectionVariantProps) {
   const { editable } = useEditableField();
   const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
@@ -40,18 +44,13 @@ export default function ColorPalette({ title, description, colors, styleOverride
         )}
         <div className={styles.swatches}>
           {colors.map((color, index) => (
-            <div key={`${color.hex}-${index}`} className={styles.swatch}>
-              <span className={styles.chip} style={{ backgroundColor: color.hex }} aria-hidden="true" />
-              {(color.label || editable) && (
-                <span className={styles.label}>
-                  <EditableText
-                    field={`colors.${index}.label`}
-                    value={color.label ?? ""}
-                    style={styleOverrides?.[`colors.${index}.label`]}
-                  />
-                </span>
-              )}
-            </div>
+            <span
+              key={`${color.hex}-${index}`}
+              className={styles.chip}
+              style={{ backgroundColor: color.hex }}
+              title={color.label || undefined}
+              aria-label={color.label || color.hex}
+            />
           ))}
         </div>
       </div>

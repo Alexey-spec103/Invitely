@@ -56,24 +56,32 @@
 }
 
 .stripe {
+  position: relative;
   display: flex;
   width: 100%;
   height: 2.5rem;
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--theme-text) 15%, transparent);
+  box-shadow: 0 4px 10px -3px rgba(0, 0, 0, 0.25);
+}
+
+/* One continuous satin sheen across the whole ribbon, not per-band -- reads
+   as a single piece of fabric catching the light, matching the "satin"
+   request, rather than a repeated per-swatch highlight fighting the
+   ribbon's own continuous shape. Sits above every .band via ::after. */
+.stripe::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.05) 35%, transparent 55%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.12) 0%, transparent 40%);
+  pointer-events: none;
 }
 
 .band {
   flex: 1;
-}
-
-.labels {
-  font-family: var(--theme-font-body);
-  font-size: 0.8rem;
-  letter-spacing: 0.03em;
-  opacity: 0.75;
-  margin: 1rem 0 0;
 }
 
 @media (min-width: 640px) {
