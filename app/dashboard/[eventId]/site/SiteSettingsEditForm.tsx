@@ -1,18 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { updateSiteSettings } from "./actions";
 import { useAutosave } from "@/lib/useAutosave";
 import AutosaveStatus from "@/components/ui/AutosaveStatus";
+import MusicDropzone from "@/components/ui/MusicDropzone";
 
-const siteSettingsFormSchema = z.object({
-  musicUrl: z.string(),
-});
-
-type SiteSettingsFormValues = z.infer<typeof siteSettingsFormSchema>;
+interface SiteSettingsFormValues {
+  musicUrl: string;
+}
 
 interface SiteSettingsEditFormProps {
   eventId: string;
@@ -21,41 +18,31 @@ interface SiteSettingsEditFormProps {
 
 export default function SiteSettingsEditForm({ eventId, defaultValues }: SiteSettingsEditFormProps) {
   const router = useRouter();
+  const [musicUrl, setMusicUrl] = useState(defaultValues.musicUrl);
 
-  const { register, control } = useForm<SiteSettingsFormValues>({
-    resolver: zodResolver(siteSettingsFormSchema),
-    defaultValues,
-    mode: "onChange",
-  });
-
-  const values = useWatch({ control });
-  const { state, error } = useAutosave(values, async (v) => {
-    const result = await updateSiteSettings({ eventId, ...(v as SiteSettingsFormValues) });
+  const { state, error } = useAutosave({ musicUrl }, async (v) => {
+    const result = await updateSiteSettings({ eventId, ...v });
     if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="space-y-4" noValidate>
+    <div className="space-y-4">
       <div className="flex justify-end">
         <AutosaveStatus state={state} error={error} />
       </div>
 
       <div>
-        <label htmlFor="musicUrl" className="block text-sm font-medium text-[var(--dash-text-muted)]">
-          Background music URL <span className="text-[var(--dash-text-muted)]">(optional)</span>
-        </label>
-        <input
-          id="musicUrl"
-          type="text"
-          placeholder="https://..."
-          className="mt-1 dash-input-dark"
-          {...register("musicUrl")}
-        />
-        <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
-          Link to a hosted audio file. Guests will get a play/pause button in the header.
+        <p className="block text-sm font-medium text-[var(--dash-text-muted)]">
+          Background music <span className="text-[var(--dash-text-muted)]">(optional)</span>
+        </p>
+        <div className="mt-1">
+          <MusicDropzone value={musicUrl || undefined} onChange={(url) => setMusicUrl(url ?? "")} />
+        </div>
+        <p className="mt-2 text-xs text-[var(--dash-text-muted)]">
+          Guests will get a play/pause button in the header.
         </p>
       </div>
-    </form>
+    </div>
   );
 }
