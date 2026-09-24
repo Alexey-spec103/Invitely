@@ -79,7 +79,7 @@ const SHOWCASE_FRAMES = [
   },
 ];
 
-/** Hero right column: a real Invitely design shown live on a phone -- a
+/** Hero right column: a real Invimbo design shown live on a phone -- a
  * clean, modern bezel-less mockup (no physical home button, styled like
  * iPhone 14+ with a Dynamic-Island-style cutout) rather than a stock photo
  * of a hand holding an old rounded iPhone. Same real-component +

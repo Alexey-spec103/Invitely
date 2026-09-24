@@ -122,20 +122,18 @@ export default async function Home() {
   return (
     <div className="bg-white font-sans">
       {/* landing-audit.md priority 19: weddingpost.ru's own site opens with a
-          gradient bar above the header, on every screen, pre-empting the
-          "can I even pay from here" objection before the visitor reaches the
-          hero. Same lilac-to-pink pair as the "with a wow effect" accent
-          (priority 18) -- one recognizable decorative accent reused in the
-          two spots that call for it, not a third color. Sticky together with
-          the header (one shared sticky wrapper) so it stays pinned exactly
-          like the original while scrolling, instead of scrolling away. */}
+          bar above the header, on every screen, pre-empting the "can I even
+          pay from here" objection before the visitor reaches the hero.
+          Sticky together with the header (one shared sticky wrapper) so it
+          stays pinned exactly like the original while scrolling, instead of
+          scrolling away. */}
       <div className="sticky top-0 z-40">
-        {/* impeccable audit: the previous violet-300/pink-300 pair failed
-            WCAG contrast for the white text (1.8:1, needs 4.5:1) -- darkened
-            within the same hue family (see the accent below) rather than
-            picking new colors, so this stays "the same recognizable
-            decorative accent" the original comment intended. */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 py-2 text-center text-xs font-medium text-white sm:text-sm">
+        {/* impeccable audit: this used to be a purple-to-pink gradient --
+            a hue family that appears nowhere else in the product (every
+            other accent is the warm coral/orange in --dash-accent) and
+            reads as generic AI-template decoration rather than a considered
+            brand choice. Solid, on-brand color instead of a gradient. */}
+        <div className="bg-[var(--dash-accent-text)] py-2 text-center text-xs font-medium text-white sm:text-sm">
           {t.topBar}
         </div>
         <header className="relative border-b border-stone-100 bg-white/80 backdrop-blur">
@@ -146,9 +144,9 @@ export default async function Home() {
                 a second, different mark for the marketing site. */}
             <Link href="/" className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-stone-900">
               <InvitelyLogo className="h-5 w-5" />
-              Invitely
+              Invimbo
             </Link>
-            <nav className="hidden items-center gap-8 text-sm font-medium text-stone-600 sm:flex">
+            <nav className="hidden items-center gap-8 text-sm font-medium text-stone-600 md:flex">
               <a href="#constructor" className="transition-colors hover:text-stone-900">
                 {t.nav.constructor}
               </a>
@@ -168,7 +166,7 @@ export default async function Home() {
               {!user && (
                 <Link
                   href="/login"
-                  className="hidden text-sm font-medium text-stone-600 transition-colors hover:text-stone-900 sm:inline"
+                  className="hidden text-sm font-medium text-stone-600 transition-colors hover:text-stone-900 md:inline"
                 >
                   {t.nav.login}
                 </Link>
@@ -207,17 +205,15 @@ export default async function Home() {
               {t.hero.headline}
             </h1>
             {/* landing-audit.md priority 18: the one deliberately "fancy"
-                element on the screen, matching weddingpost.ru's own pink→
-                purple→blue script accent -- a narrow, scoped exception to
-                the single-CTA-color cleanup above (this is decorative text,
-                not a button/interactive element). impeccable audit: the
-                original 400-shade stops measured ~1.7:1 against the cream
-                page background (needs 3:1 at this size) -- darkened one step
-                to 600 within the same pink/purple/blue family rather than
-                changing the palette, so it's still the same accent, just
-                legible. */}
+                element on the screen -- a narrow, scoped exception to the
+                single-CTA-color cleanup above (this is decorative text, not
+                a button/interactive element). impeccable audit: this used
+                to be a pink-purple-blue gradient, a hue family that appears
+                nowhere else in the product -- reads as generic AI-template
+                decoration. Solid brand accent instead; the script font
+                itself already carries the "fancy" moment. */}
             <p
-              className="mt-2 inline-block bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-4xl text-transparent"
+              className="mt-2 inline-block text-4xl text-[var(--dash-accent-text)]"
               style={{ fontFamily: "var(--font-alex-brush), cursive" }}
             >
               {t.hero.accent}
@@ -436,7 +432,7 @@ export default async function Home() {
             <div>
               <p className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-white">
                 <InvitelyLogo className="h-5 w-5" />
-                Invitely
+                Invimbo
               </p>
               <p className="mt-2 text-sm text-stone-400">{t.footer.tagline}</p>
               <div className="mt-6 flex items-center gap-3 text-xs font-semibold tracking-wide text-stone-400">

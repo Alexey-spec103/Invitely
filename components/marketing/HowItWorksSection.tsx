@@ -13,16 +13,16 @@ interface HowItWorksStepMeta {
 // English (accessibility-only screenshot descriptions of the constructor
 // UI, not something a guest reads).
 const STEP_META: HowItWorksStepMeta[] = [
-  { number: "1", image: "/marketing/how-it-works-1.png", alt: "Invitely's real Style tab: choosing a designer theme" },
-  { number: "2", image: "/marketing/how-it-works-2.png", alt: "Invitely's real font picker, open in the canvas editor" },
-  { number: "3", image: "/marketing/how-it-works-3.png", alt: "Invitely's real \"Add element\" modal: Text, Image, Video, and QR code" },
-  { number: "4", image: "/marketing/how-it-works-4.png", alt: "Invitely's real module toggle, with the live countdown it controls" },
+  { number: "1", image: "/marketing/how-it-works-1.png", alt: "Invimbo's real Style tab: choosing a designer theme" },
+  { number: "2", image: "/marketing/how-it-works-2.png", alt: "Invimbo's real font picker, open in the canvas editor" },
+  { number: "3", image: "/marketing/how-it-works-3.png", alt: "Invimbo's real \"Add element\" modal: Text, Image, Video, and QR code" },
+  { number: "4", image: "/marketing/how-it-works-4.png", alt: "Invimbo's real module toggle, with the live countdown it controls" },
 ];
 
 /** weddingpost.ru's "Как работает конструктор" -- the one dark section on an
  * otherwise light landing page, a numbered vertical timeline, and a real cut
  * of the actual editor UI next to each step (not an illustration). Every
- * image here is a genuine screenshot of Invitely's own dashboard, captured
+ * image here is a genuine screenshot of Invimbo's own dashboard, captured
  * from a real session -- see docs/research/landing-audit.md priority 8. */
 interface HowItWorksSectionProps {
   ctaHref: string;
