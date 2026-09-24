@@ -1,3 +1,5 @@
+"use client";
+
 import type { LetterSectionVariantProps } from "../types";
 import type { Locale } from "@/lib/i18n/locales";
 import { LOCALE_TO_BCP47 } from "@/lib/i18n/locales";
