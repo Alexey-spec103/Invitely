@@ -10,15 +10,24 @@
   color: var(--theme-text);
 }
 
-/* A thick paper margin + dashed edge stands in for a stamp's perforation --
-   plain CSS, no new asset needed. */
+/* A thick paper margin + perforated edge stands in for a stamp's die-cut
+   border -- plain CSS, no new asset needed, and stays theme-color-aware
+   (an SVG border-image can't pick up var(--theme-text) per-theme, a plain
+   dashed/dotted border can). Flagged live as "некрасивый контур" (an ugly
+   outline) -- a single flat 2px dashed line read as a placeholder rule, not
+   a considered stamp edge. Layers a fine dotted line (round border-style
+   dots read closer to true perforation holes than dashes do) just inside a
+   thin solid outline, with a real gutter between them -- the double-line +
+   gap is what actually reads as "stamp", a single dashed rule doesn't. */
 .stamp {
   position: relative;
   width: 11rem;
-  padding: 0.5rem;
+  padding: 0.6rem;
   background-color: var(--theme-bg);
-  border: 2px dashed color-mix(in srgb, var(--theme-text) 35%, transparent);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border: 3px dotted color-mix(in srgb, var(--theme-text) 45%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--theme-text) 22%, transparent);
+  outline-offset: 4px;
+  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.22);
 }
 
 .photo {
@@ -38,7 +47,9 @@
   width: 4rem;
   height: 5rem;
   background-color: var(--theme-bg);
-  border: 2px dashed color-mix(in srgb, var(--theme-text) 35%, transparent);
+  border: 2px dotted color-mix(in srgb, var(--theme-text) 45%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--theme-text) 22%, transparent);
+  outline-offset: 3px;
   opacity: 0.8;
 }
 

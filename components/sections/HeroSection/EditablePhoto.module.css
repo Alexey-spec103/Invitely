@@ -1,0 +1,57 @@
+/* Always visible at low opacity, not hover-only -- same reasoning as
+   EditableText's .editableIdle: a hover-only affordance never appears at
+   all on touch, which is exactly how this control went missing before.
+   z-index comfortably clears every variant's own decorative overlay/frame
+   (none of them use more than z-index: 1). */
+.editBadge {
+  position: absolute;
+  bottom: 0.85rem;
+  right: 0.85rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(20, 18, 16, 0.55);
+  backdrop-filter: blur(6px);
+  color: #f5f3ee;
+  font-family: system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 150ms ease, background-color 150ms ease, transform 150ms ease;
+}
+
+.editBadge:hover {
+  opacity: 1;
+  background: rgba(20, 18, 16, 0.75);
+  transform: translateY(-1px);
+}
+
+.editBadge span {
+  white-space: nowrap;
+}
+
+.icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* Narrow the label to an icon-only badge below ~420px of section width so
+   it never crowds a small circular/cameo photo -- text stays available via
+   the button's implicit accessible name from the visible span, which
+   remains in the DOM either way. */
+@media (max-width: 420px) {
+  .editBadge span {
+    display: none;
+  }
+
+  .editBadge {
+    padding: 0.5rem;
+  }
+}

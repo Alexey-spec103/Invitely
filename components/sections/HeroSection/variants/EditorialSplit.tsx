@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { CAP_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./EditorialSplit.module.css";
 
@@ -46,8 +47,7 @@ export default function EditorialSplit({
 
       {photoUrl && (
         <div className={styles.photoCol}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photoUrl} alt="" className={styles.photo} />
+          <EditablePhoto src={photoUrl} className={styles.photo} />
         </div>
       )}
     </section>

@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import styles from "./GothicFrame.module.css";
 
 /** Dark/Gothic: a pointed-arch ornamental frame (a distinct silhouette from
@@ -16,8 +17,7 @@ export default function GothicFrame({ names, eventDate, photoUrl, styleOverrides
     <section className={styles.section}>
       {photoUrl ? (
         <div className={styles.stage}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photoUrl} alt="" className={styles.photo} />
+          <EditablePhoto src={photoUrl} className={styles.photo} />
           <span className={styles.frame} aria-hidden="true" />
         </div>
       ) : (

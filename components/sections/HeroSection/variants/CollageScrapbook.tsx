@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { CAP_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./CollageScrapbook.module.css";
 
@@ -24,8 +25,7 @@ export default function CollageScrapbook({
           ) : (
             <span className={styles.sprig} aria-hidden="true" />
           )}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photoUrl} alt="" className={styles.photo} />
+          <EditablePhoto src={photoUrl} className={styles.photo} />
         </div>
       )}
       <p className={styles.note}>

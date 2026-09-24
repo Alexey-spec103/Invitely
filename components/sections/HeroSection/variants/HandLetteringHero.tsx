@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { CAP_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./HandLetteringHero.module.css";
 
@@ -28,10 +29,7 @@ export default function HandLetteringHero({
       ) : (
         <span className={styles.moon} aria-hidden="true" />
       )}
-      {photoUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={photoUrl} alt="" className={styles.photo} />
-      )}
+      {photoUrl && <EditablePhoto src={photoUrl} className={styles.photo} />}
       <span className={styles.eyebrow}>
         <EditableText field="eyebrow" value={eyebrow || "We're getting married"} style={styleOverrides?.["eyebrow"]} />
       </span>

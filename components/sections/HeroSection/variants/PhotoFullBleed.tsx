@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import styles from "./PhotoFullBleed.module.css";
 
 // Same local derivation as MonogramCenter/MinimalText -- see those files'
@@ -49,8 +50,7 @@ export default function PhotoFullBleed({
 
   return (
     <section className={styles.section}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={photoUrl} alt="" className={styles.photo} />
+      <EditablePhoto src={photoUrl} className={styles.photo} />
       <div className={styles.overlay} />
       <span className={styles.moon} aria-hidden="true" />
       <div className={styles.content}>

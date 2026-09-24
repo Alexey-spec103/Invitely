@@ -1761,7 +1761,7 @@ export default function SiteInlineEditor({
             </>
           }
         />
-        <div className="px-4 pb-4" onClick={(event) => event.stopPropagation()}>
+        <div id="hero-photo-controls" className="px-4 pb-4 scroll-mt-24" onClick={(event) => event.stopPropagation()}>
           <PhotoDropzone value={heroPhoto || undefined} onChange={(url) => setHeroPhoto(url ?? "")} label="📷 Photo" />
         </div>
 
@@ -2420,8 +2420,12 @@ function DressCodeColorsManager({
             title={swatch.label}
             aria-label={`Add ${swatch.label}`}
             onClick={() => onChange([...colors, { hex: swatch.hex, label: swatch.label }])}
-            className="h-8 w-8 shrink-0 rounded-full border border-[var(--dash-border)] transition hover:scale-110 hover:border-[var(--dash-accent)]"
-            style={{ backgroundColor: swatch.hex }}
+            className="h-8 w-8 shrink-0 rounded-full border border-[var(--dash-border)] shadow-[0_2px_5px_-1px_rgba(0,0,0,0.35),inset_0_-2px_3px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.4)] transition hover:scale-110 hover:border-[var(--dash-accent)]"
+            style={{
+              backgroundColor: swatch.hex,
+              backgroundImage:
+                "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.08) 30%, transparent 55%), radial-gradient(circle at 70% 78%, rgba(0,0,0,0.16) 0%, transparent 45%)",
+            }}
           />
         ))}
       </div>

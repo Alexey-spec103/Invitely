@@ -16,6 +16,10 @@
 }
 
 .inner {
+  /* Positioned so EditablePhoto's corner badge anchors to the photo itself,
+     not the whole outer .frame (which also wraps the names/date below it,
+     bottom-right of ALL of that reads as disconnected from the photo). */
+  position: relative;
   padding: 2rem 1.25rem;
   border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, transparent);
   text-align: center;

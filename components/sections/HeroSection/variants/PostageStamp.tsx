@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import styles from "./PostageStamp.module.css";
 
 /** Vintage: a photo framed like an antique postage stamp -- thick paper
@@ -16,8 +17,7 @@ export default function PostageStamp({ names, eventDate, photoUrl, styleOverride
     <section className={styles.section}>
       {photoUrl ? (
         <div className={styles.stamp}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photoUrl} alt="" className={styles.photo} />
+          <EditablePhoto src={photoUrl} className={styles.photo} />
           <span className={styles.postmark} aria-hidden="true" />
         </div>
       ) : (

@@ -1,5 +1,6 @@
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { CORNER_PAIR_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import styles from "./VintageOrnamental.module.css";
 
@@ -40,10 +41,7 @@ export default function VintageOrnamental({
           </>
         )}
         <div className={styles.inner}>
-          {photoUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={photoUrl} alt="" className={styles.photo} />
-          )}
+          {photoUrl && <EditablePhoto src={photoUrl} className={styles.photo} />}
           <p className={styles.names}>
             <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
             {names[1] && (
