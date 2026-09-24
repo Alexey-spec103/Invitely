@@ -1,8 +1,12 @@
+"use client";
+
 import type { TimelineSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import styles from "./VerticalLine.module.css";
 
 export default function VerticalLine({ title, events, styleOverrides }: TimelineSectionVariantProps) {
+  const { editable } = useEditableField();
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>
@@ -20,12 +24,13 @@ export default function VerticalLine({ title, events, styleOverrides }: Timeline
               <span className={styles.eventTitle}>
                 <EditableText field={`events.${index}.title`} value={event.title} style={styleOverrides?.[`events.${index}.title`]} />
               </span>
-              {event.description && (
+              {(event.description || editable) && (
                 <span className={styles.description}>
                   <EditableText
                     field={`events.${index}.description`}
-                    value={event.description}
+                    value={event.description ?? ""}
                     style={styleOverrides?.[`events.${index}.description`]}
+                    placeholder="Add details (optional)…"
                   />
                 </span>
               )}
