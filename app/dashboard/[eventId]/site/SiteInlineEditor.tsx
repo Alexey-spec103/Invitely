@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import { useRouter } from "next/navigation";
 import { Undo2, Redo2, Monitor, Smartphone, Tablet } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
+import RevealOnScroll from "@/components/RevealOnScroll";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { HeroSection } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
@@ -1787,18 +1788,20 @@ export default function SiteInlineEditor({
           }
         />
         {isSectionOn("letter", letter.enabled) ? (
-          <SectionBackground fill={getSectionBackground("letter")}>
-            <div ref={letterRef}>
-              <EditableFieldProvider value={letterContext}>
-                <LetterSection
-                  variant={letter.variant}
-                  {...applyHiddenFields(letterField.draft, letterField.draft.hiddenFields)}
-                  locale={DEFAULT_LOCALE}
-                  themeCategory={decorCategory}
-                />
-              </EditableFieldProvider>
-            </div>
-          </SectionBackground>
+          <RevealOnScroll root={scrollAreaRef}>
+            <SectionBackground fill={getSectionBackground("letter")}>
+              <div ref={letterRef}>
+                <EditableFieldProvider value={letterContext}>
+                  <LetterSection
+                    variant={letter.variant}
+                    {...applyHiddenFields(letterField.draft, letterField.draft.hiddenFields)}
+                    locale={DEFAULT_LOCALE}
+                    themeCategory={decorCategory}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+          </RevealOnScroll>
         ) : (
           <CollapsedSectionNote label={sectionLabels.letter} />
         )}
@@ -1820,16 +1823,18 @@ export default function SiteInlineEditor({
         />
         {isSectionOn("timeline", timeline.enabled) ? (
           <>
-            <SectionBackground fill={getSectionBackground("timeline")}>
-              <div ref={timelineRef}>
-                <EditableFieldProvider value={timelineContext}>
-                  <TimelineSection
-                    variant={timeline.variant}
-                    {...applyHiddenFields(timelineField.draft, timelineField.draft.hiddenFields)}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
+            <RevealOnScroll root={scrollAreaRef}>
+              <SectionBackground fill={getSectionBackground("timeline")}>
+                <div ref={timelineRef}>
+                  <EditableFieldProvider value={timelineContext}>
+                    <TimelineSection
+                      variant={timeline.variant}
+                      {...applyHiddenFields(timelineField.draft, timelineField.draft.hiddenFields)}
+                    />
+                  </EditableFieldProvider>
+                </div>
+              </SectionBackground>
+            </RevealOnScroll>
             <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
               <TimelineEventsManager
                 events={timelineField.draft.events}
@@ -1858,17 +1863,19 @@ export default function SiteInlineEditor({
         />
         {isSectionOn("map", map.enabled) ? (
           <>
-            <SectionBackground fill={getSectionBackground("map")}>
-              <div ref={mapRef}>
-                <EditableFieldProvider value={mapContext}>
-                  <MapSection
-                    variant={map.variant}
-                    {...applyHiddenFields(mapField.draft, mapField.draft.hiddenFields)}
-                    locale={DEFAULT_LOCALE}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
+            <RevealOnScroll root={scrollAreaRef}>
+              <SectionBackground fill={getSectionBackground("map")}>
+                <div ref={mapRef}>
+                  <EditableFieldProvider value={mapContext}>
+                    <MapSection
+                      variant={map.variant}
+                      {...applyHiddenFields(mapField.draft, mapField.draft.hiddenFields)}
+                      locale={DEFAULT_LOCALE}
+                    />
+                  </EditableFieldProvider>
+                </div>
+              </SectionBackground>
+            </RevealOnScroll>
             <div className="flex justify-center pb-6" onClick={(event) => event.stopPropagation()}>
               <button
                 type="button"
@@ -1921,26 +1928,28 @@ export default function SiteInlineEditor({
         />
         {isSectionOn("rsvp", rsvp.enabled) ? (
           <>
-            <SectionBackground fill={getSectionBackground("rsvp")}>
-              <div ref={rsvpRef}>
-                <EditableFieldProvider value={rsvpContext}>
-                  <RsvpSection
-                    variant="simple-form"
-                    title={rsvpVisible.title}
-                    description={rsvpVisible.description}
-                    styleOverrides={rsvpField.draft.styleOverrides}
-                    questions={rsvpQuestionsForRender(rsvpVisible.questions)}
-                    onSubmit={previewOnlySubmit}
-                    // Dashboard preview always shows English RSVP chrome --
-                    // this canvas is the host's own editing view, not what a
-                    // guest in their chosen language sees; a host-facing locale
-                    // picker for their own preview is a separate follow-up, not
-                    // part of this guest-facing-site i18n pass.
-                    locale={DEFAULT_LOCALE}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
+            <RevealOnScroll root={scrollAreaRef}>
+              <SectionBackground fill={getSectionBackground("rsvp")}>
+                <div ref={rsvpRef}>
+                  <EditableFieldProvider value={rsvpContext}>
+                    <RsvpSection
+                      variant="simple-form"
+                      title={rsvpVisible.title}
+                      description={rsvpVisible.description}
+                      styleOverrides={rsvpField.draft.styleOverrides}
+                      questions={rsvpQuestionsForRender(rsvpVisible.questions)}
+                      onSubmit={previewOnlySubmit}
+                      // Dashboard preview always shows English RSVP chrome --
+                      // this canvas is the host's own editing view, not what a
+                      // guest in their chosen language sees; a host-facing locale
+                      // picker for their own preview is a separate follow-up, not
+                      // part of this guest-facing-site i18n pass.
+                      locale={DEFAULT_LOCALE}
+                    />
+                  </EditableFieldProvider>
+                </div>
+              </SectionBackground>
+            </RevealOnScroll>
             <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
               <RsvpQuestionsManager
             questions={rsvpField.draft.questions}
@@ -1968,20 +1977,22 @@ export default function SiteInlineEditor({
           }
         />
         {isSectionOn("countdown", countdown.enabled) ? (
-          <SectionBackground fill={getSectionBackground("countdown")}>
-            <div ref={countdownRef}>
-              <EditableFieldProvider value={countdownContext}>
-                <CountdownSection
-                  variant={countdown.variant}
-                  title={countdownVisible.title}
-                  eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
-                  styleOverrides={countdownField.draft.styleOverrides}
-                  locale={DEFAULT_LOCALE}
-                  themeCategory={decorCategory}
-                />
-              </EditableFieldProvider>
-            </div>
-          </SectionBackground>
+          <RevealOnScroll root={scrollAreaRef}>
+            <SectionBackground fill={getSectionBackground("countdown")}>
+              <div ref={countdownRef}>
+                <EditableFieldProvider value={countdownContext}>
+                  <CountdownSection
+                    variant={countdown.variant}
+                    title={countdownVisible.title}
+                    eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
+                    styleOverrides={countdownField.draft.styleOverrides}
+                    locale={DEFAULT_LOCALE}
+                    themeCategory={decorCategory}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+          </RevealOnScroll>
         ) : (
           <CollapsedSectionNote label={sectionLabels.countdown} />
         )}
@@ -2003,21 +2014,23 @@ export default function SiteInlineEditor({
         />
         {isSectionOn("gift", gift.enabled) ? (
           <>
-            <SectionBackground fill={getSectionBackground("gift")}>
-              <div ref={giftRef}>
-                <EditableFieldProvider value={giftContext}>
-                  <GiftSection
-                    variant={gift.variant}
-                    title={giftVisible.title}
-                    description={giftVisible.description}
-                    styleOverrides={giftField.draft.styleOverrides}
-                    preferences={giftPreferencesForRender(gift.preferences)}
-                    locale={DEFAULT_LOCALE}
-                    themeCategory={decorCategory}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
+            <RevealOnScroll root={scrollAreaRef}>
+              <SectionBackground fill={getSectionBackground("gift")}>
+                <div ref={giftRef}>
+                  <EditableFieldProvider value={giftContext}>
+                    <GiftSection
+                      variant={gift.variant}
+                      title={giftVisible.title}
+                      description={giftVisible.description}
+                      styleOverrides={giftField.draft.styleOverrides}
+                      preferences={giftPreferencesForRender(gift.preferences)}
+                      locale={DEFAULT_LOCALE}
+                      themeCategory={decorCategory}
+                    />
+                  </EditableFieldProvider>
+                </div>
+              </SectionBackground>
+            </RevealOnScroll>
             <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
               <GiftWishesManager eventId={eventId} preferences={gift.preferences} />
             </div>
@@ -2043,20 +2056,22 @@ export default function SiteInlineEditor({
         />
         {isSectionOn("dressCode", dressCode.enabled) ? (
           <>
-            <SectionBackground fill={getSectionBackground("dressCode")}>
-              <div ref={dressCodeRef}>
-                <EditableFieldProvider value={dressCodeContext}>
-                  <DressCodeSection
-                    variant={dressCode.variant}
-                    title={dressCodeVisible.title}
-                    description={dressCodeVisible.description}
-                    colors={dressCodeVisible.colors}
-                    styleOverrides={dressCodeField.draft.styleOverrides}
-                    themeCategory={decorCategory}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
+            <RevealOnScroll root={scrollAreaRef}>
+              <SectionBackground fill={getSectionBackground("dressCode")}>
+                <div ref={dressCodeRef}>
+                  <EditableFieldProvider value={dressCodeContext}>
+                    <DressCodeSection
+                      variant={dressCode.variant}
+                      title={dressCodeVisible.title}
+                      description={dressCodeVisible.description}
+                      colors={dressCodeVisible.colors}
+                      styleOverrides={dressCodeField.draft.styleOverrides}
+                      themeCategory={decorCategory}
+                    />
+                  </EditableFieldProvider>
+                </div>
+              </SectionBackground>
+            </RevealOnScroll>
             <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
               <DressCodeColorsManager
             colors={dressCodeField.draft.colors}
@@ -2085,19 +2100,21 @@ export default function SiteInlineEditor({
         />
         {isSectionOn("guestbook", guestbook.enabled) ? (
           <>
-            <SectionBackground fill={getSectionBackground("guestbook")}>
-              <div ref={guestbookRef}>
-                <EditableFieldProvider value={guestbookContext}>
-                  <GuestbookSection
-                    variant={guestbook.variant}
-                    title={guestbookVisible.title}
-                    styleOverrides={guestbookField.draft.styleOverrides}
-                    messages={guestbook.messages}
-                    locale={DEFAULT_LOCALE}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
+            <RevealOnScroll root={scrollAreaRef}>
+              <SectionBackground fill={getSectionBackground("guestbook")}>
+                <div ref={guestbookRef}>
+                  <EditableFieldProvider value={guestbookContext}>
+                    <GuestbookSection
+                      variant={guestbook.variant}
+                      title={guestbookVisible.title}
+                      styleOverrides={guestbookField.draft.styleOverrides}
+                      messages={guestbook.messages}
+                      locale={DEFAULT_LOCALE}
+                    />
+                  </EditableFieldProvider>
+                </div>
+              </SectionBackground>
+            </RevealOnScroll>
             <div className="px-4 pb-6 text-xs text-[var(--dash-text-muted)]" onClick={(event) => event.stopPropagation()}>
               Messages come from guests&apos; RSVP comments. Hide or show individual messages from the Guests tab.
             </div>
@@ -2123,19 +2140,21 @@ export default function SiteInlineEditor({
         />
         {isSectionOn("video", video.enabled) ? (
           <>
-            <SectionBackground fill={getSectionBackground("video")}>
-              <div ref={videoRef}>
-                <EditableFieldProvider value={videoContext}>
-                  <VideoSection
-                    variant={video.variant}
-                    title={videoVisible.title}
-                    videoUrl={videoVisible.videoUrl}
-                    styleOverrides={videoField.draft.styleOverrides}
-                    locale={DEFAULT_LOCALE}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
+            <RevealOnScroll root={scrollAreaRef}>
+              <SectionBackground fill={getSectionBackground("video")}>
+                <div ref={videoRef}>
+                  <EditableFieldProvider value={videoContext}>
+                    <VideoSection
+                      variant={video.variant}
+                      title={videoVisible.title}
+                      videoUrl={videoVisible.videoUrl}
+                      styleOverrides={videoField.draft.styleOverrides}
+                      locale={DEFAULT_LOCALE}
+                    />
+                  </EditableFieldProvider>
+                </div>
+              </SectionBackground>
+            </RevealOnScroll>
             <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
               <VideoUrlManager
                 videoUrl={videoField.draft.videoUrl}
@@ -2163,20 +2182,22 @@ export default function SiteInlineEditor({
           }
         />
         {isSectionOn("banquetNavigator", banquetNavigator.enabled) ? (
-          <SectionBackground fill={getSectionBackground("banquetNavigator")}>
-            <div ref={banquetNavigatorRef}>
-              <EditableFieldProvider value={banquetNavigatorContext}>
-                <BanquetNavigatorSection
-                  variant="simple-lookup"
-                  title={banquetNavigatorVisible.title}
-                  description={banquetNavigatorVisible.description}
-                  styleOverrides={banquetNavigatorField.draft.styleOverrides}
-                  onLookup={previewOnlyLookup}
-                  locale={DEFAULT_LOCALE}
-                />
-              </EditableFieldProvider>
-            </div>
-          </SectionBackground>
+          <RevealOnScroll root={scrollAreaRef}>
+            <SectionBackground fill={getSectionBackground("banquetNavigator")}>
+              <div ref={banquetNavigatorRef}>
+                <EditableFieldProvider value={banquetNavigatorContext}>
+                  <BanquetNavigatorSection
+                    variant="simple-lookup"
+                    title={banquetNavigatorVisible.title}
+                    description={banquetNavigatorVisible.description}
+                    styleOverrides={banquetNavigatorField.draft.styleOverrides}
+                    onLookup={previewOnlyLookup}
+                    locale={DEFAULT_LOCALE}
+                  />
+                </EditableFieldProvider>
+              </div>
+            </SectionBackground>
+          </RevealOnScroll>
         ) : (
           <CollapsedSectionNote label={banquetNavigator.seatingLabel} />
         )}
