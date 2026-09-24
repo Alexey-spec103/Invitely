@@ -2,10 +2,46 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  GripVertical,
+  Lock,
+  Mail,
+  MailOpen,
+  CalendarDays,
+  MapPin,
+  CheckCircle2,
+  Hourglass,
+  Gift,
+  Shirt,
+  BookOpen,
+  Video,
+  UtensilsCrossed,
+  type LucideIcon,
+} from "lucide-react";
 import { reorderSections, toggleSection, updateEnvelopeReveal } from "./actions";
 import { SECTION_LABELS, SECTION_ORDER, type SectionConfig, type SectionType } from "@/components/sections/registry";
 import { BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 import SectionToggleSwitch from "./SectionToggleSwitch";
+
+// Drawn icons for this list specifically -- flagged live as reading
+// "AI-generated" (craft-floor: "Unicode glyphs or emoji standing in for an
+// icon system"). MODULE_ICONS below stays the emoji map every other
+// consumer (SiteInlineEditor's sidebar rows and section headers) already
+// depends on -- widening that shared export's type would ripple through
+// ~20 call sites for a cosmetic change scoped to just this one list, so
+// this is a second, local-only map instead of touching the shared one.
+const MODULE_ICON_COMPONENTS: Partial<Record<SectionType, LucideIcon>> = {
+  letter: Mail,
+  timeline: CalendarDays,
+  map: MapPin,
+  rsvp: CheckCircle2,
+  countdown: Hourglass,
+  gift: Gift,
+  dressCode: Shirt,
+  guestbook: BookOpen,
+  video: Video,
+  banquetNavigator: UtensilsCrossed,
+};
 
 // Every toggleable module, in the app's canonical order -- not derived from
 // the `sections` prop, because a module never toggled on yet for this event
@@ -137,6 +173,7 @@ export default function SectionModulesPanel({
         {order.map((type) => {
           const isGated =
             !hasBasicAccess && (BASIC_GATED_SECTION_TYPES as readonly string[]).includes(type);
+          const ModuleIcon = MODULE_ICON_COMPONENTS[type];
           return (
           <li
             key={type}
@@ -153,19 +190,20 @@ export default function SectionModulesPanel({
               }`}
             >
               <span className="flex items-center gap-2">
-                <span aria-hidden="true" className="text-[var(--dash-text-muted)]">
-                  ⠿
-                </span>
-                <span aria-hidden="true">{MODULE_ICONS[type]}</span>
+                <GripVertical className="h-3.5 w-3.5 shrink-0 text-[var(--dash-text-muted)]" aria-hidden="true" />
+                {ModuleIcon && (
+                  <ModuleIcon className="h-3.5 w-3.5 shrink-0 text-[var(--dash-text-muted)]" aria-hidden="true" />
+                )}
                 {SECTION_LABELS[type]}
                 {isGated && (
                   <button
                     type="button"
                     onClick={() => setExpandedGateInfo((prev) => (prev === type ? null : type))}
                     aria-expanded={expandedGateInfo === type}
-                    className="rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--dash-accent)]"
+                    className="flex items-center gap-0.5 rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--dash-accent)]"
                   >
-                    🔒 Basic
+                    <Lock className="h-2.5 w-2.5" aria-hidden="true" />
+                    Basic
                   </button>
                 )}
               </span>
@@ -193,7 +231,7 @@ export default function SectionModulesPanel({
       <div className="mt-3 border-t border-[var(--dash-border)] pt-3">
         <div className="flex items-center justify-between px-3 py-1.5 text-sm text-[var(--dash-text)]">
           <span className="flex items-center gap-2">
-            <span aria-hidden="true">✉️</span>
+            <MailOpen className="h-3.5 w-3.5 shrink-0 text-[var(--dash-text-muted)]" aria-hidden="true" />
             Envelope reveal
           </span>
           <SectionToggleSwitch
