@@ -29,7 +29,7 @@ export default async function EventDashboardLayout({
       events={events}
       navEventId={event.id}
       navEventType={event.event_type}
-      publish={{ eventId: event.id, status: event.status, slug: event.slug }}
+      publish={{ eventId: event.id, status: event.status, slug: event.slug, planId: event.plan_id }}
     >
       {children}
     </DashboardShell>

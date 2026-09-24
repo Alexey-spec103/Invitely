@@ -8,6 +8,7 @@ import DashboardNav from "./DashboardNav";
 import PublishToggle from "./PublishToggle";
 import EventSwitcher from "./EventSwitcher";
 import UserMenu from "./UserMenu";
+import PlanBadge from "./PlanBadge";
 import FunnelNav from "./FunnelNav";
 import SupportWidget from "./SupportWidget";
 import AnonymousAccountBanner from "./AnonymousAccountBanner";
@@ -57,6 +58,7 @@ interface DashboardShellProps {
     eventId: string;
     status: string | null;
     slug: string;
+    planId: string;
   };
   children: ReactNode;
 }
@@ -102,6 +104,7 @@ export default function DashboardShell({
               <ExternalLink className="h-[18px] w-[18px]" />
             </Link>
           )}
+          {publish && <PlanBadge planId={publish.planId} eventId={publish.eventId} />}
           <UserMenu userEmail={userEmail} planEventId={navEventId} />
           {publish && <PublishToggle eventId={publish.eventId} status={publish.status ?? "draft"} />}
         </div>
