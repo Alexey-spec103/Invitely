@@ -17,7 +17,7 @@ interface AddElementModalProps {
 /** Replaces the old bare "+Text"/"+Image" toolbar buttons with a small
  * card-grid modal -- matches the "Добавить элемент" pattern observed on
  * weddingpost.ru's own constructor. Text/Image/Video cover everything
- * Invitely actually supports today (no calendar/block-library entries --
+ * Invimbo actually supports today (no calendar/block-library entries --
  * a pre-built block library is a separate, larger phase, deferred). The
  * actual add/upload logic is untouched: this only changes how those
  * actions are triggered. */

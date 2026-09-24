@@ -5,7 +5,7 @@ interface PremiumUpgradeNoteProps {
 }
 
 /** dashboard-audit.md B21: shared caption next to a watermarked material,
- * pointing at the one real "unlock" action Invitely has -- the actual
+ * pointing at the one real "unlock" action Invimbo has -- the actual
  * /plan page, not a fake checkout (same honest link used by B20's payment
  * badges). Kept in one place so the wording can't drift between the
  * Seating, Paper, and Invitations tabs. */

@@ -266,7 +266,7 @@ export const ru: Dictionary = {
       signUp: "Регистрация",
       terms: "Условия использования",
       privacy: "Политика конфиденциальности",
-      rightsReserved: "© 2026 Invitely. Все права защищены.",
+      rightsReserved: "© 2026 Invimbo. Все права защищены.",
       paymentAccepted: "Принимаем Visa / Mastercard / PayPal",
     },
   },

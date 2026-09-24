@@ -13,7 +13,7 @@ export default function EventNotFound() {
         href="/"
         className="mt-2 rounded-full bg-stone-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-stone-800"
       >
-        Go to Invitely
+        Go to Invimbo
       </Link>
     </div>
   );

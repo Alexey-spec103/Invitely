@@ -10,7 +10,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           className="mb-6 flex items-center justify-center gap-1.5 text-lg font-semibold tracking-tight text-stone-900"
         >
           <InvitelyLogo className="h-5 w-5" />
-          Invitely
+          Invimbo
         </Link>
         {children}
       </div>

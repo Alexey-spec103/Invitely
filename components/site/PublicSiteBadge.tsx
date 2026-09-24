@@ -10,7 +10,7 @@ export default function PublicSiteBadge() {
       <span className={styles.mark} aria-hidden="true">
         ✦
       </span>
-      Made with Invitely
+      Made with Invimbo
     </a>
   );
 }

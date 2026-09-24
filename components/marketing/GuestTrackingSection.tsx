@@ -1,9 +1,9 @@
-/** weddingpost.ru's proof that Invitely is a platform for managing guests,
+/** weddingpost.ru's proof that Invimbo is a platform for managing guests,
  * not just sending a card: their own page shows a hand-drawn delivery-method
  * diagram (SMS/messenger/social icons converging on a couple of guest
  * segments) feeding into a color-coded guest table. That diagram is a drawn
  * illustration, not real UI -- so rather than redraw it, this shows two real
- * screenshots of Invitely's own product: the actual public-site share menu
+ * screenshots of Invimbo's own product: the actual public-site share menu
  * (how a couple actually gets their link to guests) and the actual guest
  * list with its Sent/RSVP status badges (how they track who's coming) --
  * see docs/research/landing-audit.md priority 9. Channels are copy-link/
@@ -29,7 +29,7 @@ export default function GuestTrackingSection({ locale }: { locale: Locale }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/marketing/guest-share-panel.png"
-            alt="Invitely's real share menu: Copy link, WhatsApp, SMS, Email"
+            alt="Invimbo's real share menu: Copy link, WhatsApp, SMS, Email"
             className="w-full"
           />
         </div>
@@ -39,7 +39,7 @@ export default function GuestTrackingSection({ locale }: { locale: Locale }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/marketing/guest-tracking.png"
-          alt="Invitely's real guest list: Sent/Not sent badges and live RSVP responses"
+          alt="Invimbo's real guest list: Sent/Not sent badges and live RSVP responses"
           className="w-full"
         />
       </div>

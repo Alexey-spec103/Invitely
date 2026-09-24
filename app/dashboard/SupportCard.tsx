@@ -8,7 +8,7 @@
  * landing, A10's own footer), and an icon instead of a face. Their third
  * bullet promises a designer will personally fix a couple's layout on
  * request -- a real human service we don't offer, so it isn't copied here;
- * the other two are swapped for things Invitely genuinely does. */
+ * the other two are swapped for things Invimbo genuinely does. */
 export default function SupportCard() {
   return (
     <div className="flex flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-6 sm:flex-row sm:items-center sm:p-8">

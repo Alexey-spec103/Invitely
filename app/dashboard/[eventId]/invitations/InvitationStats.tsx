@@ -10,14 +10,14 @@ interface InvitationStatsProps {
 /** dashboard-audit.md B22: weddingpost.ru's own "Статистика" column --
  * icon + label + count, `0/∞` meaning "no limits" said as a number rather
  * than a claim in prose. Their fourth metric is money actually collected
- * through a real payment system ("Собрано денежных подарков") -- Invitely's
+ * through a real payment system ("Собрано денежных подарков") -- Invimbo's
  * gift_preferences is just a wishlist with no amount field or payment
  * behind it, so that's swapped for a real count instead of a fabricated
  * currency figure: how many gift wishes the couple has actually listed.
  * "Invitations sent" and "Guests" read as two different real numbers here
  * (guests with invitation_sent_at set vs. every guest), unlike weddingpost's
  * own separate invitation/guest entities -- same underlying idea, honestly
- * mapped onto Invitely's actual data model. */
+ * mapped onto Invimbo's actual data model. */
 export default function InvitationStats({
   invitationsSent,
   guestsCount,

@@ -34,7 +34,7 @@ export default function EventError({
           href="/"
           className="rounded-full border border-stone-300 px-5 py-2 text-sm font-semibold text-stone-700 transition hover:bg-stone-100"
         >
-          Go to Invitely
+          Go to Invimbo
         </Link>
       </div>
     </div>

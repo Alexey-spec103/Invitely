@@ -72,7 +72,7 @@ export default function PremiumUpgradeModal({
         </div>
 
         <p className="text-sm text-[var(--dash-text)]">
-          {action} adds a &quot;Made with Invitely&quot; watermark on your current plan.
+          {action} adds a &quot;Made with Invimbo&quot; watermark on your current plan.
         </p>
         <p className="mt-2 text-sm text-[var(--dash-text-muted)]">
           Upgrade to <span className="font-semibold text-[var(--dash-text)]">{premiumPlan.name}</span>{" "}

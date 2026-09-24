@@ -5,7 +5,7 @@ import { Play } from "lucide-react";
 
 /** dashboard-audit.md B5: weddingpost.ru's style catalog pairs its promise
  * headline with a "▶ как это работает?" pill that teaches the flow --
- * confirmed live, this is a short explainer, not a video (Invitely has no
+ * confirmed live, this is a short explainer, not a video (Invimbo has no
  * onboarding video to link to). A lightweight click-to-toggle popover, same
  * outside-click/Escape pattern as UserMenu, rather than a full modal --
  * three sentences don't need one. */

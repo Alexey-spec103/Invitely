@@ -85,7 +85,7 @@ export default function DashboardShell({
             className="flex items-center gap-2 text-base font-semibold tracking-tight text-[var(--dash-text)]"
           >
             <InvitelyLogo />
-            Invitely
+            Invimbo
           </Link>
           <span className="hidden h-4 w-px bg-[var(--dash-border)] sm:block" />
           <EventSwitcher events={events} currentEventId={navEventId} />

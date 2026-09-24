@@ -184,8 +184,8 @@ const gildaDisplay = Gilda_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "Invitely — event websites, live in minutes",
-    template: "%s | Invitely",
+    default: "Invimbo — event websites, live in minutes",
+    template: "%s | Invimbo",
   },
   description:
     "Design a beautiful event website, matching paper invitations, and guest seating — one style, everywhere your guests see it.",

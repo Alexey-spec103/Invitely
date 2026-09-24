@@ -454,7 +454,7 @@ export const en: Dictionary = {
       signUp: "Sign up",
       terms: "Terms of service",
       privacy: "Privacy policy",
-      rightsReserved: "© 2026 Invitely. All rights reserved.",
+      rightsReserved: "© 2026 Invimbo. All rights reserved.",
       paymentAccepted: "Visa / Mastercard / PayPal accepted",
     },
   },

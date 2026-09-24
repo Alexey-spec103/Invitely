@@ -104,7 +104,7 @@ export async function createCheckoutSession(
           currency: "eur",
           unit_amount: Math.round(plan.priceEur * 100),
           product_data: {
-            name: `Invitely ${plan.name} — ${event.title}`,
+            name: `Invimbo ${plan.name} — ${event.title}`,
             description: plan.features.join(" · "),
           },
         },

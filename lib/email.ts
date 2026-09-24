@@ -4,7 +4,7 @@ import { Resend } from "resend";
 // while there's no real deployment domain yet (see NEXT_PUBLIC_APP_DOMAIN in
 // lib/supabase/proxy.ts). Swap to a branded address on the same domain once
 // one exists.
-const FROM_ADDRESS = "Invitely <onboarding@resend.dev>";
+const FROM_ADDRESS = "Invimbo <onboarding@resend.dev>";
 
 let client: Resend | null = null;
 

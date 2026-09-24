@@ -103,7 +103,7 @@ export type SendChannel = "link" | "sms" | "whatsapp" | "email";
 
 /** dashboard-audit.md B18: records which channel(s) a host actually used to
  * reach a guest -- the honest equivalent of weddingpost.ru's "delivery
- * status" given Invitely has no real SMS/email backend to report true
+ * status" given Invimbo has no real SMS/email backend to report true
  * delivery receipts from. Also flips `invitation_sent_at` the same way
  * `setInvitationSent(guestId, true)` already does, so "Sent" status and
  * channel history stay in sync regardless of which action set them. */

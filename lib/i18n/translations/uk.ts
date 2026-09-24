@@ -265,7 +265,7 @@ export const uk: Dictionary = {
       signUp: "Реєстрація",
       terms: "Умови використання",
       privacy: "Політика конфіденційності",
-      rightsReserved: "© 2026 Invitely. Усі права захищені.",
+      rightsReserved: "© 2026 Invimbo. Усі права захищені.",
       paymentAccepted: "Приймаємо Visa / Mastercard / PayPal",
     },
   },

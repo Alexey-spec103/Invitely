@@ -255,7 +255,7 @@ export const de: Dictionary = {
       signUp: "Registrieren",
       terms: "Nutzungsbedingungen",
       privacy: "Datenschutz",
-      rightsReserved: "© 2026 Invitely. Alle Rechte vorbehalten.",
+      rightsReserved: "© 2026 Invimbo. Alle Rechte vorbehalten.",
       paymentAccepted: "Visa / Mastercard / PayPal werden akzeptiert",
     },
   },

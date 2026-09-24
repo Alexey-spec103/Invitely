@@ -87,7 +87,7 @@ export default async function InvitationsPage({
 
   // dashboard-audit.md B22: "Приглашений" / "Гостей" are two different real
   // numbers here (sent vs. total), not weddingpost.ru's separate
-  // invitation/guest entities -- same idea, honestly mapped onto Invitely's
+  // invitation/guest entities -- same idea, honestly mapped onto Invimbo's
   // actual per-guest model.
   const invitationsSent = (guests ?? []).filter((guest) => guest.invitation_sent_at != null).length;
   const confirmedCount = (rsvpResponses ?? []).filter((response) => response.attending).length;

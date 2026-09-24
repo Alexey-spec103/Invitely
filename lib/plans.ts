@@ -20,7 +20,7 @@ export const plans: Record<string, Plan> = {
       "Everything in Free",
       "Custom domain",
       "Countdown, gift wishes & dress-code modules",
-      "No \"Made with Invitely\" badge",
+      "No \"Made with Invimbo\" badge",
     ],
   },
   premium: {

@@ -64,9 +64,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Invitely//Event Site//EN",
+    "PRODID:-//Invimbo//Event Site//EN",
     "BEGIN:VEVENT",
-    `UID:${event.id}@invitely.app`,
+    `UID:${event.id}@invimbo.com`,
     `DTSTAMP:${formatUtcIcsDateTime(new Date())}`,
     `DTSTART:${formatFloatingIcsDateTime(start)}`,
     `DTEND:${formatFloatingIcsDateTime(end)}`,

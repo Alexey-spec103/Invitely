@@ -309,7 +309,7 @@ function InvitationSentBadge({
   );
 }
 
-/** dashboard-audit.md B18: "Отправка SMS / мессенджер" -- Invitely has no
+/** dashboard-audit.md B18: "Отправка SMS / мессенджер" -- Invimbo has no
  * real SMS delivery backend, so WhatsApp/SMS open the host's own phone
  * compose window pre-filled with the guest's personal RSVP link (same
  * pattern any "share" button on the web uses). Email is real server-side

@@ -11,7 +11,7 @@ export default function GlobalError({
       <body className="flex min-h-screen flex-col items-center justify-center gap-3 px-4 text-center font-sans">
         <h1 className="text-2xl font-semibold text-stone-900">Something went wrong</h1>
         <p className="max-w-sm text-sm text-stone-500">
-          Invitely hit an unexpected error. Please try again.
+          Invimbo hit an unexpected error. Please try again.
         </p>
         <button
           type="button"

@@ -1,4 +1,4 @@
-/** dashboard-audit.md D7: a graphic mark next to the bare "Invitely" wordmark,
+/** dashboard-audit.md D7: a graphic mark next to the bare "Invimbo" wordmark,
  * shared by the dashboard header and the marketing landing page (header +
  * footer) so the brand mark doesn't drift into two different icons. "Toast i"
  * from the logo-concepts review -- the whole glyph reshapes into a champagne

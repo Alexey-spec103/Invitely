@@ -14,7 +14,7 @@ const SHOWCASE_THEME_ID = "romantic-blush";
 const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
 
 /** Real product, not an illustration: the laptop panel is an actual
- * screenshot of Invitely's own Canvas editor (captured from a real demo
+ * screenshot of Invimbo's own Canvas editor (captured from a real demo
  * event, /public/marketing/constructor-screenshot.png), not a CSS drawing
  * pretending to be one. The phone panel reuses the same live-rendered
  * HeroSection technique as HeroPhoneShowcase/PlatformFanSection so it can
@@ -36,7 +36,7 @@ export default function ConstructorScreenshot() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/marketing/constructor-screenshot.png"
-            alt="Invitely's real canvas editor: style rail, design canvas, and layers panel"
+            alt="Invimbo's real canvas editor: style rail, design canvas, and layers panel"
             className={styles.laptopImg}
           />
         </div>

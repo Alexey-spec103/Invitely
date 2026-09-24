@@ -7,7 +7,7 @@ interface CardWatermarkProps {
 }
 
 /** dashboard-audit.md B21: weddingpost.ru's own "НЕ ОПЛАЧЕНО" diagonal
- * repeating watermark on unpaid layouts. Invitely has no real payment to
+ * repeating watermark on unpaid layouts. Invimbo has no real payment to
  * gate on, so this fires off the plan tier `lib/plans.ts` already
  * (unenforced) claims requires Premium for banquet/table-card materials --
  * not an actual charge. The design stays fully visible and still

@@ -13,7 +13,7 @@ import Link from "next/link";
 // that jurisdiction must still review this before the product takes real
 // payments or handles real guests' data.
 export const metadata = {
-  title: "Terms of Service — Invitely",
+  title: "Terms of Service — Invimbo",
 };
 
 export default function TermsPage() {
@@ -22,7 +22,7 @@ export default function TermsPage() {
       <header className="border-b border-stone-100 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-6">
           <Link href="/" className="text-lg font-semibold tracking-tight text-stone-900">
-            Invitely
+            Invimbo
           </Link>
           <Link href="/" className="text-sm font-medium text-stone-500 hover:text-stone-900">
             Back to home
@@ -36,9 +36,9 @@ export default function TermsPage() {
 
         <div className="mt-10 space-y-8 text-sm leading-relaxed text-stone-600">
           <section>
-            <h2 className="text-base font-semibold text-stone-900">1. Using Invitely</h2>
+            <h2 className="text-base font-semibold text-stone-900">1. Using Invimbo</h2>
             <p className="mt-2">
-              Invitely lets you build and publish an event website, generate paper invitations, and
+              Invimbo lets you build and publish an event website, generate paper invitations, and
               manage guest RSVPs. By creating an account or publishing a site, you agree to these
               terms. If you don&apos;t agree, please don&apos;t use the service.
             </p>
@@ -49,7 +49,7 @@ export default function TermsPage() {
             <p className="mt-2">
               You&apos;re responsible for the accuracy of the event details, photos, and guest
               information you upload, and for keeping your login credentials secure. You retain
-              ownership of the content you create; you grant Invitely the license needed to host and
+              ownership of the content you create; you grant Invimbo the license needed to host and
               display it as part of the service you&apos;ve requested (e.g. your published event
               site).
             </p>
@@ -59,7 +59,7 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-stone-900">3. Eligibility</h2>
             <p className="mt-2">
               You must be at least 18 years old, or the age of legal majority where you live if
-              that&apos;s older, to create an Invitely account.
+              that&apos;s older, to create an Invimbo account.
             </p>
           </section>
 
@@ -80,7 +80,7 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-stone-900">5. Guest data</h2>
             <p className="mt-2">
               When you invite guests and collect RSVPs, you act as the data controller for that
-              guest information, and Invitely acts as a processor on your behalf. See our{" "}
+              guest information, and Invimbo acts as a processor on your behalf. See our{" "}
               <Link href="/privacy" className="text-stone-900 underline underline-offset-2">
                 Privacy Policy
               </Link>{" "}
@@ -91,7 +91,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-base font-semibold text-stone-900">6. Acceptable use</h2>
             <p className="mt-2">
-              Don&apos;t use Invitely to publish unlawful, abusive, or infringing content, or to
+              Don&apos;t use Invimbo to publish unlawful, abusive, or infringing content, or to
               attempt to disrupt or gain unauthorized access to the service.
             </p>
           </section>
@@ -99,7 +99,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-base font-semibold text-stone-900">7. Our intellectual property</h2>
             <p className="mt-2">
-              The Invitely name, logo, and the site templates, themes, and software we built are
+              The Invimbo name, logo, and the site templates, themes, and software we built are
               our property (or licensed to us). These terms don&apos;t grant you any rights to
               them beyond using the service as intended — they don&apos;t transfer to you along
               with the event site you create.
@@ -109,7 +109,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-base font-semibold text-stone-900">8. Disclaimer and limitation of liability</h2>
             <p className="mt-2">
-              Invitely is provided &quot;as is,&quot; without warranties of any kind. We don&apos;t
+              Invimbo is provided &quot;as is,&quot; without warranties of any kind. We don&apos;t
               guarantee the service will be uninterrupted, error-free, or that every email or RSVP
               will be delivered — for an event-critical use case like a wedding, keep a backup plan
               (e.g. your own guest list) rather than relying on any single tool exclusively. To the
@@ -121,7 +121,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-base font-semibold text-stone-900">9. Termination</h2>
             <p className="mt-2">
-              You may stop using Invitely and delete your account at any time. Deleting your
+              You may stop using Invimbo and delete your account at any time. Deleting your
               account removes your published site and associated guest data, subject to any
               retention required by law. We may suspend or terminate an account that violates
               section 6 (Acceptable use) or these terms more generally.

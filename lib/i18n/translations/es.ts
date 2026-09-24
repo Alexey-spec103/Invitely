@@ -255,7 +255,7 @@ export const es: Dictionary = {
       signUp: "Registrarse",
       terms: "Términos del servicio",
       privacy: "Política de privacidad",
-      rightsReserved: "© 2026 Invitely. Todos los derechos reservados.",
+      rightsReserved: "© 2026 Invimbo. Todos los derechos reservados.",
       paymentAccepted: "Visa / Mastercard / PayPal aceptados",
     },
   },

@@ -13,7 +13,7 @@ import Link from "next/link";
 // accurate about the *product*, cannot itself constitute legal compliance
 // advice.
 export const metadata = {
-  title: "Privacy Policy — Invitely",
+  title: "Privacy Policy — Invimbo",
 };
 
 export default function PrivacyPage() {
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
       <header className="border-b border-stone-100 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-6">
           <Link href="/" className="text-lg font-semibold tracking-tight text-stone-900">
-            Invitely
+            Invimbo
           </Link>
           <Link href="/" className="text-sm font-medium text-stone-500 hover:text-stone-900">
             Back to home
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
             <h2 className="text-base font-semibold text-stone-900">3. Who we share it with</h2>
             <p className="mt-2">
               We use a small number of service providers (&quot;subprocessors&quot;) to run
-              Invitely, each bound by its own data protection terms:
+              Invimbo, each bound by its own data protection terms:
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-5">
               <li>
@@ -131,7 +131,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-base font-semibold text-stone-900">9. Children&apos;s privacy</h2>
             <p className="mt-2">
-              Invitely is intended for adults planning events, not for use by children. We don&apos;t
+              Invimbo is intended for adults planning events, not for use by children. We don&apos;t
               knowingly collect account data from anyone under 16. A guest RSVP may include a
               minor&apos;s name if a host invites them as a plus-one, but we don&apos;t knowingly
               collect data directly from children.
@@ -143,7 +143,7 @@ export default function PrivacyPage() {
             <p className="mt-2">
               We may update this policy as the product changes (for example, once payments
               launch). Material changes will be reflected here with an updated date; continuing
-              to use Invitely after a change means you accept the update.
+              to use Invimbo after a change means you accept the update.
             </p>
           </section>
 

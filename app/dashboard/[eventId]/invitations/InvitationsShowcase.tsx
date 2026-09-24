@@ -54,7 +54,7 @@ interface Material {
  * actually has (reusing the exact preview components Paper/Banquet already
  * use, so this can never drift out of sync with what's really downloadable),
  * the site's live link, and the closest honest equivalent to weddingpost's
- * purchase CTAs given Invitely has no real payment/paywall yet (see project
+ * purchase CTAs given Invimbo has no real payment/paywall yet (see project
  * memory): Publish site is the one action that actually unlocks something. */
 export default function InvitationsShowcase({
   eventId,
