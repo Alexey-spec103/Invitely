@@ -604,13 +604,21 @@
  * real, considered composition, not an empty state) is what motion-averse
  * visitors see, same as before this change. */
 @media (prefers-reduced-motion: no-preference) {
+  /* End point moved from -82vh to -145vh: the pan used to only ever
+     traverse Hero's own ~100vh section (nothing else existed below it to
+     reach) -- now that a second full section (Letter, ~100vh) is stacked
+     underneath, this reaches into Letter's body copy/quote/corner-flourish
+     decor without overshooting past it into blank trailing space (checked
+     empirically against the rendered DOM: -178vh, a naive doubling of the
+     original -82vh, overshot well past Letter's own content; -145vh lands
+     on its body+quote+decor together, still comfortably inside it). */
   @keyframes theme-card-pan {
     0%,
     100% {
       transform: scale(calc(100cqw / 375px)) translateY(-4vh);
     }
     50% {
-      transform: scale(calc(100cqw / 375px)) translateY(-82vh);
+      transform: scale(calc(100cqw / 375px)) translateY(-145vh);
     }
   }
 

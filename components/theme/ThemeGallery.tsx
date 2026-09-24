@@ -19,10 +19,13 @@ import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { highlightFeaturesFor } from "@/lib/themes/highlightFeatures";
 import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
+import { LetterSection } from "@/components/sections/LetterSection";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import {
   previewPhotoFor,
   previewNamesFor,
   previewTargetDateFor,
+  previewQuoteFor,
   formatPreviewDate,
 } from "@/lib/themes/previewMedia";
 import { getCountdownParts, type CountdownParts } from "@/lib/countdown";
@@ -472,6 +475,17 @@ export function ThemeGalleryCard({
                   photoUrl={photoUrl}
                   themeCategory={effectiveDecorCategory(theme)}
                 />
+                {/* Matches .phoneScaleInner below -- same reasoning: without
+                    a second section here, the shared theme-card-pan
+                    keyframe's extended sweep would pan this panel past its
+                    own (Hero-only) content into empty space. */}
+                <LetterSection
+                  variant="ornate-border"
+                  title="A Note From Us"
+                  body="We can't wait to celebrate this day surrounded by the people we love most."
+                  quote={previewQuoteFor(theme.id)}
+                  locale={DEFAULT_LOCALE}
+                />
               </div>
             </div>
           </div>
@@ -496,6 +510,21 @@ export function ThemeGalleryCard({
                   eventDate={dateLabel}
                   photoUrl={photoUrl}
                   themeCategory={effectiveDecorCategory(theme)}
+                />
+                {/* A second real section below Hero, purely so the hover
+                    pan (theme-card-pan below) has real decor + sample copy
+                    to reveal -- previously it only ever panned through
+                    Hero's own ~100vh, so a host hovering a card never saw
+                    anything but a longer look at the same one section.
+                    Ornate Border specifically for its corner-flourish decor
+                    (CSS-driven off theme tokens, no themeCategory prop
+                    needed, unlike Hero's motif system). */}
+                <LetterSection
+                  variant="ornate-border"
+                  title="A Note From Us"
+                  body="We can't wait to celebrate this day surrounded by the people we love most."
+                  quote={previewQuoteFor(theme.id)}
+                  locale={DEFAULT_LOCALE}
                 />
               </div>
             </div>

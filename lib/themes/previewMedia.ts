@@ -1,4 +1,5 @@
 import type { ThemeCategory, ThemeSeason } from "./types";
+import { QUOTE_SUGGESTIONS } from "@/lib/quoteSuggestions";
 
 /**
  * Atmospheric detail photos (florals, textures, venues -- never a posed
@@ -437,4 +438,13 @@ export function previewPhotoFor(themeId: string, category: ThemeCategory): strin
 
 export function previewNamesFor(themeId: string): [string, string] {
   return DEMO_NAMES[themeId] ?? PREVIEW_NAME_PAIRS[stableIndex(themeId, PREVIEW_NAME_PAIRS.length)];
+}
+
+/** Reuses the same curated list the Letter section's real
+ * QuoteSuggestionPicker offers a host (lib/quoteSuggestions.ts) rather than
+ * inventing separate preview-only copy -- deterministic per theme id so the
+ * gallery card is stable across renders, same technique as every other
+ * `previewXFor` helper in this file. */
+export function previewQuoteFor(themeId: string): string {
+  return QUOTE_SUGGESTIONS[stableIndex(themeId, QUOTE_SUGGESTIONS.length)];
 }
