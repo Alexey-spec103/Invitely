@@ -12,6 +12,11 @@ interface LanguageSwitcherProps {
    * aria-label, since the button itself only shows the current locale code
    * (e.g. "EN"), not a text label. */
   label: string;
+  /** When provided, selecting a locale calls this instead of writing the
+   * guest-facing cookie + router.refresh() -- used by the constructor's own
+   * "preview as" picker, which flips a local React state for the live
+   * preview rather than the actual guest's stored language choice. */
+  onSelect?: (locale: Locale) => void;
 }
 
 /** A compact top-bar dropdown -- current locale as a small pill (e.g. "EN"),
@@ -28,7 +33,7 @@ interface LanguageSwitcherProps {
  * `resolveGuestLocale` now reading that cookie first -- see
  * lib/i18n/resolveLocale.ts's priority order. No Server Action needed for
  * something this simple. */
-export default function LanguageSwitcher({ currentLocale, availableLocales, label }: LanguageSwitcherProps) {
+export default function LanguageSwitcher({ currentLocale, availableLocales, label, onSelect }: LanguageSwitcherProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -49,6 +54,11 @@ export default function LanguageSwitcher({ currentLocale, availableLocales, labe
   }
 
   const selectLocale = (locale: Locale) => {
+    if (onSelect) {
+      onSelect(locale);
+      setOpen(false);
+      return;
+    }
     document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
     setOpen(false);
     router.refresh();

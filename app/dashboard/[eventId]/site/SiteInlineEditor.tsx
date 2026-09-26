@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Undo2, Redo2, Monitor, Smartphone, Tablet } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import RevealOnScroll from "@/components/RevealOnScroll";
-import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/locales";
+import LanguageSwitcher from "@/components/site/LanguageSwitcher";
 import { HeroSection } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import { getEventType } from "@/lib/eventTypes";
@@ -606,6 +607,14 @@ export default function SiteInlineEditor({
   // still gracefully shrinks on a narrower dashboard viewport, same as
   // tablet already does.
   const [device, setDevice] = useState<"desktop" | "phone" | "tablet">("desktop");
+  // dashboard-audit.md follow-up: the preview always rendered every
+  // section's static chrome (RSVP labels, Countdown units, etc.) in English
+  // -- a deliberately deferred gap from the guest-facing i18n pass ("a
+  // host-facing locale picker for their own preview is a separate
+  // follow-up"). Local-only state, not the guest cookie LanguageSwitcher
+  // otherwise writes -- this previews what a guest picking another language
+  // would see, it doesn't change anyone's actual stored choice.
+  const [previewLocale, setPreviewLocale] = useState<Locale>(DEFAULT_LOCALE);
   const deviceMaxWidth = device === "desktop" ? 1280 : device === "tablet" ? 640 : 420;
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -1686,6 +1695,12 @@ export default function SiteInlineEditor({
           >
             <Tablet className="h-3.5 w-3.5" />
           </button>
+          <LanguageSwitcher
+            currentLocale={previewLocale}
+            availableLocales={SUPPORTED_LOCALES}
+            label="Preview language"
+            onSelect={setPreviewLocale}
+          />
         </div>
       </div>
 
@@ -1795,7 +1810,7 @@ export default function SiteInlineEditor({
                   <LetterSection
                     variant={letter.variant}
                     {...applyHiddenFields(letterField.draft, letterField.draft.hiddenFields)}
-                    locale={DEFAULT_LOCALE}
+                    locale={previewLocale}
                     themeCategory={decorCategory}
                   />
                 </EditableFieldProvider>
@@ -1870,7 +1885,7 @@ export default function SiteInlineEditor({
                     <MapSection
                       variant={map.variant}
                       {...applyHiddenFields(mapField.draft, mapField.draft.hiddenFields)}
-                      locale={DEFAULT_LOCALE}
+                      locale={previewLocale}
                     />
                   </EditableFieldProvider>
                 </div>
@@ -1939,12 +1954,7 @@ export default function SiteInlineEditor({
                       styleOverrides={rsvpField.draft.styleOverrides}
                       questions={rsvpQuestionsForRender(rsvpVisible.questions)}
                       onSubmit={previewOnlySubmit}
-                      // Dashboard preview always shows English RSVP chrome --
-                      // this canvas is the host's own editing view, not what a
-                      // guest in their chosen language sees; a host-facing locale
-                      // picker for their own preview is a separate follow-up, not
-                      // part of this guest-facing-site i18n pass.
-                      locale={DEFAULT_LOCALE}
+                      locale={previewLocale}
                     />
                   </EditableFieldProvider>
                 </div>
@@ -1986,7 +1996,7 @@ export default function SiteInlineEditor({
                     title={countdownVisible.title}
                     eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
                     styleOverrides={countdownField.draft.styleOverrides}
-                    locale={DEFAULT_LOCALE}
+                    locale={previewLocale}
                     themeCategory={decorCategory}
                   />
                 </EditableFieldProvider>
@@ -2024,7 +2034,7 @@ export default function SiteInlineEditor({
                       description={giftVisible.description}
                       styleOverrides={giftField.draft.styleOverrides}
                       preferences={giftPreferencesForRender(gift.preferences)}
-                      locale={DEFAULT_LOCALE}
+                      locale={previewLocale}
                       themeCategory={decorCategory}
                     />
                   </EditableFieldProvider>
@@ -2109,7 +2119,7 @@ export default function SiteInlineEditor({
                       title={guestbookVisible.title}
                       styleOverrides={guestbookField.draft.styleOverrides}
                       messages={guestbook.messages}
-                      locale={DEFAULT_LOCALE}
+                      locale={previewLocale}
                     />
                   </EditableFieldProvider>
                 </div>
@@ -2149,7 +2159,7 @@ export default function SiteInlineEditor({
                       title={videoVisible.title}
                       videoUrl={videoVisible.videoUrl}
                       styleOverrides={videoField.draft.styleOverrides}
-                      locale={DEFAULT_LOCALE}
+                      locale={previewLocale}
                     />
                   </EditableFieldProvider>
                 </div>
@@ -2192,7 +2202,7 @@ export default function SiteInlineEditor({
                     description={banquetNavigatorVisible.description}
                     styleOverrides={banquetNavigatorField.draft.styleOverrides}
                     onLookup={previewOnlyLookup}
-                    locale={DEFAULT_LOCALE}
+                    locale={previewLocale}
                   />
                 </EditableFieldProvider>
               </div>
