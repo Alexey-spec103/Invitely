@@ -43,18 +43,32 @@
 .ambientGlow {
   position: absolute;
   z-index: -2;
-  inset: -15% -25%;
-  width: 150%;
-  height: 130%;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
   object-fit: cover;
-  filter: blur(50px) saturate(1.15);
-  opacity: 0.6;
+  /* Was blur(50px)/opacity 0.6 -- against this section's own warm cream bg,
+     the rings clip's own cream/gold palette blurred that hard just became
+     more cream: technically rendering, invisible in practice ("нет нашего
+     видео" -- confirmed live, not just this session's automation-Chrome
+     video-decode limitation). Lighter blur keeps real shape/motion legible;
+     higher saturation/contrast pushes it away from the page bg instead of
+     blending into it.
+     Also was sized/inset well past .stage's own box (-15%/-25%, 150%/130%)
+     to avoid the blur vignetting at a hard edge -- confirmed live that,
+     combined with the stronger opacity above, it visibly washed over the
+     hero's left text column instead of staying an accent behind the phone.
+     Pulled the overflow way in; .stage's own flex layout (topCaption above,
+     device below) keeps it tall enough that a smaller bleed still avoids a
+     visible crop line. */
+  filter: blur(20px) saturate(1.5) contrast(1.1);
+  opacity: 0.85;
   pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ambientGlow {
-    opacity: 0.35;
+    opacity: 0.5;
   }
 }
 

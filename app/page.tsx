@@ -420,9 +420,15 @@ export default async function Home() {
             the page with real motion at open and close instead of only the
             top. Heavily blurred/low-opacity, purely a color-and-motion wash
             behind the centered text, never competing with it. */}
+        {/* Was blur-60/opacity-40 -- against this section's own white-to-
+            orange-50 gradient, the garden clip's own bright airy palette
+            blurred that hard just became more pale wash, effectively
+            invisible in practice (confirmed live, same issue as the hero's
+            glow). Lighter blur + higher opacity/saturation keeps it a real,
+            perceptible presence instead of disappearing into the bg. */}
         <AmbientVideoGlow
           src="/marketing/hero-video/details-garden-vertical.mp4"
-          className="pointer-events-none absolute inset-[-20%] -z-10 h-[140%] w-[140%] object-cover opacity-40 blur-[60px] saturate-[1.1] motion-reduce:opacity-20"
+          className="pointer-events-none absolute inset-[-20%] -z-10 h-[140%] w-[140%] object-cover opacity-70 blur-[22px] saturate-[1.4] contrast-[1.1] motion-reduce:opacity-35"
         />
         <div className="mx-auto max-w-2xl px-6">
           <h2 className="text-3xl font-semibold tracking-tight text-stone-900">{t.finalCta.heading}</h2>
