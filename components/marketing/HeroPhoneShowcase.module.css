@@ -72,13 +72,28 @@
   }
 }
 
+/* Confirmed live: sitting directly over the ambient video with no backdrop,
+   this text's contrast varied with whatever the footage happened to show
+   behind it at that instant -- exactly the "text on top of moving media"
+   mistake a real site never makes. Frosted-glass pill (same technique Apple/
+   Linear/Framer use for badges over hero imagery) guarantees legibility
+   against any frame of the video, in either theme, rather than fighting the
+   footage's own colors. */
 .topCaption {
+  position: relative;
+  z-index: 1;
   max-width: 22rem;
   text-align: center;
   font-size: 1.05rem;
   font-weight: 700;
   line-height: 1.3;
-  color: #5c4632;
+  color: #4a3626;
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.72);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 /* Positioned ancestor for .paperStack below -- the phone alone doesn't need
@@ -572,13 +587,26 @@
   }
 }
 
+/* Same frosted-glass-over-video fix as .topCaption above -- this sits at
+   the bottom edge of .stage, still within the ambient glow's reach, and had
+   the identical low/inconsistent contrast problem confirmed live ("The
+   invitations your friends will screenshot" was barely legible against the
+   blurred footage). */
 .bottomCaption {
+  position: relative;
+  z-index: 1;
   max-width: 20rem;
   text-align: center;
   font-size: 1.15rem;
   font-style: italic;
-  color: #7a5c46;
+  color: #6b4d38;
   font-family: var(--font-cormorant-garamond), Georgia, serif;
+  padding: 0.5rem 1.5rem;
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.72);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 @media (min-width: 640px) {
