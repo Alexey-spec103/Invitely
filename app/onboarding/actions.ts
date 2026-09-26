@@ -1,6 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createEvent } from "@/lib/events";
 import { getEventType } from "@/lib/eventTypes";
@@ -44,5 +43,11 @@ export async function completeOnboarding(
     return { ok: false, message: err instanceof Error ? err.message : "Failed to save" };
   }
 
-  redirect("/dashboard");
+  // Not redirect() here -- it throws a special NEXT_REDIRECT signal that the
+  // caller's own try/catch (needed to surface a real failure as form error
+  // text) would otherwise swallow and show verbatim as "NEXT_REDIRECT" to
+  // every single new user. The client navigates on router.push after
+  // checking `ok`, same as every other action in this codebase that
+  // reports success/failure via a plain return value.
+  return { ok: true };
 }

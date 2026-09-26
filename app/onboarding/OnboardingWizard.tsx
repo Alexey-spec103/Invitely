@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -97,6 +97,7 @@ function resolveInitialThemeId(requested: string | null): string {
  * dashboard. Account creation is a separate, later, dismissible prompt
  * (`AnonymousAccountBanner`), not a step in here. */
 export default function OnboardingWizard({ locale }: { locale: Locale }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -178,6 +179,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
     try {
       const result = await completeOnboarding(values);
       if (!result.ok) throw new Error(result.message);
+      router.push("/dashboard");
     } catch (err) {
       setFormError(err instanceof Error ? err.message : t.saveFailed);
     }
