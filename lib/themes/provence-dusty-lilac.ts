@@ -12,6 +12,6 @@ export const provenceDustyLilac: Theme = {
     "--theme-accent": "#6E4A6C",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

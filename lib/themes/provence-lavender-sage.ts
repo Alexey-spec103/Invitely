@@ -15,6 +15,6 @@ export const provenceLavenderSage: Theme = {
     "--theme-accent": "#7A6A9E",
     "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

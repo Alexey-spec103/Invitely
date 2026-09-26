@@ -188,12 +188,15 @@
 
 @container theme-gallery (min-width: 700px) {
   .grid {
-    /* Deliberately wide -- weddingpost.ru's own gallery runs 2 large cards
-       per row rather than a dense grid of thumbnails, so each preview reads
-       as "here's what your site looks like" instead of a small swatch.
-       auto-fill still lets a very wide viewport fit 3 rather than hardcoding
+    /* weddingpost.ru's own gallery runs multiple large cards per row rather
+       than a dense grid of thumbnails, so each preview still reads as
+       "here's what your site looks like" instead of a small swatch --
+       400px previously fit only 1-2 per row on a typical dashboard-content
+       width and read as cramped ("чтобы в ряду два дизайна можно было
+       смотреть"); 320px reliably fits 2 side by side with room to spare,
+       and auto-fill still lets a wide viewport fit 3+ rather than hardcoding
        a column count. */
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }
 }
 
@@ -686,11 +689,11 @@
 }
 
 .cardFeatures {
-  margin-top: 0.2rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  margin-top: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #78716c;
+  color: #57534e;
 }
 

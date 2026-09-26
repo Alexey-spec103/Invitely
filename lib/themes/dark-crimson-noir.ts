@@ -15,6 +15,6 @@ export const darkCrimsonNoir: Theme = {
     "--theme-accent": "#B23A3A",
     "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

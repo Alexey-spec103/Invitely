@@ -14,6 +14,6 @@ export const vintageDustyPlum: Theme = {
     "--theme-accent": "#8E6478",
     "--theme-font-heading": "var(--font-bodoni-moda), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

@@ -13,6 +13,6 @@ export const vintageRosewood: Theme = {
     "--theme-font-heading": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

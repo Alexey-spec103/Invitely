@@ -17,6 +17,6 @@ export const minimalPorcelain: Theme = {
     "--theme-accent": "#9A8F7F",
     "--theme-font-heading": "var(--font-italiana), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

@@ -18,6 +18,6 @@ export const botanicalEucalyptus: Theme = {
     "--theme-accent": "#6B8E7C",
     "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

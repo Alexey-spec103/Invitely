@@ -14,6 +14,6 @@ export const luxuryEmeraldGold: Theme = {
     "--theme-accent": "#C9A24C",
     "--theme-font-heading": "var(--font-bodoni-moda), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

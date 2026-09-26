@@ -19,6 +19,6 @@ export const romanticIvoryLace: Theme = {
     "--theme-accent": "#B2855B",
     "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

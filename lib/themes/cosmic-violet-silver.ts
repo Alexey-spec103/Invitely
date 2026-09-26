@@ -14,6 +14,6 @@ export const cosmicVioletSilver: Theme = {
     "--theme-accent": "#A6A0B8",
     "--theme-font-heading": "var(--font-italiana), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

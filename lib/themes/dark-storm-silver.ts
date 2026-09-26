@@ -14,6 +14,6 @@ export const darkStormSilver: Theme = {
     "--theme-accent": "#9AA6B2",
     "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };

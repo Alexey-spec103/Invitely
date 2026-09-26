@@ -19,6 +19,6 @@ export const marbleSageGold: Theme = {
     "--theme-accent": "#A78148",
     "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-parisienne), cursive",
+    "--theme-font-script": "var(--font-sacramento), cursive",
   },
 };
