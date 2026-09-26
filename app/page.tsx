@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import {
   Sparkles,
@@ -53,8 +54,17 @@ const MODULE_ICONS = [Wand2, Sparkles, Mail, Clock, MapPin, ClipboardCheck, Time
 // landing page that reads as the generic "SaaS grid" the audit flagged, so
 // this shows only what a tier newly adds. Derived from the same `plans`
 // data (not a second copy) so it can't drift out of sync.
+//
+// Falls back to the unfiltered list (keeping "Everything in Basic") when
+// filtering would leave nothing -- Premium currently adds no feature of its
+// own on top of Basic (watermark removal moved there, see lib/plans.ts),
+// and an empty "WHAT THIS ADDS" list reads as broken, not "nothing new."
+// TODO: give Premium a real differentiator and drop this fallback.
 const planHighlights: Record<string, string[]> = Object.fromEntries(
-  Object.values(plans).map((plan) => [plan.id, plan.features.filter((feature) => !feature.startsWith("Everything in"))])
+  Object.values(plans).map((plan) => {
+    const added = plan.features.filter((feature) => !feature.startsWith("Everything in"));
+    return [plan.id, added.length > 0 ? added : plan.features];
+  })
 );
 
 export default async function Home() {
@@ -108,19 +118,20 @@ export default async function Home() {
   }));
 
   // Factual, not promotional -- the free tier really is unlimited to use, and
-  // the only thing Premium actually does today is remove the watermark from
-  // personalized/banquet materials (see lib/plans.ts's own comment) -- not an
-  // "unlocks paper invitations" claim, since those already work on every
-  // plan. No fabricated "-20%"-style discount badges either: unlike
-  // weddingpost.ru's pricing section, nothing here is ever actually
-  // discounted, so a strikethrough price would be a fake one.
+  // the only thing Basic actually adds beyond the module unlocks is removing
+  // the watermark from personalized/banquet materials (moved here from
+  // Premium, see lib/plans.ts's own comment) -- not an "unlocks paper
+  // invitations" claim, since those already work on every plan. No
+  // fabricated "-20%"-style discount badges either: unlike weddingpost.ru's
+  // pricing section, nothing here is ever actually discounted, so a
+  // strikethrough price would be a fake one.
   const planBadges: Record<string, string> = {
     free: t.pricing.badgeFree,
-    premium: t.pricing.badgePremium,
+    basic: t.pricing.badgePremium,
   };
 
   return (
-    <div className="bg-white font-sans">
+    <div className="marketing-shell bg-white font-sans">
       {/* landing-audit.md priority 19: weddingpost.ru's own site opens with a
           bar above the header, on every screen, pre-empting the "can I even
           pay from here" objection before the visitor reaches the hero.
@@ -171,10 +182,7 @@ export default async function Home() {
                   {t.nav.login}
                 </Link>
               )}
-              <Link
-                href={ctaHref}
-                className="rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-5 py-2 text-sm font-extrabold uppercase tracking-wide text-white shadow-sm transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
-              >
+              <Link href={ctaHref} className="landing-cta px-5 py-2 text-sm">
                 {ctaLabel}
               </Link>
             </div>
@@ -198,10 +206,10 @@ export default async function Home() {
               />
               <InvitelyLogo className="relative h-16 w-16 rotate-[-8deg] shadow-lg shadow-orange-900/15 sm:h-20 sm:w-20" />
             </div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
-              {t.hero.eyebrow}
-            </p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
+            <h1
+              className="hero-load-item text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl lg:text-6xl"
+              style={{ "--stagger-i": 0 } as CSSProperties}
+            >
               {t.hero.headline}
             </h1>
             {/* landing-audit.md priority 18: the one deliberately "fancy"
@@ -213,15 +221,24 @@ export default async function Home() {
                 decoration. Solid brand accent instead; the script font
                 itself already carries the "fancy" moment. */}
             <p
-              className="mt-2 inline-block text-4xl text-[var(--dash-accent-text)]"
-              style={{ fontFamily: "var(--font-alex-brush), cursive" }}
+              className="hero-load-item mt-2 inline-block text-4xl text-[var(--dash-accent-text)]"
+              style={{ fontFamily: "var(--font-alex-brush), cursive", "--stagger-i": 1 } as CSSProperties}
             >
               {t.hero.accent}
             </p>
-            <p className="mt-6 max-w-md text-lg text-stone-600">{t.hero.subtext}</p>
+            <p
+              className="hero-load-item mt-6 max-w-md text-lg text-stone-600"
+              style={{ "--stagger-i": 2 } as CSSProperties}
+            >
+              {t.hero.subtext}
+            </p>
             <ul className="mt-8 space-y-3">
-              {heroChecklist.map(({ icon: Icon, text }) => (
-                <li key={text} className="flex items-center gap-3 text-stone-700">
+              {heroChecklist.map(({ icon: Icon, text }, i) => (
+                <li
+                  key={text}
+                  className="hero-load-item flex items-center gap-3 text-stone-700"
+                  style={{ "--stagger-i": i + 3 } as CSSProperties}
+                >
                   <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-orange-50 text-[var(--dash-accent-text)]">
                     <Icon className="h-4 w-4" strokeWidth={2.25} />
                   </span>
@@ -230,16 +247,16 @@ export default async function Home() {
               ))}
             </ul>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link
-                href={ctaHref}
-                className="inline-block rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-8 py-3.5 text-base font-extrabold uppercase tracking-wide text-white shadow-md transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
-              >
+            <div
+              className="hero-load-item mt-10 flex flex-wrap items-center gap-4"
+              style={{ "--stagger-i": 7 } as CSSProperties}
+            >
+              <Link href={ctaHref} className="landing-cta px-8 py-3.5 text-base">
                 {ctaLabel}
               </Link>
               <a
                 href="#constructor"
-                className="text-sm font-bold uppercase tracking-wide text-[var(--dash-accent-text)] transition-colors hover:text-red-700"
+                className="text-sm font-semibold text-[var(--dash-accent-text)] underline decoration-1 underline-offset-4 transition-colors hover:text-stone-900"
               >
                 {t.hero.seeConstructor}
               </a>
@@ -274,18 +291,12 @@ export default async function Home() {
       <section id="constructor" className="landing-reveal scroll-mt-[120px] py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
-              {t.constructorSection.eyebrow}
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
+            <h2 className="text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
               {t.constructorSection.heading}
             </h2>
             <p className="mt-4 max-w-md text-stone-600">{t.constructorSection.subtext(fontCount)}</p>
             <div className="mt-8">
-              <Link
-                href={ctaHref}
-                className="inline-block rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-6 py-3 text-sm font-extrabold uppercase tracking-wide text-white transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
-              >
+              <Link href={ctaHref} className="landing-cta px-6 py-3 text-sm">
                 {constructorCtaLabel}
               </Link>
             </div>
@@ -342,10 +353,11 @@ export default async function Home() {
               roughly halves that without cramping the icon+title+description
               layout, which fits comfortably at half width. */}
           <div className="mt-16 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
-            {modules.map(({ icon: Icon, title, description }) => (
+            {modules.map(({ icon: Icon, title, description }, i) => (
               <div
                 key={title}
-                className="rounded-xl border border-stone-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md sm:p-6"
+                className="landing-reveal-item rounded-xl border border-stone-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md sm:p-6"
+                style={{ "--stagger-i": i % 6 } as CSSProperties}
               >
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-50 text-[var(--dash-accent-text)] sm:h-10 sm:w-10">
                   <Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
@@ -371,13 +383,14 @@ export default async function Home() {
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">{t.pricing.subtext}</p>
           <div className="mt-16 grid gap-6 sm:grid-cols-3">
-            {Object.values(plans).map((plan) => (
+            {Object.values(plans).map((plan, i) => (
               <div
                 key={plan.id}
-                className="relative rounded-xl border border-stone-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md"
+                className="landing-reveal-item relative rounded-xl border border-stone-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md"
+                style={{ "--stagger-i": i } as CSSProperties}
               >
                 {planBadges[plan.id] && (
-                  <span className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+                  <span className="absolute -top-3 left-6 rounded-full bg-[var(--dash-accent)] px-3 py-1 text-[11px] font-semibold text-white">
                     {planBadges[plan.id]}
                   </span>
                 )}
@@ -404,10 +417,7 @@ export default async function Home() {
           <h2 className="text-3xl font-semibold tracking-tight text-stone-900">{t.finalCta.heading}</h2>
           <p className="mt-4 text-lg text-stone-600">{t.finalCta.subtext}</p>
           <div className="mt-8">
-            <Link
-              href={ctaHref}
-              className="inline-block rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-8 py-3 text-base font-extrabold uppercase tracking-wide text-white shadow-md transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
-            >
+            <Link href={ctaHref} className="landing-cta px-8 py-3 text-base">
               {finalCtaLabel}
             </Link>
           </div>

@@ -19,10 +19,7 @@ export default function GuestTrackingSection({ locale }: { locale: Locale }) {
   return (
     <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
-          {t.eyebrow}
-        </p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900">{t.heading}</h2>
+        <h2 className="text-3xl font-semibold tracking-tight text-stone-900">{t.heading}</h2>
         <p className="mt-4 max-w-md text-stone-600">{t.subtext}</p>
 
         <div className="mt-8 overflow-hidden rounded-xl border border-stone-200 shadow-sm">

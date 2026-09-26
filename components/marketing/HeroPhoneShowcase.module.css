@@ -64,6 +64,27 @@
     0 0 0 1px rgba(255, 255, 255, 0.08) inset;
 }
 
+/* A slow, independent breathing float on the device itself -- distinct from
+   framePlay's crossfade on the screen content -- so the phone reads as
+   sitting in real space rather than a flat, static graphic pinned to the
+   page. Small enough (6px) to never feel like a distraction from the
+   content cycling on screen. */
+@media (prefers-reduced-motion: no-preference) {
+  .device {
+    animation: deviceFloat 6s ease-in-out infinite;
+  }
+}
+
+@keyframes deviceFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
 /* Minimal side-button detailing so the bezel doesn't read as a plain
    rounded rectangle -- a power button on the right, volume rocker on the
    left, both just cosmetic (not a real photo prop like before). */

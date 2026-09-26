@@ -296,6 +296,114 @@ body {
   }
 }
 
+/* Grid children (module cards, pricing tiers) get their own staggered
+   entrance instead of the section-level fade above firing on the whole
+   block at once -- each cell reveals in sequence via nth-child delay, read
+   from --stagger-i (set inline per item, e.g. style={{ "--stagger-i": i }}).
+   Same scroll-driven mechanism and reduced-motion gate as .landing-reveal;
+   this is a second vocabulary entry, not a replacement, so a page doesn't
+   read as "one fade effect copy-pasted everywhere" (impeccable audit). */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .landing-reveal-item {
+      opacity: 0;
+      animation: landing-reveal-item-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 20%;
+      animation-delay: calc(var(--stagger-i, 0) * 70ms);
+    }
+  }
+}
+
+@keyframes landing-reveal-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Hero content plays a short entrance on page load (not on scroll -- it's
+   already in the viewport at load, so a scroll-driven timeline would just
+   read as "instantly there" with no visible motion). A plain time-based
+   fade+rise, staggered by --stagger-i, gives the hero a genuine first-paint
+   moment instead of the whole thing appearing static and fully-formed. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-load-item {
+    opacity: 0;
+    animation: hero-load-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--stagger-i, 0) * 90ms);
+  }
+}
+
+@keyframes hero-load-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Shared CTA button for the marketing pages -- was a bright orange-to-red
+   gradient with uppercase, extrabold, wide-tracked text on every single
+   button (header, hero, every section, pricing badge, footer): the loud
+   "AI-generated SaaS template" button signature (impeccable audit). One
+   solid, confident color instead (the same --dash-accent used everywhere
+   else in the product), sentence-case, semibold -- and real tactile
+   feedback (lift + deeper shadow on hover, press down on click) rather than
+   a color swap being the only sign it's interactive. */
+.landing-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--dash-accent);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(194, 65, 12, 0.15);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .landing-cta:hover {
+    background: var(--dash-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -8px rgba(194, 65, 12, 0.45);
+  }
+
+  .landing-cta:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 4px 10px -4px rgba(194, 65, 12, 0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-cta:hover {
+    background: var(--dash-accent-hover);
+  }
+}
+
+/* Browser-drawn surfaces the design usually never reaches -- selection
+   color and focus rings ship in generic blue by default even on an
+   otherwise fully on-brand page. Scoped to the marketing shell only, not
+   the dashboard/product (out of scope for this pass). */
+.marketing-shell ::selection {
+  background: var(--dash-accent);
+  color: #fff;
+}
+
+.marketing-shell a:focus-visible,
+.marketing-shell button:focus-visible {
+  outline: 2px solid var(--dash-accent);
+  outline-offset: 2px;
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
@@ -43,9 +44,13 @@ export default function HowItWorksSection({ ctaHref, ctaLabel, locale }: HowItWo
           {t.steps.map((step, index) => {
             const meta = STEP_META[index];
             return (
-              <div key={meta.number} className="grid gap-8 sm:grid-cols-[auto_1fr_auto] sm:items-start">
+              <div
+                key={meta.number}
+                className="landing-reveal-item grid gap-8 sm:grid-cols-[auto_1fr_auto] sm:items-start"
+                style={{ "--stagger-i": index } as CSSProperties}
+              >
                 <div className="flex sm:flex-col sm:items-center">
-                  <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gradient-to-br from-[var(--dash-accent)] to-red-600 text-sm font-semibold text-white">
+                  <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[var(--dash-accent)] text-sm font-semibold text-white">
                     {meta.number}
                   </span>
                   <span
@@ -78,10 +83,7 @@ export default function HowItWorksSection({ ctaHref, ctaLabel, locale }: HowItWo
         </div>
 
         <div className="mt-16 flex justify-center">
-          <Link
-            href={ctaHref}
-            className="inline-block rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-8 py-3.5 text-base font-extrabold uppercase tracking-wide text-white shadow-md transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
-          >
+          <Link href={ctaHref} className="landing-cta px-8 py-3.5 text-base">
             {ctaLabel}
           </Link>
         </div>

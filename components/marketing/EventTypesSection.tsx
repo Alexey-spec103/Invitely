@@ -13,6 +13,7 @@ import {
   CalendarHeart,
   type LucideIcon,
 } from "lucide-react";
+import type { CSSProperties } from "react";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
 
@@ -57,12 +58,7 @@ export default function EventTypesSection({ ctaHref, locale }: EventTypesSection
     <section className="border-t border-stone-100 bg-stone-50 py-20">
       <div className="mx-auto max-w-6xl px-6">
         <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--dash-accent-text)]">
-            {t.eyebrow}
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-            {t.heading}
-          </h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">{t.heading}</h2>
           <p className="mx-auto mt-4 max-w-2xl text-stone-600">{t.subtext}</p>
         </div>
 
@@ -70,7 +66,11 @@ export default function EventTypesSection({ ctaHref, locale }: EventTypesSection
           {t.items.map(({ label, blurb }, index) => {
             const Icon = EVENT_TYPE_ICONS[index];
             return (
-              <div key={label} className="rounded-xl border border-stone-200 bg-white p-5">
+              <div
+                key={label}
+                className="landing-reveal-item rounded-xl border border-stone-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md"
+                style={{ "--stagger-i": index % 8 } as CSSProperties}
+              >
                 <span className={`flex h-10 w-10 items-center justify-center rounded-full ${EVENT_TYPE_TINTS[index]}`}>
                   <Icon className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
                 </span>
@@ -82,10 +82,7 @@ export default function EventTypesSection({ ctaHref, locale }: EventTypesSection
         </div>
 
         <div className="mt-10 text-center">
-          <Link
-            href={ctaHref}
-            className="inline-block rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-red-600 px-6 py-3 text-sm font-extrabold uppercase tracking-wide text-white transition hover:from-[var(--dash-accent-hover)] hover:to-red-700"
-          >
+          <Link href={ctaHref} className="landing-cta px-6 py-3 text-sm">
             {t.cta}
           </Link>
         </div>
