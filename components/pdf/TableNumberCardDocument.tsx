@@ -2,6 +2,7 @@ import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import { PdfWatermark } from "./PdfWatermark";
+import { CornerFlourish } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 
 export interface TableNumberCardDocumentProps {
@@ -45,6 +46,8 @@ export function TableNumberCardDocument({ theme, tableNames, locked }: TableNumb
       fontSize: 44,
       textAlign: "center",
     },
+    flourishTopLeft: { position: "absolute", top: 12, left: 12 },
+    flourishBottomRight: { position: "absolute", bottom: 12, right: 12 },
   });
 
   return (
@@ -52,6 +55,12 @@ export function TableNumberCardDocument({ theme, tableNames, locked }: TableNumb
       {tableNames.map((name) => (
         <Page key={name} size={CARD_SIZE} style={styles.page}>
           <View style={styles.border} fixed />
+          <View style={styles.flourishTopLeft} fixed>
+            <CornerFlourish color={style.accent} size={28} />
+          </View>
+          <View style={styles.flourishBottomRight} fixed>
+            <CornerFlourish color={style.accent} rotate={180} size={28} />
+          </View>
           <Text style={styles.tableName}>{name}</Text>
           {locked && <PdfWatermark repeat={14} fontSize={9} />}
         </Page>

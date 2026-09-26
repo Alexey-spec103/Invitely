@@ -2,6 +2,7 @@ import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import { PdfWatermark } from "./PdfWatermark";
+import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 
 export interface TableCardData {
@@ -59,6 +60,7 @@ export function TableCardDocument({ theme, tables, locked }: TableCardDocumentPr
       textAlign: "center",
       marginTop: 6,
     },
+    ...cornerFlourishStyles,
   });
 
   return (
@@ -66,6 +68,12 @@ export function TableCardDocument({ theme, tables, locked }: TableCardDocumentPr
       {tables.map((table) => (
         <Page key={table.name} size="A5" style={styles.page}>
           <View style={styles.border} fixed />
+          <View style={styles.flourishTopLeft} fixed>
+            <CornerFlourish color={style.accent} />
+          </View>
+          <View style={styles.flourishBottomRight} fixed>
+            <CornerFlourish color={style.accent} rotate={180} />
+          </View>
           <Text style={styles.tableName}>{table.name}</Text>
           <View style={styles.divider} />
           {table.guestNames.map((name) => (

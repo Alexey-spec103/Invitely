@@ -1,8 +1,9 @@
-import { Document, Page, View, Text, Image, StyleSheet, Svg, Path } from "@react-pdf/renderer";
+import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument";
 import { PdfWatermark } from "./PdfWatermark";
+import { CornerFlourish } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
 import { pdfBackgroundColor } from "@/lib/backgroundFills";
@@ -33,43 +34,6 @@ export interface InvitationDocumentProps {
 function formatEventDate(isoDate: string) {
   const date = new Date(`${isoDate}T00:00:00`);
   return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-}
-
-/** Same delicate sprig as the web's `/patterns/corner-flourish.svg` (the
- * corner ornament on LetterSection's CenteredCard), redrawn as react-pdf
- * `Path` primitives -- react-pdf's SVG support has no `mask-image`/`
- * currentColor`, so the paths are duplicated here with the theme's accent
- * baked in as a literal `stroke`/`fill` instead. Brings the personalized
- * invitation PDF (previously just centered text + a bare QR square) in line
- * with the same "real stationery" visual language the web cards already
- * have, rather than leaving the one piece a guest actually holds in their
- * hand looking like a placeholder. */
-function CornerFlourish({ color, rotate }: { color: string; rotate?: number }) {
-  return (
-    <Svg
-      width={40}
-      height={40}
-      viewBox="0 0 72 72"
-      style={rotate ? { transform: `rotate(${rotate}deg)` } : undefined}
-    >
-      <Path
-        d="M4 4 C 20 6, 34 14, 40 30 C 44 40, 42 50, 34 56"
-        stroke={color}
-        strokeWidth={1}
-        strokeLinecap="round"
-      />
-      <Path
-        d="M10 4 C 22 8, 30 16, 33 26"
-        stroke={color}
-        strokeWidth={0.75}
-        strokeLinecap="round"
-        opacity={0.7}
-      />
-      <Path d="M14 18 C 10 14, 9 9, 12 5 C 15 9, 15 14, 14 18 Z" fill={color} opacity={0.8} />
-      <Path d="M26 34 C 21 32, 17 33, 14 37 C 18 39, 23 39, 26 34 Z" fill={color} opacity={0.7} />
-      <Path d="M36 46 C 31 45, 27 47, 25 51 C 29 52, 34 51, 36 46 Z" fill={color} opacity={0.6} />
-    </Svg>
-  );
 }
 
 export function InvitationDocument({

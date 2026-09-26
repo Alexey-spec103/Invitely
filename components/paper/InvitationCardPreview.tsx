@@ -1,5 +1,7 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import type { Theme } from "@/lib/themes";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
+import CardCornerDecor from "./CardCornerDecor";
 import FlipCard from "./FlipCard";
 import { formatEventDate } from "./formatEventDate";
 import styles from "./InvitationCardPreview.module.css";
@@ -23,6 +25,7 @@ export default function InvitationCardPreview({
   side,
   backMessage,
 }: InvitationCardPreviewProps) {
+  const themeCategory = effectiveDecorCategory(theme);
   return (
     <ThemeProvider theme={theme}>
       <FlipCard
@@ -30,6 +33,7 @@ export default function InvitationCardPreview({
         front={
           <div className={styles.face} style={{ containerType: "inline-size" }}>
             <div className={styles.border} />
+            <CardCornerDecor themeCategory={themeCategory} />
             <p className={styles.names}>{names[0]}</p>
             {names[1] && (
               <>
@@ -46,6 +50,7 @@ export default function InvitationCardPreview({
         back={
           <div className={styles.face} style={{ containerType: "inline-size" }}>
             <div className={styles.border} />
+            <CardCornerDecor themeCategory={themeCategory} />
             <p className={styles.backAmpersand}>&amp;</p>
             <p className={backMessage ? styles.backMessage : styles.backMessagePlaceholder}>
               {backMessage || "Add a note for the back of your card..."}

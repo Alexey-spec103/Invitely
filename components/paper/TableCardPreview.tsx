@@ -1,5 +1,7 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import type { Theme } from "@/lib/themes";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
+import CardCornerDecor from "./CardCornerDecor";
 import CardWatermark from "./CardWatermark";
 import styles from "./TableCardPreview.module.css";
 
@@ -23,6 +25,7 @@ export default function TableCardPreview({ theme, tableName, guestNames, locked 
     <ThemeProvider theme={theme}>
       <div className={styles.face} style={{ containerType: "inline-size" }}>
         <div className={styles.border} />
+        <CardCornerDecor themeCategory={effectiveDecorCategory(theme)} />
         <p className={styles.tableName}>{tableName}</p>
         <span className={styles.divider} aria-hidden="true" />
         {guestNames.map((name) => (

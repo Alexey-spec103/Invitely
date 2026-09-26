@@ -1,5 +1,7 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import type { Theme } from "@/lib/themes";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
+import CardCornerDecor from "./CardCornerDecor";
 import styles from "./DressCodeCardPreview.module.css";
 
 export interface DressCodeCardColor {
@@ -19,6 +21,7 @@ export default function DressCodeCardPreview({ theme, title, description, colors
     <ThemeProvider theme={theme}>
       <div className={styles.face} style={{ containerType: "inline-size" }}>
         <div className={styles.border} />
+        <CardCornerDecor themeCategory={effectiveDecorCategory(theme)} />
         <p className={styles.title}>{title}</p>
         {description && <p className={styles.description}>{description}</p>}
         <div className={styles.swatchRow}>

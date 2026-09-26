@@ -1,6 +1,7 @@
 import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
+import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 
 export interface ProgramCardEvent {
@@ -73,12 +74,19 @@ export function ProgramCardDocument({ theme, title, events }: ProgramCardDocumen
       marginTop: 2,
       color: style.text,
     },
+    ...cornerFlourishStyles,
   });
 
   return (
     <Document>
       <Page size="A5" style={styles.page}>
         <View style={styles.border} fixed />
+        <View style={styles.flourishTopLeft} fixed>
+          <CornerFlourish color={style.accent} />
+        </View>
+        <View style={styles.flourishBottomRight} fixed>
+          <CornerFlourish color={style.accent} rotate={180} />
+        </View>
 
         <Text style={styles.title}>{title || "Order of the day"}</Text>
 

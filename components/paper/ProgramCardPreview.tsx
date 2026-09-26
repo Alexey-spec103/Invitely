@@ -1,5 +1,7 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import type { Theme } from "@/lib/themes";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
+import CardCornerDecor from "./CardCornerDecor";
 import styles from "./ProgramCardPreview.module.css";
 
 export interface ProgramCardEvent {
@@ -19,6 +21,7 @@ export default function ProgramCardPreview({ theme, title, events }: ProgramCard
     <ThemeProvider theme={theme}>
       <div className={styles.face} style={{ containerType: "inline-size" }}>
         <div className={styles.border} />
+        <CardCornerDecor themeCategory={effectiveDecorCategory(theme)} />
         <p className={styles.title}>{title || "Order of the day"}</p>
         {events.map((event, index) => (
           <div key={index} className={styles.row}>

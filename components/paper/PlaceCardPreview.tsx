@@ -1,5 +1,7 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import type { Theme } from "@/lib/themes";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
+import CardCornerDecor from "./CardCornerDecor";
 import CardWatermark from "./CardWatermark";
 import styles from "./PlaceCardPreview.module.css";
 
@@ -18,6 +20,7 @@ export default function PlaceCardPreview({ theme, guestName, locked }: PlaceCard
     <ThemeProvider theme={theme}>
       <div className={styles.face} style={{ containerType: "inline-size" }}>
         <div className={styles.border} aria-hidden="true" />
+        <CardCornerDecor themeCategory={effectiveDecorCategory(theme)} />
         <p className={styles.guestName}>{guestName}</p>
         {/* Place cards are small and already carry very little else on
             them -- a full-density tile would drown out the one line of

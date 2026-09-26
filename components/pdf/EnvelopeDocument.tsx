@@ -1,6 +1,7 @@
 import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
+import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 
 export interface EnvelopeDocumentProps {
@@ -75,12 +76,18 @@ export function EnvelopeDocument({ theme, names, eventDate }: EnvelopeDocumentPr
       color: style.accent,
       textTransform: "uppercase",
     },
+    ...cornerFlourishStyles,
   });
 
   return (
     <Document>
       <Page size={[ENVELOPE_WIDTH, ENVELOPE_HEIGHT]} style={styles.page}>
         <View style={styles.border} fixed />
+        {/* Only bottom-right -- the return address sits top-left, matching
+            the on-screen EnvelopeCardPreview's own corners="bottomRightOnly". */}
+        <View style={styles.flourishBottomRight} fixed>
+          <CornerFlourish color={style.accent} rotate={180} />
+        </View>
 
         <View style={styles.returnFlourish}>
           <Text style={styles.returnNames}>{names.join(" & ")}</Text>

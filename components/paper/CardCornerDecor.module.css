@@ -1,0 +1,42 @@
+/* Anchored just inside the card's own edge (positive offset), not bled
+   past it -- these represent physical print stock, where content has to
+   stay within the actual card boundary (a bleed accent would either get
+   clipped by the container's own overflow:hidden or look wrong once
+   printed). Sized with cqw so it scales with the card's own zoom level in
+   PaperConstructor, matching every text field in these same components. */
+.topLeft {
+  composes: cornerEdgeTopLeft from "../sections/decorAnchors.module.css";
+  --decor-size: clamp(1.75rem, 16cqw, 3rem);
+  --decor-edge-offset: clamp(0.35rem, 3cqw, 0.65rem);
+}
+
+.bottomRight {
+  composes: cornerEdgeBottomRight from "../sections/decorAnchors.module.css";
+  --decor-size: clamp(1.75rem, 16cqw, 3rem);
+  --decor-edge-offset: clamp(0.35rem, 3cqw, 0.65rem);
+}
+
+.topLeftMask,
+.bottomRightMask {
+  position: absolute;
+  width: clamp(1.75rem, 16cqw, 3rem);
+  height: clamp(1.75rem, 16cqw, 3rem);
+  background-color: var(--theme-accent);
+  opacity: 0.55;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  pointer-events: none;
+}
+
+.topLeftMask {
+  top: clamp(0.35rem, 3cqw, 0.65rem);
+  left: clamp(0.35rem, 3cqw, 0.65rem);
+}
+
+.bottomRightMask {
+  bottom: clamp(0.35rem, 3cqw, 0.65rem);
+  right: clamp(0.35rem, 3cqw, 0.65rem);
+  transform: rotate(180deg);
+}

@@ -2,6 +2,7 @@ import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import { PdfWatermark } from "./PdfWatermark";
+import { CornerFlourish } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 
 export interface PlaceCardDocumentProps {
@@ -49,6 +50,12 @@ export function PlaceCardDocument({ theme, guestNames, locked }: PlaceCardDocume
       textAlign: "center",
       color: style.accent,
     },
+    // Tighter inset and a smaller flourish than the other documents' shared
+    // 16pt/40pt default -- this card is only 252x144pt, a full-size sprig
+    // would crowd the single line of text (same reasoning already applied
+    // to CardCornerDecor's on-screen PlaceCardPreview sizing).
+    flourishTopLeft: { position: "absolute", top: 8, left: 8 },
+    flourishBottomRight: { position: "absolute", bottom: 8, right: 8 },
   });
 
   return (
@@ -56,6 +63,12 @@ export function PlaceCardDocument({ theme, guestNames, locked }: PlaceCardDocume
       {guestNames.map((name, index) => (
         <Page key={`${name}-${index}`} size={CARD_SIZE} style={styles.page}>
           <View style={styles.border} fixed />
+          <View style={styles.flourishTopLeft} fixed>
+            <CornerFlourish color={style.accent} size={20} />
+          </View>
+          <View style={styles.flourishBottomRight} fixed>
+            <CornerFlourish color={style.accent} rotate={180} size={20} />
+          </View>
           <Text style={styles.guestName}>{name}</Text>
           {locked && <PdfWatermark repeat={8} fontSize={7} />}
         </Page>
