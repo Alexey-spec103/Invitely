@@ -28,6 +28,7 @@ import MobileNav from "@/components/marketing/MobileNav";
 import EventTypesSection from "@/components/marketing/EventTypesSection";
 import ConstructorScreenshot from "@/components/marketing/ConstructorScreenshot";
 import HeroPhoneShowcase from "@/components/marketing/HeroPhoneShowcase";
+import AmbientVideoGlow from "@/components/marketing/AmbientVideoGlow";
 import PlatformFanSection from "@/components/marketing/PlatformFanSection";
 import HowItWorksSection from "@/components/marketing/HowItWorksSection";
 import GuestTrackingSection from "@/components/marketing/GuestTrackingSection";
@@ -412,7 +413,17 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="landing-reveal border-t border-stone-100 bg-gradient-to-b from-white to-orange-50 py-24 text-center">
+      <section className="landing-reveal relative isolate overflow-hidden border-t border-stone-100 bg-gradient-to-b from-white to-orange-50 py-24 text-center">
+        {/* Same ambient-glow-from-real-footage technique as the hero's
+            phone showcase (see AmbientVideoGlow's own comment), a different
+            clip so the page doesn't repeat the same imagery twice -- bookends
+            the page with real motion at open and close instead of only the
+            top. Heavily blurred/low-opacity, purely a color-and-motion wash
+            behind the centered text, never competing with it. */}
+        <AmbientVideoGlow
+          src="/marketing/hero-video/details-garden-vertical.mp4"
+          className="pointer-events-none absolute inset-[-20%] -z-10 h-[140%] w-[140%] object-cover opacity-40 blur-[60px] saturate-[1.1] motion-reduce:opacity-20"
+        />
         <div className="mx-auto max-w-2xl px-6">
           <h2 className="text-3xl font-semibold tracking-tight text-stone-900">{t.finalCta.heading}</h2>
           <p className="mt-4 text-lg text-stone-600">{t.finalCta.subtext}</p>

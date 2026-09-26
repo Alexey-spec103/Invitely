@@ -1,4 +1,5 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
+import AmbientVideoGlow from "@/components/marketing/AmbientVideoGlow";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { LetterSection } from "@/components/sections/LetterSection";
 import { TimelineSection } from "@/components/sections/TimelineSection";
@@ -102,6 +103,7 @@ export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
 
   return (
     <div className={styles.stage}>
+      <AmbientVideoGlow src="/marketing/hero-video/details-rings.mp4" className={styles.ambientGlow} />
       <p className={styles.topCaption}>{t.topCaption}</p>
 
       <div className={styles.deviceWrap}>
