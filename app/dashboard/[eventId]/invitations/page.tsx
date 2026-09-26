@@ -9,7 +9,7 @@ import { parseCanvasFrames } from "@/lib/canvas/parse";
 import { getPaperContent } from "@/lib/paperContent";
 import { getBanquetCardData } from "@/lib/banquetCards";
 import { getWeddingDataCompleteness } from "@/lib/weddingData";
-import { plans, DEFAULT_PLAN_ID, isPremiumPlan } from "@/lib/plans";
+import { plans, DEFAULT_PLAN_ID, planMeets } from "@/lib/plans";
 import InvitationDownloads from "./InvitationDownloads";
 import InvitationsShowcase from "./InvitationsShowcase";
 import InvitationStats from "./InvitationStats";
@@ -67,10 +67,11 @@ export default async function InvitationsPage({
 
   const { percent: weddingDataPercent } = getWeddingDataCompleteness(event);
   const plan = plans[event.plan_id ?? DEFAULT_PLAN_ID] ?? plans[DEFAULT_PLAN_ID];
-  // dashboard-audit.md B21: personalized invitations and banquet/table-card
-  // materials are both Premium-tier features in lib/plans.ts -- this is
+  // dashboard-audit.md B21: watermark removal on personalized invitations
+  // and banquet/table-card materials moved from Premium to Basic (the
+  // natural "I want the real printable thing" purchase moment) -- this is
   // what actually enforces that now (a watermark, not a hard paywall).
-  const locked = !isPremiumPlan(plan.id);
+  const locked = !planMeets(plan.id, "basic");
 
   // dashboard-audit.md A7: a guest whose invitation has the paper toggle off
   // (site-only) shouldn't show up in "Personalized invitations" at all --

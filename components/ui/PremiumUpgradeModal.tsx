@@ -20,15 +20,19 @@ interface PremiumUpgradeModalProps {
   onContinueAnyway?: () => void;
 }
 
-const premiumPlan = plans.premium;
+const targetPlan = plans.basic;
 
-/** dashboard-audit.md follow-up: previously a Premium-gated action (paper
+/** dashboard-audit.md follow-up: previously a gated action (paper
  * downloads) only got a small passive caption below the button after the
  * fact -- easy to miss, and it never actually said "this needs payment."
  * Fires the moment the host clicks a gated action, states that plainly, and
  * names the plan that removes the gate -- matching the "sam находи что
  * нелогичное" ask to surface paid-feature boundaries immediately rather
- * than silently. */
+ * than silently.
+ *
+ * Watermark removal moved from Premium to Basic (the natural "I want the
+ * real printable thing" purchase moment) -- this modal follows that gate,
+ * whichever plan it actually is, rather than hardcoding "Premium". */
 export default function PremiumUpgradeModal({
   open,
   onClose,
@@ -59,7 +63,7 @@ export default function PremiumUpgradeModal({
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="text-lg" aria-hidden="true">🔒</span>
-            <h2 className="dash-h2 text-base text-[var(--dash-accent)]">Premium feature</h2>
+            <h2 className="dash-h2 text-base text-[var(--dash-accent)]">{targetPlan.name} feature</h2>
           </div>
           <button
             type="button"
@@ -75,8 +79,8 @@ export default function PremiumUpgradeModal({
           {action} adds a &quot;Made with Invimbo&quot; watermark on your current plan.
         </p>
         <p className="mt-2 text-sm text-[var(--dash-text-muted)]">
-          Upgrade to <span className="font-semibold text-[var(--dash-text)]">{premiumPlan.name}</span>{" "}
-          (€{premiumPlan.priceEur}) to remove it, plus everything in Basic.
+          Upgrade to <span className="font-semibold text-[var(--dash-text)]">{targetPlan.name}</span>{" "}
+          (€{targetPlan.priceEur}) to remove it — plus a custom domain and no site badge.
         </p>
 
         <div className="mt-5 flex flex-col gap-2">
@@ -84,7 +88,7 @@ export default function PremiumUpgradeModal({
             href={`/dashboard/${eventId}/plan`}
             className="dash-btn dash-btn-primary w-full justify-center"
           >
-            Upgrade to {premiumPlan.name}
+            Upgrade to {targetPlan.name}
           </Link>
           {canContinueAnyway ? (
             <button

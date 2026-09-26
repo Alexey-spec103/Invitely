@@ -12,7 +12,7 @@ import PaperConstructor from "./PaperConstructor";
 import HubOverviewStrip from "../HubOverviewStrip";
 import FirstVisitTour from "@/components/ui/FirstVisitTour";
 import { getWeddingDataCompleteness } from "@/lib/weddingData";
-import { plans, DEFAULT_PLAN_ID, isPremiumPlan } from "@/lib/plans";
+import { plans, DEFAULT_PLAN_ID, planMeets } from "@/lib/plans";
 
 export default async function PaperPage({ params }: PageProps<"/dashboard/[eventId]/paper">) {
   const { eventId } = await params;
@@ -48,9 +48,10 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
 
   const { percent: weddingDataPercent } = getWeddingDataCompleteness(event);
   const plan = plans[event.plan_id ?? DEFAULT_PLAN_ID] ?? plans[DEFAULT_PLAN_ID];
-  // dashboard-audit.md B21: banquet/table-card materials are a Premium-tier
-  // feature in lib/plans.ts -- this is what actually enforces that now.
-  const locked = !isPremiumPlan(plan.id);
+  // dashboard-audit.md B21: watermark removal on paper/banquet materials
+  // moved from Premium to Basic (the natural "I want the real printable
+  // thing" purchase moment) -- this is what actually enforces that now.
+  const locked = !planMeets(plan.id, "basic");
 
   return (
     <div className="max-w-3xl">

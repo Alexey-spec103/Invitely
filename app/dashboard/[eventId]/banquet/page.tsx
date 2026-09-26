@@ -7,7 +7,7 @@ import { getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { getEventType } from "@/lib/eventTypes";
 import { getWeddingDataCompleteness } from "@/lib/weddingData";
-import { plans, DEFAULT_PLAN_ID, isPremiumPlan } from "@/lib/plans";
+import { plans, DEFAULT_PLAN_ID, planMeets } from "@/lib/plans";
 import BanquetTablesManager from "./BanquetTablesManager";
 import BanquetShowcase from "./BanquetShowcase";
 import GuestTableAssignments from "./GuestTableAssignments";
@@ -80,9 +80,11 @@ export default async function BanquetPage({ params }: PageProps<"/dashboard/[eve
 
   const { percent: weddingDataPercent } = getWeddingDataCompleteness(event);
   const plan = plans[event.plan_id ?? DEFAULT_PLAN_ID] ?? plans[DEFAULT_PLAN_ID];
-  // dashboard-audit.md B21: banquet/table-card materials are a Premium-tier
-  // feature in lib/plans.ts -- this is what actually enforces that now.
-  const locked = !isPremiumPlan(plan.id);
+  // dashboard-audit.md B21: watermark removal on banquet/table-card
+  // materials moved from Premium to Basic (the natural "I want the real
+  // printable thing" purchase moment) -- this is what actually enforces
+  // that now.
+  const locked = !planMeets(plan.id, "basic");
 
   const firstTable = tableList[0];
   const firstTableGuestNames = firstTable

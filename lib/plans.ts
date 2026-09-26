@@ -21,17 +21,15 @@ export const plans: Record<string, Plan> = {
       "Custom domain",
       "Countdown, gift wishes & dress-code modules",
       "No \"Made with Invimbo\" badge",
+      "No watermark on personalized invitations",
+      "No watermark on banquet & table cards",
     ],
   },
   premium: {
     id: "premium",
     name: "Premium",
     priceEur: 39,
-    features: [
-      "Everything in Basic",
-      "No watermark on personalized invitations",
-      "No watermark on banquet & table cards",
-    ],
+    features: ["Everything in Basic"],
   },
 };
 
@@ -49,19 +47,6 @@ type PlanTierName = keyof typeof PLAN_TIER;
 export function planMeets(planId: string, minimum: PlanTierName): boolean {
   const tier = PLAN_TIER[planId as PlanTierName] ?? PLAN_TIER.free;
   return tier >= PLAN_TIER[minimum];
-}
-
-/** dashboard-audit.md B21/D2: `plan.features` above used to list
- * "Personalized paper invitations (PDF)" and "Banquet seating & table
- * cards" as Premium-only, but nothing ever enforced that -- every event
- * got them regardless of plan. Rather than leave copy promising an
- * exclusivity that doesn't exist, this describes the one boundary that
- * actually does something: it drives whether those materials render with
- * CardWatermark/PdfWatermark, not whether they exist at all (downloads
- * still work either way, matching weddingpost.ru's own "fully visible,
- * just marked" unpaid-layout behavior rather than a real paywall). */
-export function isPremiumPlan(planId: string): boolean {
-  return planMeets(planId, "premium");
 }
 
 /** dashboard-audit.md Block E part 1: these three site modules are the
