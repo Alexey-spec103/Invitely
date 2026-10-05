@@ -12,8 +12,8 @@ export const marbleChampagneTeal: Theme = {
     "--theme-bg": "#F3EEDD",
     "--theme-text": "#2A362F",
     "--theme-accent": "#5F8074",
-    "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
+    "--theme-font-heading": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

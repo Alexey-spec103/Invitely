@@ -13,7 +13,7 @@ export const rusticTerracottaPot: Theme = {
     "--theme-bg": "#F1E4D6",
     "--theme-text": "#4C3A2B",
     "--theme-accent": "#B15E3D",
-    "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
+    "--theme-font-heading": "var(--font-libre-baskerville), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

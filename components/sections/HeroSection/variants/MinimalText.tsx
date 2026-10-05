@@ -1,5 +1,9 @@
+"use client";
+
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import StaggerReveal from "@/components/StaggerReveal";
 import styles from "./MinimalText.module.css";
 
 // Same local derivation as MonogramCenter/MonogramCrest -- see those files'
@@ -19,6 +23,7 @@ export default function MinimalText({
   styleOverrides,
 }: HeroSectionVariantProps) {
   const initials = getInitials(names);
+  const { editable } = useEditableField();
   return (
     <section className={styles.section}>
       {/* Oversized, near-transparent initials behind the content -- one
@@ -32,15 +37,23 @@ export default function MinimalText({
           {initials}
         </span>
       )}
-      <p className={styles.names}>
-        <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
-        {names[1] && (
-          <>
-            <span className={styles.divider} aria-hidden="true" />
-            <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
-          </>
-        )}
-      </p>
+      {editable ? (
+        <p className={styles.names}>
+          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+          {names[1] && (
+            <>
+              <span className={styles.divider} aria-hidden="true" />
+              <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
+            </>
+          )}
+        </p>
+      ) : (
+        <StaggerReveal as="p" itemAs="span" className={styles.names} staggerDelay={0.12}>
+          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+          {names[1] && <span className={styles.divider} aria-hidden="true" />}
+          {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
+        </StaggerReveal>
+      )}
       <p className={styles.date}>{eventDate}</p>
     </section>
   );

@@ -5,6 +5,7 @@ import Link from "next/link";
 import PremiumUpgradeNote from "@/components/paper/PremiumUpgradeNote";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface GuestItem {
   id: string;
@@ -45,6 +46,11 @@ interface InvitationDownloadsProps {
    * lib/plans.ts. Only applied to the actual per-guest downloads below,
    * never to the plain non-personalized invitation. */
   locked: boolean;
+  /** Formats the printed date on every generated PDF (envelope + invitation)
+   * -- resolveGuestLocale() in the server-component parent, same source
+   * every guest-facing page already reads. Defaults to English inside
+   * EnvelopeDocument/InvitationDocument themselves if ever omitted. */
+  locale: Locale;
 }
 
 function saveBlob(blob: Blob, filename: string) {
@@ -74,6 +80,7 @@ export default function InvitationDownloads({
   dressCodeColors,
   guests,
   locked,
+  locale,
 }: InvitationDownloadsProps) {
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -157,7 +164,7 @@ export default function InvitationDownloads({
         import("@/components/pdf/EnvelopeDocument"),
       ]);
       const blob = await pdf(
-        <EnvelopeDocument theme={theme} names={names} eventDate={eventDate} />
+        <EnvelopeDocument theme={theme} names={names} eventDate={eventDate} locale={locale} />
       ).toBlob();
       saveBlob(blob, "envelope.pdf");
     } catch (err) {
@@ -203,6 +210,7 @@ export default function InvitationDownloads({
           theme={theme}
           names={names}
           eventDate={eventDate}
+          locale={locale}
           venueName={venueName}
           venueAddress={venueAddress}
           guestName={guest?.fullName}
@@ -275,20 +283,20 @@ export default function InvitationDownloads({
           {pendingId === "generic"
             ? "Generating..."
             : hasCanvasDesign
-              ? "Download invitation (your design)"
-              : "Download generic invitation"}
+              ? "Download invitation PDF (your design)"
+              : "Download generic invitation PDF"}
         </button>
         <button type="button" onClick={generateEnvelope} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
-          {pendingId === "envelope" ? "Generating..." : "Download envelope design"}
+          {pendingId === "envelope" ? "Generating..." : "Download envelope PDF"}
         </button>
         {timelineEvents.length > 0 && (
           <button type="button" onClick={generateProgramCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
-            {pendingId === "program" ? "Generating..." : "Download program card"}
+            {pendingId === "program" ? "Generating..." : "Download program card PDF"}
           </button>
         )}
         {dressCodeColors.length > 0 && (
           <button type="button" onClick={generateDressCodeCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
-            {pendingId === "dresscode" ? "Generating..." : "Download dress-code card"}
+            {pendingId === "dresscode" ? "Generating..." : "Download dress-code card PDF"}
           </button>
         )}
       </div>
@@ -322,7 +330,7 @@ export default function InvitationDownloads({
                 ? bulkProgress
                   ? `Generating ${bulkProgress.done}/${bulkProgress.total}...`
                   : "Generating..."
-                : `Download all (${guests.length}) as ZIP`}
+                : `Download all (${guests.length}) as ZIP (PDFs)`}
             </button>
           </div>
         )}
@@ -351,7 +359,7 @@ export default function InvitationDownloads({
                 disabled={pendingId !== null}
                 className="text-sm font-medium text-gray-500 hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {pendingId === guest.id ? "Generating..." : "Download"}
+                {pendingId === guest.id ? "Generating..." : "Download PDF"}
               </button>
             </li>
           ))}

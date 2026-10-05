@@ -13,8 +13,8 @@ export const modernSageGrid: Theme = {
     "--theme-bg": "#F1F4EE",
     "--theme-text": "#263024",
     "--theme-accent": "#6F8F5C",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

@@ -18,6 +18,6 @@ export const vintageLilacParlor: Theme = {
     "--theme-accent": "#967FAD",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

@@ -140,9 +140,15 @@
   left: 0;
   width: 375px;
   transform-origin: top left;
-  /* Same crop-compensation technique/value as the other live HeroSection
-     mockups on this page -- same theme + variant, same offset. */
-  transform: scale(calc(100cqw / 375px)) translateY(-40vh);
+  /* Same crop-compensation technique as the other live HeroSection mockups
+     on this page -- but NOT the same -325px offset: `.laptopScreen`'s own
+     `16/10` aspect ratio gives a much shorter crop window here (~234
+     content-px, vs. the ~487px window -325px was tuned for elsewhere) --
+     confirmed live, the shared -325px offset showed a nearly-empty middle
+     band with no wreath or names in it. -289px instead roughly centers
+     this shorter window on the 812px-tall watercolor-bloom content
+     ((812-234)/2), landing the wreath+names in frame. */
+  transform: scale(calc(100cqw / 375px)) translateY(-289px);
 }
 
 .laptopBase {
@@ -208,7 +214,15 @@
   left: 0;
   width: 375px;
   transform-origin: top left;
-  transform: scale(calc(100cqw / 375px)) translateY(-40vh);
+  /* -325px (the shared default elsewhere) assumes a crop window roughly
+     487px tall in content-space -- but `.phone`'s own box is
+     `aspect-ratio: 375/750`, i.e. a 750px-tall window at this 375px content
+     width. -325px + a 750px window reaches content y=1075, 263px past the
+     812px-tall section -- confirmed live: the bottom ~35% of this phone
+     showed the screen's own white background below the section's real
+     content (same bug, same fix as PlatformFanSection's `.phone`). -31px
+     instead centers the 750px window on the 812px section ((812-750)/2). */
+  transform: scale(calc(100cqw / 375px)) translateY(-31px);
 }
 
 /* --- Right column: paper stack --- */

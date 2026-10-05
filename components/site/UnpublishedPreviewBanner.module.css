@@ -1,0 +1,16 @@
+.banner {
+  position: sticky;
+  top: 0;
+  /* Above EnvelopeReveal's full-screen overlay (z-index: 100) -- the owner
+     should see this before they even open the envelope, not only after. */
+  z-index: 101;
+  padding: 0.6rem 1rem;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #78350f;
+  background: #fef3c7;
+  border-bottom: 1px solid #fde68a;
+}

@@ -10,9 +10,9 @@ export const bohoTerracotta: Theme = {
     "--theme-bg": "#F4E9DD",
     "--theme-text": "#5C3D2E",
     "--theme-accent": "#C1633B",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-fraunces), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-accent": "var(--font-fraunces), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-accent": "var(--font-fraunces), var(--font-cormorant-garamond), Georgia, serif",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

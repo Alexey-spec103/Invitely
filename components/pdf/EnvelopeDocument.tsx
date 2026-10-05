@@ -3,16 +3,16 @@ import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
+import { formatEventDate } from "@/components/paper/formatEventDate";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
 export interface EnvelopeDocumentProps {
   theme: Theme;
   names: string[];
   eventDate: string;
-}
-
-function formatEventDate(isoDate: string) {
-  const date = new Date(`${isoDate}T00:00:00`);
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  /** Defaults to English -- see formatEventDate.ts's own doc comment for
+   * why this stays optional rather than required at every call site. */
+  locale?: Locale;
 }
 
 // Sized to a standard C5 envelope (162 x 229mm), printed landscape — the
@@ -24,11 +24,11 @@ function formatEventDate(isoDate: string) {
 const ENVELOPE_WIDTH = 649;
 const ENVELOPE_HEIGHT = 459;
 
-export function EnvelopeDocument({ theme, names, eventDate }: EnvelopeDocumentProps) {
+export function EnvelopeDocument({ theme, names, eventDate, locale = DEFAULT_LOCALE }: EnvelopeDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
-  registerCanvasPdfFont(style.headingFont);
-  registerCanvasPdfFont(style.bodyFont);
+  style.headingFont.forEach(registerCanvasPdfFont);
+  style.bodyFont.forEach(registerCanvasPdfFont);
 
   const styles = StyleSheet.create({
     page: {
@@ -91,7 +91,7 @@ export function EnvelopeDocument({ theme, names, eventDate }: EnvelopeDocumentPr
 
         <View style={styles.returnFlourish}>
           <Text style={styles.returnNames}>{names.join(" & ")}</Text>
-          <Text style={styles.returnDate}>{formatEventDate(eventDate).toUpperCase()}</Text>
+          <Text style={styles.returnDate}>{formatEventDate(eventDate, locale).toUpperCase()}</Text>
         </View>
 
         <View style={styles.addressArea}>

@@ -13,8 +13,8 @@ export const darkCrimsonNoir: Theme = {
     "--theme-bg": "#170D0F",
     "--theme-text": "#EFE3E1",
     "--theme-accent": "#B23A3A",
-    "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
+    "--theme-font-heading": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { LOCALE_COOKIE, LOCALE_LABELS, type Locale } from "@/lib/i18n/locales";
+import { startTransition, useEffect, useRef, useState } from "react";
+import { LOCALE_LABELS, type Locale } from "@/lib/i18n/locales";
+import { setLocale } from "@/lib/i18n/actions";
 import styles from "./LanguageSwitcher.module.css";
 
 interface LanguageSwitcherProps {
@@ -27,14 +27,12 @@ interface LanguageSwitcherProps {
  * and the marketing landing page header, so the same control/behavior shows
  * up everywhere a locale choice is offered.
  *
- * Sets the guest's explicit choice directly via `document.cookie` (a plain,
- * non-httpOnly cookie -- this is a display preference, not a secret) then
- * `router.refresh()`, which re-runs the server-rendered page with
- * `resolveGuestLocale` now reading that cookie first -- see
- * lib/i18n/resolveLocale.ts's priority order. No Server Action needed for
- * something this simple. */
+ * Sets the guest's explicit choice via the `setLocale` Server Action
+ * (lib/i18n/actions.ts), which writes the cookie server-side then calls
+ * Next 16's `refresh()` (next/cache) -- see that file's comment for why a
+ * plain client-side `document.cookie` + `router.refresh()` (the previous
+ * approach) silently failed to update the page. */
 export default function LanguageSwitcher({ currentLocale, availableLocales, label, onSelect }: LanguageSwitcherProps) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
@@ -59,9 +57,17 @@ export default function LanguageSwitcher({ currentLocale, availableLocales, labe
       setOpen(false);
       return;
     }
-    document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
     setOpen(false);
-    router.refresh();
+    // Next 16's own guide (node_modules/next/dist/docs/.../interactive-apps.md)
+    // wraps every Server Function that calls refresh() in startTransition --
+    // a bare fire-and-forget call worked most of the time in manual testing
+    // but not reliably (confirmed live: an identical click sometimes left the
+    // pill showing the old locale even though the cookie had updated
+    // correctly), since nothing told React the pending RSC update belonged
+    // to this interaction's render lifecycle.
+    startTransition(() => {
+      void setLocale(locale);
+    });
   };
 
   return (

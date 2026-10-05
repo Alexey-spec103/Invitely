@@ -12,8 +12,8 @@ export const modernLilacGrid: Theme = {
     "--theme-bg": "#F6F2F7",
     "--theme-text": "#2E2536",
     "--theme-accent": "#9B7FC4",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

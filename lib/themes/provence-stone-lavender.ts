@@ -13,7 +13,7 @@ export const provenceStoneLavender: Theme = {
     // below the 3:1 floor even for large/decorative text. Deepened within the
     // same hue and saturation (not re-picked), now passes 3.11:1.
     "--theme-accent": "#806A98",
-    "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
+    "--theme-font-heading": "var(--font-libre-baskerville), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

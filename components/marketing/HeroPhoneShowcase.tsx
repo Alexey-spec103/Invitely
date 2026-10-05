@@ -1,5 +1,4 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
-import AmbientVideoGlow from "@/components/marketing/AmbientVideoGlow";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { LetterSection } from "@/components/sections/LetterSection";
 import { TimelineSection } from "@/components/sections/TimelineSection";
@@ -103,86 +102,85 @@ export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
 
   return (
     <div className={styles.stage}>
-      <AmbientVideoGlow src="/marketing/hero-video/details-rings.mp4" className={styles.ambientGlow} />
       <p className={styles.topCaption}>{t.topCaption}</p>
 
       <div className={styles.deviceWrap}>
-        <div className={styles.device}>
-          <div className={styles.dynamicIsland} aria-hidden="true" />
-          <div className={styles.homeIndicator} aria-hidden="true" />
-          <div className={styles.screen}>
-            <div className={styles.urlBar}>
-              <span className={styles.urlDot} aria-hidden="true" />
-              <span className={styles.urlText}>yourname.com</span>
-            </div>
-            <div className={styles.screenScaleWrap}>
-              {SHOWCASE_FRAMES.map(({ themeId, section, variant, frameClass }) => {
-                const theme = getTheme(themeId);
-                const targetDate = previewTargetDateFor(theme.id, theme.season);
-                const dateLabel = formatPreviewDate(targetDate);
+          <div className={styles.device}>
+            <div className={styles.dynamicIsland} aria-hidden="true" />
+            <div className={styles.homeIndicator} aria-hidden="true" />
+            <div className={styles.screen}>
+              <div className={styles.urlBar}>
+                <span className={styles.urlDot} aria-hidden="true" />
+                <span className={styles.urlText}>yourname.com</span>
+              </div>
+              <div className={styles.screenScaleWrap} style={{ "--section-min-height": "812px" } as React.CSSProperties}>
+                {SHOWCASE_FRAMES.map(({ themeId, section, variant, frameClass }) => {
+                  const theme = getTheme(themeId);
+                  const targetDate = previewTargetDateFor(theme.id, theme.season);
+                  const dateLabel = formatPreviewDate(targetDate);
 
-                let content: React.ReactNode;
-                if (section === "hero") {
-                  const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
-                  content = (
-                    <HeroSection
-                      variant={variant}
-                      names={SHOWCASE_NAMES}
-                      eventDate={dateLabel}
-                      photoUrl={photoUrl}
-                      themeCategory={effectiveDecorCategory(theme)}
-                    />
-                  );
-                } else if (section === "letter") {
-                  const rsvpDeadlineDate = new Date(targetDate);
-                  rsvpDeadlineDate.setMonth(rsvpDeadlineDate.getMonth() - 1);
-                  content = (
-                    <LetterSection
-                      variant={variant}
-                      rsvpDeadline={rsvpDeadlineDate.toISOString().slice(0, 10)}
-                      locale={locale}
-                      {...LETTER_CONTENT}
-                    />
-                  );
-                } else {
-                  content = <TimelineSection variant={variant} {...TIMELINE_CONTENT} />;
-                }
+                  let content: React.ReactNode;
+                  if (section === "hero") {
+                    const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
+                    content = (
+                      <HeroSection
+                        variant={variant}
+                        names={SHOWCASE_NAMES}
+                        eventDate={dateLabel}
+                        photoUrl={photoUrl}
+                        themeCategory={effectiveDecorCategory(theme)}
+                      />
+                    );
+                  } else if (section === "letter") {
+                    const rsvpDeadlineDate = new Date(targetDate);
+                    rsvpDeadlineDate.setMonth(rsvpDeadlineDate.getMonth() - 1);
+                    content = (
+                      <LetterSection
+                        variant={variant}
+                        rsvpDeadline={rsvpDeadlineDate.toISOString().slice(0, 10)}
+                        locale={locale}
+                        {...LETTER_CONTENT}
+                      />
+                    );
+                  } else {
+                    content = <TimelineSection variant={variant} {...TIMELINE_CONTENT} />;
+                  }
 
-                return (
-                  <div key={themeId} className={`${styles.frameLayer} ${frameClass}`}>
-                    <div className={styles.screenScaleInner}>
-                      <ThemeProvider theme={theme}>{content}</ThemeProvider>
+                  return (
+                    <div key={themeId} className={`${styles.frameLayer} ${frameClass}`}>
+                      <div className={styles.screenScaleInner}>
+                        <ThemeProvider theme={theme}>{content}</ThemeProvider>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-              <span className={styles.shineSweep} aria-hidden="true" />
-              <span className={styles.tapCursor} aria-hidden="true" />
+                  );
+                })}
+                <span className={styles.shineSweep} aria-hidden="true" />
+                <span className={styles.tapCursor} aria-hidden="true" />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* landing-audit follow-up: "one style, everywhere" was only ever
-            *said* in the hero copy, never *shown* -- weddingpost.ru proves it
-            visually on every one of their own theme cards by pairing the
-            phone with a matching paper invitation. Reuses the exact same
-            InvitationCardPreview component the dashboard's Paper tab and
-            SiteOrPaperSection already render (real product, not an
-            illustration), synced to the same frame-cycle timing as the phone
-            via the same frameBoho/frameArtDeco/frameWatercolor delay
-            classes, so the card in view always matches the theme on screen. */}
-        <div className={styles.paperStack} aria-hidden="true">
-          {SHOWCASE_FRAMES.map(({ themeId, frameClass }) => {
-            const theme = getTheme(themeId);
-            const targetDate = previewTargetDateFor(theme.id, theme.season);
-            const isoDate = targetDate.toISOString().slice(0, 10);
-            return (
-              <div key={themeId} className={`${styles.paperLayer} ${frameClass}`}>
-                <InvitationCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} side="front" />
-              </div>
-            );
-          })}
-        </div>
+          {/* landing-audit follow-up: "one style, everywhere" was only ever
+              *said* in the hero copy, never *shown* -- weddingpost.ru proves it
+              visually on every one of their own theme cards by pairing the
+              phone with a matching paper invitation. Reuses the exact same
+              InvitationCardPreview component the dashboard's Paper tab and
+              SiteOrPaperSection already render (real product, not an
+              illustration), synced to the same frame-cycle timing as the phone
+              via the same frameBoho/frameArtDeco/frameWatercolor delay
+              classes, so the card in view always matches the theme on screen. */}
+          <div className={styles.paperStack} aria-hidden="true">
+            {SHOWCASE_FRAMES.map(({ themeId, frameClass }) => {
+              const theme = getTheme(themeId);
+              const targetDate = previewTargetDateFor(theme.id, theme.season);
+              const isoDate = targetDate.toISOString().slice(0, 10);
+              return (
+                <div key={themeId} className={`${styles.paperLayer} ${frameClass}`}>
+                  <InvitationCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} side="front" />
+                </div>
+              );
+            })}
+          </div>
       </div>
 
       <div className={styles.progressDots} aria-hidden="true">

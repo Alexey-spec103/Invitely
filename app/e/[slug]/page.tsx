@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { EVENT_COLUMNS } from "@/lib/events";
@@ -13,16 +13,20 @@ import ScrollToNextSection from "@/components/shell/ScrollToNextSection";
 import CanvasRenderer from "@/components/canvas/CanvasRenderer";
 import SectionBackground from "@/components/background/SectionBackground";
 import { parseCanvasFrames } from "@/lib/canvas/parse";
+import { resolveCanvasQrElements } from "@/lib/canvas/resolveQrElements";
 import { submitRsvp, lookupGuestTable } from "./actions";
 import SitePasswordGate from "./SitePasswordGate";
 import EnvelopeReveal from "@/components/site/EnvelopeReveal";
-import { getInviteDescription, formatEventDate } from "@/lib/socialPreview";
+import { getInviteDescription } from "@/lib/socialPreview";
+import { formatEventDate } from "@/components/paper/formatEventDate";
 import { planMeets, BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
-import { getEventType } from "@/lib/eventTypes";
+import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
 import PublicSiteBadge from "@/components/site/PublicSiteBadge";
+import UnpublishedPreviewBanner from "@/components/site/UnpublishedPreviewBanner";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
 import { SUPPORTED_LOCALES } from "@/lib/i18n/locales";
+import { getDictionary } from "@/lib/i18n/dictionary";
 
 export async function generateMetadata({
   params,
@@ -162,6 +166,11 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
   const maxPartySize =
     invitedGuest?.max_plus_ones != null ? invitedGuest.max_plus_ones + 1 : undefined;
   const assignedTableName = invitedGuest?.table_name ?? undefined;
+  // A guest who arrived via their own personal invite link is already
+  // identified server-side -- if they have no table yet, the banquet
+  // navigator should say so directly (using the name we already have)
+  // rather than asking them to type it back into a search box.
+  const knownGuestName = invitedGuest && !assignedTableName ? invitedGuest.full_name : undefined;
   const boundLookupGuestTable = lookupGuestTable.bind(null, event.id);
 
   const settings =
@@ -230,7 +239,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
   // both shapes have to be handled here too, not just the fallback.
   const rawEnvelopeDate =
     typeof heroContent.eventDate === "string" && heroContent.eventDate ? heroContent.eventDate : event.event_date;
-  const envelopeDate = /^\d{4}-\d{2}-\d{2}$/.test(rawEnvelopeDate) ? formatEventDate(rawEnvelopeDate) : rawEnvelopeDate;
+  const envelopeDate = /^\d{4}-\d{2}-\d{2}$/.test(rawEnvelopeDate) ? formatEventDate(rawEnvelopeDate, locale) : rawEnvelopeDate;
   const envelopeMonogramInitials =
     typeof heroContent.monogramInitials === "string" ? heroContent.monogramInitials : undefined;
   const envelopeRevealEnabled = typeof settings.envelopeRevealEnabled === "boolean" ? settings.envelopeRevealEnabled : true;
@@ -245,8 +254,32 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
   // real decorative asset instead of the plain accent-tinted mask fallback.
   const decorCategory = effectiveDecorCategory(theme);
 
+  // A `qr` canvas element is only ever a placeholder shape until something
+  // resolves it into a real scannable image (see resolveCanvasQrElements's
+  // own comment) -- PDF export already does this, but the live canvas-mode
+  // site never did, so any host using Canvas mode with a QR element showed
+  // every real guest a fake, non-functional icon. `host` is the raw Host
+  // header (not request.nextUrl.hostname -- see proxy.ts's own comment on
+  // why), so a verified custom domain's own root is encoded, matching
+  // exactly what resolveCustomDomain rewrites that hostname's `/` to.
+  let canvasFrames: Awaited<ReturnType<typeof parseCanvasFrames>> = [];
+  if (isCanvasMode) {
+    const host = (await headers()).get("host");
+    const isVerifiedCustomDomain =
+      !!host && event.custom_domain === host && event.custom_domain_verified_at != null;
+    const siteUrl = isVerifiedCustomDomain ? `https://${host}` : `https://${host}/e/${slug}`;
+    const inviteUrl = typeof invite === "string" && invite ? `${siteUrl}?invite=${invite}` : undefined;
+    canvasFrames = await resolveCanvasQrElements(parseCanvasFrames(event.site_config.canvas), {
+      siteUrl,
+      inviteUrl,
+    });
+  }
+
   return (
     <>
+      {event.status !== "published" && (
+        <UnpublishedPreviewBanner message={getDictionary(locale).unpublishedPreview.message} />
+      )}
       {envelopeRevealEnabled && (
         <EnvelopeReveal
           eventId={event.id}
@@ -258,7 +291,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           locale={locale}
         />
       )}
-      {isCanvasMode && <CanvasRenderer frames={parseCanvasFrames(event.site_config.canvas)} />}
+      {isCanvasMode && <CanvasRenderer frames={canvasFrames} />}
       <ThemeProvider theme={theme}>
         <SiteHeader
           sections={navItems}
@@ -270,14 +303,15 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
         />
         {sections.map((section, index) => {
           const element = renderSection(section, content, {
-            hero: { themeCategory: decorCategory, eyebrow: customEyebrow ?? getEventType(event.event_type).heroEyebrow },
+            hero: { themeCategory: decorCategory, eyebrow: customEyebrow ?? getLocalizedEventType(event.event_type, locale).heroEyebrow },
             letter: { themeCategory: decorCategory },
             rsvp: { onSubmit: boundSubmitRsvp, defaultGuestName: invitedGuest?.full_name, maxPartySize },
             countdown: { eventDateTime, themeCategory: decorCategory },
             gift: { preferences: giftItems, themeCategory: decorCategory },
             dressCode: { themeCategory: decorCategory },
+            guestNotes: { themeCategory: decorCategory },
             guestbook: { messages: guestbookMessages },
-            banquetNavigator: { onLookup: boundLookupGuestTable, assignedTableName },
+            banquetNavigator: { onLookup: boundLookupGuestTable, assignedTableName, knownGuestName },
           }, locale);
           if (!element) {
             return null;

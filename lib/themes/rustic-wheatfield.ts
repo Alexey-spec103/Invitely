@@ -16,7 +16,7 @@ export const rusticWheatfield: Theme = {
     // below the 3:1 floor even for large/decorative text. Deepened within the
     // same hue and saturation (not re-picked), now passes 3.06:1.
     "--theme-accent": "#AC7D2B",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-fraunces), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

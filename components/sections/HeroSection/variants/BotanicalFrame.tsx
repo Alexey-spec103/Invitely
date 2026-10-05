@@ -1,5 +1,9 @@
+"use client";
+
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import StaggerReveal from "@/components/StaggerReveal";
 import { CORNER_PAIR_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import styles from "./BotanicalFrame.module.css";
 
@@ -14,6 +18,7 @@ import styles from "./BotanicalFrame.module.css";
  * modern/minimal fall back to their own hand-authored mask accent instead
  * of the fully generic corner-flourish (same fallback CenteredCard uses). */
 export default function BotanicalFrame({ names, eventDate, styleOverrides, themeCategory }: HeroSectionVariantProps) {
+  const { editable } = useEditableField();
   const flourishAssets = themeCategory ? CORNER_PAIR_DECOR[themeCategory] : undefined;
   const maskAccent = !flourishAssets && themeCategory ? CATEGORY_MASK_ACCENT[themeCategory] : undefined;
   const maskAccentStyle = maskAccent
@@ -38,15 +43,23 @@ export default function BotanicalFrame({ names, eventDate, styleOverrides, theme
           </>
         )}
         <div className={styles.content}>
-          <p className={styles.names}>
-            <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
-            {names[1] && (
-              <>
-                {" & "}
-                <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
-              </>
-            )}
-          </p>
+          {editable ? (
+            <p className={styles.names}>
+              <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+              {names[1] && (
+                <>
+                  {" & "}
+                  <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
+                </>
+              )}
+            </p>
+          ) : (
+            <StaggerReveal as="p" itemAs="span" className={styles.names} staggerDelay={0.12}>
+              <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+              {names[1] && <span>{" & "}</span>}
+              {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
+            </StaggerReveal>
+          )}
           <span className={styles.divider} aria-hidden="true" />
           <p className={styles.date}>{eventDate}</p>
         </div>

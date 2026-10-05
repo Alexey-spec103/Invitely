@@ -16,6 +16,6 @@ export const peonyBlushBurgundy: Theme = {
     "--theme-accent": "#84443F",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

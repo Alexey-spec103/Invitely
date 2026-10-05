@@ -29,7 +29,8 @@ import HowItWorksClip from "./HowItWorksClip";
 import { themes, DEFAULT_THEME_ID, getTheme } from "@/lib/themes";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
-import { EVENT_TYPE_LIST, DEFAULT_EVENT_TYPE_ID, getEventType } from "@/lib/eventTypes";
+import { DEFAULT_EVENT_TYPE_ID, getEventType } from "@/lib/eventTypes";
+import { getLocalizedEventType, getLocalizedEventTypeList } from "@/lib/eventTypesLocalized";
 import { completeOnboarding } from "./actions";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
@@ -102,6 +103,15 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [formError, setFormError] = useState<string | null>(null);
+  // zodResolver validates the whole schema on every trigger() call (Zod has
+  // no concept of partial-object validation once a .superRefine() is
+  // involved), so an early step's own trigger() already resolves later,
+  // still-untouched fields as invalid and stores that in `errors` -- without
+  // this gate, eventDate's "required" message was showing in red the
+  // instant step 4 first rendered, before the date input had been touched
+  // at all. Scoped per step (not per field): each step's JSX only ever
+  // reads the error(s) belonging to that step, so one Set suffices.
+  const [attemptedSteps, setAttemptedSteps] = useState<Set<number>>(new Set());
 
   const dict = getDictionary(locale);
   const t = dict.onboarding;
@@ -133,7 +143,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
   const photoUrl = useWatch({ control, name: "photoUrl" });
   const eventDate = useWatch({ control, name: "eventDate" });
 
-  const eventType = getEventType(eventTypeId);
+  const eventType = getLocalizedEventType(eventTypeId, locale);
   const isCoupleMode = eventType.namesMode === "couple";
 
   const isLastStep = step === STEPS.length - 1;
@@ -163,6 +173,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
   };
 
   const handleNext = async () => {
+    setAttemptedSteps((prev) => new Set(prev).add(step));
     const isValid = await trigger(STEP_FIELDS[stepKey]);
     if (isValid) {
       goToStep(step + 1, 1);
@@ -210,7 +221,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
       }
     >
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit, () => setAttemptedSteps((prev) => new Set(prev).add(step)))}
         className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
         noValidate
       >
@@ -233,7 +244,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
 
                 <div className="relative mt-4">
                   <div className="grid max-h-[28rem] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3 lg:grid-cols-4">
-                    {EVENT_TYPE_LIST.map((type) => {
+                    {getLocalizedEventTypeList(locale).map((type) => {
                       const Icon = EVENT_TYPE_ICONS[type.icon] ?? CalendarHeart;
                       const isSelected = type.id === eventTypeId;
                       return (
@@ -286,7 +297,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
             {stepKey === "names" && (
               <div className="mt-4">
                 <label htmlFor="name1" className="block text-lg font-semibold text-gray-900">
-                  💑 {eventType.namePrompts[0]}
+                  {isCoupleMode ? "💑" : "✨"} {eventType.namePrompts[0]}
                 </label>
                 <input
                   id="name1"
@@ -295,7 +306,9 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                   className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                   {...register("name1")}
                 />
-                {errors.name1 && <p className="mt-1 text-sm text-red-600">{errors.name1.message}</p>}
+                {attemptedSteps.has(step) && errors.name1 && (
+                  <p className="mt-1 text-sm text-red-600">{errors.name1.message}</p>
+                )}
 
                 {isCoupleMode && (
                   <>
@@ -308,7 +321,9 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                       className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                       {...register("name2")}
                     />
-                    {errors.name2 && <p className="mt-1 text-sm text-red-600">{errors.name2.message}</p>}
+                    {attemptedSteps.has(step) && errors.name2 && (
+                      <p className="mt-1 text-sm text-red-600">{errors.name2.message}</p>
+                    )}
                   </>
                 )}
 
@@ -322,6 +337,11 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                         onChange={(url) => field.onChange(url ?? "")}
                         label={t.photo.label}
                         helpText={t.photo.help}
+                        dropHint={t.photo.dropHint}
+                        busyHint={t.photo.busyHint}
+                        changeLabel={t.photo.changeLabel}
+                        removeLabel={t.photo.removeLabel}
+                        errorFallback={t.photo.errorFallback}
                       />
                     )}
                   />
@@ -341,7 +361,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                   className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                   {...register("eventDate")}
                 />
-                {errors.eventDate && (
+                {attemptedSteps.has(step) && errors.eventDate && (
                   <p className="mt-1 text-sm text-red-600">{errors.eventDate.message}</p>
                 )}
               </div>
@@ -362,8 +382,22 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
             {t.back}
           </button>
 
+          {/* Explicit, distinct `key`s on these two branches -- without them,
+              React reconciles both as "the same motion.button in this JSX
+              slot" and mutates the existing DOM node's `type` attribute in
+              place instead of swapping elements. If `handleNext`'s trigger()
+              resolves (and advances `step`) inside the brief window between
+              a click's mousedown and mouseup, the physical button a real
+              click is mid-gesture on flips from type="button" to
+              type="submit" under the user's finger -- so the SAME click that
+              was meant to move off the names step also fires a real,
+              premature form submission on whatever step comes next.
+              Confirmed live: this is exactly how eventDate's "required"
+              error was appearing before the date field had ever been
+              touched. Distinct keys force a real unmount/remount instead. */}
           {isLastStep ? (
             <motion.button
+              key="submit"
               type="submit"
               disabled={isSubmitting}
               whileHover={{ scale: 1.03 }}
@@ -374,6 +408,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
             </motion.button>
           ) : (
             <motion.button
+              key="next"
               type="button"
               onClick={handleNext}
               whileHover={{ scale: 1.03 }}
@@ -397,6 +432,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                 variant={previewHeroVariant}
                 names={previewNames}
                 eventDate={eventDate || ""}
+                locale={locale}
                 photoUrl={photoUrl || undefined}
                 eyebrow={eventType.heroEyebrow}
                 themeCategory={effectiveDecorCategory(selectedTheme)}

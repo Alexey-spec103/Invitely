@@ -50,7 +50,7 @@ export default function AccountForm({ currentEmail }: AccountFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           Email

@@ -12,8 +12,8 @@ export const marbleOnyxSage: Theme = {
     "--theme-bg": "#16211C",
     "--theme-text": "#E8E9E1",
     "--theme-accent": "#C9AD6E",
-    "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
+    "--theme-font-heading": "var(--font-marcellus), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

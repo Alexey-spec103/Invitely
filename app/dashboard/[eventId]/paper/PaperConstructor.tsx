@@ -9,6 +9,7 @@ import { getEventType } from "@/lib/eventTypes";
 import { useAutosave } from "@/lib/useAutosave";
 import AutosaveStatus from "@/components/ui/AutosaveStatus";
 import type { Theme } from "@/lib/themes";
+import type { Locale } from "@/lib/i18n/locales";
 import { CANVAS_DESIGN_WIDTH, type CanvasElement, type CanvasFrame } from "@/lib/canvas/types";
 import CanvasFrameEditor from "@/components/canvas/CanvasFrameEditor";
 import InvitationCardPreview from "@/components/paper/InvitationCardPreview";
@@ -45,6 +46,11 @@ interface PaperConstructorProps {
   /** dashboard-audit.md B21: true when the event's plan is below Premium
    * -- banquet/table-card materials are Premium-only in lib/plans.ts. */
   locked: boolean;
+  /** Formats the printed date on the live card previews below, so they match
+   * the same locale InvitationDownloads.tsx already formats the real
+   * downloaded PDF in -- same resolveGuestLocale() source, passed down from
+   * this page's server-component parent. */
+  locale: Locale;
 }
 
 function saveBlob(blob: Blob, filename: string) {
@@ -147,6 +153,7 @@ export default function PaperConstructor({
   placeCardsFilteredByRsvp,
   seatingLabel,
   locked,
+  locale,
 }: PaperConstructorProps) {
   const router = useRouter();
 
@@ -314,7 +321,7 @@ export default function PaperConstructor({
     <div
       className={
         isBackCanvasActive
-          ? "mt-6 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:flex sm:items-start sm:gap-6"
+          ? "mt-6 rounded-[10px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:flex sm:items-start sm:gap-6"
           : /* Was `[..._minmax(0,240px)_1fr]` -- the middle column (the
              actual print-card preview, capped at 240px) got the SMALLEST
              of the two flexible slots, while the largest (1fr) went to a
@@ -324,14 +331,19 @@ export default function PaperConstructor({
              clear and easy to work with). Swapping which column gets 1fr
              (paired with a bigger base render size below) gives the actual
              preview the room, not the caption next to it. */
-            "mt-6 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:grid sm:grid-cols-[minmax(0,160px)_1fr_minmax(0,260px)] sm:items-start sm:gap-6"
+            "mt-6 rounded-[10px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:grid sm:grid-cols-[minmax(0,160px)_1fr_minmax(0,260px)] sm:items-start sm:gap-6"
       }
     >
       <nav className={isBackCanvasActive ? "flex-none space-y-4 sm:w-40" : "space-y-4"}>
         {groupedMedia.map(({ group, items }) => (
           <div key={group}>
             <p className="dash-h2 px-1 text-xs uppercase tracking-wide text-[var(--dash-accent)]">
-              {group}
+              {/* "Banquet" is a stable internal group id (see MediaGroup/
+                  GROUP_ORDER above) -- the visible label still needs to
+                  adapt per event type, same as the "...tab" hint text
+                  elsewhere in this file, or a Graduation/Corporate Event
+                  host sees "BANQUET" over their seating cards regardless. */}
+              {group === "Banquet" ? seatingLabel : group}
             </p>
             <div className="mt-1 space-y-0.5">
               {items.map((item) => (
@@ -385,13 +397,14 @@ export default function PaperConstructor({
                     theme={theme}
                     names={names}
                     eventDate={eventDate}
+                    locale={locale}
                     venueName={venueName}
                     venueAddress={venueAddress}
                     side="front"
                   />
                 )}
                 {activeMedia.id === "envelope" && (
-                  <EnvelopeCardPreview theme={theme} names={names} eventDate={eventDate} />
+                  <EnvelopeCardPreview theme={theme} names={names} eventDate={eventDate} locale={locale} />
                 )}
                 {activeMedia.id === "program" && (
                   <ProgramCardPreview theme={theme} title={timelineTitle} events={timelineEvents} />
@@ -524,7 +537,7 @@ export default function PaperConstructor({
                   disabled={pendingDownload !== null}
                   className="dash-btn dash-btn-primary"
                 >
-                  {pendingDownload === "seatingChart" ? "Generating..." : `Download all (${tableCardData.length})`}
+                  {pendingDownload === "seatingChart" ? "Generating..." : `Download all (${tableCardData.length}) as PDF`}
                 </button>
                 {locked && <PremiumUpgradeNote eventId={eventId} />}
               </div>
@@ -541,7 +554,7 @@ export default function PaperConstructor({
                   disabled={pendingDownload !== null}
                   className="dash-btn dash-btn-primary"
                 >
-                  {pendingDownload === "placeCards" ? "Generating..." : `Download all (${allGuestNames.length})`}
+                  {pendingDownload === "placeCards" ? "Generating..." : `Download all (${allGuestNames.length}) as PDF`}
                 </button>
                 {locked && <PremiumUpgradeNote eventId={eventId} />}
               </div>
@@ -561,7 +574,7 @@ export default function PaperConstructor({
                   disabled={pendingDownload !== null}
                   className="dash-btn dash-btn-primary"
                 >
-                  {pendingDownload === "tableNumbers" ? "Generating..." : `Download all (${tableNames.length})`}
+                  {pendingDownload === "tableNumbers" ? "Generating..." : `Download all (${tableNames.length}) as PDF`}
                 </button>
                 {locked && <PremiumUpgradeNote eventId={eventId} />}
               </div>

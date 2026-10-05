@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   GripVertical,
   Lock,
@@ -16,10 +17,18 @@ import {
   BookOpen,
   Video,
   UtensilsCrossed,
+  StickyNote,
+  ArrowRight,
   type LucideIcon,
 } from "lucide-react";
 import { reorderSections, toggleSection, updateEnvelopeReveal } from "./actions";
-import { SECTION_LABELS, SECTION_ORDER, type SectionConfig, type SectionType } from "@/components/sections/registry";
+import {
+  SECTION_LABELS,
+  SECTION_ICONS,
+  SECTION_ORDER,
+  type SectionConfig,
+  type SectionType,
+} from "@/components/sections/registry";
 import { BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 import SectionToggleSwitch from "./SectionToggleSwitch";
 
@@ -41,6 +50,7 @@ const MODULE_ICON_COMPONENTS: Partial<Record<SectionType, LucideIcon>> = {
   guestbook: BookOpen,
   video: Video,
   banquetNavigator: UtensilsCrossed,
+  guestNotes: StickyNote,
 };
 
 // Every toggleable module, in the app's canonical order -- not derived from
@@ -50,6 +60,28 @@ const MODULE_ICON_COMPONENTS: Partial<Record<SectionType, LucideIcon>> = {
 const ALL_MODULE_TYPES = (Object.keys(SECTION_LABELS) as SectionType[])
   .filter((type) => type !== "hero")
   .sort((a, b) => SECTION_ORDER[a] - SECTION_ORDER[b]);
+
+// dashboard-audit.md (impeccable critique, P1): 11 modules in one flat,
+// ungrouped list pushed well past the ~4-items-per-group working-memory
+// guideline -- a first-timer had to scan the whole thing to find what they
+// wanted. Purely a visual label inserted between runs of the same group in
+// whatever order the host has dragged things into; it never constrains
+// drag-and-drop itself (the saved order stays one flat list, same as
+// before -- a module can still be dragged into any position, a group label
+// just stops appearing above it once it's no longer first in its run).
+const MODULE_GROUPS: Partial<Record<SectionType, string>> = {
+  letter: "Core",
+  timeline: "Core",
+  map: "Core",
+  rsvp: "Core",
+  countdown: "Fun extras",
+  gift: "Fun extras",
+  dressCode: "Fun extras",
+  guestbook: "Fun extras",
+  video: "Fun extras",
+  banquetNavigator: "Logistics",
+  guestNotes: "Logistics",
+};
 
 interface SectionModulesPanelProps {
   eventId: string;
@@ -69,19 +101,11 @@ interface SectionModulesPanelProps {
 // Decorative only -- weddingpost.ru's own module column has its own icon
 // set (dashboard-audit.md 3.3), not something to copy pixel-for-pixel.
 // Hero has no row here (no icon needed): it's always on, matching
-// SiteInlineEditor's existing "no toggle for Hero" convention.
-export const MODULE_ICONS: Partial<Record<SectionType, string>> = {
-  letter: "💌",
-  timeline: "🗓️",
-  map: "📍",
-  rsvp: "✅",
-  countdown: "⏳",
-  gift: "🎁",
-  dressCode: "👔",
-  guestbook: "📖",
-  video: "🎥",
-  banquetNavigator: "🍽️",
-};
+// SiteInlineEditor's existing "no toggle for Hero" convention. Re-exported
+// from the shared registry (not a second copy of the same emoji map) now
+// that the guest-facing nav (components/shell/SiteHeader.tsx) needs the
+// exact same per-section icon too -- see SECTION_ICONS's own comment.
+export const MODULE_ICONS = SECTION_ICONS;
 
 /** landing-audit.md counterpart for the dashboard: dashboard-audit.md A1.
  * Replaces the old arrow-reorder `Section order` list -- this is now the
@@ -118,30 +142,40 @@ export default function SectionModulesPanel({
   const [expandedGateInfo, setExpandedGateInfo] = useState<SectionType | null>(null);
   const [envelopeEnabled, setEnvelopeEnabled] = useState(envelopeRevealEnabled);
   const [envelopePending, setEnvelopePending] = useState(false);
+  // impeccable critique P3: a failed toggle used to revert silently --
+  // visually identical to "I guess I didn't actually click that" -- while
+  // PublishToggle right above this panel already surfaces its own failures
+  // inline. One shared message slot for every toggle in this panel, same
+  // red-text convention PublishToggle uses.
+  const [toggleError, setToggleError] = useState<string | null>(null);
 
   const handleEnvelopeToggle = async (next: boolean) => {
+    setToggleError(null);
     setEnvelopeEnabled(next);
     setEnvelopePending(true);
     try {
       const result = await updateEnvelopeReveal(eventId, next);
       if (!result.ok) throw new Error(result.message);
       router.refresh();
-    } catch {
+    } catch (err) {
       setEnvelopeEnabled(!next);
+      setToggleError(err instanceof Error ? err.message : "Failed to save -- please try again.");
     } finally {
       setEnvelopePending(false);
     }
   };
 
   const handleToggle = async (type: SectionType, next: boolean) => {
+    setToggleError(null);
     setEnabled((prev) => ({ ...prev, [type]: next }));
     setPendingToggle(type);
     try {
       const result = await toggleSection(eventId, type, next);
       if (!result.ok) throw new Error(result.message);
       router.refresh();
-    } catch {
+    } catch (err) {
       setEnabled((prev) => ({ ...prev, [type]: !next }));
+      setToggleError(err instanceof Error ? err.message : "Failed to save -- please try again.");
     } finally {
       setPendingToggle(null);
     }
@@ -152,6 +186,7 @@ export default function SectionModulesPanel({
       setDraggingType(null);
       return;
     }
+    const previous = order;
     const fromIndex = order.indexOf(draggingType);
     const toIndex = order.indexOf(targetType);
     const next = order.slice();
@@ -159,24 +194,52 @@ export default function SectionModulesPanel({
     next.splice(toIndex, 0, draggingType);
     setOrder(next);
     setDraggingType(null);
-    await reorderSections(eventId, ["hero", ...next]);
-    router.refresh();
+    setToggleError(null);
+    // Same gap as the toggle writes above used to have: this used to fire
+    // and forget, so a failed reorder left the drag looking like it
+    // worked (new position kept locally) while the saved order never
+    // actually changed.
+    try {
+      const result = await reorderSections(eventId, ["hero", ...next]);
+      if (!result.ok) {
+        setOrder(previous);
+        setToggleError(result.message);
+        return;
+      }
+      router.refresh();
+    } catch (err) {
+      setOrder(previous);
+      setToggleError(err instanceof Error ? err.message : "Failed to save -- please try again.");
+    }
   };
 
   return (
-    <div className="mb-8 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
+    <div id="site-modules-panel" className="mb-8 rounded-[10px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
       <h2 className="dash-h2 text-sm text-[var(--dash-accent)]">Modules</h2>
       <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
         Guests won&apos;t see a module until it&apos;s turned on here — drag to change the order they appear in on your public site.
       </p>
+      {toggleError && <p className="mt-1 text-sm text-red-400">{toggleError}</p>}
       <ul className="mt-3 space-y-1">
-        {order.map((type) => {
+        {order.map((type, index) => {
           const isGated =
             !hasBasicAccess && (BASIC_GATED_SECTION_TYPES as readonly string[]).includes(type);
           const ModuleIcon = MODULE_ICON_COMPONENTS[type];
+          const group = MODULE_GROUPS[type];
+          const showGroupLabel = group && group !== MODULE_GROUPS[order[index - 1]];
           return (
+          <Fragment key={type}>
+          {showGroupLabel && (
+            <li
+              aria-hidden="true"
+              className={`px-3 text-[10px] font-semibold uppercase tracking-wide text-[var(--dash-text-muted)] ${
+                index === 0 ? "pb-1" : "pb-1 pt-3"
+              }`}
+            >
+              {group}
+            </li>
+          )}
           <li
-            key={type}
             draggable
             onDragStart={() => setDraggingType(type)}
             onDragOver={(event) => event.preventDefault()}
@@ -219,7 +282,22 @@ export default function SectionModulesPanel({
                 Turn this on and preview it freely — it only shows on your published site once you&apos;re on the Basic plan or above.
               </p>
             )}
+            {/* Direct feedback: turning this on doesn't do anything by
+                itself -- a guest can only find their table once the host has
+                actually added guests and seated them, which happens on the
+                Guests tab (not here). Without this, a host had no way to
+                know where that step even was. */}
+            {type === "banquetNavigator" && enabled[type] && (
+              <Link
+                href={`/dashboard/${eventId}/guests`}
+                className="flex items-center gap-1 border-t border-[var(--dash-border)] px-3 py-2 text-xs font-medium text-[var(--dash-accent)] hover:text-[var(--dash-accent-hover)]"
+              >
+                Add &amp; seat your guests on the Guests tab
+                <ArrowRight className="h-3 w-3 shrink-0" aria-hidden="true" />
+              </Link>
+            )}
           </li>
+          </Fragment>
           );
         })}
       </ul>

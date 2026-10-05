@@ -9,7 +9,7 @@ import { MessageCircle, X } from "lucide-react";
  * (same call as B19's SupportCard): a persistent round button that opens a
  * small panel pointing at the one real support channel the app already
  * surfaces everywhere else (Terms, Privacy, landing, SupportCard) --
- * support@invitely.app, read by a real person -- rather than faking a live
+ * support@invimbo.com, read by a real person -- rather than faking a live
  * chat session that doesn't exist. Bottom-left (not bottom-right, where
  * FirstVisitTour already floats) so the two never overlap on a first visit. */
 export default function SupportWidget() {
@@ -43,10 +43,10 @@ export default function SupportWidget() {
             We don&apos;t run a live chat yet — email us and a real person will get back to you.
           </p>
           <a
-            href="mailto:support@invitely.app"
+            href="mailto:support@invimbo.com"
             className="mt-3 inline-block text-sm font-semibold text-[var(--dash-accent)] underline underline-offset-2"
           >
-            support@invitely.app
+            support@invimbo.com
           </a>
         </div>
       )}

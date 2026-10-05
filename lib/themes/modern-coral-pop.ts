@@ -12,8 +12,8 @@ export const modernCoralPop: Theme = {
     "--theme-bg": "#FFF5F2",
     "--theme-text": "#241512",
     "--theme-accent": "#E8613F",
-    "--theme-font-heading": "var(--font-italiana), Georgia, serif",
+    "--theme-font-heading": "var(--font-italiana), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

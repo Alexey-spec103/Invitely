@@ -1,10 +1,9 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
-import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
-import type { HeroVariant } from "@/components/sections/HeroSection";
+import { HeroSection } from "@/components/sections/HeroSection";
 import InvitationCardPreview from "@/components/paper/InvitationCardPreview";
 import EnvelopeCardPreview from "@/components/paper/EnvelopeCardPreview";
 import { getTheme } from "@/lib/themes";
-import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { previewPhotoFor, previewTargetDateFor, formatPreviewDate } from "@/lib/themes/previewMedia";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
@@ -15,6 +14,14 @@ import styles from "./SiteOrPaperSection.module.css";
 const SHOWCASE_THEME_ID = "romantic-blush";
 const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
 
+// Hand-picked, NOT `recommendedHeroVariantFor` -- same trap already found
+// and fixed in HeroPhoneShowcase/ConstructorScreenshot/PlatformFanSection:
+// the recommended pick for romantic-blush rendered a plain, undecorated
+// background with just names and date. `watercolor-bloom` is romantic's own
+// signature wreath layout, already proven here for this exact theme in
+// PlatformFanSection.
+const SHOWCASE_HERO_VARIANT = "watercolor-bloom" as const;
+
 /** weddingpost.ru's "site and/or paper" choice (step 5 of their "how it
  * works") -- two live product panels, not photos: the same real HeroSection
  * rendered twice at laptop + phone size on the left, and the same real
@@ -23,10 +30,6 @@ const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
 export default function SiteOrPaperSection({ locale }: { locale: Locale }) {
   const t = getDictionary(locale).landing.siteOrPaper;
   const theme = getTheme(SHOWCASE_THEME_ID);
-  const recommended = recommendedHeroVariantFor(theme.id, theme.category);
-  const heroVariant: HeroVariant = HERO_VARIANTS.includes(recommended as HeroVariant)
-    ? (recommended as HeroVariant)
-    : DEFAULT_HERO_VARIANT;
   const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
   const targetDate = previewTargetDateFor(theme.id, theme.season);
   const dateLabel = formatPreviewDate(targetDate);
@@ -34,7 +37,13 @@ export default function SiteOrPaperSection({ locale }: { locale: Locale }) {
 
   const heroContent = (
     <ThemeProvider theme={theme}>
-      <HeroSection variant={heroVariant} names={SHOWCASE_NAMES} eventDate={dateLabel} photoUrl={photoUrl} />
+      <HeroSection
+        variant={SHOWCASE_HERO_VARIANT}
+        names={SHOWCASE_NAMES}
+        eventDate={dateLabel}
+        photoUrl={photoUrl}
+        themeCategory={effectiveDecorCategory(theme)}
+      />
     </ThemeProvider>
   );
 
@@ -48,7 +57,7 @@ export default function SiteOrPaperSection({ locale }: { locale: Locale }) {
           <div className={styles.devices}>
             <div className={styles.laptop}>
               <div className={styles.laptopScreen}>
-                <div className={styles.laptopScaleWrap}>
+                <div className={styles.laptopScaleWrap} style={{ "--section-min-height": "812px" } as React.CSSProperties}>
                   <div className={styles.laptopScaleInner}>{heroContent}</div>
                 </div>
               </div>
@@ -58,7 +67,7 @@ export default function SiteOrPaperSection({ locale }: { locale: Locale }) {
               <div className={styles.phoneBezel}>
                 <span className={styles.phoneNotch} aria-hidden="true" />
                 <div className={styles.phoneScreen}>
-                  <div className={styles.phoneScaleWrap}>
+                  <div className={styles.phoneScaleWrap} style={{ "--section-min-height": "812px" } as React.CSSProperties}>
                     <div className={styles.phoneScaleInner}>{heroContent}</div>
                   </div>
                 </div>
@@ -81,10 +90,10 @@ export default function SiteOrPaperSection({ locale }: { locale: Locale }) {
         <div className={styles.column}>
           <div className={styles.paperStack}>
             <div className={`${styles.paperItem} ${styles.envelope}`}>
-              <EnvelopeCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} />
+              <EnvelopeCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} locale={locale} />
             </div>
             <div className={`${styles.paperItem} ${styles.invitation}`}>
-              <InvitationCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} side="front" />
+              <InvitationCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} side="front" locale={locale} />
             </div>
           </div>
           <h3 className={styles.columnTitle}>{t.paper.title}</h3>

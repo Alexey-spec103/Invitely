@@ -8,7 +8,8 @@ import { z } from "zod";
 import { updateWeddingData } from "./actions";
 import { useAutosave } from "@/lib/useAutosave";
 import AutosaveStatus from "@/components/ui/AutosaveStatus";
-import { getEventType } from "@/lib/eventTypes";
+import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
+import type { Locale } from "@/lib/i18n/locales";
 
 const weddingDataFormSchema = z.object({
   name1: z.string().min(1, "Enter a name"),
@@ -25,15 +26,23 @@ interface WeddingDataFormProps {
   eventId: string;
   eventType: string;
   defaultValues: WeddingDataFormValues;
+  /** Only used to localize `namePrompts` (e.g. "First partner's name") below
+   * -- every other label on this form (Venue name, City, Address, the
+   * validation messages) stays English on purpose, same as the rest of the
+   * dashboard's host-facing chrome. Resolved the same way as every
+   * guest-facing page, via resolveGuestLocale() in the server-component
+   * parent -- there's no separate host-account language preference to read
+   * instead. */
+  locale: Locale;
 }
 
 /** The one canonical edit surface for names/date/venue -- the "wedding data"
  * source every module (Hero, Map's default venue) and the paper set read
  * from, replacing what used to be duplicate name/date inputs living inside
  * the Hero section's own form. */
-export default function WeddingDataForm({ eventId, eventType, defaultValues }: WeddingDataFormProps) {
+export default function WeddingDataForm({ eventId, eventType, defaultValues, locale }: WeddingDataFormProps) {
   const router = useRouter();
-  const type = getEventType(eventType);
+  const type = getLocalizedEventType(eventType, locale);
   const isCoupleMode = type.namesMode === "couple";
 
   const {
@@ -87,7 +96,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
 
       <div>
         <label htmlFor="wd-name1" className="block text-sm font-medium text-gray-700">
-          {isCoupleMode ? "👰 Partner 1's name" : `✨ ${type.namePrompts[0]}`}
+          {isCoupleMode ? `💑 ${type.namePrompts[0]}` : `✨ ${type.namePrompts[0]}`}
         </label>
         <input
           id="wd-name1"
@@ -102,7 +111,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues }: W
       {isCoupleMode && (
         <div>
           <label htmlFor="wd-name2" className="block text-sm font-medium text-gray-700">
-            🤵 Partner 2&apos;s name
+            {type.namePrompts[1]}
           </label>
           <input
             id="wd-name2"

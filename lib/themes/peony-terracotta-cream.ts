@@ -14,7 +14,7 @@ export const peonyTerracottaCream: Theme = {
     // below the 3:1 floor even for large/decorative text. Deepened within the
     // same hue and saturation (not re-picked), now passes 3.03:1.
     "--theme-accent": "#BF6640",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-fraunces), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

@@ -2,8 +2,8 @@ export const SUPPORTED_LOCALES = ["en", "de", "fr", "es", "it", "pl", "ru", "uk"
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 
-/** Set client-side by LanguageSwitcher.tsx (a plain `document.cookie` write
- * followed by `router.refresh()`) and read server-side by resolveLocale.ts.
+/** Set server-side by the `setLocale` Server Action (lib/i18n/actions.ts,
+ * called from LanguageSwitcher.tsx) and read server-side by resolveLocale.ts.
  * Lives here, not in resolveLocale.ts, specifically so LanguageSwitcher (a
  * "use client" component) can import this one constant without pulling in
  * resolveLocale.ts's `next/headers` import -- that's a server-only API, and
@@ -11,9 +11,9 @@ export const DEFAULT_LOCALE: Locale = "en";
  * (confirmed live: "You're importing a module that depends on next/headers
  * ... in the Pages Router" even though this is the App Router -- Turbopack's
  * actual complaint is the client/server module boundary, not the router).
- * Not httpOnly: this is a display preference, not a secret, and needs to be
- * settable from a client component without a round trip through a Server
- * Action. */
+ * Not httpOnly: this is a display preference, not a secret -- the Server
+ * Action route is purely so Next 16's `refresh()` (next/cache) actually
+ * re-renders the page, not for any security reason. */
 export const LOCALE_COOKIE = "invitely_locale";
 
 export const LOCALE_LABELS: Record<Locale, string> = {

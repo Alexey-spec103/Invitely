@@ -13,8 +13,8 @@ export const coastalNavySail: Theme = {
     "--theme-bg": "#EEF3F5",
     "--theme-text": "#1B2A38",
     "--theme-accent": "#2E6E8E",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

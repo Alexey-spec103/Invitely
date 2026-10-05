@@ -3,6 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
+/** A host typing "amazon.com/registry" (no protocol) into a plain `z.string()`
+ * field used to save exactly that -- rendered as `<a href="amazon.com/registry">`
+ * on the public site, the browser resolves it as a path relative to the
+ * current page instead of an external link, landing the guest on a 404 on
+ * invimbo.com's own domain. Prepending `https://` when no scheme is present
+ * is more forgiving than rejecting the input outright for a non-technical
+ * host who doesn't know why "amazon.com/registry" would be "invalid". */
+function normalizeUrl(url: string | undefined): string | null {
+  const trimmed = url?.trim();
+  if (!trimmed) return null;
+  return /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 interface AddGiftPreferenceInput {
   eventId: string;
   title: string;
@@ -32,8 +45,8 @@ export async function addGiftPreference(input: AddGiftPreferenceInput) {
     event_id: input.eventId,
     title: input.title,
     type: input.type,
-    url: input.url || null,
-    image_url: input.imageUrl || null,
+    url: normalizeUrl(input.url),
+    image_url: normalizeUrl(input.imageUrl),
     description: input.description || null,
     order_index: count ?? 0,
   });
@@ -70,8 +83,8 @@ export async function updateGiftPreference(input: UpdateGiftPreferenceInput) {
     .update({
       title: input.title,
       type: input.type,
-      url: input.url || null,
-      image_url: input.imageUrl || null,
+      url: normalizeUrl(input.url),
+      image_url: normalizeUrl(input.imageUrl),
       description: input.description || null,
     })
     .eq("id", input.giftId);

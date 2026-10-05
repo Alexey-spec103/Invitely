@@ -1,6 +1,5 @@
 import ThemeProvider from "@/components/theme/ThemeProvider";
-import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
-import type { HeroVariant } from "@/components/sections/HeroSection";
+import { HeroSection } from "@/components/sections/HeroSection";
 import InvitationCardPreview from "@/components/paper/InvitationCardPreview";
 import EnvelopeCardPreview from "@/components/paper/EnvelopeCardPreview";
 import ProgramCardPreview from "@/components/paper/ProgramCardPreview";
@@ -8,7 +7,7 @@ import DressCodeCardPreview from "@/components/paper/DressCodeCardPreview";
 import TableCardPreview from "@/components/paper/TableCardPreview";
 import PlaceCardPreview from "@/components/paper/PlaceCardPreview";
 import { getTheme } from "@/lib/themes";
-import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
+import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { previewPhotoFor, previewTargetDateFor, formatPreviewDate } from "@/lib/themes/previewMedia";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
@@ -20,6 +19,16 @@ import styles from "./PlatformFanSection.module.css";
 // design the visitor just saw in the hero phone, not a fresh unrelated demo.
 const SHOWCASE_THEME_ID = "romantic-blush";
 const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
+
+// Hand-picked, NOT `recommendedHeroVariantFor` -- the same trap
+// HeroPhoneShowcase/ConstructorScreenshot's own comments warn about.
+// Confirmed live: romantic-blush's recommended pick rendered with the
+// phone's bottom half solid white (that variant's real content height at
+// mobile width is well under the 812px this fan's crop-compensation
+// assumes). `watercolor-bloom` is romantic's own signature layout -- its
+// WATERCOLOR_BLOOM_RING entry for `romantic` nests the names inside an open
+// wreath, filling the full mobile height properly.
+const SHOWCASE_HERO_VARIANT = "watercolor-bloom" as const;
 
 // No `description` on these -- this card renders quite small in the fan
 // (a decorative thumbnail, not the full-size version PaperEditor shows), so
@@ -52,10 +61,6 @@ const TABLE_GUESTS = ["Emma Carter", "Jack Carter", "Olivia Bennett", "Noah Benn
 export default function PlatformFanSection({ locale }: { locale: Locale }) {
   const t = getDictionary(locale).landing.platformFan;
   const theme = getTheme(SHOWCASE_THEME_ID);
-  const recommended = recommendedHeroVariantFor(theme.id, theme.category);
-  const heroVariant: HeroVariant = HERO_VARIANTS.includes(recommended as HeroVariant)
-    ? (recommended as HeroVariant)
-    : DEFAULT_HERO_VARIANT;
   const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
   const targetDate = previewTargetDateFor(theme.id, theme.season);
   const dateLabel = formatPreviewDate(targetDate);
@@ -78,7 +83,7 @@ export default function PlatformFanSection({ locale }: { locale: Locale }) {
         </div>
 
         <div className={`${styles.item} ${styles.envelope}`}>
-          <EnvelopeCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} />
+          <EnvelopeCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} locale={locale} />
         </div>
 
         <div className={`${styles.item} ${styles.program}`}>
@@ -95,7 +100,7 @@ export default function PlatformFanSection({ locale }: { locale: Locale }) {
         </div>
 
         <div className={`${styles.item} ${styles.invitation}`}>
-          <InvitationCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} side="front" />
+          <InvitationCardPreview theme={theme} names={SHOWCASE_NAMES} eventDate={isoDate} side="front" locale={locale} />
         </div>
 
         <div className={`${styles.item} ${styles.place}`}>
@@ -106,10 +111,16 @@ export default function PlatformFanSection({ locale }: { locale: Locale }) {
           <div className={styles.phoneBezel}>
             <span className={styles.phoneNotch} aria-hidden="true" />
             <div className={styles.phoneScreen}>
-              <div className={styles.phoneScaleWrap}>
+              <div className={styles.phoneScaleWrap} style={{ "--section-min-height": "812px" } as React.CSSProperties}>
                 <div className={styles.phoneScaleInner}>
                   <ThemeProvider theme={theme}>
-                    <HeroSection variant={heroVariant} names={SHOWCASE_NAMES} eventDate={dateLabel} photoUrl={photoUrl} />
+                    <HeroSection
+                      variant={SHOWCASE_HERO_VARIANT}
+                      names={SHOWCASE_NAMES}
+                      eventDate={dateLabel}
+                      photoUrl={photoUrl}
+                      themeCategory={effectiveDecorCategory(theme)}
+                    />
                   </ThemeProvider>
                 </div>
               </div>

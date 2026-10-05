@@ -15,8 +15,8 @@ export const minimalStone: Theme = {
     // below the 3:1 floor even for large/decorative text. Deepened within the
     // same hue and saturation (not re-picked), now passes 3.02:1.
     "--theme-accent": "#968A7B",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

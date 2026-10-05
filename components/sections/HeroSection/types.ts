@@ -1,5 +1,6 @@
 import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
 import type { ThemeCategory } from "@/lib/themes/types";
+import type { Locale } from "@/lib/i18n/locales";
 
 export type HeroVariant =
   | "monogram-center"
@@ -58,4 +59,11 @@ export interface HeroSectionVariantProps {
 
 export interface HeroSectionProps extends HeroSectionVariantProps {
   variant: HeroVariant;
+  /** Only consumed here, by the dispatcher, to locale-format a raw ISO
+   * `eventDate` before handing an already-formatted string down to whichever
+   * variant renders -- never added to HeroSectionVariantProps, so no variant
+   * needs to know it exists. Optional (defaults to "en" in HeroSection.tsx)
+   * so call sites with no real guest/host locale in scope (marketing
+   * mockups, dev previews) keep working unchanged. */
+  locale?: Locale;
 }

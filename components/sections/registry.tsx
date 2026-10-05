@@ -18,6 +18,8 @@ import { GuestbookSection, DEFAULT_GUESTBOOK_VARIANT } from "./GuestbookSection"
 import type { GuestbookSectionProps, GuestbookMessageItem } from "./GuestbookSection";
 import { VideoSection, DEFAULT_VIDEO_VARIANT } from "./VideoSection";
 import type { VideoSectionProps } from "./VideoSection";
+import { GuestNotesSection, DEFAULT_GUEST_NOTES_VARIANT } from "./GuestNotesSection";
+import type { GuestNotesSectionProps } from "./GuestNotesSection";
 import type { BackgroundFill } from "@/lib/backgroundFills";
 import { BanquetNavigatorSection, DEFAULT_BANQUET_NAVIGATOR_VARIANT } from "./BanquetNavigatorSection";
 import type { BanquetNavigatorSectionProps, BanquetTableLookupResult } from "./BanquetNavigatorSection";
@@ -37,6 +39,7 @@ export const componentRegistry = {
   guestbook: GuestbookSection,
   video: VideoSection,
   banquetNavigator: BanquetNavigatorSection,
+  guestNotes: GuestNotesSection,
 };
 
 export type SectionType = keyof typeof componentRegistry;
@@ -62,6 +65,32 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   guestbook: "Guestbook",
   video: "Video",
   banquetNavigator: "Find My Table",
+  guestNotes: "Notes for Guests",
+};
+
+/** Design-audit finding: weddingpost.ru's own hamburger menu pairs every
+ * jump-link with a small icon (checked live); ours was plain text only,
+ * reading noticeably barer for the same amount of information. Same emoji
+ * set `app/dashboard/[eventId]/site/SectionModulesPanel.tsx`'s own
+ * `MODULE_ICONS` already uses for the dashboard's Modules panel/section
+ * headers -- centralized here (this file already owns `SECTION_LABELS`) so
+ * the guest-facing nav (`components/shell/SiteHeader.tsx`) can share the
+ * exact same icon per section type instead of a third, drifting copy of the
+ * map. `hero` has no entry in the dashboard's own MODULE_ICONS (it's never
+ * toggleable there) but does need one here for the nav's "Home" link. */
+export const SECTION_ICONS: Partial<Record<SectionType, string>> = {
+  hero: "🏠",
+  letter: "💌",
+  timeline: "🗓️",
+  map: "📍",
+  rsvp: "✅",
+  countdown: "⏳",
+  gift: "🎁",
+  dressCode: "👔",
+  guestbook: "📖",
+  video: "🎥",
+  banquetNavigator: "🍽️",
+  guestNotes: "📌",
 };
 
 export interface SectionConfig {
@@ -97,6 +126,7 @@ export const SECTION_ORDER: Record<SectionType, number> = {
   guestbook: 8,
   video: 9,
   banquetNavigator: 10,
+  guestNotes: 11,
 };
 
 /** Variant a section starts with the first time it's toggled on before ever
@@ -114,6 +144,7 @@ export const DEFAULT_VARIANTS: Record<SectionType, string> = {
   guestbook: DEFAULT_GUESTBOOK_VARIANT,
   video: DEFAULT_VIDEO_VARIANT,
   banquetNavigator: DEFAULT_BANQUET_NAVIGATOR_VARIANT,
+  guestNotes: DEFAULT_GUEST_NOTES_VARIANT,
 };
 
 /**
@@ -186,6 +217,7 @@ export const DEFAULT_CONTENT_ON_ENABLE: Partial<Record<SectionType, Record<strin
   dressCode: { title: SECTION_LABELS.dressCode, colors: [] },
   guestbook: { title: SECTION_LABELS.guestbook },
   banquetNavigator: { title: SECTION_LABELS.banquetNavigator },
+  guestNotes: { title: SECTION_LABELS.guestNotes },
 };
 
 /** `site_config.content` is also a `json` column; only its top-level shape (an object keyed by section type) is checked here. */
@@ -214,10 +246,12 @@ export interface RenderSectionContext {
   countdown: { eventDateTime: string; themeCategory?: ThemeCategory };
   gift: { preferences: GiftPreferenceItem[]; themeCategory?: ThemeCategory };
   dressCode?: { themeCategory?: ThemeCategory };
+  guestNotes?: { themeCategory?: ThemeCategory };
   guestbook: { messages: GuestbookMessageItem[] };
   banquetNavigator: {
     onLookup: (fullName: string) => Promise<BanquetTableLookupResult>;
     assignedTableName?: string;
+    knownGuestName?: string;
   };
 }
 
@@ -327,6 +361,7 @@ export function renderSection(
           {...(data as Omit<HeroSectionProps, "variant">)}
           themeCategory={context.hero?.themeCategory}
           eyebrow={context.hero?.eyebrow}
+          locale={locale}
         />
       );
     }
@@ -443,10 +478,22 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as BanquetNavigatorSectionProps["variant"]}
-          {...(data as Omit<BanquetNavigatorSectionProps, "variant" | "onLookup" | "assignedTableName" | "locale">)}
+          {...(data as Omit<BanquetNavigatorSectionProps, "variant" | "onLookup" | "assignedTableName" | "knownGuestName" | "locale">)}
           onLookup={context.banquetNavigator.onLookup}
           assignedTableName={context.banquetNavigator.assignedTableName}
+          knownGuestName={context.banquetNavigator.knownGuestName}
           locale={locale}
+        />
+      );
+    }
+    case "guestNotes": {
+      const Component = componentRegistry.guestNotes;
+      return (
+        <Component
+          key={section.type}
+          variant={section.variant as GuestNotesSectionProps["variant"]}
+          {...(data as Omit<GuestNotesSectionProps, "variant">)}
+          themeCategory={context.guestNotes?.themeCategory}
         />
       );
     }

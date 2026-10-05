@@ -157,6 +157,55 @@ export async function submitRsvp(
     }
   }
 
+  // Best-effort host notification -- direct feedback: a host had no way to
+  // know a guest RSVP'd besides checking the dashboard themselves. Runs
+  // independently of the guest confirmation above (that one only fires for
+  // guests with an email on file; the host should hear about every RSVP,
+  // including self-service ones with no guest email at all). Same
+  // security-definer lookup pattern as the guest email above -- this action
+  // runs with no session (anon RSVP form), so the host's email can't be read
+  // through a normal RLS-scoped query.
+  try {
+    // Checked before the RPC call (not just skipped at send time) so a host
+    // who turned this off doesn't pay for the lookup either -- see
+    // guests/RsvpNotificationToggle.tsx for where this gets flipped.
+    const { data: notificationEvent } = await supabase
+      .from("events")
+      .select("title, rsvp_email_notifications")
+      .eq("id", eventId)
+      .single();
+
+    // Defaults to on (matches the column's own DB default) if the select
+    // above came back empty -- e.g. the 20260930130000 migration adding
+    // this column hasn't been applied by hand yet -- rather than silently
+    // going quiet instead of notifying the host.
+    const { data: ownerEmail } = notificationEvent?.rsvp_email_notifications !== false
+      ? await supabase.rpc("get_event_owner_email_for_rsvp_notification", { p_event_id: eventId })
+      : { data: null };
+
+    if (ownerEmail) {
+      const eventTitle = notificationEvent?.title ?? "your event";
+
+      const detailLines = [
+        `<p><strong>${input.guestName || "A guest"}</strong> ${input.attending ? "is coming" : "can't make it"} to ${eventTitle}.</p>`,
+        input.attending ? `<p>Party size: ${partySize}</p>` : "",
+        input.attending && input.attendeeNames?.length
+          ? `<p>Names: ${input.attendeeNames.filter(Boolean).join(", ")}</p>`
+          : "",
+        input.allergies ? `<p>Allergies / dietary needs: ${input.allergies}</p>` : "",
+        input.comment ? `<p>Message: ${input.comment}</p>` : "",
+      ].filter(Boolean);
+
+      await sendEmail({
+        to: ownerEmail,
+        subject: input.attending ? `New RSVP: ${input.guestName || "a guest"} is coming` : `New RSVP: ${input.guestName || "a guest"} can't make it`,
+        html: detailLines.join(""),
+      });
+    }
+  } catch (emailError) {
+    console.error("submitRsvp host notification email failed", emailError);
+  }
+
   return { ok: true };
 }
 
@@ -167,8 +216,18 @@ export async function lookupGuestTable(eventId: string, fullName: string): Promi
     .rpc("lookup_guest_table_by_name", { p_event_id: eventId, p_full_name: fullName })
     .maybeSingle();
 
-  if (error || !data) {
+  // A real RPC/DB failure used to be folded into the same `{found: false}`
+  // shape as a legitimate "no match" -- SimpleLookup's catch block only
+  // triggers on a thrown error, so a guest hitting an actual outage saw
+  // "we couldn't find you on the guest list, check your spelling" instead
+  // of "something went wrong, try again" -- wrong advice for the real
+  // problem. `!data` alone (the RPC ran fine, zero rows) is still a
+  // genuine not-found, not an error.
+  if (error) {
     console.error("lookupGuestTable failed", error);
+    throw new Error("Lookup failed");
+  }
+  if (!data) {
     return { found: false, tableName: null, attending: null };
   }
 

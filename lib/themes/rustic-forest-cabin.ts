@@ -12,7 +12,7 @@ export const rusticForestCabin: Theme = {
     "--theme-bg": "#E8E2D5",
     "--theme-text": "#33362B",
     "--theme-accent": "#5B6B4A",
-    "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
+    "--theme-font-heading": "var(--font-libre-baskerville), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

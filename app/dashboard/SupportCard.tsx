@@ -20,6 +20,10 @@ export default function SupportCard() {
             is locked behind a paywall while you&apos;re still deciding.
           </li>
           <li>
+            Guests just open your link and answer —{" "}
+            <span className="font-medium text-gray-900">no account, no app, nothing to install</span> on their end.
+          </li>
+          <li>
             Your site and RSVPs update the moment you hit save —{" "}
             <span className="font-medium text-gray-900">no waiting</span> on anyone to approve or process anything.
           </li>
@@ -33,10 +37,10 @@ export default function SupportCard() {
         </span>
         <p className="text-xs text-gray-500">Questions? We&apos;re here.</p>
         <a
-          href="mailto:support@invitely.app"
+          href="mailto:support@invimbo.com"
           className="text-sm font-semibold text-[var(--dash-accent)] underline underline-offset-2"
         >
-          support@invitely.app
+          support@invimbo.com
         </a>
       </div>
     </div>

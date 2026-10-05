@@ -28,8 +28,13 @@ export default async function EventDashboardLayout({
       isAnonymous={user.is_anonymous ?? false}
       events={events}
       navEventId={event.id}
-      navEventType={event.event_type}
-      publish={{ eventId: event.id, status: event.status, slug: event.slug, planId: event.plan_id }}
+      publish={{
+        eventId: event.id,
+        status: event.status,
+        slug: event.slug,
+        planId: event.plan_id,
+        customDomain: event.custom_domain_verified_at ? event.custom_domain : null,
+      }}
     >
       {children}
     </DashboardShell>

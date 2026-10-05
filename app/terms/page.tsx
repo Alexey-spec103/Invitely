@@ -145,8 +145,8 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-stone-900">12. Contact</h2>
             <p className="mt-2">
               Questions about these terms?{" "}
-              <a href="mailto:support@invitely.app" className="text-stone-900 underline underline-offset-2">
-                support@invitely.app
+              <a href="mailto:support@invimbo.com" className="text-stone-900 underline underline-offset-2">
+                support@invimbo.com
               </a>
               .
             </p>

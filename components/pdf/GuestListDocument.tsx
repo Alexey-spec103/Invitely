@@ -21,8 +21,8 @@ export interface GuestListDocumentProps {
 export function GuestListDocument({ theme, eventTitle, rows }: GuestListDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
-  registerCanvasPdfFont(style.headingFont);
-  registerCanvasPdfFont(style.bodyFont);
+  style.headingFont.forEach(registerCanvasPdfFont);
+  style.bodyFont.forEach(registerCanvasPdfFont);
 
   const styles = StyleSheet.create({
     page: {

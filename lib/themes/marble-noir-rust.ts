@@ -12,8 +12,8 @@ export const marbleNoirRust: Theme = {
     "--theme-bg": "#14100E",
     "--theme-text": "#EFE7DE",
     "--theme-accent": "#BA6E3F",
-    "--theme-font-heading": "var(--font-bodoni-moda), Georgia, serif",
+    "--theme-font-heading": "var(--font-bodoni-moda), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

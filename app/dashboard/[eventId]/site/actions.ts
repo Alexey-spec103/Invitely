@@ -20,6 +20,7 @@ import type { DressCodeVariant } from "@/components/sections/DressCodeSection";
 import type { GuestbookVariant } from "@/components/sections/GuestbookSection";
 import type { VideoVariant } from "@/components/sections/VideoSection";
 import type { BanquetNavigatorVariant } from "@/components/sections/BanquetNavigatorSection";
+import type { GuestNotesVariant } from "@/components/sections/GuestNotesSection";
 import type { Json } from "@/lib/supabase/database.types";
 import type { BackgroundFill } from "@/lib/backgroundFills";
 import { DEFAULT_THEME_ID, getTheme } from "@/lib/themes";
@@ -1040,6 +1041,85 @@ export async function updateRsvpSection(input: UpdateRsvpSectionInput): Promise<
 
   if (configError) {
     return { ok: false, message: configError.message };
+  }
+
+  revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
+}
+
+interface UpdateGuestNotesSectionInput {
+  eventId: string;
+  title: string;
+  body?: string;
+  guestNotesVariant: GuestNotesVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
+}
+
+/** Same shape as updateBanquetNavigatorSection above (title + one free-text
+ * field, single variant) -- a practical-requests block, kept deliberately
+ * separate from Letter's own personal-note content. */
+export async function updateGuestNotesSection(input: UpdateGuestNotesSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const { data: existingConfig } = await supabase
+    .from("site_config")
+    .select("*")
+    .eq("event_id", input.eventId)
+    .maybeSingle();
+
+  const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
+  const existingContent = existingConfig ? parseContent(existingConfig.content) : {};
+
+  const sections = existingSections.some((section) => section.type === "guestNotes")
+    ? existingSections.map((section) =>
+        section.type === "guestNotes" ? { ...section, variant: input.guestNotesVariant } : section
+      )
+    : [
+        ...existingSections,
+        {
+          type: "guestNotes",
+          variant: input.guestNotesVariant,
+          order: SECTION_ORDER.guestNotes,
+          enabled: true,
+        },
+      ];
+
+  const content = {
+    ...existingContent,
+    guestNotes: {
+      title: input.title,
+      body: input.body || undefined,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "guestNotes"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "guestNotes"),
+    },
+  };
+
+  const { error: configError2 } = existingConfig
+    ? await supabase
+        .from("site_config")
+        .update({
+          sections: sections as unknown as Json,
+          content: content as unknown as Json,
+        })
+        .eq("event_id", input.eventId)
+    : await supabase.from("site_config").insert({
+        event_id: input.eventId,
+        theme_id: DEFAULT_THEME_ID,
+        sections: sections as unknown as Json,
+        content: content as unknown as Json,
+      });
+
+  if (configError2) {
+    return { ok: false, message: configError2.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);

@@ -22,7 +22,6 @@ export default async function AccountLayout({ children }: LayoutProps<"/dashboar
       isAnonymous={user.is_anonymous ?? false}
       events={events}
       navEventId={events[0].id}
-      navEventType={events[0].event_type}
     >
       {children}
     </DashboardShell>

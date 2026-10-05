@@ -17,8 +17,8 @@ export const marbleSageGold: Theme = {
     // below the 3:1 floor even for large/decorative text. Deepened within the
     // same hue and saturation (not re-picked), now passes 3.06:1.
     "--theme-accent": "#A78148",
-    "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
+    "--theme-font-heading": "var(--font-marcellus), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

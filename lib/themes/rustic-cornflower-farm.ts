@@ -12,7 +12,7 @@ export const rusticCornflowerFarm: Theme = {
     "--theme-bg": "#EFEEDD",
     "--theme-text": "#383C2C",
     "--theme-accent": "#6E7FA0",
-    "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
+    "--theme-font-heading": "var(--font-libre-baskerville), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

@@ -12,8 +12,8 @@ export const luxurySapphireSilver: Theme = {
     "--theme-bg": "#0D1420",
     "--theme-text": "#EAEEF3",
     "--theme-accent": "#6E93C2",
-    "--theme-font-heading": "var(--font-marcellus), Georgia, serif",
+    "--theme-font-heading": "var(--font-marcellus), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

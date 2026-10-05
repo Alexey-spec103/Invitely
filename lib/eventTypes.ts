@@ -1,7 +1,25 @@
 export type NamesMode = "couple" | "single" | "title";
 
+/** The fixed set of event-type ids -- also the exact key set
+ * `Dictionary["eventTypes"]` (lib/i18n/translations/*.ts) must provide a
+ * localized label/namePrompts/dateLabel/heroEyebrow for, enforced at compile
+ * time via Record<EventTypeId, ...> on both sides. */
+export type EventTypeId =
+  | "wedding"
+  | "anniversary"
+  | "engagement"
+  | "birthday"
+  | "baby_shower"
+  | "kids_party"
+  | "quinceanera"
+  | "graduation"
+  | "corporate"
+  | "holiday"
+  | "retirement"
+  | "other";
+
 export interface EventTypeDef {
-  id: string;
+  id: EventTypeId;
   label: string;
   icon: string;
   namesMode: NamesMode;
@@ -25,7 +43,7 @@ function possessive(name: string): string {
   return name.endsWith("s") ? `${name}'` : `${name}'s`;
 }
 
-export const EVENT_TYPES: Record<string, EventTypeDef> = {
+export const EVENT_TYPES: Record<EventTypeId, EventTypeDef> = {
   wedding: {
     id: "wedding",
     label: "Wedding",
@@ -162,8 +180,8 @@ export const EVENT_TYPES: Record<string, EventTypeDef> = {
 
 export const EVENT_TYPE_LIST = Object.values(EVENT_TYPES);
 
-export const DEFAULT_EVENT_TYPE_ID = "wedding";
+export const DEFAULT_EVENT_TYPE_ID: EventTypeId = "wedding";
 
 export function getEventType(id: string): EventTypeDef {
-  return EVENT_TYPES[id] ?? EVENT_TYPES[DEFAULT_EVENT_TYPE_ID];
+  return EVENT_TYPES[id as EventTypeId] ?? EVENT_TYPES[DEFAULT_EVENT_TYPE_ID];
 }

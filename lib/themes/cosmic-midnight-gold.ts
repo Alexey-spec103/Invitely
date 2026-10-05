@@ -13,8 +13,8 @@ export const cosmicMidnightGold: Theme = {
     "--theme-bg": "#0D0F1A",
     "--theme-text": "#EDE9DD",
     "--theme-accent": "#C9A24C",
-    "--theme-font-heading": "var(--font-bodoni-moda), Georgia, serif",
+    "--theme-font-heading": "var(--font-bodoni-moda), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

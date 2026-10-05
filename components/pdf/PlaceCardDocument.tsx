@@ -18,8 +18,8 @@ const CARD_SIZE: [number, number] = [252, 144];
 export function PlaceCardDocument({ theme, guestNames, locked }: PlaceCardDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
-  registerCanvasPdfFont(style.headingFont);
-  registerCanvasPdfFont(style.bodyFont);
+  style.headingFont.forEach(registerCanvasPdfFont);
+  style.bodyFont.forEach(registerCanvasPdfFont);
 
   const styles = StyleSheet.create({
     page: {

@@ -19,8 +19,8 @@ export interface ProgramCardDocumentProps {
 export function ProgramCardDocument({ theme, title, events }: ProgramCardDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
-  registerCanvasPdfFont(style.headingFont);
-  registerCanvasPdfFont(style.bodyFont);
+  style.headingFont.forEach(registerCanvasPdfFont);
+  style.bodyFont.forEach(registerCanvasPdfFont);
 
   const styles = StyleSheet.create({
     page: {

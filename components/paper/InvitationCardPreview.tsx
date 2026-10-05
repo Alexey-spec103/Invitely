@@ -4,6 +4,7 @@ import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import CardCornerDecor from "./CardCornerDecor";
 import FlipCard from "./FlipCard";
 import { formatEventDate } from "./formatEventDate";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import styles from "./InvitationCardPreview.module.css";
 
 export interface InvitationCardPreviewProps {
@@ -14,6 +15,7 @@ export interface InvitationCardPreviewProps {
   venueAddress?: string;
   side: "front" | "back";
   backMessage?: string;
+  locale?: Locale;
 }
 
 export default function InvitationCardPreview({
@@ -24,6 +26,7 @@ export default function InvitationCardPreview({
   venueAddress,
   side,
   backMessage,
+  locale = DEFAULT_LOCALE,
 }: InvitationCardPreviewProps) {
   const themeCategory = effectiveDecorCategory(theme);
   return (
@@ -41,7 +44,7 @@ export default function InvitationCardPreview({
                 <p className={styles.names}>{names[1]}</p>
               </>
             )}
-            <p className={styles.date}>{formatEventDate(eventDate).toUpperCase()}</p>
+            <p className={styles.date}>{formatEventDate(eventDate, locale).toUpperCase()}</p>
             {(venueName || venueAddress) && (
               <p className={styles.venue}>{[venueName, venueAddress].filter(Boolean).join(" · ")}</p>
             )}

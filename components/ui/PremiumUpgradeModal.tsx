@@ -20,7 +20,7 @@ interface PremiumUpgradeModalProps {
   onContinueAnyway?: () => void;
 }
 
-const targetPlan = plans.basic;
+const targetPlan = plans.premium;
 
 /** dashboard-audit.md follow-up: previously a gated action (paper
  * downloads) only got a small passive caption below the button after the
@@ -30,9 +30,9 @@ const targetPlan = plans.basic;
  * нелогичное" ask to surface paid-feature boundaries immediately rather
  * than silently.
  *
- * Watermark removal moved from Premium to Basic (the natural "I want the
- * real printable thing" purchase moment) -- this modal follows that gate,
- * whichever plan it actually is, rather than hardcoding "Premium". */
+ * Watermark-free paper/banquet downloads are a Premium-only feature --
+ * Basic covers the digital site (custom domain, extra modules, no site
+ * badge) but printable materials stay watermarked until Premium. */
 export default function PremiumUpgradeModal({
   open,
   onClose,
@@ -80,7 +80,7 @@ export default function PremiumUpgradeModal({
         </p>
         <p className="mt-2 text-sm text-[var(--dash-text-muted)]">
           Upgrade to <span className="font-semibold text-[var(--dash-text)]">{targetPlan.name}</span>{" "}
-          (€{targetPlan.priceEur}) to remove it — plus a custom domain and no site badge.
+          (€{targetPlan.priceEur}) to remove it from every invitation and banquet card.
         </p>
 
         <div className="mt-5 flex flex-col gap-2">

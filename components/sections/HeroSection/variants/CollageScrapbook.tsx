@@ -1,5 +1,9 @@
+"use client";
+
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import StaggerReveal from "@/components/StaggerReveal";
 import EditablePhoto from "../EditablePhoto";
 import { CAP_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./CollageScrapbook.module.css";
@@ -15,6 +19,7 @@ export default function CollageScrapbook({
   themeCategory,
 }: HeroSectionVariantProps) {
   const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
+  const { editable } = useEditableField();
   return (
     <section className={styles.section}>
       {photoUrl && (
@@ -28,15 +33,23 @@ export default function CollageScrapbook({
           <EditablePhoto src={photoUrl} className={styles.photo} />
         </div>
       )}
-      <p className={styles.note}>
-        <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
-        {names[1] && (
-          <>
-            {" & "}
-            <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
-          </>
-        )}
-      </p>
+      {editable ? (
+        <p className={styles.note}>
+          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+          {names[1] && (
+            <>
+              {" & "}
+              <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
+            </>
+          )}
+        </p>
+      ) : (
+        <StaggerReveal as="p" itemAs="span" className={styles.note} staggerDelay={0.12}>
+          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+          {names[1] && <span>{" & "}</span>}
+          {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
+        </StaggerReveal>
+      )}
       <p className={styles.date}>{eventDate}</p>
     </section>
   );

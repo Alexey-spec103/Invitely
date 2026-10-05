@@ -14,9 +14,9 @@ export const regalNavyGold: Theme = {
     "--theme-bg": "#101B2E",
     "--theme-text": "#EDE6D6",
     "--theme-accent": "#C9A24C",
-    "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
+    "--theme-font-heading": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-accent": "var(--font-cinzel), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-accent": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

@@ -45,7 +45,14 @@ export default function ResetPasswordPage() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
+        // Possible race with the getSession() check below: the recovery
+        // token in the URL is parsed into a session asynchronously, so
+        // getSession() can resolve with nothing *before* that parsing
+        // finishes and set linkInvalid -- a real link wrongly shown as
+        // expired. This event firing after that is proof the link was
+        // valid all along, so it un-sticks that false state too.
         setReady(true);
+        setLinkInvalid(false);
       }
     });
 

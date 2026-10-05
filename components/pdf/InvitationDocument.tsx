@@ -7,11 +7,16 @@ import { CornerFlourish } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
 import { pdfBackgroundColor } from "@/lib/backgroundFills";
+import { formatEventDate } from "@/components/paper/formatEventDate";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
 export interface InvitationDocumentProps {
   theme: Theme;
   names: string[];
   eventDate: string;
+  /** Defaults to English -- see formatEventDate.ts's own doc comment for
+   * why this stays optional rather than required at every call site. */
+  locale?: Locale;
   venueName?: string;
   venueAddress?: string;
   guestName?: string;
@@ -31,15 +36,11 @@ export interface InvitationDocumentProps {
   locked?: boolean;
 }
 
-function formatEventDate(isoDate: string) {
-  const date = new Date(`${isoDate}T00:00:00`);
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-}
-
 export function InvitationDocument({
   theme,
   names,
   eventDate,
+  locale = DEFAULT_LOCALE,
   venueName,
   venueAddress,
   guestName,
@@ -50,8 +51,8 @@ export function InvitationDocument({
 }: InvitationDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
-  registerCanvasPdfFont(style.headingFont);
-  registerCanvasPdfFont(style.bodyFont);
+  style.headingFont.forEach(registerCanvasPdfFont);
+  style.bodyFont.forEach(registerCanvasPdfFont);
   if (backFrame) {
     for (const family of collectFontFamilies([backFrame])) {
       registerCanvasPdfFont(family);
@@ -186,7 +187,7 @@ export function InvitationDocument({
           </>
         )}
 
-        <Text style={styles.date}>{formatEventDate(eventDate).toUpperCase()}</Text>
+        <Text style={styles.date}>{formatEventDate(eventDate, locale).toUpperCase()}</Text>
 
         {(venueName || venueAddress) && (
           <Text style={styles.venue}>{[venueName, venueAddress].filter(Boolean).join(" · ")}</Text>

@@ -20,7 +20,7 @@ const CARD_SIZE: [number, number] = [288, 288];
 export function TableNumberCardDocument({ theme, tableNames, locked }: TableNumberCardDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
-  registerCanvasPdfFont(style.headingFont);
+  style.headingFont.forEach(registerCanvasPdfFont);
 
   const styles = StyleSheet.create({
     page: {

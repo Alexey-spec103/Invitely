@@ -1,5 +1,9 @@
+"use client";
+
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import StaggerReveal from "@/components/StaggerReveal";
 import { BOHO_ASYMMETRIC_VINE_DECOR, BOHO_ASYMMETRIC_CORNER_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./BohoAsymmetric.module.css";
 
@@ -31,6 +35,7 @@ import styles from "./BohoAsymmetric.module.css";
  * Watercolor*'s centered variants), so hard corner offsets are safe here --
  * confirmed by the existing masked fallback already using them. */
 export default function BohoAsymmetric({ names, eventDate, styleOverrides, themeCategory }: HeroSectionVariantProps) {
+  const { editable } = useEditableField();
   const vineAsset = themeCategory ? BOHO_ASYMMETRIC_VINE_DECOR[themeCategory] : undefined;
   const cornerAssets = themeCategory ? BOHO_ASYMMETRIC_CORNER_DECOR[themeCategory] : undefined;
   return (
@@ -49,15 +54,23 @@ export default function BohoAsymmetric({ names, eventDate, styleOverrides, theme
         </>
       )}
       <div className={styles.content}>
-        <p className={styles.names}>
-          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
-          {names[1] && (
-            <>
-              {" & "}
-              <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
-            </>
-          )}
-        </p>
+        {editable ? (
+          <p className={styles.names}>
+            <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+            {names[1] && (
+              <>
+                {" & "}
+                <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
+              </>
+            )}
+          </p>
+        ) : (
+          <StaggerReveal as="p" itemAs="span" className={styles.names} staggerDelay={0.12}>
+            <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+            {names[1] && <span>{" & "}</span>}
+            {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
+          </StaggerReveal>
+        )}
         <p className={styles.date}>{eventDate}</p>
       </div>
     </section>

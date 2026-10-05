@@ -6,6 +6,7 @@ import { LOCALE_TO_BCP47 } from "@/lib/i18n/locales";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import StaggerReveal from "@/components/StaggerReveal";
 import { CORNER_PAIR_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import styles from "./CenteredCard.module.css";
 
@@ -59,6 +60,71 @@ export default function CenteredCard({
   const maskAccentStyle = maskAccent
     ? { maskImage: `url(${maskAccent})`, WebkitMaskImage: `url(${maskAccent})` }
     : undefined;
+  // Each field cascades in one after another instead of the whole card
+  // fading as one flat block -- built as a plain array so the same JSX can
+  // render either flat (dashboard editor, no stagger -- see the `editable`
+  // comment below) or wrapped in StaggerReveal (public site).
+  const fields = [
+    <h2 key="title" className={styles.title}>
+      <EditableText
+        field="title"
+        value={title}
+        style={styleOverrides?.["title"]}
+        placeholder="Write a title for your letter…"
+      />
+    </h2>,
+    <p key="body" className={styles.body}>
+      <EditableText
+        field="body"
+        value={body}
+        style={styleOverrides?.["body"]}
+        placeholder="Write a welcome message to your guests…"
+      />
+    </p>,
+    <p key="quote" className={styles.quote}>
+      {/* dashboard-audit.md finding #4: the decorative « » marks used to
+          wrap this field unconditionally, so an empty quote read as a
+          broken bare "«»" with nothing inside -- shown only once there's
+          real text, while EditableText itself always stays mounted (not
+          wrapped in `{quote && ...}` the way note/closingLine below are)
+          so a host can still click into this field in the dashboard
+          editor to write a first quote at all. */}
+      {quote && "«"}
+      <EditableText
+        field="quote"
+        value={quote}
+        style={styleOverrides?.["quote"]}
+        placeholder="Add a quote (optional)…"
+      />
+      {quote && "»"}
+    </p>,
+    (note || editable) && (
+      <p key="note" className={styles.note}>
+        <EditableText
+          field="note"
+          value={note ?? ""}
+          style={styleOverrides?.["note"]}
+          placeholder="A short extra note (optional)…"
+        />
+      </p>
+    ),
+    // Derived display text, not a raw content field -- not independently editable.
+    rsvpDeadline && isDeadlineUpcoming(rsvpDeadline) && (
+      <p key="deadline" className={styles.deadline}>
+        {t.confirmBy(formatDeadline(rsvpDeadline, locale))}
+      </p>
+    ),
+    (closingLine || editable) && (
+      <p key="closingLine" className={styles.closingLine}>
+        <EditableText
+          field="closingLine"
+          value={closingLine ?? ""}
+          style={styleOverrides?.["closingLine"]}
+          placeholder="Sign off — e.g. “With love, the two of us”…"
+        />
+      </p>
+    ),
+  ];
   return (
     <section className={styles.section}>
       <div className={styles.card}>
@@ -73,63 +139,12 @@ export default function CenteredCard({
             <span className={styles.flourishBottomRight} style={maskAccentStyle} aria-hidden="true" />
           </>
         )}
-        <h2 className={styles.title}>
-          <EditableText
-            field="title"
-            value={title}
-            style={styleOverrides?.["title"]}
-            placeholder="Write a title for your letter…"
-          />
-        </h2>
-        <p className={styles.body}>
-          <EditableText
-            field="body"
-            value={body}
-            style={styleOverrides?.["body"]}
-            placeholder="Write a welcome message to your guests…"
-          />
-        </p>
-        <p className={styles.quote}>
-          {/* dashboard-audit.md finding #4: the decorative « » marks used to
-              wrap this field unconditionally, so an empty quote read as a
-              broken bare "«»" with nothing inside -- shown only once there's
-              real text, while EditableText itself always stays mounted (not
-              wrapped in `{quote && ...}` the way note/closingLine below are)
-              so a host can still click into this field in the dashboard
-              editor to write a first quote at all. */}
-          {quote && "«"}
-          <EditableText
-            field="quote"
-            value={quote}
-            style={styleOverrides?.["quote"]}
-            placeholder="Add a quote (optional)…"
-          />
-          {quote && "»"}
-        </p>
-        {(note || editable) && (
-          <p className={styles.note}>
-            <EditableText
-              field="note"
-              value={note ?? ""}
-              style={styleOverrides?.["note"]}
-              placeholder="A short extra note (optional)…"
-            />
-          </p>
-        )}
-        {/* Derived display text, not a raw content field -- not independently editable. */}
-        {rsvpDeadline && isDeadlineUpcoming(rsvpDeadline) && (
-          <p className={styles.deadline}>{t.confirmBy(formatDeadline(rsvpDeadline, locale))}</p>
-        )}
-        {(closingLine || editable) && (
-          <p className={styles.closingLine}>
-            <EditableText
-              field="closingLine"
-              value={closingLine ?? ""}
-              style={styleOverrides?.["closingLine"]}
-              placeholder="Sign off — e.g. “With love, the two of us”…"
-            />
-          </p>
-        )}
+        {/* Stagger only on the public site -- in the dashboard editor this
+            same markup mounts every time a host opens this tab, and
+            EditableText's click-to-select + contentEditable handling
+            depends on stable, un-wrapped DOM nodes (see its own file
+            comments), so editable mode keeps the flat, unanimated layout. */}
+        {editable ? fields : <StaggerReveal staggerDelay={0.1}>{fields}</StaggerReveal>}
       </div>
     </section>
   );

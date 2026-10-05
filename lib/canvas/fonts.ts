@@ -170,6 +170,61 @@ export const CANVAS_FONTS: CanvasFontOption[] = [
 
 export const CANVAS_FONT_OPTIONS: string[] = CANVAS_FONTS.map((f) => f.family);
 
+const FONT_CATEGORY_BY_FAMILY = new Map(CANVAS_FONTS.map((f) => [f.family, f.category]));
+
+function canvasFontCategory(family: string): CanvasFontOption["category"] {
+  return FONT_CATEGORY_BY_FAMILY.get(family) ?? "serif";
+}
+
+// Checked live against the Google Fonts CSS2 API: of these ~150 curated
+// families, over 100 -- including nearly every script font -- ship zero
+// Cyrillic glyphs at all. That's a hard limit of the font files themselves,
+// not something any CSS can work around, so a real Cyrillic fallback has to
+// be a different, visually-compatible family per category rather than a
+// generic system font. Each pick here already has confirmed full Cyrillic
+// coverage, and three of the four are already self-hosted for the PDF path
+// too (lib/pdf/fonts.ts) -- reusing them here means the PDF fallback never
+// needs its own separate asset.
+const CYRILLIC_FALLBACK_BY_CATEGORY: Record<CanvasFontOption["category"], string> = {
+  serif: "Cormorant Garamond",
+  "sans-serif": "Inter",
+  script: "Great Vibes",
+  display: "Playfair Display",
+};
+
+const GENERIC_CSS_FALLBACK: Record<CanvasFontOption["category"], string> = {
+  serif: "serif",
+  "sans-serif": "sans-serif",
+  script: "cursive",
+  display: "serif",
+};
+
+function quoteFontFamily(name: string): string {
+  return /\s/.test(name) ? `"${name}"` : name;
+}
+
+/** The families that actually need loading/registering for `family` to
+ * render correctly everywhere a guest might type -- just `[family]` when it
+ * already carries full Cyrillic coverage itself, otherwise `[family,
+ * fallback]`. */
+export function canvasFontFamiliesFor(family: string): string[] {
+  const fallback = CYRILLIC_FALLBACK_BY_CATEGORY[canvasFontCategory(family)];
+  return fallback === family ? [family] : [family, fallback];
+}
+
+/** The real CSS `font-family` value for a canvas text element: the host's
+ * chosen font first (so Latin text -- and Cyrillic, for the minority of
+ * fonts that do carry those glyphs -- renders exactly as chosen), then a
+ * same-mood family confirmed to carry full Cyrillic glyphs, then a generic
+ * last resort. A browser only reaches past the first family for codepoints
+ * it actually lacks, so this is a no-op for already-Cyrillic-complete fonts
+ * and strictly better than the bare system-default fallback for the rest. */
+export function canvasFontFamilyCss(family: string): string {
+  const category = canvasFontCategory(family);
+  const families = canvasFontFamiliesFor(family).map(quoteFontFamily);
+  return [...families, GENERIC_CSS_FALLBACK[category]].join(", ");
+}
+
 export function canvasFontStylesheetUrl(family: string): string {
   return `https://fonts.googleapis.com/css2?family=${encodeURIComponent(
     family

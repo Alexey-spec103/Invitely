@@ -10,8 +10,8 @@ export const peonyDustyMauve: Theme = {
     "--theme-bg": "#D9C2C5",
     "--theme-text": "#3A2429",
     "--theme-accent": "#7A3B39",
-    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

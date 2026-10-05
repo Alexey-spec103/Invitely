@@ -10,8 +10,8 @@ export const coastalBreeze: Theme = {
     "--theme-bg": "#EFF6F5",
     "--theme-text": "#1F3B3E",
     "--theme-accent": "#3B7A8C",
-    "--theme-font-heading": "var(--font-italiana), Georgia, serif",
+    "--theme-font-heading": "var(--font-italiana), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

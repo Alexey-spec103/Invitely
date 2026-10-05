@@ -28,12 +28,20 @@ export default function UserMenu({ userEmail, planEventId }: UserMenuProps) {
   const handleSignOut = async () => {
     setSigningOut(true);
     const supabase = createClient();
-    // scope: "local" -- end only this browser's session. Supabase's default
-    // ("global") revokes the refresh token everywhere, signing the user out
-    // of every other device/tab too, which isn't what "Sign out" here means.
-    await supabase.auth.signOut({ scope: "local" });
-    router.push("/login");
-    router.refresh();
+    try {
+      // scope: "local" -- end only this browser's session. Supabase's
+      // default ("global") revokes the refresh token everywhere, signing
+      // the user out of every other device/tab too, which isn't what
+      // "Sign out" here means.
+      await supabase.auth.signOut({ scope: "local" });
+      router.push("/login");
+      router.refresh();
+    } catch {
+      // No `catch` here before meant a failed sign-out (rare, but a real
+      // network blip is enough) left the button stuck on "Signing out..."
+      // forever -- disabled, with no retry short of a full page reload.
+      setSigningOut(false);
+    }
   };
 
   useEffect(() => {

@@ -132,12 +132,19 @@ body {
      light page background (soft lavender-gray, sampled from their pages and
      already recorded in design-reference.md's palette notes). */
   --dash-light-bg: #eff0f5;
-  --dash-bg: #131318;
-  --dash-surface: #1c1c24;
-  --dash-surface-2: #24242e;
-  --dash-border: #2f2f3a;
+  /* Raycast design-reference pass (docs/design-references/raycast/DESIGN.md):
+     swapped the dark constructor's surface ladder for Raycast's own
+     canvas -> surface -> surface-elevated values and its hairline border --
+     same roles these tokens already filled (bg/surface/surface-2/border),
+     just deeper blacks and a crisper 1px line instead of the previous
+     muddier charcoal-purple. --dash-text already matched Raycast's "ink"
+     almost exactly; --dash-text-muted tightened to their "mute" token. */
+  --dash-bg: #07080a;
+  --dash-surface: #0d0d0d;
+  --dash-surface-2: #101111;
+  --dash-border: #242728;
   --dash-text: #f4f4f6;
-  --dash-text-muted: #9797a6;
+  --dash-text-muted: #9c9c9d;
 
   /* Cabinet-only font pair, reusing fonts already loaded in app/layout.tsx
      for the public site themes -- no new font added. Fraunces (a display
@@ -152,6 +159,14 @@ body {
   --dash-font-body: var(--font-inter), Arial, Helvetica, sans-serif;
 
   font-family: var(--dash-font-body);
+  /* Raycast design-reference pass: Inter was already the cabinet's body
+     font (see comment above) but rendered with the default glyph set --
+     ss03 swaps in the alternate single-story "g", Raycast's signature
+     typographic detail, for free on a font already loaded. calt/kern/liga
+     are the browser's own defaults for a feature-settings list this size,
+     listed explicitly only because enabling ss03 means specifying the
+     whole set. Cabinet-only, same scoping as the font tokens above. */
+  font-feature-settings: "calt", "kern", "liga", "ss03";
 }
 
 /* Page-level title -- one shared size/weight/serif treatment so every

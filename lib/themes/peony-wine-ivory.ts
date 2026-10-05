@@ -10,8 +10,8 @@ export const peonyWineIvory: Theme = {
     "--theme-bg": "#E3D5C4",
     "--theme-text": "#382723",
     "--theme-accent": "#6B2E2A",
-    "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
+    "--theme-font-heading": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

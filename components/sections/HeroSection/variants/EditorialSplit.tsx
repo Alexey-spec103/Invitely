@@ -1,5 +1,9 @@
+"use client";
+
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import StaggerReveal from "@/components/StaggerReveal";
 import EditablePhoto from "../EditablePhoto";
 import { CAP_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./EditorialSplit.module.css";
@@ -22,6 +26,7 @@ export default function EditorialSplit({
     ? [monogramInitials.trim().charAt(0).toUpperCase(), monogramInitials.trim().charAt(1)?.toUpperCase() ?? ""]
     : getInitials(names);
   const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
+  const { editable } = useEditableField();
 
   return (
     <section className={styles.section}>
@@ -29,11 +34,23 @@ export default function EditorialSplit({
         <span className={styles.bigLetter} aria-hidden="true">
           {initialA}
         </span>
-        <p className={styles.names}>
-          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
-          {names[1] && <span className={styles.ampersand}>&amp;</span>}
-          {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
-        </p>
+        {editable ? (
+          <p className={styles.names}>
+            <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+            {names[1] && (
+              <>
+                <span className={styles.ampersand}>&amp;</span>
+                <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
+              </>
+            )}
+          </p>
+        ) : (
+          <StaggerReveal as="p" itemAs="span" className={styles.names} staggerDelay={0.12}>
+            <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+            {names[1] && <span className={styles.ampersand}>&amp;</span>}
+            {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
+          </StaggerReveal>
+        )}
         <p className={styles.date}>{eventDate}</p>
         {capAsset ? (
           <img className={styles.sprigColor} src={capAsset} alt="" aria-hidden="true" />

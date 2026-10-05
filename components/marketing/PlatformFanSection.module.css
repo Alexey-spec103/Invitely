@@ -186,6 +186,18 @@
   transform-origin: top left;
   /* Same container-query scale-to-fit + vertical crop-compensation as
      HeroPhoneShowcase's .screenScaleInner, for the same theme/variant --
-     see that file's comment for why the translateY offset exists. */
-  transform: scale(calc(100cqw / 375px)) translateY(-40vh);
+     see that file's comment for why the translateY offset exists, and why
+     it's now a fixed px value (paired with .phoneScaleWrap's
+     `--section-min-height: 812px` in the TSX) instead of `vh`.
+
+     -325px (the shared default elsewhere) assumes a crop window roughly
+     487px tall in content-space -- but `.phone`'s own box is
+     `aspect-ratio: 375/750`, i.e. a 750px-tall window at this 375px content
+     width. -325px + a 750px window reaches content y=1075, 263px past the
+     812px-tall section -- confirmed live: the bottom ~35% of this phone
+     showed the screen's own white background below the section's real
+     content. -31px instead centers the 750px window on the 812px section
+     ((812-750)/2), matching what every other frame's offset already does:
+     center the visible crop on the actual content. */
+  transform: scale(calc(100cqw / 375px)) translateY(-31px);
 }

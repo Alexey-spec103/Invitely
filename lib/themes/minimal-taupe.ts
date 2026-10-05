@@ -14,6 +14,6 @@ export const minimalTaupe: Theme = {
     "--theme-accent": "#8A7F72",
     "--theme-font-heading": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

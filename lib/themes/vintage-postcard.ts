@@ -13,7 +13,7 @@ export const vintagePostcard: Theme = {
     "--theme-bg": "#F0E8DC",
     "--theme-text": "#43392E",
     "--theme-accent": "#B6604A",
-    "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
+    "--theme-font-heading": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

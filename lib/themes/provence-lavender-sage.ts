@@ -13,8 +13,8 @@ export const provenceLavenderSage: Theme = {
     "--theme-bg": "#D9D3E0",
     "--theme-text": "#332B42",
     "--theme-accent": "#7A6A9E",
-    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant), Georgia, serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

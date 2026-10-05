@@ -10,6 +10,17 @@ interface PhotoDropzoneProps {
   onChange: (url: string | undefined) => void;
   label?: string;
   helpText?: string;
+  /** All five below default to English -- every dashboard call site (always
+   * English, by established convention) relies on that default rather than
+   * passing these explicitly. Only the onboarding wizard (the one place this
+   * component renders somewhere locale-aware) passes real translations --
+   * confirmed live, this text was staying English even deep into a fully
+   * Russian/German onboarding run otherwise. */
+  dropHint?: string;
+  busyHint?: string;
+  changeLabel?: string;
+  removeLabel?: string;
+  errorFallback?: string;
 }
 
 /** Drag-and-drop (or click-to-browse) photo picker, replacing the old
@@ -20,6 +31,11 @@ export default function PhotoDropzone({
   onChange,
   label = "Add your photo",
   helpText,
+  dropHint = "Drag a photo here, or click to browse",
+  busyHint = "Adding your photo...",
+  changeLabel = "Change photo",
+  removeLabel = "Remove",
+  errorFallback = "Couldn't add that photo",
 }: PhotoDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -34,7 +50,7 @@ export default function PhotoDropzone({
       const url = await uploadEventPhoto(file);
       onChange(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't add that photo");
+      setError(err instanceof Error ? err.message : errorFallback);
     } finally {
       setIsBusy(false);
     }
@@ -87,16 +103,16 @@ export default function PhotoDropzone({
                   onClick={() => inputRef.current?.click()}
                   className="rounded-full bg-white px-3.5 py-2 text-sm font-semibold text-gray-900 shadow transition hover:bg-gray-100"
                 >
-                  Change photo
+                  {changeLabel}
                 </button>
                 <button
                   type="button"
                   onClick={() => onChange(undefined)}
                   className="flex items-center gap-1 rounded-full bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow transition hover:bg-red-50"
-                  aria-label="Remove photo"
+                  aria-label={removeLabel}
                 >
                   <X className="h-4 w-4" />
-                  Remove
+                  {removeLabel}
                 </button>
               </div>
             </motion.div>
@@ -116,9 +132,7 @@ export default function PhotoDropzone({
               ) : (
                 <ImagePlus className="h-6 w-6" aria-hidden="true" />
               )}
-              <span className="text-sm font-medium">
-                {isBusy ? "Adding your photo..." : "Drag a photo here, or click to browse"}
-              </span>
+              <span className="text-sm font-medium">{isBusy ? busyHint : dropHint}</span>
             </motion.button>
           )}
         </AnimatePresence>

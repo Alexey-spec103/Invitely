@@ -17,6 +17,7 @@ import {
   Type,
   Pencil,
   Sliders,
+  BadgeCheck,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InvitelyLogo from "@/components/InvitelyLogo";
@@ -46,7 +47,7 @@ const fontCount = CANVAS_FONTS.length;
 // (indexed positionally against these arrays, built inside Home() once
 // `t` is resolved) since it depends on the request's locale, not something
 // module-level constants can hold.
-const HERO_CHECKLIST_ICONS = [Palette, Wand2, ClipboardCheck, Printer];
+const HERO_CHECKLIST_ICONS = [BadgeCheck, Palette, Wand2, ClipboardCheck, Printer];
 const CONSTRUCTOR_FEATURE_ICONS = [Type, Palette, Wand2, Pencil, Printer, Sliders];
 const MODULE_ICONS = [Wand2, Sparkles, Mail, Clock, MapPin, ClipboardCheck, Timer, MessagesSquare, Video, Printer, Users2, Globe];
 
@@ -56,11 +57,10 @@ const MODULE_ICONS = [Wand2, Sparkles, Mail, Clock, MapPin, ClipboardCheck, Time
 // this shows only what a tier newly adds. Derived from the same `plans`
 // data (not a second copy) so it can't drift out of sync.
 //
-// Falls back to the unfiltered list (keeping "Everything in Basic") when
-// filtering would leave nothing -- Premium currently adds no feature of its
-// own on top of Basic (watermark removal moved there, see lib/plans.ts),
-// and an empty "WHAT THIS ADDS" list reads as broken, not "nothing new."
-// TODO: give Premium a real differentiator and drop this fallback.
+// Falls back to the unfiltered list (keeping "Everything in Basic") only as
+// a safety net if a tier's features are ever reduced to nothing but that
+// line again -- an empty "WHAT THIS ADDS" list reads as broken, not
+// "nothing new."
 const planHighlights: Record<string, string[]> = Object.fromEntries(
   Object.values(plans).map((plan) => {
     const added = plan.features.filter((feature) => !feature.startsWith("Everything in"));
@@ -93,10 +93,15 @@ export default async function Home() {
   const finalCtaLabel = user ? t.cta.primaryLoggedIn : t.cta.final;
 
   const heroChecklist = [
-    { icon: HERO_CHECKLIST_ICONS[0], text: t.hero.checklistThemes(themeCount) },
-    { icon: HERO_CHECKLIST_ICONS[1], text: t.hero.checklistFonts(fontCount) },
-    { icon: HERO_CHECKLIST_ICONS[2], text: t.hero.checklistRsvp },
-    { icon: HERO_CHECKLIST_ICONS[3], text: t.hero.checklistPaper },
+    // Competitor research (Zola, Joy): both lead their hero with "free," not
+    // leave it implicit until a visitor scrolls to pricing. This is the one
+    // checklist line that's true before any other choice is made, so it
+    // goes first.
+    { icon: HERO_CHECKLIST_ICONS[0], text: t.hero.checklistFree },
+    { icon: HERO_CHECKLIST_ICONS[1], text: t.hero.checklistThemes(themeCount) },
+    { icon: HERO_CHECKLIST_ICONS[2], text: t.hero.checklistFonts(fontCount) },
+    { icon: HERO_CHECKLIST_ICONS[3], text: t.hero.checklistRsvp },
+    { icon: HERO_CHECKLIST_ICONS[4], text: t.hero.checklistPaper },
   ];
 
   const statBar = [
@@ -119,16 +124,14 @@ export default async function Home() {
   }));
 
   // Factual, not promotional -- the free tier really is unlimited to use, and
-  // the only thing Basic actually adds beyond the module unlocks is removing
-  // the watermark from personalized/banquet materials (moved here from
-  // Premium, see lib/plans.ts's own comment) -- not an "unlocks paper
-  // invitations" claim, since those already work on every plan. No
-  // fabricated "-20%"-style discount badges either: unlike weddingpost.ru's
-  // pricing section, nothing here is ever actually discounted, so a
-  // strikethrough price would be a fake one.
+  // Premium's one real differentiator is removing the watermark from
+  // personalized/banquet materials once a host wants the printable kit for
+  // real. No fabricated "-20%"-style discount badges either: unlike
+  // weddingpost.ru's pricing section, nothing here is ever actually
+  // discounted, so a strikethrough price would be a fake one.
   const planBadges: Record<string, string> = {
     free: t.pricing.badgeFree,
-    basic: t.pricing.badgePremium,
+    premium: t.pricing.badgePremium,
   };
 
   return (
@@ -191,8 +194,31 @@ export default async function Home() {
         </header>
       </div>
 
-      <section className="overflow-hidden bg-gradient-to-b from-orange-50 via-orange-50 to-white">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 sm:py-20 lg:grid-cols-2 lg:py-24">
+      <section className="relative isolate overflow-hidden bg-gradient-to-b from-orange-50 via-orange-50 to-white">
+        {/* Round 5: replaces round 4's side-by-side phone+video card
+            entirely -- direct feedback: "что если видео как-то сделать на
+            заднем фоне полностью вообще? чтобы это было мило, не мешало
+            секции, было видно кольца и видео само" (what if the video
+            becomes the full background instead -- nice, doesn't interfere
+            with the section, the rings/video itself stay visible). Same
+            "full-bleed video + gradient scrim + real content on top"
+            pattern researched live against Framer.com/Apple's airpods-pro
+            hero earlier this session -- the video sits behind the ENTIRE
+            hero (text column and phone alike), never blurred into
+            unrecognizability (that was round 1/2's mistake), with only a
+            gradient scrim doing the legibility work. Heavier/more opaque
+            over the text column (a lot of body copy needs to read easily),
+            lighter toward the phone side so the footage itself stays
+            genuinely visible there, per "видно кольца" -- reversing this
+            would hide the video behind exactly the area meant to show it
+            off. */}
+        <AmbientVideoGlow
+          src="/marketing/hero-video/details-rings.mp4"
+          className="absolute inset-0 -z-10 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-orange-50 via-orange-50/75 to-orange-50/20" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-orange-50/40 via-transparent to-white/70" />
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 sm:py-20 lg:grid-cols-2 lg:py-24">
           <div>
             {/* landing-audit.md brand pass: the "Toast i" mark (champagne
                 flute) also lives in the header at 20px, small enough that
@@ -413,30 +439,35 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="landing-reveal relative isolate overflow-hidden border-t border-stone-100 bg-gradient-to-b from-white to-orange-50 py-24 text-center">
-        {/* Same ambient-glow-from-real-footage technique as the hero's
-            phone showcase (see AmbientVideoGlow's own comment), a different
-            clip so the page doesn't repeat the same imagery twice -- bookends
-            the page with real motion at open and close instead of only the
-            top. Heavily blurred/low-opacity, purely a color-and-motion wash
-            behind the centered text, never competing with it. */}
-        {/* Was blur-60/opacity-40 -- against this section's own white-to-
-            orange-50 gradient, the garden clip's own bright airy palette
-            blurred that hard just became more pale wash, effectively
-            invisible in practice (confirmed live, same issue as the hero's
-            glow). Lighter blur + higher opacity/saturation keeps it a real,
-            perceptible presence instead of disappearing into the bg. */}
-        <AmbientVideoGlow
-          src="/marketing/hero-video/details-garden-vertical.mp4"
-          className="pointer-events-none absolute inset-[-20%] -z-10 h-[140%] w-[140%] object-cover opacity-70 blur-[22px] saturate-[1.4] contrast-[1.1] motion-reduce:opacity-35"
-        />
-        <div className="mx-auto max-w-2xl px-6">
-          <h2 className="text-3xl font-semibold tracking-tight text-stone-900">{t.finalCta.heading}</h2>
-          <p className="mt-4 text-lg text-stone-600">{t.finalCta.subtext}</p>
-          <div className="mt-8">
-            <Link href={ctaHref} className="landing-cta px-8 py-3 text-base">
-              {finalCtaLabel}
-            </Link>
+      <section className="landing-reveal relative isolate overflow-hidden border-t border-stone-100 bg-gradient-to-b from-white to-orange-50 py-24">
+        {/* Round 2: a full-bleed blurred-past-recognition background here had
+            the same "нет нашего видео" problem as the hero's old ambient
+            glow -- and this clip is 9:16, so stretching/cropping it to fill
+            a wide landscape section ("h-[140%] w-[140%]") also chopped the
+            footage into something that read as broken/cut off
+            ("оборванное"), not intentional. A vertical clip belongs in a
+            vertical frame: a small tilted video card off to the side (same
+            "real object peeking in" idea as the hero's own video card,
+            phone, and paper stack) keeps its native 9:16 aspect intact and
+            stays sharp instead of smeared. */}
+        <div className="mx-auto grid max-w-4xl items-center gap-10 px-6 text-center md:grid-cols-[1fr_auto] md:text-left">
+          <div>
+            <h2 className="text-3xl font-semibold tracking-tight text-stone-900">{t.finalCta.heading}</h2>
+            <p className="mt-4 text-lg text-stone-600">{t.finalCta.subtext}</p>
+            <div className="mt-8">
+              <Link href={ctaHref} className="landing-cta px-8 py-3 text-base">
+                {finalCtaLabel}
+              </Link>
+            </div>
+          </div>
+          {/* Bumped from w-36/sm:w-44 -- direct feedback on the hero's own
+              video card applies here too: needs to read as a real,
+              phone/tablet-scale showcase item, not a small accent. */}
+          <div className="mx-auto w-52 shrink-0 -rotate-3 overflow-hidden rounded-2xl shadow-[0_24px_50px_-20px_rgba(60,40,20,0.35)] ring-4 ring-white sm:w-72">
+            <AmbientVideoGlow
+              src="/marketing/hero-video/details-garden-vertical.mp4"
+              className="aspect-[9/16] w-full object-cover saturate-[1.1]"
+            />
           </div>
         </div>
       </section>
@@ -522,8 +553,8 @@ export default async function Home() {
           </div>
           <div className="mt-12 flex flex-col gap-2 border-t border-stone-800 pt-6 text-sm text-stone-500 sm:flex-row sm:items-center sm:justify-between">
             <p>{t.footer.rightsReserved}</p>
-            <a href="mailto:support@invitely.app" className="transition-colors hover:text-stone-300">
-              support@invitely.app
+            <a href="mailto:support@invimbo.com" className="transition-colors hover:text-stone-300">
+              support@invimbo.com
             </a>
           </div>
         </div>

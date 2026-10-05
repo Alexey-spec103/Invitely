@@ -2,6 +2,7 @@ import { Document, Page, Text, Image, StyleSheet } from "@react-pdf/renderer";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import type { CanvasFrame, CanvasElement } from "@/lib/canvas/types";
 import { pdfBackgroundColor } from "@/lib/backgroundFills";
+import { canvasFontFamiliesFor } from "@/lib/canvas/fonts";
 
 export interface CanvasPdfDocumentProps {
   frames: CanvasFrame[];
@@ -22,7 +23,13 @@ export function collectFontFamilies(frames: CanvasFrame[]): string[] {
   for (const frame of frames) {
     for (const element of frame.elements) {
       if (element.type === "text") {
-        families.add(element.fontFamily);
+        // Also register each family's Cyrillic-capable fallback -- most of
+        // the curated catalog has zero Cyrillic glyphs in its own font file
+        // (see lib/canvas/fonts.ts), and unlike a browser, react-pdf only
+        // substitutes glyphs across the exact families it's told about via
+        // the Text style's fontFamily array below -- an unregistered
+        // fallback would just render missing Cyrillic glyphs as nothing.
+        canvasFontFamiliesFor(element.fontFamily).forEach((f) => families.add(f));
       }
     }
   }
@@ -116,7 +123,10 @@ export function CanvasPdfElement({ element }: { element: CanvasElement }) {
       <Text
         style={{
           ...positionStyle,
-          fontFamily: element.fontFamily,
+          // react-pdf picks, per glyph, the first family in this list that
+          // actually has it -- same per-character fallback a browser does
+          // automatically, which this needs to opt into explicitly.
+          fontFamily: canvasFontFamiliesFor(element.fontFamily),
           fontSize: element.fontSize * PDF_SCALE,
           fontWeight: element.fontWeight,
           color: element.color,

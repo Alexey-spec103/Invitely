@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { QrCode } from "lucide-react";
 import type { CanvasFrame, CanvasElement } from "@/lib/canvas/types";
-import { canvasFontStylesheetUrl } from "@/lib/canvas/fonts";
+import { canvasFontStylesheetUrl, canvasFontFamiliesFor, canvasFontFamilyCss } from "@/lib/canvas/fonts";
 import BackgroundLayer from "@/components/background/BackgroundLayer";
 import AnimatedCanvasElement from "./AnimatedCanvasElement";
 import styles from "./CanvasRenderer.module.css";
@@ -15,7 +15,11 @@ function collectFontFamilies(frames: CanvasFrame[]): string[] {
   for (const frame of frames) {
     for (const element of frame.elements) {
       if (element.type === "text") {
-        families.add(element.fontFamily);
+        // Also load each family's Cyrillic-capable fallback -- most of the
+        // curated catalog has zero Cyrillic glyphs of its own (see
+        // lib/canvas/fonts.ts), so the fallback stylesheet has to actually
+        // be loaded here too, not just named in the CSS font-family value.
+        canvasFontFamiliesFor(element.fontFamily).forEach((f) => families.add(f));
       }
     }
   }
@@ -86,7 +90,7 @@ function CanvasElementView({ element }: { element: CanvasElement }) {
           display: "block",
           width: "100%",
           height: "100%",
-          fontFamily: element.fontFamily,
+          fontFamily: canvasFontFamilyCss(element.fontFamily),
           fontSize: element.fontSize,
           fontWeight: element.fontWeight,
           color: element.color,
@@ -126,10 +130,13 @@ function CanvasElementView({ element }: { element: CanvasElement }) {
         }}
       />
     ) : (
-      // A live public canvas page has no per-guest context to resolve this
-      // against (that only exists for the print/PDF export -- see
-      // resolveCanvasQrElements), so it's a placeholder here too rather than
-      // a real, scannable code.
+      // The real guest-facing page (app/e/[slug]/page.tsx) now resolves every
+      // `qr` element into a real `image` element via resolveCanvasQrElements
+      // before frames ever reach this component, so a live site never
+      // actually renders this branch. It's kept as a real fallback (e.g. the
+      // throwaway /dev/canvas-seed preview, which skips that resolution step
+      // on purpose) rather than assuming every caller remembers to resolve
+      // first.
       <div
         style={{
           width: "100%",

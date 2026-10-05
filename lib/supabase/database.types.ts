@@ -59,6 +59,7 @@ export type Database = {
           id: string
           owner_id: string
           plan_id: string
+          rsvp_email_notifications: boolean
           site_password_enabled: boolean
           site_password_hash: string | null
           site_password_unlock_token: string | null
@@ -86,6 +87,7 @@ export type Database = {
           id?: string
           owner_id: string
           plan_id?: string
+          rsvp_email_notifications?: boolean
           site_password_enabled?: boolean
           site_password_hash?: string | null
           site_password_unlock_token?: string | null
@@ -113,6 +115,7 @@ export type Database = {
           id?: string
           owner_id?: string
           plan_id?: string
+          rsvp_email_notifications?: boolean
           site_password_enabled?: boolean
           site_password_hash?: string | null
           site_password_unlock_token?: string | null
@@ -449,6 +452,12 @@ export type Database = {
         Args: {
           p_event_id: string
           p_guest_id: string
+        }
+        Returns: string | null
+      }
+      get_event_owner_email_for_rsvp_notification: {
+        Args: {
+          p_event_id: string
         }
         Returns: string | null
       }

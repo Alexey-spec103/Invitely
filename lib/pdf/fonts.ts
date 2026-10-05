@@ -4,9 +4,25 @@ export type PdfFontFamily =
   | "Cormorant Garamond"
   | "Inter"
   | "Playfair Display"
-  | "Fraunces";
+  | "Fraunces"
+  | "Great Vibes";
 
 const FONT_FILES: Record<PdfFontFamily, { regular: string; bold: string }> = {
+  // Cormorant Garamond/Inter/Playfair Display are also the serif/sans-serif/
+  // display Cyrillic fallback targets lib/canvas/fonts.ts routes any
+  // non-Cyrillic-capable canvas font to -- these three (plus Great Vibes,
+  // the script fallback) are sourced from Google's actual variable-font
+  // files (github.com/google/fonts), not the usual legacy-Android-UA fetch
+  // this file's other font resolution relies on. Confirmed live: that
+  // legacy route -- and the original static files self-hosted through it --
+  // serve a Latin-only glyph set regardless of the family's real language
+  // support, so a Cyrillic codepoint resolved no glyph in ANY registered
+  // font and react-pdf/fontkit's fallback-of-last-resort produced visibly
+  // wrong glyphs (not even a blank box) instead of the intended character.
+  // Reusing one variable-font file for both weight slots means "bold" canvas
+  // text in these four families renders at the file's default instance
+  // weight rather than a true separate bold design -- a minor cosmetic
+  // tradeoff against actually having working Cyrillic glyphs at all.
   "Cormorant Garamond": {
     regular: "/fonts/cormorant-garamond-400.ttf",
     bold: "/fonts/cormorant-garamond-600.ttf",
@@ -22,6 +38,13 @@ const FONT_FILES: Record<PdfFontFamily, { regular: string; bold: string }> = {
   Fraunces: {
     regular: "/fonts/fraunces-400.ttf",
     bold: "/fonts/fraunces-600.ttf",
+  },
+  // Not previously self-hosted at all -- lib/canvas/fonts.ts's script
+  // Cyrillic fallback, so it has to be genuinely Cyrillic-complete the same
+  // way the three above are.
+  "Great Vibes": {
+    regular: "/fonts/great-vibes-400.ttf",
+    bold: "/fonts/great-vibes-400.ttf",
   },
 };
 

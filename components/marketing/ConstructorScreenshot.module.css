@@ -4,13 +4,7 @@
   padding-bottom: 14%;
 }
 
-/* A real laptop screen is ~16:10 (this matches a MacBook's own panel), not
-   the source screenshot's raw 1568x463 (a wide 3-panel style
-   rail+canvas+layers capture) -- that ultra-wide ratio was previously used
-   as-is, which is what made the mockup read as an unnaturally flat, wide
-   slab instead of an actual device. `object-fit: cover` centers the crop,
-   keeping the canvas (the actual invitation design, the part worth reading)
-   fully in frame while trimming evenly off both side panels. */
+/* A real laptop screen is ~16:10 (this matches a MacBook's own panel). */
 .laptop {
   position: relative;
   width: 100%;
@@ -21,17 +15,30 @@
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: 10px 10px 0 0;
-  background: #000;
+  background: #fff;
   border: 10px solid #1a1a1a;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  container-type: inline-size;
 }
 
-.laptopImg {
+.laptopScaleWrap {
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
+  overflow: hidden;
+}
+
+.laptopScaleInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 375px;
+  transform-origin: top left;
+  /* `.laptopScreen`'s 16/10 aspect gives a ~234-content-px crop window (see
+     SiteOrPaperSection's identical case) -- -289px centers that window on
+     the 812px-tall watercolor-bloom content so the wreath+names land in
+     frame instead of a blank band. */
+  transform: scale(calc(100cqw / 375px)) translateY(-289px);
 }
 
 .laptopBase {
@@ -101,10 +108,12 @@
   left: 0;
   width: 375px;
   transform-origin: top left;
-  /* Same crop-compensation technique/value as HeroPhoneShowcase and
-     PlatformFanSection -- same theme + Hero variant, so the same offset
-     brings the vertically-centered content into view here too. */
-  transform: scale(calc(100cqw / 375px)) translateY(-40vh);
+  /* `.phone`'s box is `aspect-ratio: 375/750` -- same mismatch already found
+     and fixed in PlatformFanSection/SiteOrPaperSection's own `.phone`: the
+     shared -325px offset overshoots the 812px-tall content by 263px,
+     leaving blank space at the bottom. -31px centers the 750px window on
+     the 812px section instead. */
+  transform: scale(calc(100cqw / 375px)) translateY(-31px);
 }
 
 @media (max-width: 640px) {

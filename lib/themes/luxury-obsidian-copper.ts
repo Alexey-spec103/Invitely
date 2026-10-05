@@ -13,8 +13,8 @@ export const luxuryObsidianCopper: Theme = {
     "--theme-bg": "#14100E",
     "--theme-text": "#EFE7DE",
     "--theme-accent": "#B8703F",
-    "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
+    "--theme-font-heading": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

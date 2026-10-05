@@ -15,9 +15,9 @@ interface HowItWorksStepMeta {
 // UI, not something a guest reads).
 const STEP_META: HowItWorksStepMeta[] = [
   { number: "1", image: "/marketing/how-it-works-1.png", alt: "Invimbo's real Style tab: choosing a designer theme" },
-  { number: "2", image: "/marketing/how-it-works-2.png", alt: "Invimbo's real font picker, open in the canvas editor" },
-  { number: "3", image: "/marketing/how-it-works-3.png", alt: "Invimbo's real \"Add element\" modal: Text, Image, Video, and QR code" },
-  { number: "4", image: "/marketing/how-it-works-4.png", alt: "Invimbo's real module toggle, with the live countdown it controls" },
+  { number: "2", image: "/marketing/how-it-works-2.png", alt: "Invimbo's real Wedding data form: names, date, and venue" },
+  { number: "3", image: "/marketing/how-it-works-3.png", alt: "Invimbo's real module toggle, with the live countdown it controls" },
+  { number: "4", image: "/marketing/how-it-works-4.png", alt: "Invimbo's real invitation kit: paper cards and the live site link" },
 ];
 
 /** weddingpost.ru's "Как работает конструктор" -- the one dark section on an

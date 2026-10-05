@@ -12,8 +12,8 @@ export const minimalInk: Theme = {
     "--theme-bg": "#FFFFFF",
     "--theme-text": "#0A0A0A",
     "--theme-accent": "#0A0A0A",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
-    "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-heading": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
+    "--theme-font-body": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

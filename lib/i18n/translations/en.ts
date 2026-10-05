@@ -10,6 +10,8 @@
  * purpose -- `as const` would infer each string as its own literal type
  * (e.g. `"Menu"`), which makes every other locale's translated string a
  * type error instead of the plain `string` every translation actually is. */
+import type { EventTypeId } from "@/lib/eventTypes";
+
 export interface Dictionary {
   siteHeader: {
     menu: string;
@@ -20,6 +22,17 @@ export interface Dictionary {
     playMusic: string;
     pauseMusic: string;
     shareText: (eventTitle?: string) => string;
+  };
+  /** Shown only to the event's own owner, previewing their own unpublished
+   * draft by direct URL -- RLS (see supabase/migrations/
+   * 20260811120000_owner_events_policies.sql) means no anonymous guest can
+   * ever reach this page while unpublished at all (a real guest gets a plain
+   * 404 instead), so this isn't guest-facing copy. It exists because a host
+   * testing their own RSVP form before publishing got no warning that the
+   * submission wouldn't be saved until the error appeared after clicking
+   * submit -- confirmed live via dashboard-audit critique 2026-10-04. */
+  unpublishedPreview: {
+    message: string;
   };
   envelopeReveal: {
     tapToOpen: string;
@@ -104,6 +117,15 @@ export interface Dictionary {
     seatedAt: (tableName: string) => string;
     resultSeatedAt: (guestName: string, tableName: string) => string;
     resultNotFound: (guestName: string) => string;
+    /** Recognized on the guest list (or already identified via a personal
+     * invite link) but no table assigned yet -- the host just hasn't
+     * finished seating. Distinct from resultNotFound so this never reads as
+     * an error about a real, invited guest. */
+    resultNotSeatedYet: (guestName: string) => string;
+    /** Recognized on the guest list, but their own RSVP says they're not
+     * attending -- asking about a table for someone not coming would read
+     * as either a mistake or pressure to reconsider. */
+    resultNotAttending: (guestName: string) => string;
   };
   landing: {
     topBar: string;
@@ -115,6 +137,7 @@ export interface Dictionary {
       headline: string;
       accent: string;
       subtext: string;
+      checklistFree: string;
       checklistThemes: (themeCount: number) => string;
       checklistFonts: (fontCount: number) => string;
       checklistRsvp: string;
@@ -188,7 +211,15 @@ export interface Dictionary {
     previewBadge: string;
     eventTypeStep: { heading: string; subtext: string };
     styleStep: { heading: string; subtext: string };
-    photo: { label: string; help: string };
+    photo: {
+      label: string;
+      help: string;
+      dropHint: string;
+      busyHint: string;
+      changeLabel: string;
+      removeLabel: string;
+      errorFallback: string;
+    };
     validation: { pickEventType: string; pickStyle: string; enterName: string; enterDate: string };
     howItWorks: {
       toggleLabel: string;
@@ -197,6 +228,14 @@ export interface Dictionary {
       steps: { title: string; text: string }[];
     };
   };
+  /** lib/eventTypes.ts stays the source of truth for ids/icon/namesMode/
+   * seatingLabel/titleTemplate -- only the four fields a guest or host
+   * actually reads move here, resolved via lib/eventTypesLocalized.ts's
+   * getLocalizedEventType/getLocalizedEventTypeList rather than read off
+   * EVENT_TYPES directly. Record<EventTypeId, ...> makes a missing event
+   * type in any locale a compile error, same guarantee as every other key
+   * in this file. */
+  eventTypes: Record<EventTypeId, { label: string; namePrompts: string[]; dateLabel: string; heroEyebrow: string }>;
 }
 
 export const en: Dictionary = {
@@ -209,6 +248,9 @@ export const en: Dictionary = {
     playMusic: "Play music",
     pauseMusic: "Pause music",
     shareText: (eventTitle) => (eventTitle ? `You're invited: ${eventTitle}` : "You're invited!"),
+  },
+  unpublishedPreview: {
+    message: "👀 You're previewing this site — it isn't published yet, so RSVPs submitted here are just a test and won't be saved.",
   },
   envelopeReveal: {
     tapToOpen: "Tap to open",
@@ -276,7 +318,11 @@ export const en: Dictionary = {
     lookupFailedError: "Something went wrong. Please try again in a moment.",
     seatedAt: (tableName) => `You're seated at ${tableName}`,
     resultSeatedAt: (guestName, tableName) => `${guestName} is seated at ${tableName}`,
-    resultNotFound: (guestName) => `We couldn't find a table for "${guestName}" yet — check with the host.`,
+    resultNotFound: (guestName) =>
+      `We couldn't find "${guestName}" on the guest list — double-check the spelling, or ask the host.`,
+    resultNotSeatedYet: (guestName) => `Hi ${guestName} — you're on the list! Seating is still being finalized, check back soon.`,
+    resultNotAttending: (guestName) =>
+      `Looks like ${guestName} is marked as not attending — reach out to the host if that's not right.`,
   },
   landing: {
     topBar: "Visa / Mastercard / PayPal accepted · Instant delivery — send your invite link anywhere in the world",
@@ -295,6 +341,7 @@ export const en: Dictionary = {
       accent: "with a wow effect",
       subtext:
         "A beautiful event website, matching paper invitations, and guest seating — one style, everywhere your guests see it. Start from a designer theme, or drag your own together from a blank canvas.",
+      checklistFree: "Free to design — pay only if you want this exact link live",
       checklistThemes: (themeCount) => `${themeCount} designer themes — or build your own from a blank canvas`,
       checklistFonts: (fontCount) => `Drag anything, ${fontCount}+ fonts, any color you like`,
       checklistRsvp: "RSVP tracking with your own custom questions",
@@ -332,10 +379,10 @@ export const en: Dictionary = {
       ],
     },
     constructorSection: {
-      eyebrow: "The real constructor",
-      heading: "Not just a theme picker — a canvas",
+      eyebrow: "Designer themes",
+      heading: "Every theme is complete, out of the box",
       subtext: (fontCount) =>
-        `Pick a designer theme to start fast, then move anything: drag text and photos anywhere on the page, pick from ${fontCount}+ fonts, choose any color, layer elements front to back, and undo your way back if you change your mind. The exact design you build carries over to your printed invitations too.`,
+        `Pick a designer theme and it's already done — matching fonts, colors, and layout, ready to publish. Still want to change something? Any text, any color, any photo is yours to edit, from ${fontCount}+ fonts to your own palette. The exact design you choose carries over to your printed invitations too.`,
       features: [
         { title: "Curated fonts", description: "Script, serif, bold, or thin — swap the whole look with one click." },
         { title: "Any color you like", description: "Build your own palette to match your exact wedding colors." },
@@ -350,7 +397,7 @@ export const en: Dictionary = {
       subtext: "Everything below happens live, right in your browser — no downloads, nothing to learn.",
       steps: [
         {
-          title: "Customize your design",
+          title: "Choose your style",
           bullets: [
             "Pick from 100 designer themes, or start from a blank canvas",
             "Every theme comes fully color-coordinated, ready to use",
@@ -358,27 +405,27 @@ export const en: Dictionary = {
           ],
         },
         {
-          title: "Edit any text, your way",
+          title: "Enter your event details",
           bullets: [
-            "Choose from 149+ fonts, each one previewed in its own typeface",
-            "Change color, size, spacing, and alignment",
-            "Click any text on the canvas to edit it instantly",
+            "Names, date, venue — fill it in once",
+            "It carries through your site, invitations, and banquet cards",
+            "Edit any of it any time before or after you publish",
           ],
         },
         {
-          title: "Add photos, video, and more",
-          bullets: [
-            "Upload your own photos anywhere on the design",
-            "Add a video clip to bring your story to life",
-            "Drop in a QR code linking to your site, or a guest's own invite",
-          ],
-        },
-        {
-          title: "Turn modules on and off",
+          title: "Turn on the modules you need",
           bullets: [
             "Countdown, RSVP, gift wishes, dress code, and more",
             "Each one has its own on/off switch",
             "Only show guests what's relevant to your event",
+          ],
+        },
+        {
+          title: "Get your link and PDF papers",
+          bullets: [
+            "One link, live instantly — share it however guests actually check messages",
+            "Print-ready PDF invitations, envelopes, and banquet cards",
+            "Update anything later — everyone sees the latest version",
           ],
         },
       ],
@@ -387,7 +434,7 @@ export const en: Dictionary = {
       eyebrow: "Beyond the invitation",
       heading: "Send it anywhere, track every reply",
       subtext:
-        "Share your one link over WhatsApp, SMS, email, or however your guests actually check messages. Every RSVP flows straight back into your guest list — who's coming, who hasn't answered yet, and who you still need to invite.",
+        "Share your one link over WhatsApp, SMS, email, or however your guests actually check messages. Every RSVP flows straight back into your guest list — who's coming, who hasn't answered yet, and who you still need to invite. They don't need an account or an app to respond — just the link.",
     },
     siteOrPaper: {
       heading: "A website invitation, and/or paper",
@@ -468,7 +515,15 @@ export const en: Dictionary = {
     previewBadge: "Preview",
     eventTypeStep: { heading: "\u{1F389} What are you celebrating?", subtext: "This shapes the questions we ask next." },
     styleStep: { heading: "\u{1F3A8} Pick your style", subtext: "You can always change this or design your own later." },
-    photo: { label: "\u{1F4F7} Add a photo (optional)", help: "Shows up on your site's photo layouts — you can always add or change it later." },
+    photo: {
+      label: "\u{1F4F7} Add a photo (optional)",
+      help: "Shows up on your site's photo layouts — you can always add or change it later.",
+      dropHint: "Drag a photo here, or click to browse",
+      busyHint: "Adding your photo...",
+      changeLabel: "Change photo",
+      removeLabel: "Remove",
+      errorFallback: "Couldn't add that photo",
+    },
     validation: {
       pickEventType: "Pick an event type",
       pickStyle: "Pick a style",
@@ -484,6 +539,80 @@ export const en: Dictionary = {
         { title: "Add your details", text: "Names, date, a photo if you want one. That's it." },
         { title: "Share your site", text: "Get a live link guests can open on their phone." },
       ],
+    },
+  },
+  eventTypes: {
+    wedding: {
+      label: "Wedding",
+      namePrompts: ["First partner's name", "Second partner's name"],
+      dateLabel: "When's the big day?",
+      heroEyebrow: "We're getting married",
+    },
+    anniversary: {
+      label: "Anniversary",
+      namePrompts: ["First partner's name", "Second partner's name"],
+      dateLabel: "When's the celebration?",
+      heroEyebrow: "We're celebrating our anniversary",
+    },
+    engagement: {
+      label: "Engagement",
+      namePrompts: ["First partner's name", "Second partner's name"],
+      dateLabel: "When's the party?",
+      heroEyebrow: "We're engaged",
+    },
+    birthday: {
+      label: "Birthday",
+      namePrompts: ["Who's celebrating?"],
+      dateLabel: "When's the party?",
+      heroEyebrow: "It's a birthday celebration",
+    },
+    baby_shower: {
+      label: "Baby Shower",
+      namePrompts: ["Who's the shower for?"],
+      dateLabel: "When's the shower?",
+      heroEyebrow: "It's a baby shower",
+    },
+    kids_party: {
+      label: "Kids' Party",
+      namePrompts: ["Who's celebrating?"],
+      dateLabel: "When's the party?",
+      heroEyebrow: "It's a party",
+    },
+    quinceanera: {
+      label: "Quinceañera",
+      namePrompts: ["Who's celebrating?"],
+      dateLabel: "When's the celebration?",
+      heroEyebrow: "It's her Quinceañera",
+    },
+    graduation: {
+      label: "Graduation",
+      namePrompts: ["Who's graduating?"],
+      dateLabel: "When's the celebration?",
+      heroEyebrow: "It's a graduation celebration",
+    },
+    corporate: {
+      label: "Corporate Event",
+      namePrompts: ["What's the event called?"],
+      dateLabel: "When's the event?",
+      heroEyebrow: "You're invited",
+    },
+    holiday: {
+      label: "Holiday Party",
+      namePrompts: ["What's the event called?"],
+      dateLabel: "When's the event?",
+      heroEyebrow: "It's a holiday celebration",
+    },
+    retirement: {
+      label: "Retirement",
+      namePrompts: ["Who's retiring?"],
+      dateLabel: "When's the celebration?",
+      heroEyebrow: "It's a retirement celebration",
+    },
+    other: {
+      label: "Other",
+      namePrompts: ["What's the event called?"],
+      dateLabel: "When's the event?",
+      heroEyebrow: "You're invited",
     },
   },
 };

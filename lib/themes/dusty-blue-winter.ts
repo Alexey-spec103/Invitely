@@ -13,9 +13,9 @@ export const dustyBlueWinter: Theme = {
     "--theme-bg": "#E4E9ED",
     "--theme-text": "#26313D",
     "--theme-accent": "#5C7A99",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-fraunces), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-accent": "var(--font-fraunces), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-accent": "var(--font-fraunces), var(--font-cormorant-garamond), Georgia, serif",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

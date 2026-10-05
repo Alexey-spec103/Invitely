@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import type { RsvpSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
@@ -37,6 +37,17 @@ export default function SimpleForm({
   const [pending, setPending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // dashboard-audit critique 2026-10-04 (P1): the "fill in your name and
+  // attendance" error used to stay on screen, unexplained, even after the
+  // guest had already fixed both fields -- it only cleared on the next
+  // submit attempt. Clearing it as soon as the guest resumes editing either
+  // field matches heuristic 1 (visibility of system status) without needing
+  // per-field validity tracking.
+  useEffect(() => {
+    if (error) setError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guestName, attending]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -11,6 +11,9 @@ export const de: Dictionary = {
     pauseMusic: "Musik pausieren",
     shareText: (eventTitle) => (eventTitle ? `Du bist eingeladen: ${eventTitle}` : "Du bist eingeladen!"),
   },
+  unpublishedPreview: {
+    message: "👀 Du siehst dir eine Vorschau dieser Seite an — sie ist noch nicht veröffentlicht, daher sind hier gesendete Zusagen nur ein Test und werden nicht gespeichert.",
+  },
   envelopeReveal: {
     tapToOpen: "Zum Öffnen tippen",
     invitationFor: (guestName) => `Eine Einladung für ${guestName}`,
@@ -77,7 +80,12 @@ export const de: Dictionary = {
     lookupFailedError: "Etwas ist schiefgelaufen. Bitte versuche es gleich noch einmal.",
     seatedAt: (tableName) => `Du sitzt an ${tableName}`,
     resultSeatedAt: (guestName, tableName) => `${guestName} sitzt an ${tableName}`,
-    resultNotFound: (guestName) => `Wir konnten für „${guestName}" noch keinen Tisch finden — frag beim Gastgeber nach.`,
+    resultNotFound: (guestName) =>
+      `Wir konnten „${guestName}" nicht auf der Gästeliste finden — prüf die Schreibweise oder frag die Gastgeber.`,
+    resultNotSeatedYet: (guestName) =>
+      `Hallo ${guestName} — du stehst auf der Liste! Die Sitzordnung wird noch festgelegt, schau bald wieder vorbei.`,
+    resultNotAttending: (guestName) =>
+      `${guestName} scheint als „nicht teilnehmend" markiert zu sein — falls das ein Fehler ist, wende dich an die Gastgeber.`,
   },
   landing: {
     topBar: "Visa / Mastercard / PayPal werden akzeptiert · Sofortige Zustellung — versende deinen Einladungslink überallhin",
@@ -96,6 +104,7 @@ export const de: Dictionary = {
       accent: "mit Wow-Effekt",
       subtext:
         "Eine wunderschöne Event-Website, dazu passende Papiereinladungen und Sitzordnung — ein Stil, überall wo deine Gäste ihn sehen. Starte mit einem Designer-Theme oder gestalte alles frei auf einer leeren Fläche.",
+      checklistFree: "Kostenlos gestalten — zahle nur, wenn dieser Link live gehen soll",
       checklistThemes: (themeCount) => `${themeCount} Designer-Themes — oder gestalte dein eigenes auf einer leeren Fläche`,
       checklistFonts: (fontCount) => `Alles frei verschiebbar, ${fontCount}+ Schriftarten, jede Farbe, die du möchtest`,
       checklistRsvp: "Zusagen-Tracking mit eigenen Fragen",
@@ -188,7 +197,7 @@ export const de: Dictionary = {
       eyebrow: "Mehr als nur die Einladung",
       heading: "Überall versenden, jede Antwort verfolgen",
       subtext:
-        "Teile deinen einen Link über WhatsApp, SMS, E-Mail — wie auch immer deine Gäste Nachrichten wirklich lesen. Jede Zusage fließt direkt in deine Gästeliste zurück — wer kommt, wer noch nicht geantwortet hat, und wen du noch einladen musst.",
+        "Teile deinen einen Link über WhatsApp, SMS, E-Mail — wie auch immer deine Gäste Nachrichten wirklich lesen. Jede Zusage fließt direkt in deine Gästeliste zurück — wer kommt, wer noch nicht geantwortet hat, und wen du noch einladen musst. Für eine Antwort brauchen sie kein Konto und keine App — nur den Link.",
     },
     siteOrPaper: {
       heading: "Website-Einladung und/oder Papier",
@@ -269,7 +278,15 @@ export const de: Dictionary = {
     previewBadge: "Vorschau",
     eventTypeStep: { heading: "\u{1F389} Was feiert ihr?", subtext: "Das bestimmt, was wir als Nächstes fragen." },
     styleStep: { heading: "\u{1F3A8} Wähle deinen Stil", subtext: "Du kannst das jederzeit ändern oder später dein eigenes gestalten." },
-    photo: { label: "\u{1F4F7} Foto hinzufügen (optional)", help: "Erscheint in den Foto-Layouts deiner Website — du kannst es jederzeit hinzufügen oder ändern." },
+    photo: {
+      label: "\u{1F4F7} Foto hinzufügen (optional)",
+      help: "Erscheint in den Foto-Layouts deiner Website — du kannst es jederzeit hinzufügen oder ändern.",
+      dropHint: "Foto hierher ziehen oder klicken, um eins auszuwählen",
+      busyHint: "Foto wird hinzugefügt...",
+      changeLabel: "Foto ändern",
+      removeLabel: "Entfernen",
+      errorFallback: "Foto konnte nicht hinzugefügt werden",
+    },
     validation: {
       pickEventType: "Wähle einen Event-Typ",
       pickStyle: "Wähle einen Stil",
@@ -285,6 +302,80 @@ export const de: Dictionary = {
         { title: "Details hinzufügen", text: "Namen, Datum, ein Foto, wenn du willst. Das war's." },
         { title: "Website teilen", text: "Erhalte einen Live-Link, den Gäste auf dem Handy öffnen können." },
       ],
+    },
+  },
+  eventTypes: {
+    wedding: {
+      label: "Hochzeit",
+      namePrompts: ["Name des ersten Partners", "Name des zweiten Partners"],
+      dateLabel: "Wann ist der große Tag?",
+      heroEyebrow: "Wir heiraten",
+    },
+    anniversary: {
+      label: "Jubiläum",
+      namePrompts: ["Name des ersten Partners", "Name des zweiten Partners"],
+      dateLabel: "Wann ist die Feier?",
+      heroEyebrow: "Wir feiern unser Jubiläum",
+    },
+    engagement: {
+      label: "Verlobung",
+      namePrompts: ["Name des ersten Partners", "Name des zweiten Partners"],
+      dateLabel: "Wann ist die Feier?",
+      heroEyebrow: "Wir haben uns verlobt",
+    },
+    birthday: {
+      label: "Geburtstag",
+      namePrompts: ["Wer feiert?"],
+      dateLabel: "Wann ist die Feier?",
+      heroEyebrow: "Geburtstagsfeier",
+    },
+    baby_shower: {
+      label: "Babyparty",
+      namePrompts: ["Für wen ist die Babyparty?"],
+      dateLabel: "Wann ist die Babyparty?",
+      heroEyebrow: "Babyparty",
+    },
+    kids_party: {
+      label: "Kinderparty",
+      namePrompts: ["Wer feiert?"],
+      dateLabel: "Wann ist die Feier?",
+      heroEyebrow: "Es wird gefeiert",
+    },
+    quinceanera: {
+      label: "Quinceañera",
+      namePrompts: ["Wer feiert?"],
+      dateLabel: "Wann ist die Feier?",
+      heroEyebrow: "Ihre Quinceañera",
+    },
+    graduation: {
+      label: "Abschlussfeier",
+      namePrompts: ["Wer schließt ab?"],
+      dateLabel: "Wann ist die Feier?",
+      heroEyebrow: "Abschlussfeier",
+    },
+    corporate: {
+      label: "Firmenevent",
+      namePrompts: ["Wie heißt die Veranstaltung?"],
+      dateLabel: "Wann ist die Veranstaltung?",
+      heroEyebrow: "Du bist eingeladen",
+    },
+    holiday: {
+      label: "Feiertagsparty",
+      namePrompts: ["Wie heißt die Veranstaltung?"],
+      dateLabel: "Wann ist die Veranstaltung?",
+      heroEyebrow: "Es wird gefeiert",
+    },
+    retirement: {
+      label: "Ruhestand",
+      namePrompts: ["Wer geht in den Ruhestand?"],
+      dateLabel: "Wann ist die Feier?",
+      heroEyebrow: "Abschied in den Ruhestand",
+    },
+    other: {
+      label: "Sonstiges",
+      namePrompts: ["Wie heißt die Veranstaltung?"],
+      dateLabel: "Wann ist die Veranstaltung?",
+      heroEyebrow: "Du bist eingeladen",
     },
   },
 };

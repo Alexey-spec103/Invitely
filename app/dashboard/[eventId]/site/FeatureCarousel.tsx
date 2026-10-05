@@ -27,7 +27,7 @@ const FEATURES: FeatureCard[] = [
   {
     icon: QrCode,
     title: "A QR code on every invitation",
-    body: "Each guest's printed invite carries a unique code straight to their personal RSVP page.",
+    body: "Guests scan and land straight on their own RSVP page, name already filled in — nothing to type, nowhere to get lost.",
   },
   {
     icon: PenTool,
@@ -47,8 +47,8 @@ const FEATURES: FeatureCard[] = [
   },
   {
     icon: Globe,
-    title: "Bring your own domain",
-    body: "Point yourwedding.com at your site — we verify it's really yours, no hosting lock-in.",
+    title: "A nicer address for your site",
+    body: "Claim a free claire-and-nathaniel.invimbo.com address, or point a domain you already own at your site instead.",
   },
 ];
 

@@ -16,7 +16,7 @@ import LinkPreviewCard from "./LinkPreviewCard";
 import DomainEditForm from "./DomainEditForm";
 import PasswordProtectionCard from "./PasswordProtectionCard";
 import { getInviteDescription } from "@/lib/socialPreview";
-import { planMeets } from "@/lib/plans";
+import { planMeets, plans } from "@/lib/plans";
 import { HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import { LETTER_VARIANTS, DEFAULT_LETTER_VARIANT } from "@/components/sections/LetterSection";
@@ -38,6 +38,7 @@ import type { VideoVariant } from "@/components/sections/VideoSection";
 import { getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
 import { getWeddingDataCompleteness } from "@/lib/weddingData";
 import WeddingDataForm from "../WeddingDataForm";
+import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
 import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
 
 function extractStyleOverrides(content: Record<string, unknown>): Record<string, TextStyleOverride> | undefined {
@@ -52,8 +53,9 @@ function extractHiddenFields(content: Record<string, unknown>): string[] | undef
   return Array.isArray(hidden) ? (hidden as string[]) : undefined;
 }
 
-export default async function SitePage({ params }: PageProps<"/dashboard/[eventId]/site">) {
+export default async function SitePage({ params, searchParams }: PageProps<"/dashboard/[eventId]/site">) {
   const { eventId } = await params;
+  const { checkout } = await searchParams;
   const user = await getAuthedUser();
 
   if (!user) {
@@ -65,6 +67,8 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
   if (!event) {
     redirect("/dashboard");
   }
+
+  const locale = await resolveGuestLocale();
 
   const supabase = await createClient();
   const { data: siteConfig } = await supabase
@@ -114,10 +118,20 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
   };
   const letterEnabled = letterSection?.enabled ?? false;
 
-  const timelineContent =
-    typeof content.timeline === "object" && content.timeline !== null
-      ? (content.timeline as Record<string, unknown>)
-      : {};
+  const timelineContentExists = typeof content.timeline === "object" && content.timeline !== null;
+  const timelineContent = timelineContentExists ? (content.timeline as Record<string, unknown>) : {};
+  // Direct feedback: a brand-new Timeline started from a blank "no events
+  // yet" state, so a host had to already know to click "+ Add event" before
+  // there was anything to edit -- the section just read as unfinished.
+  // Dashboard-editor-only default: one example event, already there to edit
+  // or delete, so the section looks filled in from the first click instead
+  // of empty. Only applies when `content.timeline` has genuinely never been
+  // saved -- an explicitly-saved empty `events: []` (a host who added then
+  // deleted every event) is a real choice and stays empty, not re-seeded.
+  // Never touches the DB or the public site's own render path
+  // (sectionWillRender/renderSection in registry.tsx read straight from
+  // stored content, independent of this dashboard-display fallback) -- an
+  // untouched example only ever appears here, in the editor.
   const timelineEvents = Array.isArray(timelineContent.events)
     ? timelineContent.events
         .filter(
@@ -128,7 +142,9 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
           title: typeof item.title === "string" ? item.title : "",
           description: typeof item.description === "string" ? item.description : "",
         }))
-    : [];
+    : timelineContentExists
+      ? []
+      : [{ time: "4:00 PM", title: "New event", description: "" }];
   const timelineSection = siteConfig
     ? parseSections(siteConfig.sections).find((section) => section.type === "timeline")
     : undefined;
@@ -365,6 +381,21 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
     hiddenFields: extractHiddenFields(banquetNavigatorContent),
   };
 
+  const guestNotesSection = siteConfig
+    ? parseSections(siteConfig.sections).find((section) => section.type === "guestNotes")
+    : undefined;
+  const guestNotesContent =
+    typeof content.guestNotes === "object" && content.guestNotes !== null
+      ? (content.guestNotes as Record<string, unknown>)
+      : {};
+  const guestNotesEnabled = guestNotesSection?.enabled ?? false;
+  const guestNotesDefaultValues = {
+    title: typeof guestNotesContent.title === "string" ? guestNotesContent.title : "Good to know",
+    body: typeof guestNotesContent.body === "string" ? guestNotesContent.body : "",
+    styleOverrides: extractStyleOverrides(guestNotesContent),
+    hiddenFields: extractHiddenFields(guestNotesContent),
+  };
+
   const settingsContent =
     typeof content.settings === "object" && content.settings !== null
       ? (content.settings as Record<string, unknown>)
@@ -405,7 +436,11 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
   };
 
   return (
-    <div className="-mx-4 -my-6 min-h-[calc(100vh-73px)] bg-[var(--dash-bg)] px-4 py-6 text-[var(--dash-text)] sm:-mx-10 sm:-my-10 sm:px-10 sm:py-10">
+    <div
+      className={`-mx-4 -my-6 min-h-[calc(100vh-73px)] bg-[var(--dash-bg)] px-4 py-6 text-[var(--dash-text)] sm:-mx-10 sm:-my-10 sm:px-10 sm:py-10 ${
+        hasBasicAccess ? "" : "pb-24"
+      }`}
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="dash-h1 text-[var(--dash-text)]">Site</h1>
         <Link
@@ -415,6 +450,48 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
           🎨 Free canvas
         </Link>
       </div>
+
+      {/* Direct feedback: checkout redirected back to /plan, which has no
+          link on it at all -- a host who'd just paid landed on a page with
+          nothing to show for it. success_url (plan/actions.ts) now points
+          here instead, where the real link and the domain-claim card
+          already live, so "I paid, now what" resolves on arrival.
+          Gated on hasBasicAccess (not just the query param) -- the plan
+          upgrade itself only happens when Stripe's webhook
+          (app/api/stripe/webhook/route.ts) fires and updates plan_id, which
+          is a separate, async, server-to-server call that can lag behind
+          (or, in local dev with no `stripe listen` forwarding configured,
+          never arrive at all) the browser's redirect back here. Showing
+          "Payment received" unconditionally off the query param alone told
+          a host their link was ready even when the DB write never landed --
+          indistinguishable from a real failure from their side. */}
+      {checkout === "success" &&
+        (hasBasicAccess ? (
+          <div className="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5">
+            <p className="text-base font-bold text-emerald-900">🎉 Payment received — your link is ready.</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <a
+                href={`/e/${event.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="dash-btn dash-btn-primary"
+              >
+                Open your link →
+              </a>
+              <a href="#custom-domain-card" className="text-sm font-semibold text-emerald-800 underline">
+                Or claim a nicer address (yourname.invimbo.com)
+              </a>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5">
+            <p className="text-base font-bold text-amber-900">⏳ Confirming your payment…</p>
+            <p className="mt-1 text-sm text-amber-800">
+              Stripe is finishing up — this page will unlock automatically in a few seconds. If it doesn&apos;t,
+              refresh, or contact support if your card was charged and this still doesn&apos;t update.
+            </p>
+          </div>
+        ))}
 
       <FeatureCarousel />
 
@@ -426,8 +503,8 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
             body: "Everything here saves itself as you type — there's no Save button to remember.",
           },
           {
-            title: "🎨 Try a different layout",
-            body: "Open the 💌 The essentials card and click through any of the 17 layouts — each one is a live preview using your own theme.",
+            title: "✏️ Click any text to edit it",
+            body: "No separate editor-vs-preview split — click straight on a name, date, or line of copy on the live page below and start typing.",
           },
           {
             title: "📷 Add your photos",
@@ -435,11 +512,18 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
           },
           {
             title: "🧩 Turn modules on or off",
-            body: "Countdown, RSVP, gift wishes, dress code and more each have their own on/off switch inside their card.",
+            // dashboard-audit critique 2026-10-04 (onboarding-tour spotlight):
+            // was "...inside their card," a leftover from the old per-module
+            // ModuleCard scheme this panel replaced -- every toggle already
+            // lives right here, so this step now rings-highlights the panel
+            // itself instead of describing a layout that no longer exists.
+            body: "Countdown, RSVP, gift wishes, dress code and more — each has its own on/off switch right here.",
+            targetSelector: "#site-modules-panel",
           },
           {
             title: "🔎 Can't find something?",
-            body: "Open Editable blocks below the preview — it lists every text and photo on your site, grouped by section, so you can jump straight to it.",
+            body: "Editable blocks (below the preview) lists every text and photo on your site, grouped by section, so you can jump straight to it.",
+            targetSelector: "#editable-blocks-panel",
           },
         ]}
       />
@@ -491,7 +575,7 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
           <p className="mb-3 text-xs text-[var(--dash-text-muted)]">
             Names, date & venue — used across your site and paper set.
           </p>
-          <WeddingDataForm eventId={event.id} eventType={event.event_type} defaultValues={weddingDataDefaultValues} />
+          <WeddingDataForm eventId={event.id} eventType={event.event_type} defaultValues={weddingDataDefaultValues} locale={locale} />
         </ModuleCard>
 
         {/* dashboard-audit.md B14: weddingpost.ru's own "quick settings" row
@@ -552,6 +636,8 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
           <DomainEditForm
             eventId={event.id}
             hasBasicAccess={hasBasicAccess}
+            suggestedSubdomain={event.slug}
+            appDomain={process.env.NEXT_PUBLIC_APP_DOMAIN ?? "invimbo.com"}
             defaultValues={{
               customDomain: event.custom_domain ?? "",
               verificationToken: event.custom_domain_verification_token,
@@ -571,7 +657,11 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
           скроллбаром") and deleting the old iframe column outright, not
           keeping both in sync. No URL bar here on purpose -- that's A5's
           domain-placeholder work, not this one. */}
-      <div id="site-editor-preview" className="mt-6 flex scroll-mt-6 flex-col items-center lg:sticky lg:top-6 lg:mt-0">
+      {/* DashboardShell's own header is now `sticky top-0` (73px tall --
+          matches this page's own `calc(100vh-73px)` constant below) -- this
+          panel's sticky offset has to clear it, or the header would sit on
+          top of the preview's own top edge instead of above it. */}
+      <div id="site-editor-preview" className="mt-6 flex scroll-mt-6 flex-col items-center lg:sticky lg:top-[97px] lg:mt-0">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
           Site editor — click any text to edit it in place
         </p>
@@ -585,6 +675,7 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
         <div className="mx-auto w-full">
             <SiteInlineEditor
               eventId={event.id}
+              hasBasicAccess={hasBasicAccess}
               theme={theme}
               heroVariant={heroVariant}
               heroPhotoUrl={heroPhotoUrl}
@@ -624,6 +715,7 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
                 values: banquetNavigatorDefaultValues,
                 seatingLabel: getEventType(event.event_type).seatingLabel,
               }}
+              guestNotes={{ enabled: guestNotesEnabled, values: guestNotesDefaultValues }}
               allSections={allSections}
             />
         </div>
@@ -645,6 +737,28 @@ export default async function SitePage({ params }: PageProps<"/dashboard/[eventI
       </div>
       </div>
 
+      {/* Direct feedback: wanted the pay CTA pinned both top (header's
+          PlanBadge, now sticky) AND bottom -- a host scrolled deep into a
+          long constructor page shouldn't have to scroll all the way back
+          down (or up) to find it. `fixed` rather than `sticky`: this button
+          used to live inside the right-hand preview column, but that column
+          isn't reliably the page's own scroll container at every
+          breakpoint, so `fixed` pins it to the viewport itself regardless.
+          Hidden once already on Basic+ (nothing left to sell here).
+          "Get your link" -- phrased identically to DashboardShell's new,
+          plan-independent "Copy your link" button -- read as payment being
+          required for a link at all, when Free publishing was never gated
+          on it. "Remove the badge" names the thing Basic actually changes. */}
+      {!hasBasicAccess && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-3 shadow-[0_-8px_24px_rgba(0,0,0,0.12)] sm:px-10">
+          <Link
+            href={`/dashboard/${event.id}/plan`}
+            className="mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-[var(--dash-accent)] px-4 py-2.5 text-sm font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)]"
+          >
+            Happy with it? Remove the badge — €{plans.basic.priceEur}
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

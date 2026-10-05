@@ -9,6 +9,13 @@ interface DeleteEventSectionProps {
 }
 
 export default function DeleteEventSection({ eventId, eventTitle }: DeleteEventSectionProps) {
+  // impeccable critique: this card used to sit fully exposed, immediately
+  // below the payment card in the same continuous scroll -- a host
+  // rechecking pricing after a declined card scrolls straight past a live
+  // delete button. Collapsed behind its own disclosure now, so reaching the
+  // actual button takes one deliberate click to begin with, on top of the
+  // typed-name confirmation it already required.
+  const [expanded, setExpanded] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [typedTitle, setTypedTitle] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -27,6 +34,20 @@ export default function DeleteEventSection({ eventId, eventTitle }: DeleteEventS
       setIsDeleting(false);
     }
   };
+
+  if (!expanded) {
+    return (
+      <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-6">
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="text-sm font-medium text-gray-400 underline decoration-dotted hover:text-red-700"
+        >
+          Danger zone — delete this event
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-10 rounded-2xl border border-red-200 bg-red-50 p-6">

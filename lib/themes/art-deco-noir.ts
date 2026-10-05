@@ -13,9 +13,9 @@ export const artDecoNoir: Theme = {
     "--theme-bg": "#0D0D0D",
     "--theme-text": "#F0EAE0",
     "--theme-accent": "#D4AF37",
-    "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
+    "--theme-font-heading": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-accent": "var(--font-cinzel), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-accent": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

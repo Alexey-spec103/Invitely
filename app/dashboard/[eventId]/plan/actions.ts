@@ -115,7 +115,10 @@ export async function createCheckoutSession(
       eventId: event.id,
       planId: plan.id,
     },
-    success_url: `${origin}/dashboard/${event.id}/plan?checkout=success`,
+    // Lands back on Site, not Plan -- that's where the actual link/domain-
+    // claim UI (DomainEditForm) lives, so "I paid, now what" resolves to
+    // "here's your link" in one landing rather than a second navigation.
+    success_url: `${origin}/dashboard/${event.id}/site?checkout=success`,
     cancel_url: `${origin}/dashboard/${event.id}/plan?checkout=cancelled`,
   });
 

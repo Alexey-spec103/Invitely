@@ -16,7 +16,7 @@ export const bohoLavenderFields: Theme = {
     // below the 3:1 floor even for large/decorative text. Deepened within the
     // same hue and saturation (not re-picked), now passes 3.08:1.
     "--theme-accent": "#997CAE",
-    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

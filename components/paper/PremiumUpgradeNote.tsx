@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { plans } from "@/lib/plans";
 
 interface PremiumUpgradeNoteProps {
   eventId: string;
@@ -10,20 +11,30 @@ interface PremiumUpgradeNoteProps {
  * badges). Kept in one place so the wording can't drift between the
  * Seating, Paper, and Invitations tabs.
  *
- * Watermark removal moved from Premium to Basic -- printable materials are
- * the natural "I want the real thing" purchase moment, so that's the gate
- * now. */
+ * Watermark-free printable materials are a Premium feature -- Basic covers
+ * the digital site only. */
 export default function PremiumUpgradeNote({ eventId }: PremiumUpgradeNoteProps) {
+  // Direct feedback: this used to be a tiny gray caption (text-xs
+  // text-gray-500) sitting quietly next to the material -- easy to miss
+  // entirely, which meant a host could believe a watermarked download was
+  // free until they actually opened the PDF. Money-related gating needs to
+  // be impossible to miss, not a footnote -- same bold/bordered treatment
+  // as the Free-plan watermark preview on the Plan page.
   return (
-    <p className="text-xs text-gray-500">
-      🔒 Downloads with a watermark on the Free plan.{" "}
-      <Link
-        href={`/dashboard/${eventId}/plan`}
-        className="font-medium text-[var(--dash-accent)] underline underline-offset-2"
-      >
-        Upgrade to Basic
-      </Link>{" "}
-      to remove it.
-    </p>
+    <div className="flex items-center gap-2 rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3">
+      <span className="text-xl" aria-hidden="true">
+        🔒
+      </span>
+      <p className="text-sm font-bold text-amber-900">
+        This is a paid feature — downloads with a watermark on Free and Basic.{" "}
+        <Link
+          href={`/dashboard/${eventId}/plan`}
+          className="underline decoration-2 underline-offset-2 hover:text-amber-700"
+        >
+          Upgrade to Premium (€{plans.premium.priceEur})
+        </Link>{" "}
+        to remove it.
+      </p>
+    </div>
   );
 }

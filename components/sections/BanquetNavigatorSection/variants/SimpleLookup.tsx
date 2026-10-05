@@ -12,6 +12,7 @@ export default function SimpleLookup({
   title,
   description,
   assignedTableName,
+  knownGuestName,
   onLookup,
   styleOverrides,
   locale,
@@ -20,7 +21,19 @@ export default function SimpleLookup({
   const t = getDictionary(locale).banquetNavigator;
   const [name, setName] = useState("");
   const [pending, setPending] = useState(false);
-  const [result, setResult] = useState<{ tableName: string | null; searchedFor: string } | null>(null);
+  // Direct feedback: `found: false` (never on the list -- likely a typo) and
+  // `found: true, tableName: null` (a real, recognized guest whose host just
+  // hasn't finished seating yet) both used to collapse into the exact same
+  // "couldn't find a table" message -- alarming for the second case, which
+  // is the common one early in planning. The lookup RPC already returns
+  // `found`/`attending` distinctly (see the 20260818130000 migration); this
+  // just finally reads them instead of only ever checking `tableName`.
+  const [result, setResult] = useState<{
+    searchedFor: string;
+    found: boolean;
+    tableName: string | null;
+    attending: boolean | null;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -33,7 +46,12 @@ export default function SimpleLookup({
     setPending(true);
     try {
       const outcome = await onLookup(name.trim());
-      setResult({ tableName: outcome.found ? outcome.tableName : null, searchedFor: name.trim() });
+      setResult({
+        searchedFor: name.trim(),
+        found: outcome.found,
+        tableName: outcome.tableName,
+        attending: outcome.attending,
+      });
     } catch {
       setError(t.lookupFailedError);
     } finally {
@@ -57,6 +75,8 @@ export default function SimpleLookup({
 
         {assignedTableName ? (
           <p className={styles.tableAnswer}>{t.seatedAt(assignedTableName)}</p>
+        ) : knownGuestName ? (
+          <p className={styles.tableAnswer}>{t.resultNotSeatedYet(knownGuestName)}</p>
         ) : (
           <>
             <form className={styles.form} onSubmit={handleSubmit}>
@@ -75,7 +95,13 @@ export default function SimpleLookup({
             {error && <p className={styles.error}>{error}</p>}
             {result && (
               <p className={styles.tableAnswer}>
-                {result.tableName ? t.resultSeatedAt(result.searchedFor, result.tableName) : t.resultNotFound(result.searchedFor)}
+                {!result.found
+                  ? t.resultNotFound(result.searchedFor)
+                  : result.tableName
+                    ? t.resultSeatedAt(result.searchedFor, result.tableName)
+                    : result.attending === false
+                      ? t.resultNotAttending(result.searchedFor)
+                      : t.resultNotSeatedYet(result.searchedFor)}
               </p>
             )}
           </>

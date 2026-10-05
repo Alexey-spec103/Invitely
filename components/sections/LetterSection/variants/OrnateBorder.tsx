@@ -6,6 +6,7 @@ import { LOCALE_TO_BCP47 } from "@/lib/i18n/locales";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import StaggerReveal from "@/components/StaggerReveal";
 import styles from "./OrnateBorder.module.css";
 
 function formatDeadline(isoDate: string, locale: Locale) {
@@ -30,6 +31,65 @@ export default function OrnateBorder({
 }: LetterSectionVariantProps) {
   const t = getDictionary(locale).letter;
   const { editable } = useEditableField();
+  // Same array + StaggerReveal approach as CenteredCard -- the four corner
+  // flourish spans stay outside the array (purely decorative, same as
+  // CenteredCard's own corner flourishes).
+  const fields = [
+    <h2 key="title" className={styles.title}>
+      <EditableText
+        field="title"
+        value={title}
+        style={styleOverrides?.["title"]}
+        placeholder="Write a title for your letter…"
+      />
+    </h2>,
+    <p key="body" className={styles.body}>
+      <EditableText
+        field="body"
+        value={body}
+        style={styleOverrides?.["body"]}
+        placeholder="Write a welcome message to your guests…"
+      />
+    </p>,
+    // Always mounted, decorative quote marks conditional -- same
+    // dashboard-audit.md #4 fix already applied to CenteredCard, so a
+    // host can still click in to write a first quote from empty.
+    <p key="quote" className={styles.quote}>
+      {quote && "“"}
+      <EditableText
+        field="quote"
+        value={quote}
+        style={styleOverrides?.["quote"]}
+        placeholder="Add a quote (optional)…"
+      />
+      {quote && "”"}
+    </p>,
+    (note || editable) && (
+      <p key="note" className={styles.note}>
+        <EditableText
+          field="note"
+          value={note ?? ""}
+          style={styleOverrides?.["note"]}
+          placeholder="A short extra note (optional)…"
+        />
+      </p>
+    ),
+    rsvpDeadline && isDeadlineUpcoming(rsvpDeadline) && (
+      <p key="deadline" className={styles.deadline}>
+        {t.confirmBy(formatDeadline(rsvpDeadline, locale))}
+      </p>
+    ),
+    (closingLine || editable) && (
+      <p key="closingLine" className={styles.closingLine}>
+        <EditableText
+          field="closingLine"
+          value={closingLine ?? ""}
+          style={styleOverrides?.["closingLine"]}
+          placeholder="Sign off — e.g. “With love, the two of us”…"
+        />
+      </p>
+    ),
+  ];
   return (
     <section className={styles.section}>
       <div className={styles.frame}>
@@ -38,58 +98,7 @@ export default function OrnateBorder({
         <span className={styles.flourish} data-pos="bl" aria-hidden="true" />
         <span className={styles.flourish} data-pos="br" aria-hidden="true" />
         <div className={styles.inner}>
-          <h2 className={styles.title}>
-            <EditableText
-              field="title"
-              value={title}
-              style={styleOverrides?.["title"]}
-              placeholder="Write a title for your letter…"
-            />
-          </h2>
-          <p className={styles.body}>
-            <EditableText
-              field="body"
-              value={body}
-              style={styleOverrides?.["body"]}
-              placeholder="Write a welcome message to your guests…"
-            />
-          </p>
-          {/* Always mounted, decorative quote marks conditional -- same
-              dashboard-audit.md #4 fix already applied to CenteredCard, so a
-              host can still click in to write a first quote from empty. */}
-          <p className={styles.quote}>
-            {quote && "“"}
-            <EditableText
-              field="quote"
-              value={quote}
-              style={styleOverrides?.["quote"]}
-              placeholder="Add a quote (optional)…"
-            />
-            {quote && "”"}
-          </p>
-          {(note || editable) && (
-            <p className={styles.note}>
-              <EditableText
-                field="note"
-                value={note ?? ""}
-                style={styleOverrides?.["note"]}
-                placeholder="A short extra note (optional)…"
-              />
-            </p>
-          )}
-          {rsvpDeadline && isDeadlineUpcoming(rsvpDeadline) && (
-            <p className={styles.deadline}>{t.confirmBy(formatDeadline(rsvpDeadline, locale))}</p>
-          )}
-          {(closingLine || editable) && (
-            <p className={styles.closingLine}>
-              <EditableText
-                field="closingLine"
-                value={closingLine ?? ""}
-                style={styleOverrides?.["closingLine"]}
-                placeholder="Sign off — e.g. “With love, the two of us”…"
-              />
-            </p>
-          )}
+          {editable ? fields : <StaggerReveal staggerDelay={0.1}>{fields}</StaggerReveal>}
         </div>
       </div>
     </section>

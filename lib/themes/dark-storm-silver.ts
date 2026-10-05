@@ -12,8 +12,8 @@ export const darkStormSilver: Theme = {
     "--theme-bg": "#14171C",
     "--theme-text": "#E6E9EC",
     "--theme-accent": "#9AA6B2",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

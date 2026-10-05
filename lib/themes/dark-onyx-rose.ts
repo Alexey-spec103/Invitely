@@ -13,9 +13,9 @@ export const darkOnyxRose: Theme = {
     "--theme-bg": "#17141A",
     "--theme-text": "#EDE6E0",
     "--theme-accent": "#C97B92",
-    "--theme-font-heading": "var(--font-bodoni-moda), Georgia, serif",
-    "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-bodoni-moda), var(--font-cormorant-garamond), Georgia, serif",
+    "--theme-font-body": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

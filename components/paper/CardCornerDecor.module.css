@@ -6,21 +6,31 @@
    PaperConstructor, matching every text field in these same components. */
 .topLeft {
   composes: cornerEdgeTopLeft from "../sections/decorAnchors.module.css";
-  --decor-size: clamp(1.75rem, 16cqw, 3rem);
+  /* Minimum lowered from 1.75rem: PlatformFanSection's landing-page "fan"
+     thumbnails render these cards well under the ~175px width where 16cqw
+     alone would exceed 1.75rem, so the old floor kept the decor pinned at a
+     fixed 28px regardless of how small the card actually got -- confirmed
+     live, this covered the "D" in "Dress Code" and the "Bennett" surname on
+     the place card. The real paper editor and PDF exports render these
+     cards well above 175px wide, so 16cqw governs there either way -- this
+     floor never applied to them and lowering it doesn't change their size. */
+  --decor-size: clamp(0.9rem, 16cqw, 3rem);
   --decor-edge-offset: clamp(0.35rem, 3cqw, 0.65rem);
 }
 
 .bottomRight {
   composes: cornerEdgeBottomRight from "../sections/decorAnchors.module.css";
-  --decor-size: clamp(1.75rem, 16cqw, 3rem);
+  /* Same lowered minimum as .topLeft above. */
+  --decor-size: clamp(0.9rem, 16cqw, 3rem);
   --decor-edge-offset: clamp(0.35rem, 3cqw, 0.65rem);
 }
 
 .topLeftMask,
 .bottomRightMask {
   position: absolute;
-  width: clamp(1.75rem, 16cqw, 3rem);
-  height: clamp(1.75rem, 16cqw, 3rem);
+  /* Same lowered minimum as .topLeft/.bottomRight above. */
+  width: clamp(0.9rem, 16cqw, 3rem);
+  height: clamp(0.9rem, 16cqw, 3rem);
   background-color: var(--theme-accent);
   opacity: 0.55;
   mask-repeat: no-repeat;

@@ -12,8 +12,8 @@ export const vintageSepiaLace: Theme = {
     "--theme-bg": "#F1E7D8",
     "--theme-text": "#4A3B2E",
     "--theme-accent": "#9B7653",
-    "--theme-font-heading": "var(--font-libre-baskerville), Georgia, serif",
+    "--theme-font-heading": "var(--font-libre-baskerville), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

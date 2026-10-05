@@ -11,8 +11,8 @@ export const cosmicObsidianStarlight: Theme = {
     "--theme-bg": "#0A0A0C",
     "--theme-text": "#F0EFEC",
     "--theme-accent": "#C7C9D3",
-    "--theme-font-heading": "var(--font-bodoni-moda), Georgia, serif",
+    "--theme-font-heading": "var(--font-bodoni-moda), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

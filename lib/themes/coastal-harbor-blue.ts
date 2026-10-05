@@ -12,8 +12,8 @@ export const coastalHarborBlue: Theme = {
     "--theme-bg": "#E8F0F3",
     "--theme-text": "#1E3341",
     "--theme-accent": "#4B87A6",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

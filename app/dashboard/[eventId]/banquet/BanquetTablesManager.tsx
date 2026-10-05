@@ -8,7 +8,6 @@ import { z } from "zod";
 import { Plus } from "lucide-react";
 import { addBanquetTable } from "./banquet-actions";
 import TableCard, { type SeatedGuest } from "./TableCard";
-import type { Theme } from "@/lib/themes";
 import type { Tables } from "@/lib/supabase/database.types";
 
 const tableFormSchema = z.object({
@@ -20,12 +19,9 @@ type TableFormValues = z.infer<typeof tableFormSchema>;
 
 interface BanquetTablesManagerProps {
   eventId: string;
-  theme: Theme;
   tables: Tables<"banquet_tables">[];
   guests: Tables<"guests">[];
   attendees: Tables<"guest_attendees">[];
-  /** dashboard-audit.md B21: true when the event's plan is below Premium. */
-  locked: boolean;
 }
 
 /** dashboard-audit.md B16: replaces the old bare add-table form + plain
@@ -35,11 +31,9 @@ interface BanquetTablesManagerProps {
  * not a static form pinned above the list. */
 export default function BanquetTablesManager({
   eventId,
-  theme,
   tables,
   guests,
   attendees,
-  locked,
 }: BanquetTablesManagerProps) {
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
@@ -86,12 +80,9 @@ export default function BanquetTablesManager({
         {tables.map((table) => (
           <TableCard
             key={table.id}
-            eventId={eventId}
-            theme={theme}
             table={table}
             seatedGuests={seatedGuestsByTable(table.id)}
             unassignedGuests={unassignedGuests}
-            locked={locked}
           />
         ))}
 

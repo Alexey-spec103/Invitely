@@ -13,8 +13,8 @@ export const vintageForestEmerald: Theme = {
     "--theme-bg": "#E6EAE1",
     "--theme-text": "#2C362A",
     "--theme-accent": "#4F7259",
-    "--theme-font-heading": "var(--font-cinzel), Georgia, serif",
+    "--theme-font-heading": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

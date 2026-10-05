@@ -101,8 +101,8 @@ export default function ModuleCard({
       id={id}
       className={
         emphasized
-          ? "scroll-mt-6 rounded-[22px] border-2 border-[var(--dash-accent)] bg-[color-mix(in_srgb,var(--dash-accent)_5%,var(--dash-surface))] p-6"
-          : "scroll-mt-6 rounded-[22px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5"
+          ? "scroll-mt-6 rounded-[10px] border-2 border-[var(--dash-accent)] bg-[color-mix(in_srgb,var(--dash-accent)_5%,var(--dash-surface))] p-6"
+          : "scroll-mt-6 rounded-[10px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5"
       }
     >
       <div

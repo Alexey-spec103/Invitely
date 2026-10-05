@@ -1,10 +1,9 @@
 import { Resend } from "resend";
 
-// Sandbox sender: works immediately with no domain verification, but only
-// while there's no real deployment domain yet (see NEXT_PUBLIC_APP_DOMAIN in
-// lib/supabase/proxy.ts). Swap to a branded address on the same domain once
-// one exists.
-const FROM_ADDRESS = "Invimbo <onboarding@resend.dev>";
+// invimbo.com is verified in Resend (DKIM/SPF/MX) -- matches the
+// support@invimbo.com address domain-actions.ts already promises hosts can
+// reply to.
+const FROM_ADDRESS = "Invimbo <support@invimbo.com>";
 
 let client: Resend | null = null;
 

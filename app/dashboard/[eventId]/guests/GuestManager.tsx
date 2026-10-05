@@ -268,12 +268,19 @@ function InvitationSentBadge({
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
+  // Same gap as the other toggles fixed in this file: setInvitationSent
+  // throws on failure, and this had no `catch` at all, just `finally` --
+  // a failed click looked identical to a successful one.
+  const [error, setError] = useState<string | null>(null);
 
   const handleToggle = async () => {
+    setError(null);
     setPending(true);
     try {
       await setInvitationSent(guestId, !sent);
       router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update");
     } finally {
       setPending(false);
     }
@@ -282,6 +289,7 @@ function InvitationSentBadge({
   const knownChannels = channels.filter((channel): channel is SendChannel => channel in CHANNEL_ICONS);
 
   return (
+    <span className="inline-flex items-center gap-1">
     <button
       type="button"
       onClick={handleToggle}
@@ -306,6 +314,8 @@ function InvitationSentBadge({
         </span>
       )}
     </button>
+    {error && <span className="text-[10px] text-red-600">{error}</span>}
+    </span>
   );
 }
 
@@ -464,25 +474,43 @@ function AttendeeList({
   const [name, setName] = useState("");
   const [adding, setAdding] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  // Both actions below throw on failure (not the {ok, message} return shape
+  // some other actions in this file use) -- this component had no `catch`
+  // at all, just `try/finally`, so a failed add/remove surfaced as nothing
+  // more than an uncaught rejection in the console. Same red-text
+  // convention the parent GuestManager's own formError already uses.
+  const [error, setError] = useState<string | null>(null);
 
   const handleAdd = async () => {
     const trimmed = name.trim();
     if (!trimmed) return;
+    setError(null);
     setAdding(true);
     try {
       await addGuestAttendee(guestId, trimmed);
       setName("");
       router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to add");
     } finally {
       setAdding(false);
     }
   };
 
-  const handleRemove = async (attendeeId: string) => {
+  const handleRemove = async (attendeeId: string, attendeeName: string) => {
+    // Matches the confirm() gate the top-level guest delete already uses
+    // below -- this one had none at all, so a misclick silently dropped a
+    // named person off the invitation with no recovery.
+    if (!window.confirm(`Remove ${attendeeName} from this invitation?`)) {
+      return;
+    }
+    setError(null);
     setRemovingId(attendeeId);
     try {
       await deleteGuestAttendee(attendeeId);
       router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to remove");
     } finally {
       setRemovingId(null);
     }
@@ -504,7 +532,7 @@ function AttendeeList({
               <span>{attendee.full_name}</span>
               <button
                 type="button"
-                onClick={() => handleRemove(attendee.id)}
+                onClick={() => handleRemove(attendee.id, attendee.full_name)}
                 disabled={removingId === attendee.id}
                 className="text-red-500 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
@@ -537,6 +565,7 @@ function AttendeeList({
           {adding ? "Adding..." : "+ Add"}
         </button>
       </div>
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
 }
@@ -679,10 +708,27 @@ export default function GuestManager({
 }: GuestManagerProps) {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  // impeccable critique (Flexibility and Efficiency): the only way to remove
+  // guests at scale was one-by-one, even right after a messy bulk import.
+  // Bulk removal shares the same undo-toast path as single removal below
+  // rather than adding a parallel bulk server action.
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // impeccable critique "Questions to Consider" #3: a window.confirm()-then-
+  // gone dialog is unforgiving when working through a list quickly, and this
+  // project has no soft-delete column to build a true undo on. Removing a
+  // guest now hides them immediately (optimistic, via hiddenIds) but delays
+  // the actual deleteGuest call behind a dismissible toast -- a misclick is
+  // recoverable for a few seconds without touching the schema.
+  const UNDO_WINDOW_MS = 5000;
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
+  const [pendingRemoval, setPendingRemoval] = useState<{
+    ids: string[];
+    label: string;
+    timeoutId: ReturnType<typeof setTimeout>;
+  } | null>(null);
 
   const statusCounts = useMemo(() => {
     const counts: Record<StatusFilter, number> = {
@@ -701,6 +747,7 @@ export default function GuestManager({
   const filteredGuests = useMemo(() => {
     const query = search.trim().toLowerCase();
     return guests.filter((guest) => {
+      if (hiddenIds.has(guest.id)) return false;
       if (statusFilter !== "all" && getGuestStatus(guest, rsvpStatusByGuestId) !== statusFilter) {
         return false;
       }
@@ -709,7 +756,7 @@ export default function GuestManager({
         .filter(Boolean)
         .some((field) => field!.toLowerCase().includes(query));
     });
-  }, [guests, search, statusFilter, rsvpStatusByGuestId]);
+  }, [guests, search, statusFilter, rsvpStatusByGuestId, hiddenIds]);
 
   const {
     register,
@@ -743,20 +790,101 @@ export default function GuestManager({
     }
   };
 
-  const handleDelete = async (guestId: string) => {
-    if (!window.confirm("Remove this guest?")) {
-      return;
-    }
-    setDeletingId(guestId);
+  // Shared by single and bulk removal: hides `ids` immediately, commits the
+  // real deleteGuest calls only after UNDO_WINDOW_MS with nothing clicked.
+  // Any still-pending removal is committed first -- two overlapping undo
+  // windows would need their own toast each, which isn't worth the
+  // complexity for how rarely a host would remove, then remove again, inside
+  // the same 5 seconds.
+  const commitPendingRemoval = async (removal: NonNullable<typeof pendingRemoval>) => {
     try {
-      const result = await deleteGuest(guestId);
-      if (!result.ok) throw new Error(result.message);
+      for (const guestId of removal.ids) {
+        const result = await deleteGuest(guestId);
+        if (!result.ok) throw new Error(result.message);
+      }
       router.refresh();
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Failed to delete");
-    } finally {
-      setDeletingId(null);
+      // The call failed, so these guests were never actually removed --
+      // bring them back into view rather than leaving them stuck hidden.
+      setHiddenIds((prev) => {
+        const next = new Set(prev);
+        for (const id of removal.ids) next.delete(id);
+        return next;
+      });
     }
+  };
+
+  const startRemoval = (ids: string[], label: string) => {
+    if (pendingRemoval) {
+      clearTimeout(pendingRemoval.timeoutId);
+      void commitPendingRemoval(pendingRemoval);
+    }
+    setFormError(null);
+    setHiddenIds((prev) => {
+      const next = new Set(prev);
+      for (const id of ids) next.add(id);
+      return next;
+    });
+    // Committing from inside a setPendingRemoval *updater* (reading the
+    // latest value, like the clearTimeout guard above wants) triggers React's
+    // "Cannot update a component while rendering a different component" --
+    // an updater has to stay a pure state calculation, never a place to kick
+    // off side effects. `clearTimeout` on startRemoval's own re-entry (above)
+    // already guarantees a stale timeout can never fire, so there's nothing
+    // left to guard here; setPendingRemoval(null) and the actual commit can
+    // both just be plain statements in this ordinary timer callback.
+    const timeoutId = setTimeout(() => {
+      setPendingRemoval(null);
+      void commitPendingRemoval({ ids, label, timeoutId });
+    }, UNDO_WINDOW_MS);
+    setPendingRemoval({ ids, label, timeoutId });
+  };
+
+  const handleDelete = (guestId: string, guestName: string) => {
+    startRemoval([guestId], guestName);
+  };
+
+  const handleUndoRemoval = () => {
+    if (!pendingRemoval) return;
+    clearTimeout(pendingRemoval.timeoutId);
+    setHiddenIds((prev) => {
+      const next = new Set(prev);
+      for (const id of pendingRemoval.ids) next.delete(id);
+      return next;
+    });
+    setPendingRemoval(null);
+  };
+
+  const toggleSelected = (guestId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(guestId)) next.delete(guestId);
+      else next.add(guestId);
+      return next;
+    });
+  };
+
+  const allVisibleSelected = filteredGuests.length > 0 && filteredGuests.every((guest) => selectedIds.has(guest.id));
+
+  const toggleSelectAllVisible = () => {
+    setSelectedIds((prev) => {
+      if (allVisibleSelected) {
+        const next = new Set(prev);
+        for (const guest of filteredGuests) next.delete(guest.id);
+        return next;
+      }
+      const next = new Set(prev);
+      for (const guest of filteredGuests) next.add(guest.id);
+      return next;
+    });
+  };
+
+  const handleBulkDelete = () => {
+    const count = selectedIds.size;
+    if (count === 0) return;
+    startRemoval(Array.from(selectedIds), `${count} guest${count === 1 ? "" : "s"}`);
+    setSelectedIds(new Set());
   };
 
   return (
@@ -883,6 +1011,45 @@ export default function GuestManager({
             </span>
           </div>
           <StatusPills counts={statusCounts} active={statusFilter} onChange={setStatusFilter} />
+          {selectedIds.size > 0 ? (
+            <div className="flex items-center gap-3 rounded-lg bg-gray-100 px-3 py-2">
+              <label className="flex items-center gap-2 text-xs font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={allVisibleSelected}
+                  onChange={toggleSelectAllVisible}
+                  className="h-3.5 w-3.5 rounded border-gray-300"
+                />
+                {selectedIds.size} selected
+              </label>
+              <button
+                type="button"
+                onClick={handleBulkDelete}
+                className="text-xs font-semibold text-red-600 hover:text-red-700"
+              >
+                Remove selected
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedIds(new Set())}
+                className="text-xs font-medium text-gray-500 hover:text-gray-700"
+              >
+                Clear selection
+              </button>
+            </div>
+          ) : (
+            filteredGuests.length > 0 && (
+              <label className="flex items-center gap-2 text-xs font-medium text-gray-500">
+                <input
+                  type="checkbox"
+                  checked={allVisibleSelected}
+                  onChange={toggleSelectAllVisible}
+                  className="h-3.5 w-3.5 rounded border-gray-300"
+                />
+                Select all
+              </label>
+            )
+          )}
         </div>
       )}
 
@@ -918,7 +1085,17 @@ export default function GuestManager({
             }
           >
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
+              <div className="flex items-start gap-3">
+                {editingId !== guest.id && (
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(guest.id)}
+                    onChange={() => toggleSelected(guest.id)}
+                    aria-label={`Select ${guest.full_name}`}
+                    className="mt-1 h-3.5 w-3.5 shrink-0 rounded border-gray-300"
+                  />
+                )}
+                <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-sm font-medium text-gray-900">Dear {guest.full_name}!</p>
                   <InvitationSentBadge
@@ -931,6 +1108,7 @@ export default function GuestManager({
                 <p className="text-xs text-gray-500">
                   {[guest.group_label, guest.email, guest.phone].filter(Boolean).join(" · ")}
                 </p>
+                </div>
               </div>
               {editingId !== guest.id && (
                 <div className="flex flex-wrap items-center gap-3">
@@ -957,11 +1135,10 @@ export default function GuestManager({
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDelete(guest.id)}
-                    disabled={deletingId === guest.id}
-                    className="text-sm font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    onClick={() => handleDelete(guest.id, guest.full_name)}
+                    className="text-sm font-medium text-red-600 hover:text-red-700"
                   >
-                    {deletingId === guest.id ? "Removing..." : "Remove"}
+                    Remove
                   </button>
                 </div>
               )}
@@ -981,6 +1158,22 @@ export default function GuestManager({
           );
         })}
       </ul>
+
+      {pendingRemoval && (
+        <div
+          role="status"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm shadow-lg"
+        >
+          <span className="text-gray-700">Removed {pendingRemoval.label}.</span>
+          <button
+            type="button"
+            onClick={handleUndoRemoval}
+            className="font-semibold text-[var(--dash-accent)] hover:underline"
+          >
+            Undo
+          </button>
+        </div>
+      )}
     </div>
   );
 }

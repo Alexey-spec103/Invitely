@@ -1,5 +1,9 @@
+"use client";
+
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import StaggerReveal from "@/components/StaggerReveal";
 import styles from "./EditorialMinimal.module.css";
 
 /** Editorial minimalism: left-aligned, bottom-anchored, wide-tracked
@@ -13,6 +17,7 @@ import styles from "./EditorialMinimal.module.css";
  * MinimalText/WatercolorBloom's centered variants), matching the existing
  * .rule element's own already-fine positioning. */
 export default function EditorialMinimal({ names, eventDate, styleOverrides, eyebrow }: HeroSectionVariantProps) {
+  const { editable } = useEditableField();
   return (
     <section className={styles.section}>
       <span className={styles.wave} aria-hidden="true" />
@@ -20,15 +25,23 @@ export default function EditorialMinimal({ names, eventDate, styleOverrides, eye
         <span className={styles.eyebrow}>
           <EditableText field="eyebrow" value={eyebrow || "Save the date"} style={styleOverrides?.["eyebrow"]} />
         </span>
-        <p className={styles.names}>
-          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
-          {names[1] && (
-            <>
-              {" & "}
-              <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
-            </>
-          )}
-        </p>
+        {editable ? (
+          <p className={styles.names}>
+            <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+            {names[1] && (
+              <>
+                {" & "}
+                <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
+              </>
+            )}
+          </p>
+        ) : (
+          <StaggerReveal as="p" itemAs="span" className={styles.names} staggerDelay={0.12}>
+            <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+            {names[1] && <span>{" & "}</span>}
+            {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
+          </StaggerReveal>
+        )}
         <span className={styles.rule} aria-hidden="true" />
         <p className={styles.date}>{eventDate}</p>
       </div>

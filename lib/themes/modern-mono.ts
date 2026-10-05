@@ -10,7 +10,7 @@ export const modernMono: Theme = {
     "--theme-text": "#111111",
     "--theme-accent": "#111111",
     "--theme-font-heading": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-body": "var(--font-space-grotesk), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-body": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

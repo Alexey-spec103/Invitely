@@ -1,0 +1,76 @@
+.section {
+  position: relative;
+  padding: 3rem 1rem;
+  color: var(--theme-text);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Same edge-safe-top reasoning as Gift's SimpleList.module.css (its own
+   comment explains the min-height/padding-top math in full) -- reused here
+   as-is since this section has the identical "title + centered text, no
+   repeatable items" shape. */
+.sectionColor {
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+  --decor-gap: 1rem;
+  padding-top: calc(var(--decor-size) + var(--decor-edge-offset) + var(--decor-gap));
+  min-height: 22rem;
+}
+
+.accentTopLeft {
+  composes: cornerEdgeTopLeft from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+}
+
+.accentBottomRight {
+  composes: cornerEdgeBottomRight from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.9rem;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.75rem;
+}
+
+.body {
+  font-family: var(--theme-font-body);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 34rem;
+  margin: 0 auto;
+  white-space: pre-line;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 2.4rem;
+  }
+
+  .accentTopLeft,
+  .accentBottomRight {
+    --decor-size: 14rem;
+  }
+
+  .sectionColor {
+    --decor-size: 14rem;
+    min-height: 28rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .accentTopLeft,
+  .accentBottomRight {
+    --decor-size: 18rem;
+  }
+
+  .sectionColor {
+    --decor-size: 18rem;
+    min-height: 32rem;
+  }
+}

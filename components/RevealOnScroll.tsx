@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
 interface RevealOnScrollProps {
   children: ReactNode;
@@ -30,6 +31,7 @@ interface RevealOnScrollProps {
 export default function RevealOnScroll({ children, root }: RevealOnScrollProps) {
   const targetRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     const node = targetRef.current;
@@ -51,9 +53,12 @@ export default function RevealOnScroll({ children, root }: RevealOnScrollProps) 
   return (
     <motion.div
       ref={targetRef}
-      initial={{ opacity: 0, y: 24 }}
-      animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      // `initial={false}` under reduced motion skips the enter transition
+      // entirely rather than running it at a near-zero duration -- the
+      // element simply renders at its final, settled state on first paint.
+      initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+      animate={reduceMotion || isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+      transition={{ type: "spring", duration: 0.6, bounce: 0 }}
     >
       {children}
     </motion.div>

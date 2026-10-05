@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import Moveable from "react-moveable";
 import type { OnDrag, OnResize, OnRotate } from "react-moveable";
 import { CANVAS_DESIGN_WIDTH, type CanvasElement, type CanvasFrame } from "@/lib/canvas/types";
-import { ensureCanvasFontLoaded } from "@/lib/canvas/fonts";
+import { ensureCanvasFontLoaded, canvasFontFamiliesFor, canvasFontFamilyCss } from "@/lib/canvas/fonts";
 import { uploadEventPhoto } from "@/lib/photoUpload";
 import { uploadEventVideo } from "@/lib/videoUpload";
 import type { BackgroundFill } from "@/lib/backgroundFills";
@@ -243,6 +243,35 @@ export default function CanvasFrameEditor({
     [frame, selectedId]
   );
 
+  // Entering edit mode renders the element's own `{editingId === element.id
+  // ? null : element.text}` JSX children below -- intentional, so React
+  // stops reconciling text nodes it no longer controls once the browser's
+  // native contentEditable takes over keystrokes. But that same children
+  // swap (string -> null) also wipes whatever text was already in the DOM
+  // at the exact moment double-click sets `editingId`, before this effect
+  // runs -- confirmed live: double-clicking existing text cleared it
+  // instantly, and the field never even received focus (no explicit
+  // .focus() call existed anywhere), so Ctrl+A/typing fell through to the
+  // page instead of the field. This effect re-seeds the live DOM node with
+  // the element's actual text once React has committed the null-children
+  // render, then focuses it with the cursor parked at the end -- restoring
+  // the double-click-to-edit flow editors normally guarantee.
+  useEffect(() => {
+    if (!editingId) return;
+    const node = elementRefs.current[editingId];
+    const el = frame.elements.find((e) => e.id === editingId);
+    if (!node || !el || el.type !== "text") return;
+    node.textContent = el.text;
+    node.focus();
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    range.collapse(false);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingId]);
+
   // "▶ Preview" button -- plays the entrance animation once on the actual
   // canvas node via the Web Animations API rather than a CSS class, so it
   // never touches the element's own inline style (which already carries its
@@ -264,7 +293,7 @@ export default function CanvasFrameEditor({
   useEffect(() => {
     for (const el of frame.elements) {
       if (el.type === "text") {
-        ensureCanvasFontLoaded(el.fontFamily);
+        canvasFontFamiliesFor(el.fontFamily).forEach(ensureCanvasFontLoaded);
       }
     }
   }, [frame]);
@@ -497,6 +526,15 @@ export default function CanvasFrameEditor({
           onChange={(event) => void handleBackgroundFileChosen(event.target.files?.[0])}
         />
 
+        {/* Shared across image/video element uploads and the background
+            upload (LayersPanel shows it a second time, right next to its
+            own background controls) -- this copy is the one that's always
+            on screen. LayersPanel is a closed-by-default drawer on mobile,
+            so a failed element upload (triggered from the toolbar's own
+            "+ Add element" modal, nothing to do with the panel) used to
+            have nowhere visible to show at all on a phone. */}
+        {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
+
         <span className="flex-1" />
         {toolbarRight}
       </div>
@@ -584,7 +622,7 @@ export default function CanvasFrameEditor({
                     outline: selectedId === element.id ? "1px solid #e11d48" : "none",
                     ...(element.type === "text"
                       ? {
-                          fontFamily: element.fontFamily,
+                          fontFamily: canvasFontFamilyCss(element.fontFamily),
                           fontSize: element.fontSize,
                           fontWeight: element.fontWeight,
                           color: element.color,

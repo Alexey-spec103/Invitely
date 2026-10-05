@@ -14,7 +14,7 @@ export const provenceSageTerracotta: Theme = {
     // below the 3:1 floor even for large/decorative text. Deepened within the
     // same hue and saturation (not re-picked), now passes 3.02:1.
     "--theme-accent": "#AA6240",
-    "--theme-font-heading": "var(--font-gilda-display), Georgia, serif",
+    "--theme-font-heading": "var(--font-gilda-display), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

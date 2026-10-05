@@ -3,15 +3,17 @@ import type { Theme } from "@/lib/themes";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import CardCornerDecor from "./CardCornerDecor";
 import { formatEventDate } from "./formatEventDate";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import styles from "./EnvelopeCardPreview.module.css";
 
 export interface EnvelopeCardPreviewProps {
   theme: Theme;
   names: string[];
   eventDate: string;
+  locale?: Locale;
 }
 
-export default function EnvelopeCardPreview({ theme, names, eventDate }: EnvelopeCardPreviewProps) {
+export default function EnvelopeCardPreview({ theme, names, eventDate, locale = DEFAULT_LOCALE }: EnvelopeCardPreviewProps) {
   return (
     <ThemeProvider theme={theme}>
       <div className={styles.face} style={{ containerType: "inline-size" }}>
@@ -21,7 +23,7 @@ export default function EnvelopeCardPreview({ theme, names, eventDate }: Envelop
         <CardCornerDecor themeCategory={effectiveDecorCategory(theme)} corners="bottomRightOnly" />
         <div className={styles.returnFlourish}>
           <p className={styles.returnNames}>{names.join(" & ")}</p>
-          <p className={styles.returnDate}>{formatEventDate(eventDate).toUpperCase()}</p>
+          <p className={styles.returnDate}>{formatEventDate(eventDate, locale).toUpperCase()}</p>
         </div>
         <div className={styles.addressArea}>
           <p className={styles.addressHint}>Guest address</p>

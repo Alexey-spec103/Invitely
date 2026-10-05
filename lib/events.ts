@@ -4,8 +4,10 @@ import { DEFAULT_THEME_ID, getTheme } from "@/lib/themes";
 import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { DEFAULT_HERO_VARIANT, HERO_VARIANTS } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
+import { DEFAULT_VARIANTS, SECTION_ORDER, DEFAULT_CONTENT_ON_ENABLE } from "@/components/sections/registry";
 import type { Json } from "@/lib/supabase/database.types";
 import { QUOTE_SUGGESTIONS } from "@/lib/quoteSuggestions";
+import { getEventType } from "@/lib/eventTypes";
 
 // `site_password_hash` is deliberately excluded: its column-level SELECT is
 // revoked from anon/authenticated at the DB level (see the site-password
@@ -16,6 +18,15 @@ import { QUOTE_SUGGESTIONS } from "@/lib/quoteSuggestions";
 // A single string literal (not built via `+`, which widens to plain `string`)
 // so supabase-js can still statically infer the resulting row shape from the
 // literal type -- a `string`-typed select falls back to an untyped result.
+// Direct feedback: adding a brand-new column here once broke every page
+// that calls getEventById -- this project's migrations only ever apply once
+// the user runs them by hand in the Supabase SQL Editor (the CLI hangs
+// non-interactively in this environment), so a column that exists only in
+// a migration *file* isn't actually there yet. A feature needing a
+// just-added column should fetch it with its own narrow, defensively-coded
+// query (see guests/page.tsx's own rsvp_email_notifications read) instead
+// of widening this shared constant, so a not-yet-applied migration degrades
+// only that one feature rather than the entire dashboard.
 export const EVENT_COLUMNS =
   "id, owner_id, slug, title, subtitle_names, event_type, event_date, event_time, venue_name, venue_address, venue_city, venue_lat, venue_lng, plan_id, status, default_locale, supported_locales, custom_domain, custom_domain_verification_token, custom_domain_verified_at, site_password_enabled, site_password_unlock_token, created_at, updated_at" as const;
 
@@ -139,13 +150,41 @@ export async function createEvent(userId: string, input: CreateEventInput) {
     // Unknown theme id -- keep the default variant.
   }
 
+  // A fresh event used to seed `sections` with only `hero` -- a brand-new
+  // host finishing onboarding landed on a site that was just a name-and-date
+  // banner, with Welcome Letter, Schedule, Location, and (worst of all)
+  // RSVP all showing as off in the Modules panel. Confirmed live: creating
+  // a new event through the real onboarding flow produced exactly that.
+  // Letter/Timeline/Map still won't actually render for guests with no
+  // owner-written content (`sectionWillRender`/DEFAULT_CONTENT_ON_ENABLE's
+  // own comment both gate on that deliberately), but starting them enabled
+  // means their editing UI is open and inviting on first visit to the Site
+  // tab, not collapsed behind a toggle the host has to discover first. RSVP
+  // does have real zero-content seed data (DEFAULT_CONTENT_ON_ENABLE.rsvp),
+  // so it renders for guests immediately, not just in the dashboard.
+  const CORE_SECTION_TYPES = ["letter", "timeline", "map", "rsvp"] as const;
+  const coreSections = CORE_SECTION_TYPES.map((type) => ({
+    type,
+    variant: DEFAULT_VARIANTS[type],
+    order: SECTION_ORDER[type],
+    enabled: true,
+  }));
+  const coreContent = Object.fromEntries(
+    CORE_SECTION_TYPES.filter((type) => type in DEFAULT_CONTENT_ON_ENABLE).map((type) => [
+      type,
+      DEFAULT_CONTENT_ON_ENABLE[type],
+    ])
+  );
+
   const { error: configError } = await supabase.from("site_config").insert({
     event_id: newEvent.id,
     theme_id: themeId,
     sections: [
       { type: "hero", variant: heroVariant, order: 0, enabled: true },
+      ...coreSections,
     ] as unknown as Json,
     content: {
+      ...coreContent,
       hero: {
         names: input.names,
         eventDate: input.eventDate,
@@ -158,9 +197,18 @@ export async function createEvent(userId: string, input: CreateEventInput) {
       // "Clear quote" option), beats an empty box with no cue at all.
       // Picked once here, not at render time, so it stays stable across
       // reloads instead of changing every time the page is fetched.
-      letter: {
-        quote: QUOTE_SUGGESTIONS[Math.floor(Math.random() * QUOTE_SUGGESTIONS.length)],
-      },
+      // QUOTE_SUGGESTIONS is "two souls"/"two hearts" couple-romantic
+      // material (see its own file comment: scoped to weddings) -- seeding
+      // it unconditionally put a wedding-vow line on every brand-new event
+      // regardless of type, confirmed live on a fresh Birthday event. Only
+      // couple-mode event types (wedding, anniversary, engagement) actually
+      // have "two" of anything for these lines to describe; single/title
+      // modes get the same blank-with-placeholder state the comment above
+      // already considers an acceptable (if less inviting) fallback.
+      letter:
+        getEventType(input.eventType).namesMode === "couple"
+          ? { quote: QUOTE_SUGGESTIONS[Math.floor(Math.random() * QUOTE_SUGGESTIONS.length)] }
+          : {},
     } as unknown as Json,
   });
 

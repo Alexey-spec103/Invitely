@@ -25,8 +25,14 @@ export function useAutosave<T>(values: T, save: (values: T) => Promise<void>, op
   const isFirstRun = useRef(true);
   const savedSnapshot = useRef<string>(JSON.stringify(values));
   const saveRef = useRef(save);
+  // The most recently *requested* save, kept in sync every render (not just
+  // when a new save is actually scheduled below) -- lets an in-flight save
+  // tell, once its request finally resolves, whether a newer edit has since
+  // superseded it.
+  const latestSnapshot = useRef<string>(JSON.stringify(values));
 
   const snapshot = JSON.stringify(values);
+  latestSnapshot.current = snapshot;
 
   useEffect(() => {
     saveRef.current = save;
@@ -41,14 +47,26 @@ export function useAutosave<T>(values: T, save: (values: T) => Promise<void>, op
 
     setState("saving");
     const timeout = setTimeout(async () => {
+      const requestedSnapshot = snapshot;
       try {
         await saveRef.current(values);
-        savedSnapshot.current = snapshot;
-        setState("saved");
-        setError(null);
+        // On a slow connection, an older save can resolve *after* a newer
+        // one -- confirmed reachable: type, wait past the debounce so a save
+        // starts, type again before it resolves, and let the two requests
+        // land out of order. Without this check the stale response would
+        // flip the status back to "saved" and record the old value as the
+        // last-known-saved one, even though a newer save (resolved or still
+        // in flight) already superseded it.
+        if (requestedSnapshot === latestSnapshot.current) {
+          savedSnapshot.current = requestedSnapshot;
+          setState("saved");
+          setError(null);
+        }
       } catch (err) {
-        setState("error");
-        setError(err instanceof Error ? err.message : "Couldn't save");
+        if (requestedSnapshot === latestSnapshot.current) {
+          setState("error");
+          setError(err instanceof Error ? err.message : "Couldn't save");
+        }
       }
     }, delay);
 

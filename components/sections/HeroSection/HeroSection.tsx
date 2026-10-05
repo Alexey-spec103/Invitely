@@ -25,6 +25,7 @@ import WatercolorBotanical from "./variants/WatercolorBotanical";
 import AlcoholInkGold from "./variants/AlcoholInkGold";
 import type { HeroSectionProps } from "./types";
 import { formatEventDate } from "@/components/paper/formatEventDate";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 
 /** dashboard-audit.md finding #6: every one of the 24 variants below just
  * displays `eventDate` as-is (`<p>{eventDate}</p>`, confirmed by grep --
@@ -32,7 +33,7 @@ import { formatEventDate } from "@/components/paper/formatEventDate";
  * from Wedding Data / `events.event_date` -- formatted once, in this one
  * shared dispatcher, using the same canonical formatter Paper's own
  * invitation/envelope previews already use, rather than in each variant. */
-export default function HeroSection({ variant, eventDate, ...variantProps }: HeroSectionProps) {
+export default function HeroSection({ variant, eventDate, locale = DEFAULT_LOCALE, ...variantProps }: HeroSectionProps) {
   // Real event data always arrives here as a raw "YYYY-MM-DD" date (Wedding
   // Data / `events.event_date`) -- but several marketing/theme-gallery
   // preview call sites (HeroPhoneShowcase, ThemeGallery, etc.) pass an
@@ -42,7 +43,7 @@ export default function HeroSection({ variant, eventDate, ...variantProps }: Her
   // Only reformat what actually looks like a raw ISO date -- confirmed live
   // that blindly reformatting an already-formatted or empty string produces
   // "Invalid Date" instead of leaving it alone.
-  const formattedEventDate = /^\d{4}-\d{2}-\d{2}$/.test(eventDate) ? formatEventDate(eventDate) : eventDate;
+  const formattedEventDate = /^\d{4}-\d{2}-\d{2}$/.test(eventDate) ? formatEventDate(eventDate, locale) : eventDate;
   switch (variant) {
     case "monogram-center":
       return <MonogramCenter {...variantProps} eventDate={formattedEventDate} />;

@@ -1,5 +1,9 @@
+"use client";
+
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import StaggerReveal from "@/components/StaggerReveal";
 import { CORNER_PAIR_DECOR } from "@/lib/themes/decorMotifs";
 import styles from "./WatercolorBotanical.module.css";
 
@@ -15,6 +19,7 @@ import styles from "./WatercolorBotanical.module.css";
  * transform" technique as .branch (see that rule's own comment on why an
  * explicit top/left here would fall outside the theme gallery's crop). */
 export default function WatercolorBotanical({ names, eventDate, styleOverrides, themeCategory }: HeroSectionVariantProps) {
+  const { editable } = useEditableField();
   const decor = themeCategory ? CORNER_PAIR_DECOR[themeCategory] : undefined;
   return (
     <section className={styles.section}>
@@ -30,15 +35,23 @@ export default function WatercolorBotanical({ names, eventDate, styleOverrides, 
         </>
       )}
       <div className={styles.content}>
-        <p className={styles.names}>
-          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
-          {names[1] && (
-            <>
-              {" & "}
-              <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
-            </>
-          )}
-        </p>
+        {editable ? (
+          <p className={styles.names}>
+            <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+            {names[1] && (
+              <>
+                {" & "}
+                <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
+              </>
+            )}
+          </p>
+        ) : (
+          <StaggerReveal as="p" itemAs="span" className={styles.names} staggerDelay={0.12}>
+            <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
+            {names[1] && <span>{" & "}</span>}
+            {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
+          </StaggerReveal>
+        )}
         <p className={styles.date}>{eventDate}</p>
       </div>
     </section>

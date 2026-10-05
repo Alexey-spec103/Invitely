@@ -17,8 +17,8 @@ export const luxuryChampagnePearl: Theme = {
     // below the 3:1 floor even for large/decorative text. Deepened within the
     // same hue and saturation (not re-picked), now passes 3.09:1.
     "--theme-accent": "#AE8632",
-    "--theme-font-heading": "var(--font-italiana), Georgia, serif",
+    "--theme-font-heading": "var(--font-italiana), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };

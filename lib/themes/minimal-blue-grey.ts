@@ -12,8 +12,8 @@ export const minimalBlueGrey: Theme = {
     "--theme-bg": "#F3F5F6",
     "--theme-text": "#23282B",
     "--theme-accent": "#6E8A99",
-    "--theme-font-heading": "var(--font-space-grotesk), system-ui, sans-serif",
+    "--theme-font-heading": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

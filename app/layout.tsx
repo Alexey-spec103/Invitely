@@ -21,36 +21,47 @@ import {
   Gilda_Display,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
 });
 
 const cormorantGaramond = Cormorant_Garamond({
   variable: "--font-cormorant-garamond",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
 const inter = Inter({
   variable: "--font-inter",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
 });
 
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair-display",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   style: ["normal", "italic"],
   weight: ["400", "500", "600"],
 });
 
+// `subsets` controls which glyphs next/font actually self-hosts -- "latin"
+// only here is why Cyrillic text in Fraunces used to silently fall back to
+// a bare system font, not a display bug. This one's only ever worth fixing
+// this way where Google's own files have a cyrillic version to request
+// (confirmed live per family, not assumed) -- Fraunces doesn't, so adding
+// "cyrillic" here would fail the build. Every theme that uses Fraunces (or
+// any of the other families below with no cyrillic subset) instead carries
+// a Cyrillic-capable fallback font in its own --theme-font-* value (see
+// lib/themes/*.ts) -- a fix that has to live at the CSS level since no
+// amount of next/font config can conjure glyphs a font file never shipped.
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
@@ -101,7 +112,7 @@ const spaceGrotesk = Space_Grotesk({
 // reads as casual/boho rather than black-tie.
 const caveat = Caveat({
   variable: "--font-caveat",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600", "700"],
 });
 
@@ -109,7 +120,7 @@ const caveat = Caveat({
 // Garamond -- a second "romantic" register for variety at scale.
 const ebGaramond = EB_Garamond({
   variable: "--font-eb-garamond",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   style: ["normal", "italic"],
   weight: ["400", "500", "600"],
 });
@@ -159,7 +170,7 @@ const italiana = Italiana({
 // registers that want more variety than reusing Cormorant Garamond again.
 const cormorant = Cormorant({
   variable: "--font-cormorant",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   style: ["normal", "italic"],
   weight: ["300", "400", "500", "600"],
 });
@@ -191,10 +202,16 @@ export const metadata: Metadata = {
     "Design a beautiful event website, matching paper invitations, and guest seating — one style, everywhere your guests see it.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Was hardcoded "en" regardless of which locale actually rendered below it
+  // (cookie or geo-IP resolved, same as every guest-facing page -- see
+  // resolveGuestLocale's own doc comment) -- screen readers and the
+  // browser's own translate-this-page prompt both read this attribute, and
+  // both were wrong for every non-English guest.
+  const locale = await resolveGuestLocale();
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} ${inter.variable} ${playfairDisplay.variable} ${fraunces.variable} ${alexBrush.variable} ${cinzel.variable} ${libreBaskerville.variable} ${spaceGrotesk.variable} ${caveat.variable} ${ebGaramond.variable} ${parisienne.variable} ${marcellus.variable} ${bodoniModa.variable} ${italiana.variable} ${cormorant.variable} ${sacramento.variable} ${gildaDisplay.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">

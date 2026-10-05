@@ -153,6 +153,13 @@ export default function LayersPanel({
             Remove image
           </button>
         )}
+        {/* Background-upload-specific failures still show here too -- a
+            host mid-background-upload is already looking at this exact
+            spot. Image/video *element* upload failures (the shared
+            `uploadError` state's other two sources) now also surface in
+            the always-visible toolbar above the canvas -- this panel is a
+            closed-by-default drawer on mobile, where a host adding an
+            element from elsewhere would otherwise never see this at all. */}
         {uploadError && <p className="mt-2 text-xs text-red-400">{uploadError}</p>}
       </div>
     </div>

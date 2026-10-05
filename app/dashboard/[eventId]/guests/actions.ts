@@ -466,3 +466,37 @@ export async function deleteRsvpResponse(
   revalidatePath("/dashboard", "layout");
   return { ok: true };
 }
+
+/** Direct feedback: a host had no way to turn off the "you got an RSVP"
+ * email (app/e/[slug]/actions.ts's submitRsvp sends one on every response,
+ * unconditionally) -- some hosts want to just check the dashboard
+ * themselves instead. `.eq("owner_id", user.id)` is the actual enforcement
+ * here (not just RLS) since this writes to `events` directly, a broader
+ * table than the guest-scoped rows most of this file's other actions touch. */
+export async function updateRsvpEmailNotifications(
+  eventId: string,
+  enabled: boolean
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const { error } = await supabase
+    .from("events")
+    .update({ rsvp_email_notifications: enabled })
+    .eq("id", eventId)
+    .eq("owner_id", user.id);
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  revalidatePath("/dashboard", "layout");
+  return { ok: true };
+}

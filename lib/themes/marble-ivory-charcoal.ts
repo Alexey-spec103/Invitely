@@ -11,8 +11,8 @@ export const marbleIvoryCharcoal: Theme = {
     "--theme-bg": "#F5F1E8",
     "--theme-text": "#332E28",
     "--theme-accent": "#8C7C63",
-    "--theme-font-heading": "var(--font-italiana), Georgia, serif",
+    "--theme-font-heading": "var(--font-italiana), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-sacramento), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

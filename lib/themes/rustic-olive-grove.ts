@@ -12,7 +12,7 @@ export const rusticOliveGrove: Theme = {
     "--theme-bg": "#EDE9D8",
     "--theme-text": "#3B3A28",
     "--theme-accent": "#6E7A45",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-fraunces), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
     "--theme-font-script": "var(--font-caveat), cursive",
   },

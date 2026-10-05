@@ -12,8 +12,8 @@ export const darkForestNoir: Theme = {
     "--theme-bg": "#10160F",
     "--theme-text": "#E6E9E1",
     "--theme-accent": "#7FA07A",
-    "--theme-font-heading": "var(--font-fraunces), Georgia, serif",
+    "--theme-font-heading": "var(--font-fraunces), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), cursive",
+    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
   },
 };
