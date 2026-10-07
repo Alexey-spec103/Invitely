@@ -329,6 +329,7 @@ export type Database = {
       site_config: {
         Row: {
           canvas: Json | null
+          color_variant_id: string | null
           content: Json
           event_id: string
           id: string
@@ -339,6 +340,7 @@ export type Database = {
         }
         Insert: {
           canvas?: Json | null
+          color_variant_id?: string | null
           content?: Json
           event_id: string
           id?: string
@@ -349,6 +351,7 @@ export type Database = {
         }
         Update: {
           canvas?: Json | null
+          color_variant_id?: string | null
           content?: Json
           event_id?: string
           id?: string

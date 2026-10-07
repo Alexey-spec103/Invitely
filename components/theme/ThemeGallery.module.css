@@ -10,6 +10,43 @@
   align-items: start;
 }
 
+.occasionRow {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  scrollbar-width: thin;
+}
+
+.occasionChip,
+.occasionChipActive {
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  background: white;
+  color: #4b5563;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.occasionChip:hover {
+  border-color: var(--dash-accent, #ff6b45);
+  color: var(--dash-accent, #ff6b45);
+}
+
+.occasionChipActive {
+  background: var(--dash-accent, #ff6b45);
+  border-color: var(--dash-accent, #ff6b45);
+  color: white;
+  font-weight: 600;
+}
+
 @container theme-gallery (max-width: 640px) {
   .layout {
     grid-template-columns: 1fr;

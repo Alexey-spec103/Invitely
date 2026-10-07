@@ -14,6 +14,6 @@ export const botanicalMoss: Theme = {
     "--theme-accent": "#5E7255",
     "--theme-font-heading": "var(--font-playfair-display), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
+    "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

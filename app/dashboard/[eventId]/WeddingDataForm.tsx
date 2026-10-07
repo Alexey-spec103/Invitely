@@ -90,7 +90,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
   return (
     <form onSubmit={(e) => e.preventDefault()} className="mt-4 space-y-4 rounded-md border border-gray-200 bg-white p-4" noValidate>
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-900">{type.id === "wedding" ? "Wedding data" : "Event data"}</p>
+        <p className="text-sm font-medium text-gray-900">{type.label} data</p>
         <AutosaveStatus state={state} error={error} />
       </div>
 
@@ -125,7 +125,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
 
       <div>
         <label htmlFor="wd-eventDate" className="block text-sm font-medium text-gray-700">
-          📅 {type.id === "wedding" ? "Wedding date" : "Event date"}
+          📅 {type.label} date
         </label>
         <input
           id="wd-eventDate"
@@ -144,7 +144,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
         <input
           id="wd-venueName"
           type="text"
-          placeholder="Name of the ZAGS, restaurant..."
+          placeholder="Name of the venue, restaurant, or hall..."
           defaultValue={defaultValues.venueName}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
           {...register("venueName")}

@@ -16,6 +16,6 @@ export const darkOnyxRose: Theme = {
     "--theme-font-heading": "var(--font-bodoni-moda), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-accent": "var(--font-playfair-display), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
+    "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

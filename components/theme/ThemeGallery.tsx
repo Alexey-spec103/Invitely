@@ -12,6 +12,8 @@ import {
   NEW_THEME_IDS,
 } from "@/lib/themes";
 import type { Theme, ThemeCategory, ThemeSeason } from "@/lib/themes";
+import { EVENT_TYPE_LIST, type EventTypeId } from "@/lib/eventTypes";
+import { OCCASION_CATEGORIES } from "@/lib/themes/occasionCategories";
 import { useFavoriteThemes } from "@/lib/useFavoriteThemes";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { CATEGORY_STYLE_ICONS, LAYOUT_STYLE_ICONS } from "@/components/icons/StyleFilterIcons";
@@ -82,6 +84,11 @@ interface ThemeGalleryProps {
   disabled?: boolean;
   /** dashboard-audit.md A6 -- see `ThemeGalleryCardProps.onCustomize`. */
   onCustomize?: () => void;
+  /** The event's own type (lib/eventTypes.ts id), when the caller knows it
+   * -- drives the "Occasion" chip row below and its default selection. Not
+   * every caller has this yet (e.g. a hypothetical theme-only context), so
+   * it's optional and the row simply doesn't render without it. */
+  eventType?: string;
 }
 
 /** Category/season sidebar + search + a live, screenshot-free dual mockup
@@ -112,6 +119,7 @@ export default function ThemeGallery({
   onSelect,
   disabled,
   onCustomize,
+  eventType,
 }: ThemeGalleryProps) {
   // dashboard-audit.md B6: weddingpost.ru's catalog opens on its "Популярные"
   // entry rather than an unfiltered "all" -- confirmed live. This is a
@@ -121,6 +129,15 @@ export default function ThemeGallery({
   const [entry, setEntry] = useState<EntryId | null>("popular");
   const [style, setStyle] = useState<StyleValue | null>(null);
   const [season, setSeason] = useState<ThemeSeason | "all">("all");
+  // Pre-selected to the event's own type when OCCASION_CATEGORIES has a
+  // shortlist for it (not every type does -- "other" deliberately doesn't,
+  // see that file's own comment) -- an independent narrowing axis, not
+  // mutually exclusive with Popular/category/search the way entry and style
+  // are with each other, so "Popular wedding styles" is a real, reachable
+  // state rather than forcing a choice between the two.
+  const [occasion, setOccasion] = useState<EventTypeId | null>(
+    eventType && OCCASION_CATEGORIES[eventType as EventTypeId] ? (eventType as EventTypeId) : null
+  );
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const { favoriteIds, toggleFavorite } = useFavoriteThemes();
@@ -132,6 +149,10 @@ export default function ThemeGallery({
       if (entry === "popular" && !POPULAR_THEME_IDS.includes(theme.id)) return false;
       if (entry === "new" && !NEW_THEME_IDS.includes(theme.id)) return false;
       if (entry === "favorites" && !favoriteIds.has(theme.id)) return false;
+      if (occasion) {
+        const allowedCategories = OCCASION_CATEGORIES[occasion];
+        if (allowedCategories && !allowedCategories.includes(theme.category)) return false;
+      }
       if (style?.kind === "category" && theme.category !== style.id) return false;
       if (style?.kind === "layout" && layoutLabelFor(theme.id, theme.category) !== style.id) return false;
       if (season !== "all" && theme.season !== season) return false;
@@ -145,12 +166,21 @@ export default function ThemeGallery({
       }
       return true;
     });
-  }, [themes, entry, favoriteIds, style, season, query]);
+  }, [themes, entry, favoriteIds, occasion, style, season, query]);
 
   const visible = filtered.slice(0, visibleCount);
 
   const selectEntry = (next: EntryId) => {
     setEntry((current) => (current === next ? null : next));
+    setVisibleCount(PAGE_SIZE);
+  };
+
+  // Deliberately does NOT clear `entry`/`style`/`season` the way those clear
+  // each other -- "Popular wedding styles" (entry="popular" AND
+  // occasion="wedding" both set) is the actual point of this filter, not an
+  // edge case to prevent.
+  const updateOccasion = (next: EventTypeId) => {
+    setOccasion((current) => (current === next ? null : next));
     setVisibleCount(PAGE_SIZE);
   };
 
@@ -175,13 +205,36 @@ export default function ThemeGallery({
   const categoryEntries = Object.entries(THEME_CATEGORIES) as [ThemeCategory, number][];
   const seasonEntries = Object.entries(THEME_SEASONS) as [ThemeSeason, number][];
   const layoutEntries = Object.entries(THEME_LAYOUTS).sort((a, b) => b[1] - a[1]);
+  // Below this, a layout bucket (e.g. "Alcohol Ink" at 1 theme, "Gothic
+  // Frame" at 2) reads as a near-empty dead end in the sidebar rather than a
+  // useful way to browse -- confirmed live, 11 of 34 combined buckets had
+  // fewer than 4 themes. The themes themselves aren't hidden: they still
+  // show up under their (always >=6) base category and in search, this just
+  // keeps the filter list itself from padding out with sparse entries.
+  const MIN_STYLE_BUCKET_SIZE = 4;
   const combinedStyleEntries: StyleEntry[] = [
     ...categoryEntries.map(([cat, count]) => ({ kind: "category" as const, id: cat, label: CATEGORY_LABELS[cat], count })),
-    ...layoutEntries.map(([label, count]) => ({ kind: "layout" as const, id: label, label, count })),
+    ...layoutEntries
+      .filter(([, count]) => count >= MIN_STYLE_BUCKET_SIZE)
+      .map(([label, count]) => ({ kind: "layout" as const, id: label, label, count })),
   ].sort((a, b) => b.count - a.count);
 
   return (
     <div className={styles.root}>
+    {eventType && (
+      <div className={styles.occasionRow}>
+        {EVENT_TYPE_LIST.map((type) => (
+          <button
+            key={type.id}
+            type="button"
+            onClick={() => updateOccasion(type.id)}
+            className={occasion === type.id ? styles.occasionChipActive : styles.occasionChip}
+          >
+            {type.label}
+          </button>
+        ))}
+      </div>
+    )}
     <div className={styles.layout}>
       <aside className={styles.sidebar}>
         <input

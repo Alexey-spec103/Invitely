@@ -7,15 +7,17 @@ import StaggerReveal from "@/components/StaggerReveal";
 import EditablePhoto from "../EditablePhoto";
 import styles from "./GothicFrame.module.css";
 
-/** Dark/Gothic: a pointed-arch ornamental frame (a distinct silhouette from
- * EditorialSplit's plain rounded arch) wraps a portrait photo -- gives the
- * Dark category a genuine framed-photo option alongside the existing
- * full-bleed/monogram-crest/art-deco-crest variants, none of which frame a
- * photo this way. Honest fallback: with no photo, neither the photo nor the
- * ornamented .frame mask renders (a hollow frame ring with nothing inside
- * would read as broken, not intentional) -- but a plain empty arch outline,
- * pure CSS border-radius, no photo/mask required, now stands in its place
- * so the section is never just two lines of text on a blank field. */
+/** Dark/Gothic: a rounded-arch portrait photo, same silhouette as the
+ * no-photo .archOutline fallback below (pure CSS border-radius, both
+ * states share one shape language instead of two unrelated ones). Used to
+ * overlay an ornamental SVG ring (`/patterns/dark-gothic-frame.svg`) on top
+ * of the photo via a CSS mask -- removed after it turned out to be a
+ * mismatched asset: that SVG is a roughly-square decorative oval wreath
+ * with its own top rule and corner flourishes (meant for a full border
+ * treatment), not a tight pointed-arch photo mask, so scaling it onto a
+ * portrait photo box put vine scrollwork directly across the sitter's face
+ * (confirmed live, reported by a real upload, not a template mockup). A
+ * thin accent-colored border now does the "framed" job reliably instead. */
 export default function GothicFrame({ names, eventDate, photoUrl, styleOverrides }: HeroSectionVariantProps) {
   const { editable } = useEditableField();
   return (
@@ -23,7 +25,6 @@ export default function GothicFrame({ names, eventDate, photoUrl, styleOverrides
       {photoUrl ? (
         <div className={styles.stage}>
           <EditablePhoto src={photoUrl} className={styles.photo} />
-          <span className={styles.frame} aria-hidden="true" />
         </div>
       ) : (
         <span className={styles.archOutline} aria-hidden="true" />

@@ -10,7 +10,7 @@ import styles from "./EditorialSplit.module.css";
 
 function getInitials(names: string[]): [string, string] {
   const a = names[0]?.trim().charAt(0).toUpperCase() ?? "";
-  const b = (names[1] ?? names[0])?.trim().charAt(0).toUpperCase() ?? "";
+  const b = names[1]?.trim().charAt(0).toUpperCase() ?? "";
   return [a, b];
 }
 
@@ -57,9 +57,11 @@ export default function EditorialSplit({
         ) : (
           <span className={styles.sprig} aria-hidden="true" />
         )}
-        <span className={`${styles.bigLetter} ${styles.bigLetterSecond}`} aria-hidden="true">
-          {initialB}
-        </span>
+        {initialB && (
+          <span className={`${styles.bigLetter} ${styles.bigLetterSecond}`} aria-hidden="true">
+            {initialB}
+          </span>
+        )}
       </div>
 
       {photoUrl && (

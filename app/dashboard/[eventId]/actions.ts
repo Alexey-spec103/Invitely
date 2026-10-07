@@ -139,7 +139,15 @@ export async function updateTheme(
   const { error: configError } = existingConfig
     ? await supabase
         .from("site_config")
-        .update({ theme_id: input.themeId, sections: sectionsWithRecommendedVariants as unknown as Json })
+        // A color variant overrides colors on top of whatever theme is
+        // currently selected -- switching theme entirely should reset to
+        // the new theme's own colors, not silently carry an override picked
+        // for a different (even same-category) theme forward.
+        .update({
+          theme_id: input.themeId,
+          color_variant_id: null,
+          sections: sectionsWithRecommendedVariants as unknown as Json,
+        })
         .eq("event_id", input.eventId)
     : await supabase.from("site_config").insert({
         event_id: input.eventId,
@@ -178,6 +186,72 @@ export async function updateTheme(
   }
 
   revalidatePath(`/dashboard/${input.eventId}`);
+  return { ok: true };
+}
+
+interface UpdateColorVariantInput {
+  eventId: string;
+  /** A same-category sibling theme's id to borrow bg/text/accent from, or
+   * null to go back to the current theme's own colors. Re-validated server
+   * side against lib/themes/applyColorVariant's own category check --
+   * trusting the client here would let a crafted request mismatch a
+   * fixed-palette category's decor with an unrelated accent color. */
+  colorVariantId: string | null;
+}
+
+/** Deliberately its own action, not folded into updateTheme -- a color swap
+ * changes none of theme_id/sections/hero variant, so it doesn't need (and
+ * shouldn't trigger) any of that function's recommended-variant recompute or
+ * theme_history logging. See lib/themes/index.ts's applyColorVariant for why
+ * this only does anything for modern/minimal themes. */
+export async function updateColorVariant(
+  input: UpdateColorVariantInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const { data: existingConfig } = await supabase
+    .from("site_config")
+    .select("theme_id")
+    .eq("event_id", input.eventId)
+    .maybeSingle();
+
+  if (!existingConfig) {
+    return { ok: false, message: "No site found for this event yet" };
+  }
+
+  let colorVariantId = input.colorVariantId;
+  if (colorVariantId) {
+    try {
+      const base = getTheme(existingConfig.theme_id);
+      const variant = getTheme(colorVariantId);
+      const isSameSafeCategory =
+        (base.category === "modern" || base.category === "minimal") && variant.category === base.category;
+      if (!isSameSafeCategory) {
+        colorVariantId = null;
+      }
+    } catch {
+      colorVariantId = null;
+    }
+  }
+
+  const { error } = await supabase
+    .from("site_config")
+    .update({ color_variant_id: colorVariantId })
+    .eq("event_id", input.eventId);
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  revalidatePath(`/dashboard/${input.eventId}`, "layout");
   return { ok: true };
 }
 
@@ -250,6 +324,82 @@ export async function updateWeddingData(
         content: {
           ...existingContent,
           hero: { ...existingHero, names, eventDate: input.eventDate },
+        } as unknown as Json,
+      })
+      .eq("event_id", input.eventId);
+
+    if (contentError) {
+      return { ok: false, message: contentError.message };
+    }
+  }
+
+  revalidatePath(`/dashboard/${input.eventId}`, "layout");
+  return { ok: true };
+}
+
+interface ChangeEventTypeInput {
+  eventId: string;
+  newEventType: string;
+  name1: string;
+  name2?: string;
+}
+
+/** Lets a host who picked the wrong card in onboarding fix it afterward --
+ * `event_type` was previously write-once at creation (lib/events.ts's own
+ * createEvent), with no path to change it anywhere in the dashboard. Reuses
+ * updateWeddingData's exact title/subtitle_names/hero-mirror recipe rather
+ * than inventing a second one, but deliberately leaves event_date and venue
+ * fields untouched -- a type change isn't a reason to discard those. */
+export async function changeEventType(
+  input: ChangeEventTypeInput
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const type = getEventType(input.newEventType);
+  const names = type.namesMode === "couple" ? [input.name1, input.name2 ?? ""] : [input.name1];
+  const title = type.titleTemplate(names);
+
+  const { error } = await supabase
+    .from("events")
+    .update({
+      event_type: input.newEventType,
+      title,
+      subtitle_names: names,
+    })
+    .eq("id", input.eventId)
+    .eq("owner_id", user.id);
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  const { data: existingConfig } = await supabase
+    .from("site_config")
+    .select("content")
+    .eq("event_id", input.eventId)
+    .maybeSingle();
+
+  if (existingConfig) {
+    const existingContent = parseContent(existingConfig.content);
+    const existingHero =
+      typeof existingContent.hero === "object" && existingContent.hero !== null
+        ? (existingContent.hero as Record<string, unknown>)
+        : {};
+
+    const { error: contentError } = await supabase
+      .from("site_config")
+      .update({
+        content: {
+          ...existingContent,
+          hero: { ...existingHero, names },
         } as unknown as Json,
       })
       .eq("event_id", input.eventId);

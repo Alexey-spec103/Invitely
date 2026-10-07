@@ -14,6 +14,6 @@ export const luxuryBlackDiamond: Theme = {
     "--theme-accent": "#E8E8E4",
     "--theme-font-heading": "var(--font-cinzel), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-cormorant-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

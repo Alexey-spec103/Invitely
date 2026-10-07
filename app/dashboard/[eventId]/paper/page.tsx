@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getAuthedUser } from "@/lib/session";
 import { getEventById } from "@/lib/events";
 import { createClient } from "@/lib/supabase/server";
-import { getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
+import { getTheme, applyColorVariant, DEFAULT_THEME_ID } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { parseContent } from "@/components/sections/registry";
 import { parseCanvasFrames } from "@/lib/canvas/parse";
@@ -38,7 +38,7 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
   const [{ data: siteConfig }, { data: guests }] = await Promise.all([
     supabase
       .from("site_config")
-      .select("theme_id, content, layout_mode, canvas")
+      .select("theme_id, color_variant_id, content, layout_mode, canvas")
       .eq("event_id", event.id)
       .maybeSingle(),
     supabase.from("guests").select("id, full_name, invite_code, paper_enabled").eq("event_id", event.id).order("created_at"),
@@ -46,7 +46,7 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
 
   let theme;
   try {
-    theme = getTheme(siteConfig?.theme_id ?? DEFAULT_THEME_ID);
+    theme = applyColorVariant(getTheme(siteConfig?.theme_id ?? DEFAULT_THEME_ID), siteConfig?.color_variant_id);
   } catch {
     theme = romanticBlush;
   }

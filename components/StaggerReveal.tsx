@@ -80,7 +80,12 @@ export default function StaggerReveal({
 
   const items = Children.toArray(children).map((child, index) =>
     itemAs === "span" ? (
-      <motion.span key={index} variants={{ hidden: HIDDEN, visible: VISIBLE }} transition={ITEM_TRANSITION} style={{ display: "inline-block" }}>
+      <motion.span
+        key={index}
+        variants={{ hidden: HIDDEN, visible: VISIBLE }}
+        transition={ITEM_TRANSITION}
+        style={{ display: "inline-block", maxWidth: "100%" }}
+      >
         {child}
       </motion.span>
     ) : (

@@ -45,7 +45,7 @@ export default function DeleteAccountSection({ currentEmail }: DeleteAccountSect
       <h2 className="dash-h2 text-sm text-red-900">Danger zone</h2>
       <p className="mt-1 text-sm text-red-700">
         Permanently delete your account and everything in it &mdash; every event you own, its
-        guests, RSVPs, gift wishes, banquet tables, and site content. This cannot be undone.
+        guests, RSVPs, gift wishes, seating tables, and site content. This cannot be undone.
       </p>
 
       {!confirming ? (

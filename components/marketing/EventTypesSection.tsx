@@ -5,6 +5,7 @@ import {
   Gem,
   Cake,
   Baby,
+  Candy,
   PartyPopper,
   Crown,
   GraduationCap,
@@ -23,7 +24,7 @@ import type { Locale } from "@/lib/i18n/locales";
 // Same icons as EVENT_TYPE_ICONS in OnboardingWizard.tsx too, matching
 // lib/eventTypes.ts's own EVENT_TYPE_LIST, so this promises nothing the
 // picker itself doesn't already deliver.
-const EVENT_TYPE_ICONS: LucideIcon[] = [Heart, Cake, Building2, GraduationCap, Sparkles, Baby, Crown, Award, PartyPopper, PartyPopper, Gem, CalendarHeart];
+const EVENT_TYPE_ICONS: LucideIcon[] = [Heart, Cake, Building2, GraduationCap, Sparkles, Baby, Crown, Award, Candy, PartyPopper, Gem, CalendarHeart];
 const EVENT_TYPE_TINTS = [
   "bg-orange-50 text-[var(--dash-accent-text)]",
   "bg-rose-50 text-rose-600",

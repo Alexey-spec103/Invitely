@@ -102,7 +102,7 @@ export const EVENT_TYPES: Record<EventTypeId, EventTypeDef> = {
   kids_party: {
     id: "kids_party",
     label: "Kids' Party",
-    icon: "PartyPopper",
+    icon: "Candy",
     namesMode: "single",
     namePrompts: ["Who's celebrating?"],
     heroEyebrow: "It's a party",

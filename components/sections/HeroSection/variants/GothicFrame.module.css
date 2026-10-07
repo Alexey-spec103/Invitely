@@ -24,31 +24,15 @@
   width: 12rem;
   height: 15rem;
   object-fit: cover;
+  border: 2px solid var(--theme-accent);
+  border-bottom: none;
+  border-radius: 6rem 6rem 0 0;
+  box-sizing: border-box;
 }
 
-/* The ornate pointed-arch ring sits above the photo with a hollow (alpha-
-   transparent) center -- the photo peeks through, the ring frames it. Same
-   overlay technique as VintageOrnamental's corner flourishes, just a single
-   full frame instead of four corner pieces. */
-.frame {
-  position: absolute;
-  inset: 0;
-  background-color: var(--theme-accent);
-  opacity: 0.85;
-  pointer-events: none;
-  mask-image: url("/patterns/dark-gothic-frame.svg");
-  mask-repeat: no-repeat;
-  mask-size: contain;
-  mask-position: center;
-  -webkit-mask-image: url("/patterns/dark-gothic-frame.svg");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  -webkit-mask-position: center;
-}
-
-/* No-photo fallback for .stage/.frame above -- a plain pointed-arch outline
+/* No-photo fallback for .stage/.photo above -- a plain rounded-arch outline
    (own shape via border-radius, no image asset) so the composition still
-   reads as a considered gothic-arch silhouette rather than empty space. */
+   reads as a considered arch silhouette rather than empty space. */
 .archOutline {
   display: block;
   width: 7rem;
@@ -85,6 +69,7 @@
   .photo {
     width: 14rem;
     height: 17rem;
+    border-radius: 7rem 7rem 0 0;
   }
 
   .archOutline {
@@ -111,6 +96,7 @@
   .photo {
     width: 16rem;
     height: 19.5rem;
+    border-radius: 8rem 8rem 0 0;
   }
 
   .names {

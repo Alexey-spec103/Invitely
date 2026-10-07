@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getAuthedUser } from "@/lib/session";
 import { getEventById } from "@/lib/events";
 import { createClient } from "@/lib/supabase/server";
-import { getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
+import { getTheme, applyColorVariant, DEFAULT_THEME_ID } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { parseContent, parseSections } from "@/components/sections/registry";
 import GuestManager from "./GuestManager";
@@ -65,7 +65,7 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
 
   const { data: siteConfig } = await supabase
     .from("site_config")
-    .select("theme_id, content, sections")
+    .select("theme_id, color_variant_id, content, sections")
     .eq("event_id", event.id)
     .maybeSingle();
   const content = siteConfig ? parseContent(siteConfig.content) : {};
@@ -119,7 +119,7 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
 
   let theme;
   try {
-    theme = getTheme(siteConfig?.theme_id ?? DEFAULT_THEME_ID);
+    theme = applyColorVariant(getTheme(siteConfig?.theme_id ?? DEFAULT_THEME_ID), siteConfig?.color_variant_id);
   } catch {
     theme = romanticBlush;
   }

@@ -18,6 +18,6 @@ export const romanticPeony: Theme = {
     "--theme-accent": "#CF6D87",
     "--theme-font-heading": "var(--font-cormorant), Georgia, serif",
     "--theme-font-body": "var(--font-eb-garamond), Georgia, serif",
-    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

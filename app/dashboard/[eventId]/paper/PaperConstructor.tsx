@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { updateInvitationBackCanvas } from "./actions";
 import { getEventType } from "@/lib/eventTypes";
+import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
 import { useAutosave } from "@/lib/useAutosave";
 import AutosaveStatus from "@/components/ui/AutosaveStatus";
 import type { Theme } from "@/lib/themes";
@@ -494,7 +495,7 @@ export default function PaperConstructor({
               <p className="text-xs text-[var(--dash-text-muted)]">
                 Names, date &amp; venue come from your{" "}
                 <Link href={`/dashboard/${eventId}/site#wedding-data-card`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
-                  {getEventType(eventType).id === "wedding" ? "Wedding data" : "Event data"}
+                  {getLocalizedEventType(eventType, locale).label} data
                 </Link>
                 . Edit them there and this card updates automatically.
               </p>

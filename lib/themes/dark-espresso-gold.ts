@@ -14,6 +14,6 @@ export const darkEspressoGold: Theme = {
     "--theme-accent": "#C9A15A",
     "--theme-font-heading": "var(--font-bodoni-moda), var(--font-cormorant-garamond), Georgia, serif",
     "--theme-font-body": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
+    "--theme-font-script": "var(--font-sacramento), var(--font-caveat), cursive",
   },
 };

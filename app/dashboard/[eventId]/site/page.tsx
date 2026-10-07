@@ -6,6 +6,7 @@ import { getEventById } from "@/lib/events";
 import { createClient } from "@/lib/supabase/server";
 import { parseSections, parseContent } from "@/components/sections/registry";
 import { getEventType } from "@/lib/eventTypes";
+import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
 import SectionModulesPanel from "./SectionModulesPanel";
 import FirstVisitTour from "@/components/ui/FirstVisitTour";
 import FeatureCarousel from "./FeatureCarousel";
@@ -35,9 +36,10 @@ import { GUESTBOOK_VARIANTS, DEFAULT_GUESTBOOK_VARIANT } from "@/components/sect
 import type { GuestbookVariant } from "@/components/sections/GuestbookSection";
 import { VIDEO_VARIANTS, DEFAULT_VIDEO_VARIANT } from "@/components/sections/VideoSection";
 import type { VideoVariant } from "@/components/sections/VideoSection";
-import { getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
+import { getTheme, applyColorVariant, DEFAULT_THEME_ID } from "@/lib/themes";
 import { getWeddingDataCompleteness } from "@/lib/weddingData";
 import WeddingDataForm from "../WeddingDataForm";
+import EventTypeSwitcher from "../EventTypeSwitcher";
 import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
 import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
 
@@ -413,7 +415,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
   const hasBasicAccess = planMeets(event.plan_id, "basic");
   let theme;
   try {
-    theme = getTheme(siteConfig?.theme_id ?? DEFAULT_THEME_ID);
+    theme = applyColorVariant(getTheme(siteConfig?.theme_id ?? DEFAULT_THEME_ID), siteConfig?.color_variant_id);
   } catch {
     theme = getTheme(DEFAULT_THEME_ID);
   }
@@ -443,12 +445,21 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="dash-h1 text-[var(--dash-text)]">Site</h1>
-        <Link
-          href={`/dashboard/${event.id}/canvas`}
-          className="rounded-full border border-[var(--dash-border)] px-3.5 py-1.5 text-xs font-medium text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
-        >
-          🎨 Free canvas
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <EventTypeSwitcher
+            eventId={event.id}
+            currentEventType={event.event_type}
+            name1={event.subtitle_names?.[0] ?? ""}
+            name2={event.subtitle_names?.[1]}
+            locale={locale}
+          />
+          <Link
+            href={`/dashboard/${event.id}/canvas`}
+            className="rounded-full border border-[var(--dash-border)] px-3.5 py-1.5 text-xs font-medium text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+          >
+            🎨 Free canvas
+          </Link>
+        </div>
       </div>
 
       {/* Direct feedback: checkout redirected back to /plan, which has no
@@ -556,7 +567,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
               href="#wedding-data-card"
               className="mt-3 inline-block rounded-full bg-[var(--dash-accent)] px-4 py-2 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
             >
-              {getEventType(event.event_type).id === "wedding" ? "Wedding data" : "Event data"}
+              {getLocalizedEventType(event.event_type, locale).label} data
             </a>
           </div>
         )}
@@ -564,7 +575,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
         <ModuleCard
           id="wedding-data-card"
           icon="💍"
-          title={getEventType(event.event_type).id === "wedding" ? "Wedding data" : "Event data"}
+          title={`${getLocalizedEventType(event.event_type, locale).label} data`}
           status={{
             label: `${weddingDataPercent}% complete`,
             tone: weddingDataPercent === 100 ? "on" : "neutral",

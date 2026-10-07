@@ -8,6 +8,9 @@ import MaterialsPreviewModal from "@/components/theme/MaterialsPreviewModal";
 import HowItWorksButton from "./HowItWorksButton";
 import DesignSlotsPanel from "./DesignSlotsPanel";
 import { updateTheme } from "../actions";
+import EventTypeSwitcher from "../EventTypeSwitcher";
+import ColorVariantPicker from "./ColorVariantPicker";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface ThemeSlotRow {
   id: string;
@@ -23,21 +26,27 @@ interface ThemeHistoryRow {
 interface ThemeSelectFormProps {
   eventId: string;
   currentThemeId: string;
+  currentColorVariantId: string | null;
+  eventType: string;
   name1: string;
   name2?: string;
   eventDate: string | null;
   slots: ThemeSlotRow[];
   history: ThemeHistoryRow[];
+  locale: Locale;
 }
 
 export default function ThemeSelectForm({
   eventId,
   currentThemeId,
+  currentColorVariantId,
+  eventType,
   name1,
   name2,
   eventDate,
   slots,
   history,
+  locale,
 }: ThemeSelectFormProps) {
   const router = useRouter();
   const [selected, setSelected] = useState(currentThemeId);
@@ -74,6 +83,7 @@ export default function ThemeSelectForm({
           <p className="mt-1 text-xs text-gray-400">Everything here can be customized further in the constructor.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <EventTypeSwitcher eventId={eventId} currentEventType={eventType} name1={name1} name2={name2} locale={locale} />
           <HowItWorksButton />
           <button
             type="button"
@@ -84,6 +94,8 @@ export default function ThemeSelectForm({
           </button>
         </div>
       </div>
+
+      <ColorVariantPicker eventId={eventId} theme={selectedTheme} currentColorVariantId={currentColorVariantId} />
 
       <DesignSlotsPanel
         eventId={eventId}
@@ -111,6 +123,7 @@ export default function ThemeSelectForm({
           onSelect={handleSelect}
           disabled={isPending}
           onCustomize={() => router.push(`/dashboard/${eventId}/site`)}
+          eventType={eventType}
         />
       </div>
 

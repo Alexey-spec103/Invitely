@@ -257,31 +257,34 @@ export const DEFAULT_THEME_ID = romanticBlush.id;
 /** dashboard-audit.md B6: weddingpost.ru's "Популярные"/"Новые" entries rank
  * by real usage/upload date -- neither exists here (all themes shipped in
  * batches, confirmed via git history), so these are a deliberate editorial
- * curation for visual spread across categories, not a computed metric
- * pretending to be one. `ThemeGallery` opens on this "popular" entry by
- * default, so this list is literally the first thing a visitor sees when
- * picking a style -- curated from the newest four categories (marble,
- * cosmic, peony, provence: the most recent design work, with real matched
- * textures and full decorative-asset coverage) rather than the original
- * launch batch, so the strongest current work leads instead of getting
- * buried under 100+ older themes in an unsorted "all styles" grid. Leads
- * with a warm, colorful boho pick specifically -- the marble/cosmic entries
- * right after it are deliberately darker/moodier, so opening on one of
- * those first made the whole rail read as dark before a visitor scrolled. */
+ * curation, not a computed metric pretending to be one. `ThemeGallery` opens
+ * on this "popular" entry by default, so this list is literally the first
+ * thing a visitor sees when picking a style.
+ *
+ * Previously drawn entirely from the newest four categories (marble/cosmic/
+ * peony/provence) -- confirmed live this made Popular read as narrow/
+ * repetitive (same moody palette family, 12 of 13 entries) and meant the
+ * three largest style groups in the whole catalog (Watercolor 20 themes,
+ * Art Deco 15, Editorial 14) had zero presence here despite being some of
+ * the strongest, most complete work. Rebuilt as exactly one pick per base
+ * category (all 14), each individually checked live against production for
+ * real font rendering -- so a first-time visitor's very first impression of
+ * "what styles exist" actually spans the catalog instead of one mood. */
 export const POPULAR_THEME_IDS: string[] = [
   "boho-marigold-festival",
-  "marble-noir-rust",
+  "romantic-rosewater",
+  "modern-ivory-noir",
+  "botanical-sage",
+  "luxury-rose-gold",
+  "dark-midnight-teal",
+  "coastal-breeze",
+  "rustic-barnwood",
+  "vintage-rosewood",
+  "minimal-ink",
   "marble-sage-gold",
-  "marble-champagne-teal",
-  "cosmic-obsidian-starlight",
   "cosmic-midnight-gold",
-  "cosmic-plum-gold",
   "peony-blush-burgundy",
-  "peony-sage-clay",
-  "peony-wine-ivory",
   "provence-lavender-sage",
-  "provence-dusty-lilac",
-  "provence-sage-terracotta",
 ];
 
 /** The "New" filter entry -- every theme from the same most-recent batch as
@@ -356,6 +359,39 @@ export function getTheme(id: string): Theme {
     throw new Error(`Unknown theme id: "${id}"`);
   }
   return theme;
+}
+
+/** `modern`/`minimal` only (enforced here, not just in the picker UI that
+ * offers this) -- every other category's decor is a fixed-palette
+ * illustration baked to its own theme's colors (see lib/themes/
+ * decorMotifs.ts), so swapping in a different accent there would mismatch
+ * the art. `modern`/`minimal` decor is an accent-tinted CSS mask instead
+ * (CATEGORY_MASK_ACCENT), so it re-tints safely. Returns `base` unchanged
+ * for any other category, a missing/unknown variant id, or no id at all --
+ * this is read from a DB column a stale/deleted theme id could reference,
+ * so failing open to "use the theme's own colors" rather than throwing. */
+export function applyColorVariant(base: Theme, colorVariantId: string | null | undefined): Theme {
+  if (!colorVariantId) return base;
+  if (base.category !== "modern" && base.category !== "minimal") return base;
+  const variant = themes[colorVariantId];
+  if (!variant || variant.category !== base.category) return base;
+  return {
+    ...base,
+    vars: {
+      ...base.vars,
+      "--theme-bg": variant.vars["--theme-bg"],
+      "--theme-text": variant.vars["--theme-text"],
+      "--theme-accent": variant.vars["--theme-accent"],
+    },
+  };
+}
+
+/** Same-category siblings a `modern`/`minimal` theme's color picker can
+ * offer -- see `applyColorVariant`'s own comment for why only these two
+ * categories are safe to recolor at all. Excludes the theme itself. */
+export function colorVariantOptionsFor(theme: Theme): Theme[] {
+  if (theme.category !== "modern" && theme.category !== "minimal") return [];
+  return Object.values(themes).filter((t) => t.category === theme.category && t.id !== theme.id);
 }
 
 export type { Theme, ThemeVars, ThemeCategory, ThemeSeason } from "./types";

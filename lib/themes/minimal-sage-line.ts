@@ -18,6 +18,6 @@ export const minimalSageLine: Theme = {
     "--theme-accent": "#7E946B",
     "--theme-font-heading": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
     "--theme-font-body": "var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif",
-    "--theme-font-script": "var(--font-alex-brush), var(--font-caveat), cursive",
+    "--theme-font-script": "var(--font-caveat), cursive",
   },
 };

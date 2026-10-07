@@ -6,9 +6,10 @@ import { deleteEventAction } from "../actions";
 interface DeleteEventSectionProps {
   eventId: string;
   eventTitle: string;
+  seatingLabel: string;
 }
 
-export default function DeleteEventSection({ eventId, eventTitle }: DeleteEventSectionProps) {
+export default function DeleteEventSection({ eventId, eventTitle, seatingLabel }: DeleteEventSectionProps) {
   // impeccable critique: this card used to sit fully exposed, immediately
   // below the payment card in the same continuous scroll -- a host
   // rechecking pricing after a declined card scrolls straight past a live
@@ -54,7 +55,7 @@ export default function DeleteEventSection({ eventId, eventTitle }: DeleteEventS
       <h2 className="dash-h2 text-sm text-red-900">Danger zone</h2>
       <p className="mt-1 text-sm text-red-700">
         Permanently delete &ldquo;{eventTitle}&rdquo; and everything in it &mdash; guests, RSVPs,
-        gift wishes, banquet tables, and site content. This cannot be undone.
+        gift wishes, {seatingLabel.toLowerCase()} tables, and site content. This cannot be undone.
       </p>
 
       {!confirming ? (

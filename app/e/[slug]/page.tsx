@@ -3,7 +3,7 @@ import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { EVENT_COLUMNS } from "@/lib/events";
-import { getTheme } from "@/lib/themes";
+import { getTheme, applyColorVariant } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { parseSections, parseContent, renderSection, sectionWillRender, SECTION_LABELS } from "@/components/sections/registry";
 import ThemeProvider from "@/components/theme/ThemeProvider";
@@ -217,7 +217,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
 
   let theme;
   try {
-    theme = getTheme(event.site_config.theme_id);
+    theme = applyColorVariant(getTheme(event.site_config.theme_id), event.site_config.color_variant_id);
   } catch {
     theme = romanticBlush;
   }

@@ -6,20 +6,6 @@ import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import {
-  Heart,
-  Sparkles,
-  Gem,
-  Cake,
-  Baby,
-  PartyPopper,
-  Crown,
-  GraduationCap,
-  Building2,
-  Award,
-  CalendarHeart,
-  type LucideIcon,
-} from "lucide-react";
 import { HeroSection, DEFAULT_HERO_VARIANT, HERO_VARIANTS } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import ThemeProvider from "@/components/theme/ThemeProvider";
@@ -31,23 +17,11 @@ import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { DEFAULT_EVENT_TYPE_ID, getEventType } from "@/lib/eventTypes";
 import { getLocalizedEventType, getLocalizedEventTypeList } from "@/lib/eventTypesLocalized";
+import { EVENT_TYPE_ICON_COMPONENTS } from "@/lib/eventTypeIcons";
+import { CalendarHeart } from "lucide-react";
 import { completeOnboarding } from "./actions";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
-
-const EVENT_TYPE_ICONS: Record<string, LucideIcon> = {
-  Heart,
-  Sparkles,
-  Gem,
-  Cake,
-  Baby,
-  PartyPopper,
-  Crown,
-  GraduationCap,
-  Building2,
-  Award,
-  CalendarHeart,
-};
 
 // Built per-locale (see buildOnboardingSchema below, called via useMemo keyed
 // on `dict`) rather than as a single module-level constant, since every
@@ -245,7 +219,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                 <div className="relative mt-4">
                   <div className="grid max-h-[28rem] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3 lg:grid-cols-4">
                     {getLocalizedEventTypeList(locale).map((type) => {
-                      const Icon = EVENT_TYPE_ICONS[type.icon] ?? CalendarHeart;
+                      const Icon = EVENT_TYPE_ICON_COMPONENTS[type.icon] ?? CalendarHeart;
                       const isSelected = type.id === eventTypeId;
                       return (
                         <button
