@@ -1,0 +1,37 @@
+.field {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Oversized relative to any real viewport and centered, so rotating it
+   never leaves an unwatermarked gap in a corner -- confirmed the math at
+   -24deg needs real margin beyond 100vw/100vh, 170% covers every aspect
+   ratio from narrow phones to ultrawide monitors. */
+.grid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 170vw;
+  height: 170vh;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  transform: translate(-50%, -50%) rotate(-24deg);
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-accent);
+  opacity: 0.16;
+  font-family: var(--theme-font-body);
+  font-size: clamp(0.85rem, 2vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}

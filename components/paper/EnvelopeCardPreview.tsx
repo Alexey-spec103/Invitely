@@ -17,6 +17,7 @@ export default function EnvelopeCardPreview({ theme, names, eventDate, locale = 
   return (
     <ThemeProvider theme={theme}>
       <div className={styles.face} style={{ containerType: "inline-size" }}>
+        <div className={styles.liner} aria-hidden="true" />
         <div className={styles.border} />
         {/* Only bottom-right -- the return address sits top-left, a corner
             accent there would compete with real text. */}

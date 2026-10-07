@@ -20,7 +20,7 @@ export const plans: Record<string, Plan> = {
       "Everything in Free",
       "Custom domain",
       "Countdown, gift wishes & dress-code modules",
-      "No \"Made with Invimbo\" badge",
+      "No \"Made with Invimbo\" site badge",
     ],
   },
   premium: {
@@ -29,8 +29,8 @@ export const plans: Record<string, Plan> = {
     priceEur: 35,
     features: [
       "Everything in Basic",
-      "No watermark on personalized invitations",
-      "No watermark on banquet & table cards",
+      "No paper watermark on personalized invitations",
+      "No paper watermark on banquet & table cards",
     ],
   },
 };

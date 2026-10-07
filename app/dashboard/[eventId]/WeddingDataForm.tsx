@@ -106,6 +106,14 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
           {...register("name1")}
         />
         {errors.name1 && <p className="mt-1 text-sm text-red-600">{errors.name1.message}</p>}
+        {/* Same titleTemplate-compounding risk as onboarding's own name
+            field -- see OnboardingWizard.tsx's comment on its matching
+            preview line for why this exists. */}
+        {!isCoupleMode && typeof values.name1 === "string" && values.name1.trim() && (
+          <p className="mt-1 text-sm text-gray-500">
+            Your site will be titled "{type.titleTemplate([values.name1.trim()])}"
+          </p>
+        )}
       </div>
 
       {isCoupleMode && (

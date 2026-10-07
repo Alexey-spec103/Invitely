@@ -22,6 +22,7 @@ import { formatEventDate } from "@/components/paper/formatEventDate";
 import { planMeets, BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
 import PublicSiteBadge from "@/components/site/PublicSiteBadge";
+import WatermarkOverlay from "@/components/site/WatermarkOverlay";
 import UnpublishedPreviewBanner from "@/components/site/UnpublishedPreviewBanner";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
@@ -328,7 +329,12 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           return index === 0 && !isCanvasMode ? wrapped : <RevealOnScroll key={section.type}>{wrapped}</RevealOnScroll>;
         })}
         {!isCanvasMode && sections.length > 1 && <ScrollToNextSection />}
-        {!hasBasicAccess && <PublicSiteBadge />}
+        {!hasBasicAccess && (
+          <>
+            <WatermarkOverlay />
+            <PublicSiteBadge />
+          </>
+        )}
       </ThemeProvider>
     </>
   );

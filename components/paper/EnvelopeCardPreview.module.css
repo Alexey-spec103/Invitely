@@ -16,9 +16,33 @@
   inset: 3%;
   border: 1px solid var(--theme-accent);
   pointer-events: none;
+  z-index: 1;
+}
+
+/* Envelope liner -- the colored paper glued inside the flap, the single
+   most visible premium detail on every competitor's own envelope mockup
+   (Greenvelope: confirmed live, every design in their catalog shows one)
+   that this card had none of before. A shallow triangle along the top
+   edge, standing in for the flap's own point without claiming to be a
+   photo-real open-flap render -- real liner color only ever shows through
+   that point, never across the whole top third, so the apex stays well
+   short of where the return address text starts (confirmed clear at the
+   padding/line-height this component already uses). */
+.liner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 16%;
+  background: var(--theme-accent);
+  clip-path: polygon(0 0, 100% 0, 50% 55%);
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .returnFlourish {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

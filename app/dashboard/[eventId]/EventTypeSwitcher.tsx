@@ -168,6 +168,19 @@ export default function EventTypeSwitcher({ eventId, currentEventType, name1, na
                     onChange={(event) => setNewName1(event.target.value)}
                     className="mt-1 w-full rounded-md border border-[var(--dash-border)] bg-[var(--dash-bg)] px-3 py-2 text-sm text-[var(--dash-text)] shadow-sm focus:border-[var(--dash-accent)] focus:outline-none"
                   />
+                  {/* This exact field is where the compounding-title bug
+                      was first caught live -- carrying over a prior type's
+                      full free-text title (e.g. a Corporate Event's name)
+                      as-is into a single-mode prompt, then confirming
+                      unchanged, produces "X's Birthday's Birthday" on a
+                      second switch. Surfacing the real computed title here
+                      means it's visible before the write happens, not
+                      after. */}
+                  {pendingType.namesMode !== "couple" && newName1.trim() && (
+                    <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
+                      Your site will be titled "{pendingType.titleTemplate([newName1.trim()])}"
+                    </p>
+                  )}
                 </div>
 
                 {pendingType.namesMode === "couple" && (

@@ -283,6 +283,23 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                 {attemptedSteps.has(step) && errors.name1 && (
                   <p className="mt-1 text-sm text-red-600">{errors.name1.message}</p>
                 )}
+                {/* Single/title-mode titleTemplate appends a possessive +
+                    the event type (e.g. "{name}'s Birthday") on top of
+                    whatever's typed here -- confirmed live this reads as
+                    broken ("Mia's 7th Birthday Bash & Celebration's
+                    Birthday") the moment a host types a fuller phrase
+                    instead of a bare first name, which this field's own
+                    generic "Who's celebrating?" prompt does nothing to
+                    discourage. The dashboard/browser-tab title is the only
+                    place that ever showed the composed form before now --
+                    surfacing it live, right where the host can still just
+                    shorten what they typed, beats discovering it after the
+                    site already exists. */}
+                {!isCoupleMode && name1?.trim() && (
+                  <p className="mt-2 text-sm text-gray-500">
+                    Your site will be titled "{eventType.titleTemplate([name1.trim()])}"
+                  </p>
+                )}
 
                 {isCoupleMode && (
                   <>
