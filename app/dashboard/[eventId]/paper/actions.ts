@@ -66,3 +66,10 @@ export async function updateInvitationBackCanvas(input: {
 }): Promise<{ ok: true } | { ok: false; message: string }> {
   return patchInvitationsContent(input.eventId, { backCanvas: input.frame as unknown as Json });
 }
+
+export async function updateInvitationFrontCanvas(input: {
+  eventId: string;
+  frame: CanvasFrame;
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  return patchInvitationsContent(input.eventId, { frontCanvas: input.frame as unknown as Json });
+}

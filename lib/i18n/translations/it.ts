@@ -245,12 +245,16 @@ export const it: Dictionary = {
     },
     pricing: {
       heading: "Il costruttore è sempre gratuito",
-      subtext: "Progetta il tuo sito, invita gli ospiti e traccia le conferme senza costi. Paghi solo se vuoi un dominio personalizzato, inviti cartacei o disposizione del banchetto.",
+      subtext: "Progetta il tuo sito, invita gli ospiti e traccia le conferme senza costi — pubblicalo quando sei pronto. Paghi se vuoi un indirizzo tutto tuo senza il badge Invimbo, oppure inviti cartacei senza filigrana.",
       free: "Gratis",
       whatYouGet: "Cosa ottieni",
       whatThisAdds: "Cosa aggiunge",
       badgeFree: "Sempre gratis",
       badgePremium: "Rimuove la filigrana",
+      freeCaveat: "Mostra un piccolo badge \"Made with Invimbo\" sul tuo sito pubblicato, e una filigrana sulla carta stampata.",
+      oneTime: "Pagamento unico, non un abbonamento",
+      exampleCaption: "Un design Invimbo reale — il tuo può essere così.",
+      valueAnchor: "Gli inviti stampati e spediti di solito costano di più per ospite. Qui una tariffa unica copre tutta la tua lista invitati, per quanti siano.",
     },
     finalCta: {
       heading: "Gratis per iniziare",

@@ -29,6 +29,13 @@ export interface PaperContent {
    * undefined until the host opens the Back canvas editor for the first
    * time, at which point it's seeded from `backMessage` and persisted. */
   backCanvas?: CanvasFrame;
+  /** Canvas design for the invitation's FRONT side -- undefined until the
+   * host opens "Customize text" on the front card for the first time. The
+   * front keeps its existing static (names/date/venue-from-Site-tab)
+   * preview as the default; this only exists for a host who wants to write
+   * something the structured fields can't say ("мало ли он хочет что-то
+   * своё написать"). Same opt-in, zero-migration pattern as backCanvas. */
+  frontCanvas?: CanvasFrame;
 }
 
 export function getPaperContent(content: Record<string, unknown>): PaperContent {
@@ -87,6 +94,10 @@ export function getPaperContent(content: Record<string, unknown>): PaperContent 
     typeof invitationsContent.backCanvas === "object" && invitationsContent.backCanvas !== null
       ? (invitationsContent.backCanvas as unknown as CanvasFrame)
       : undefined;
+  const frontCanvas =
+    typeof invitationsContent.frontCanvas === "object" && invitationsContent.frontCanvas !== null
+      ? (invitationsContent.frontCanvas as unknown as CanvasFrame)
+      : undefined;
 
   return {
     venueName,
@@ -98,5 +109,6 @@ export function getPaperContent(content: Record<string, unknown>): PaperContent 
     dressCodeColors,
     backMessage,
     backCanvas,
+    frontCanvas,
   };
 }

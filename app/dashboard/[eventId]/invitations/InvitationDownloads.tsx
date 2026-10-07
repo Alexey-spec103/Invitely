@@ -37,6 +37,7 @@ interface InvitationDownloadsProps {
   canvasFrames: CanvasFrame[];
   backMessage?: string;
   backCanvas?: CanvasFrame;
+  frontCanvas?: CanvasFrame;
   dressCodeTitle: string;
   dressCodeDescription?: string;
   dressCodeColors: DressCodeColorItem[];
@@ -75,6 +76,7 @@ export default function InvitationDownloads({
   canvasFrames,
   backMessage,
   backCanvas,
+  frontCanvas,
   dressCodeTitle,
   dressCodeDescription,
   dressCodeColors,
@@ -190,18 +192,22 @@ export default function InvitationDownloads({
       qrDataUrl = await QRCode.toDataURL(inviteUrl, { margin: 1, width: 240 });
     }
 
-    // A "Guest's personal invite" QR on the canvas back side needs to
+    // A "Guest's personal invite" QR on a canvas-designed side needs to
     // encode *this* guest's link, not the plain site link -- resolved fresh
     // per guest (resolveCanvasQrElements falls back to the site link when
     // inviteUrl is undefined, i.e. the generic/non-personalized download).
     let backFrame: CanvasFrame | undefined;
-    if (backCanvas) {
+    let frontFrame: CanvasFrame | undefined;
+    if (backCanvas || frontCanvas) {
       const { resolveCanvasQrElements } = await import("@/lib/canvas/resolveQrElements");
-      const [resolved] = await resolveCanvasQrElements([backCanvas], {
+      const framesToResolve = [backCanvas, frontCanvas].filter((f): f is CanvasFrame => Boolean(f));
+      const resolved = await resolveCanvasQrElements(framesToResolve, {
         siteUrl: `${window.location.origin}/e/${slug}`,
         inviteUrl,
       });
-      backFrame = resolved;
+      let i = 0;
+      if (backCanvas) backFrame = resolved[i++];
+      if (frontCanvas) frontFrame = resolved[i++];
     }
 
     return pdfModule
@@ -217,6 +223,7 @@ export default function InvitationDownloads({
           qrDataUrl={qrDataUrl}
           backMessage={backMessage}
           backFrame={backFrame}
+          frontFrame={frontFrame}
           locked={Boolean(guest) && locked}
         />
       )

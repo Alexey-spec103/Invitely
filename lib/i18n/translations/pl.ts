@@ -255,12 +255,16 @@ export const pl: Dictionary = {
     },
     pricing: {
       heading: "Kreator jest zawsze darmowy",
-      subtext: "Projektuj stronę, zapraszaj gości i śledź potwierdzenia bez opłat. Płacisz tylko wtedy, gdy chcesz własną domenę, zaproszenia papierowe lub rozmieszczenie na bankiecie.",
+      subtext: "Projektuj stronę, zapraszaj gości i śledź potwierdzenia bez opłat — opublikuj ją na żywo, kiedy będziesz gotowy. Płacisz, gdy chcesz własny adres bez odznaki Invimbo, albo zaproszenia papierowe bez znaku wodnego.",
       free: "Za darmo",
       whatYouGet: "Co otrzymujesz",
       whatThisAdds: "Co to dodaje",
       badgeFree: "Zawsze za darmo",
       badgePremium: "Usuwa znak wodny",
+      freeCaveat: "Na Twojej stronie na żywo pojawia się mała odznaka „Made with Invimbo”, a na wydrukach — znak wodny.",
+      oneTime: "Płatność jednorazowa, nie subskrypcja",
+      exampleCaption: "Prawdziwy projekt Invimbo — Twój może wyglądać podobnie.",
+      valueAnchor: "Drukowane, wysyłane pocztą zaproszenia zwykle kosztują więcej za gościa. Tu jedna stała opłata obejmuje całą Twoją listę gości, niezależnie od liczby osób.",
     },
     finalCta: {
       heading: "Zacznij za darmo",

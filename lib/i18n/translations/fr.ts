@@ -245,12 +245,16 @@ export const fr: Dictionary = {
     },
     pricing: {
       heading: "Le constructeur est toujours gratuit",
-      subtext: "Concevez votre site, invitez vos invités et suivez les réponses gratuitement. Payez uniquement si vous voulez un domaine personnalisé, des invitations papier ou un placement au banquet.",
+      subtext: "Concevez votre site, invitez vos invités et suivez les réponses gratuitement — publiez-le dès que vous êtes prêt. Vous payez pour une adresse qui vous est propre sans le badge Invimbo, ou des invitations papier sans filigrane.",
       free: "Gratuit",
       whatYouGet: "Ce que vous obtenez",
       whatThisAdds: "Ce que cela ajoute",
       badgeFree: "Toujours gratuit",
       badgePremium: "Retire le filigrane",
+      freeCaveat: "Affiche un petit badge « Made with Invimbo » sur votre site en ligne, et un filigrane sur le papier imprimé.",
+      oneTime: "Paiement unique, pas d'abonnement",
+      exampleCaption: "Un vrai modèle Invimbo — le vôtre peut y ressembler.",
+      valueAnchor: "Les invitations imprimées et envoyées par courrier coûtent généralement plus cher par invité. Ici, un tarif unique couvre toute votre liste d'invités, quel que soit leur nombre.",
     },
     finalCta: {
       heading: "Gratuit pour commencer",

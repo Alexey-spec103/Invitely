@@ -38,12 +38,17 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
   // so a not-yet-applied migration only reverts this one toggle to its
   // default (notifications on) instead of breaking every page that loads
   // this event.
+  // rsvp_digest_email/last_digest_sent_at (20261007130000_rsvp_digest_email.sql)
+  // have the same not-yet-applied-migration concern as rsvp_email_notifications
+  // above, so they ride the same narrow query and the same safe-default
+  // fallback (off, matching the column's own default).
   const { data: notificationSettings } = await supabase
     .from("events")
-    .select("rsvp_email_notifications")
+    .select("rsvp_email_notifications, rsvp_digest_email")
     .eq("id", event.id)
     .maybeSingle();
   const rsvpEmailNotifications = notificationSettings?.rsvp_email_notifications ?? true;
+  const rsvpDigestEmail = notificationSettings?.rsvp_digest_email ?? false;
 
   const { data: guests } = await supabase
     .from("guests")
@@ -200,7 +205,7 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
         )}
       />
 
-      <RsvpNotificationToggle eventId={event.id} enabled={rsvpEmailNotifications} />
+      <RsvpNotificationToggle eventId={event.id} enabled={rsvpEmailNotifications} digestEnabled={rsvpDigestEmail} />
 
       <RsvpResponses
         eventId={event.id}

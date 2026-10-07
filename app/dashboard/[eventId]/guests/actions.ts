@@ -500,3 +500,111 @@ export async function updateRsvpEmailNotifications(
   revalidatePath("/dashboard", "layout");
   return { ok: true };
 }
+
+/** Companion to updateRsvpEmailNotifications above, for the separate daily
+ * digest (app/api/cron/rsvp-digest/route.ts) rather than the instant
+ * per-response email -- a host can have either, both, or neither on. */
+export async function updateRsvpDigestEmail(
+  eventId: string,
+  enabled: boolean
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const { error } = await supabase
+    .from("events")
+    .update({ rsvp_digest_email: enabled })
+    .eq("id", eventId)
+    .eq("owner_id", user.id);
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  revalidatePath("/dashboard", "layout");
+  return { ok: true };
+}
+
+/** Bulk counterpart to sendGuestInvitationEmail above -- one click through
+ * every guest with an email on file that hasn't already been emailed,
+ * instead of opening SendInviteMenu once per person. Sequential (not
+ * Promise.all) so a slow/failing send never races recordInvitationSent
+ * writes against each other for different guests, and so a host sending to
+ * a large list doesn't fire everything at Resend at once. Best-effort per
+ * guest: one failure is recorded in `failed` and the loop continues, rather
+ * than aborting the whole batch. */
+export async function sendBulkGuestInvitationEmails(
+  eventId: string,
+  baseUrl: string
+): Promise<
+  | { ok: true; sent: number; skipped: number; failed: { name: string; message: string }[] }
+  | { ok: false; message: string }
+> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("title, slug")
+    .eq("id", eventId)
+    .eq("owner_id", user.id)
+    .single();
+
+  if (eventError || !event) {
+    return { ok: false, message: eventError?.message ?? "Event not found" };
+  }
+
+  const { data: guests, error: guestsError } = await supabase
+    .from("guests")
+    .select("id, full_name, email, invite_code, invitation_sent_at, site_enabled")
+    .eq("event_id", eventId);
+
+  if (guestsError) {
+    return { ok: false, message: guestsError.message };
+  }
+
+  const eligible = (guests ?? []).filter(
+    (guest) => guest.site_enabled && guest.email && guest.invite_code && !guest.invitation_sent_at
+  );
+
+  let sent = 0;
+  const failed: { name: string; message: string }[] = [];
+
+  for (const guest of eligible) {
+    const url = `${baseUrl}/e/${event.slug}?invite=${guest.invite_code}`;
+    try {
+      // sendGuestInvitationEmail's own {ok:false} path only covers its
+      // guard clauses (no email on file, event/guest not found) -- the
+      // underlying sendEmail() call throws on a real provider error (e.g.
+      // Resend rejecting a test address), which would otherwise escape this
+      // loop entirely and abort every guest after the one that failed.
+      const result = await sendGuestInvitationEmail(guest.id, url);
+      if (result.ok) {
+        sent += 1;
+      } else {
+        failed.push({ name: guest.full_name, message: result.message });
+      }
+    } catch (err) {
+      failed.push({ name: guest.full_name, message: err instanceof Error ? err.message : "Failed to send" });
+    }
+  }
+
+  const skipped = (guests ?? []).length - eligible.length - failed.length;
+
+  revalidatePath("/dashboard", "layout");
+  return { ok: true, sent, skipped: Math.max(skipped, 0), failed };
+}

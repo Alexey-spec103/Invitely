@@ -28,6 +28,13 @@ export interface InvitationDocumentProps {
    * itself. Takes over the back page entirely when present; falls back to
    * the plain `backMessage` text page otherwise. */
   backFrame?: CanvasFrame;
+  /** The invitation's canvas-designed FRONT side -- same resolved-QR
+   * contract as `backFrame`. Opt-in: takes over the front page entirely
+   * when present (the structured names/date/venue/QR layout below is
+   * skipped for that page), falls back to the structured layout otherwise.
+   * Lets a host write something the structured fields can't say, without
+   * touching every event that hasn't customized its front. */
+  frontFrame?: CanvasFrame;
   /** dashboard-audit.md B21: true when the event's plan is below Premium
    * -- personalized (QR-linked, per-guest) invitations are a Premium-tier
    * material in lib/plans.ts. Only meaningful when `guestName`/`qrDataUrl`
@@ -47,14 +54,15 @@ export function InvitationDocument({
   qrDataUrl,
   backMessage,
   backFrame,
+  frontFrame,
   locked,
 }: InvitationDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
   style.headingFont.forEach(registerCanvasPdfFont);
   style.bodyFont.forEach(registerCanvasPdfFont);
-  if (backFrame) {
-    for (const family of collectFontFamilies([backFrame])) {
+  if (backFrame || frontFrame) {
+    for (const family of collectFontFamilies([backFrame, frontFrame].filter((f): f is CanvasFrame => Boolean(f)))) {
       registerCanvasPdfFont(family);
     }
   }
@@ -168,45 +176,61 @@ export function InvitationDocument({
 
   return (
     <Document>
-      <Page size="A5" style={styles.page}>
-        <View style={styles.border} fixed />
-        <View style={styles.flourishTopLeft} fixed>
-          <CornerFlourish color={style.accent} />
-        </View>
-        <View style={styles.flourishBottomRight} fixed>
-          <CornerFlourish color={style.accent} rotate={180} />
-        </View>
+      {frontFrame ? (
+        <Page
+          size="A5"
+          style={{
+            position: "relative",
+            backgroundColor:
+              frontFrame.background.fill || frontFrame.background.color
+                ? pdfBackgroundColor(frontFrame.background)
+                : style.background,
+          }}
+        >
+          <CanvasPdfFrameContent frame={frontFrame} />
+          {locked && <PdfWatermark repeat={36} />}
+        </Page>
+      ) : (
+        <Page size="A5" style={styles.page}>
+          <View style={styles.border} fixed />
+          <View style={styles.flourishTopLeft} fixed>
+            <CornerFlourish color={style.accent} />
+          </View>
+          <View style={styles.flourishBottomRight} fixed>
+            <CornerFlourish color={style.accent} rotate={180} />
+          </View>
 
-        {guestName && <Text style={styles.guestLine}>Dear {guestName},</Text>}
+          {guestName && <Text style={styles.guestLine}>Dear {guestName},</Text>}
 
-        <Text style={styles.names}>{names[0]}</Text>
-        {names[1] && (
-          <>
-            <Text style={styles.ampersand}>&</Text>
-            <Text style={styles.names}>{names[1]}</Text>
-          </>
-        )}
+          <Text style={styles.names}>{names[0]}</Text>
+          {names[1] && (
+            <>
+              <Text style={styles.ampersand}>&</Text>
+              <Text style={styles.names}>{names[1]}</Text>
+            </>
+          )}
 
-        <Text style={styles.date}>{formatEventDate(eventDate, locale).toUpperCase()}</Text>
+          <Text style={styles.date}>{formatEventDate(eventDate, locale).toUpperCase()}</Text>
 
-        {(venueName || venueAddress) && (
-          <Text style={styles.venue}>{[venueName, venueAddress].filter(Boolean).join(" · ")}</Text>
-        )}
+          {(venueName || venueAddress) && (
+            <Text style={styles.venue}>{[venueName, venueAddress].filter(Boolean).join(" · ")}</Text>
+          )}
 
-        {qrDataUrl && (
-          <>
-            <View style={styles.qrDivider} />
-            <View style={styles.qrWrap}>
-              <View style={styles.qrFrame}>
-                {/* eslint-disable-next-line jsx-a11y/alt-text -- react-pdf's Image is a PDF primitive, not an HTML img; it has no alt prop */}
-                <Image src={qrDataUrl} style={styles.qrImage} />
+          {qrDataUrl && (
+            <>
+              <View style={styles.qrDivider} />
+              <View style={styles.qrWrap}>
+                <View style={styles.qrFrame}>
+                  {/* eslint-disable-next-line jsx-a11y/alt-text -- react-pdf's Image is a PDF primitive, not an HTML img; it has no alt prop */}
+                  <Image src={qrDataUrl} style={styles.qrImage} />
+                </View>
+                <Text style={styles.qrCaption}>Scan to RSVP</Text>
               </View>
-              <Text style={styles.qrCaption}>Scan to RSVP</Text>
-            </View>
-          </>
-        )}
-        {locked && <PdfWatermark repeat={36} />}
-      </Page>
+            </>
+          )}
+          {locked && <PdfWatermark repeat={36} />}
+        </Page>
+      )}
 
       {backFrame ? (
         <Page

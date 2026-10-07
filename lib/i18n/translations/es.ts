@@ -245,12 +245,16 @@ export const es: Dictionary = {
     },
     pricing: {
       heading: "El constructor siempre es gratis",
-      subtext: "Diseña tu sitio, invita a tus invitados y sigue las confirmaciones sin coste. Paga solo si quieres un dominio personalizado, invitaciones de papel u organización de banquete.",
+      subtext: "Diseña tu sitio, invita a tus invitados y sigue las confirmaciones sin coste — publícalo en directo cuando quieras. Paga si quieres tu propia dirección sin el distintivo de Invimbo, o invitaciones de papel sin marca de agua.",
       free: "Gratis",
       whatYouGet: "Lo que obtienes",
       whatThisAdds: "Lo que añade",
       badgeFree: "Siempre gratis",
       badgePremium: "Elimina la marca de agua",
+      freeCaveat: "Muestra un pequeño distintivo \"Hecho con Invimbo\" en tu sitio en directo, y una marca de agua en el papel impreso.",
+      oneTime: "Pago único, no es una suscripción",
+      exampleCaption: "Un diseño real de Invimbo — el tuyo puede verse así.",
+      valueAnchor: "Las invitaciones impresas y enviadas por correo suelen costar más por invitado. Aquí, una tarifa única cubre a toda tu lista de invitados, sean cuantos sean.",
     },
     finalCta: {
       heading: "Gratis para empezar",

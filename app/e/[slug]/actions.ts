@@ -186,8 +186,26 @@ export async function submitRsvp(
     if (ownerEmail) {
       const eventTitle = notificationEvent?.title ?? "your event";
 
+      // Direct feedback: a host had to open the dashboard to see where RSVPs
+      // stood overall -- this one extra query turns every instant email into
+      // a running scoreboard, not just a single-guest notice. Counted fresh
+      // on each send rather than cached, so it's always accurate even if two
+      // RSVPs land close together.
+      const { data: allResponses } = await supabase
+        .from("rsvp_responses")
+        .select("attending")
+        .eq("event_id", eventId);
+      const totalResponded = allResponses?.length ?? 0;
+      const totalYes = allResponses?.filter((response) => response.attending).length ?? 0;
+      const totalNo = totalResponded - totalYes;
+      const summaryLine =
+        totalResponded > 0
+          ? `<p style="color:#6b7280;font-size:13px;">${totalResponded} response${totalResponded === 1 ? "" : "s"} so far: ${totalYes} yes, ${totalNo} no.</p>`
+          : "";
+
       const detailLines = [
         `<p><strong>${input.guestName || "A guest"}</strong> ${input.attending ? "is coming" : "can't make it"} to ${eventTitle}.</p>`,
+        summaryLine,
         input.attending ? `<p>Party size: ${partySize}</p>` : "",
         input.attending && input.attendeeNames?.length
           ? `<p>Names: ${input.attendeeNames.filter(Boolean).join(", ")}</p>`

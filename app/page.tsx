@@ -25,6 +25,7 @@ import { themes } from "@/lib/themes";
 import { CANVAS_FONTS } from "@/lib/canvas/fonts";
 import { plans } from "@/lib/plans";
 import LandingThemeShowcase from "@/components/marketing/LandingThemeShowcase";
+import InvitationCardPreview from "@/components/paper/InvitationCardPreview";
 import MobileNav from "@/components/marketing/MobileNav";
 import EventTypesSection from "@/components/marketing/EventTypesSection";
 import ConstructorScreenshot from "@/components/marketing/ConstructorScreenshot";
@@ -41,6 +42,12 @@ import { SUPPORTED_LOCALES } from "@/lib/i18n/locales";
 
 const themeCount = Object.keys(themes).length;
 const fontCount = CANVAS_FONTS.length;
+
+// Anchors the €19 price to one concrete, real rendered design instead of a
+// bare number -- reuses InvitationCardPreview (the same component the Paper
+// tab and HeroPhoneShowcase render), not a new rendering path. A richly
+// decorated, popular pick (see LandingThemeShowcase's own showcase list).
+const PRICING_EXAMPLE_THEME_ID = "peony-blush-burgundy";
 
 // Icon-only lookup tables -- the translated title/description text for each
 // entry now lives in lib/i18n/translations/*.ts's `landing` namespace
@@ -133,6 +140,8 @@ export default async function Home() {
     free: t.pricing.badgeFree,
     premium: t.pricing.badgePremium,
   };
+
+  const pricingExampleTheme = themes[PRICING_EXAMPLE_THEME_ID] ?? Object.values(themes)[0];
 
   return (
     <div className="marketing-shell bg-white font-sans">
@@ -409,32 +418,68 @@ export default async function Home() {
             {t.pricing.heading}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">{t.pricing.subtext}</p>
-          <div className="mt-16 grid gap-6 sm:grid-cols-3">
-            {Object.values(plans).map((plan, i) => (
-              <div
-                key={plan.id}
-                className="landing-reveal-item relative rounded-xl border border-stone-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md"
-                style={{ "--stagger-i": i } as CSSProperties}
-              >
-                {planBadges[plan.id] && (
-                  <span className="absolute -top-3 left-6 rounded-full bg-[var(--dash-accent)] px-3 py-1 text-[11px] font-semibold text-white">
-                    {planBadges[plan.id]}
-                  </span>
-                )}
-                <p className="text-sm font-semibold text-stone-900">{plan.name}</p>
-                <p className="mt-2 text-3xl font-semibold text-stone-900">
-                  {plan.priceEur === 0 ? t.pricing.free : `€${plan.priceEur}`}
-                </p>
-                <p className="mt-2 text-xs uppercase tracking-wide text-stone-400">
-                  {plan.id === "free" ? t.pricing.whatYouGet : t.pricing.whatThisAdds}
-                </p>
-                <ul className="mt-3 space-y-2 text-sm text-stone-600">
-                  {planHighlights[plan.id].map((feature) => (
-                    <li key={feature}>{feature}</li>
-                  ))}
-                </ul>
+          <div className="mt-16 grid gap-10 lg:grid-cols-[auto_1fr] lg:items-start">
+            {/* Anchors the price to a real, finished result rather than
+                leaving it as an abstract number next to text -- see
+                PRICING_EXAMPLE_THEME_ID's own comment. */}
+            <div className="mx-auto w-48 shrink-0 -rotate-2 overflow-hidden rounded-2xl shadow-[0_24px_50px_-20px_rgba(60,40,20,0.35)] ring-4 ring-white sm:w-56 lg:mx-0">
+              <InvitationCardPreview
+                theme={pricingExampleTheme}
+                names={["Claire", "Nathaniel"]}
+                eventDate="2027-05-15"
+                side="front"
+                locale={locale}
+              />
+              <p className="mt-3 hidden text-center text-xs text-stone-500 lg:block">{t.pricing.exampleCaption}</p>
+            </div>
+            <div>
+              <p className="-mt-6 mb-6 text-center text-xs text-stone-500 lg:hidden">{t.pricing.exampleCaption}</p>
+              <div className="grid gap-6 sm:grid-cols-3">
+                {Object.values(plans).map((plan, i) => (
+                  <div
+                    key={plan.id}
+                    className="landing-reveal-item relative rounded-xl border border-stone-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md"
+                    style={{ "--stagger-i": i } as CSSProperties}
+                  >
+                    {planBadges[plan.id] && (
+                      <span className="absolute -top-3 left-6 rounded-full bg-[var(--dash-accent)] px-3 py-1 text-[11px] font-semibold text-white">
+                        {planBadges[plan.id]}
+                      </span>
+                    )}
+                    <p className="text-sm font-semibold text-stone-900">{plan.name}</p>
+                    <p className="mt-2 text-3xl font-semibold text-stone-900">
+                      {plan.priceEur === 0 ? t.pricing.free : `€${plan.priceEur}`}
+                    </p>
+                    {/* Verified true: app/dashboard/[eventId]/plan/actions.ts's
+                        createCheckoutSession uses Stripe mode: "payment" (a
+                        single charge), never mode: "subscription" -- matches
+                        the identical claim already made on the dashboard's
+                        own Plan page (PlanSelectForm.tsx). */}
+                    {plan.priceEur > 0 && <p className="mt-0.5 text-xs text-stone-400">{t.pricing.oneTime}</p>}
+                    <p className="mt-2 text-xs uppercase tracking-wide text-stone-400">
+                      {plan.id === "free" ? t.pricing.whatYouGet : t.pricing.whatThisAdds}
+                    </p>
+                    <ul className="mt-3 space-y-2 text-sm text-stone-600">
+                      {planHighlights[plan.id].map((feature) => (
+                        <li key={feature}>{feature}</li>
+                      ))}
+                    </ul>
+                    {/* Free really does publish a live site (see
+                        app/e/[slug]/page.tsx -- visibility is gated on
+                        event.status === "published", never on plan_id), so
+                        removing this card would misrepresent the product.
+                        The honest fix is naming its one trade-off here
+                        instead of implying it doesn't exist. */}
+                    {plan.id === "free" && (
+                      <p className="mt-3 border-t border-stone-100 pt-3 text-xs text-stone-500">
+                        {t.pricing.freeCaveat}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
+              <p className="mt-6 text-center text-sm text-stone-500 sm:text-left">{t.pricing.valueAnchor}</p>
+            </div>
           </div>
         </div>
       </section>

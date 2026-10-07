@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { updateInvitationBackCanvas } from "./actions";
+import { updateInvitationBackCanvas, updateInvitationFrontCanvas } from "./actions";
 import { getEventType } from "@/lib/eventTypes";
 import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
 import { useAutosave } from "@/lib/useAutosave";
@@ -13,6 +13,8 @@ import type { Theme } from "@/lib/themes";
 import type { Locale } from "@/lib/i18n/locales";
 import { CANVAS_DESIGN_WIDTH, type CanvasElement, type CanvasFrame } from "@/lib/canvas/types";
 import CanvasFrameEditor from "@/components/canvas/CanvasFrameEditor";
+import CanvasRenderer from "@/components/canvas/CanvasRenderer";
+import { formatEventDate } from "@/components/paper/formatEventDate";
 import InvitationCardPreview from "@/components/paper/InvitationCardPreview";
 import EnvelopeCardPreview from "@/components/paper/EnvelopeCardPreview";
 import ProgramCardPreview, { type ProgramCardEvent } from "@/components/paper/ProgramCardPreview";
@@ -39,6 +41,10 @@ interface PaperConstructorProps {
   dressCodeColors: DressCodeCardColor[];
   backMessage: string;
   backCanvas?: CanvasFrame;
+  /** Canvas design for the invitation's FRONT side -- undefined until the
+   * host opens "Customize text" on the front card. See `createFrontCanvasSeed`
+   * for what a freshly-opened editor starts from. */
+  frontCanvas?: CanvasFrame;
   tableCardData: TableCardData[];
   tableNames: string[];
   allGuestNames: string[];
@@ -103,6 +109,139 @@ function createBackCanvasSeed(backMessage: string): CanvasFrame {
   };
 }
 
+/** First time a host opens "Customize text" on the FRONT card with no saved
+ * design yet: seed a canvas that reproduces the current static card's own
+ * content (names/date/venue) and the event's actual theme colors, so
+ * switching into the editor doesn't look like a jarring blank slate --
+ * from there the host can edit, move, or replace any of it freely. Text
+ * only (no border/corner-flourish decor): the ask was to let a host write
+ * something of their own, not to rebuild the themed card chrome in canvas
+ * form. */
+function createFrontCanvasSeed(args: {
+  theme: Theme;
+  names: string[];
+  eventDate: string;
+  venueName?: string;
+  venueAddress?: string;
+  locale: Locale;
+}): CanvasFrame {
+  const { theme, names, eventDate, venueName, venueAddress, locale } = args;
+  const textColor = theme.vars["--theme-text"];
+  const accentColor = theme.vars["--theme-accent"];
+  const midY = BACK_CANVAS_HEIGHT / 2;
+  const hasSecondName = Boolean(names[1]);
+
+  const elements: CanvasElement[] = [];
+  let zIndex = 1;
+
+  elements.push({
+    id: crypto.randomUUID(),
+    type: "text",
+    x: 100,
+    y: hasSecondName ? midY - 260 : midY - 160,
+    width: CANVAS_DESIGN_WIDTH - 200,
+    height: 140,
+    rotation: 0,
+    zIndex: zIndex++,
+    text: names[0] ?? "",
+    fontFamily: "Playfair Display",
+    fontSize: 72,
+    fontWeight: 600,
+    color: textColor,
+    textAlign: "center",
+    lineHeight: 1.1,
+    letterSpacing: 0,
+  });
+
+  if (hasSecondName) {
+    elements.push({
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: midY - 110,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 60,
+      rotation: 0,
+      zIndex: zIndex++,
+      text: "&",
+      fontFamily: "Playfair Display",
+      fontSize: 40,
+      fontWeight: 400,
+      color: accentColor,
+      textAlign: "center",
+      lineHeight: 1,
+      letterSpacing: 0,
+    });
+    elements.push({
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: midY - 30,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 140,
+      rotation: 0,
+      zIndex: zIndex++,
+      text: names[1] ?? "",
+      fontFamily: "Playfair Display",
+      fontSize: 72,
+      fontWeight: 600,
+      color: textColor,
+      textAlign: "center",
+      lineHeight: 1.1,
+      letterSpacing: 0,
+    });
+  }
+
+  elements.push({
+    id: crypto.randomUUID(),
+    type: "text",
+    x: 100,
+    y: hasSecondName ? midY + 160 : midY + 40,
+    width: CANVAS_DESIGN_WIDTH - 200,
+    height: 50,
+    rotation: 0,
+    zIndex: zIndex++,
+    text: formatEventDate(eventDate, locale).toUpperCase(),
+    fontFamily: "Inter",
+    fontSize: 26,
+    fontWeight: 500,
+    color: accentColor,
+    textAlign: "center",
+    lineHeight: 1.3,
+    letterSpacing: 2,
+  });
+
+  if (venueName || venueAddress) {
+    elements.push({
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: hasSecondName ? midY + 220 : midY + 100,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 50,
+      rotation: 0,
+      zIndex: zIndex++,
+      text: [venueName, venueAddress].filter(Boolean).join(" · "),
+      fontFamily: "Inter",
+      fontSize: 22,
+      fontWeight: 400,
+      color: textColor,
+      textAlign: "center",
+      lineHeight: 1.3,
+      letterSpacing: 0,
+    });
+  }
+
+  return {
+    id: crypto.randomUUID(),
+    name: "Front",
+    width: CANVAS_DESIGN_WIDTH,
+    height: BACK_CANVAS_HEIGHT,
+    background: { color: theme.vars["--theme-bg"] },
+    elements,
+  };
+}
+
 type MediaId =
   | "invitation-front"
   | "invitation-back"
@@ -148,6 +287,7 @@ export default function PaperConstructor({
   dressCodeColors,
   backMessage: initialBackMessage,
   backCanvas: initialBackCanvas,
+  frontCanvas: initialFrontCanvas,
   tableCardData,
   tableNames,
   allGuestNames,
@@ -214,8 +354,35 @@ export default function PaperConstructor({
     router.refresh();
   });
 
+  // Front stays on its existing static (theme-matched, decor-corners)
+  // preview by default -- only a host who explicitly opens "Customize text"
+  // gets the free-form canvas, same data/undo-history shape as the back's.
+  const [isEditingFront, setIsEditingFront] = useState(false);
+  const [hasCustomFront, setHasCustomFront] = useState(Boolean(initialFrontCanvas));
+  const [frontCanvasHistory, setFrontCanvasHistory] = useState<CanvasFrame[]>([
+    initialFrontCanvas ?? createFrontCanvasSeed({ theme, names, eventDate, venueName, venueAddress, locale }),
+  ]);
+  const [frontCanvasHistoryIndex, setFrontCanvasHistoryIndex] = useState(0);
+  const frontCanvasFrame = frontCanvasHistory[frontCanvasHistoryIndex];
+
+  const updateFrontCanvasFrame = (updater: (f: CanvasFrame) => CanvasFrame) => {
+    const next = updater(frontCanvasFrame);
+    setFrontCanvasHistory((prev) => [...prev.slice(0, frontCanvasHistoryIndex + 1), next]);
+    setFrontCanvasHistoryIndex((idx) => idx + 1);
+    setHasCustomFront(true);
+  };
+  const undoFrontCanvas = () => setFrontCanvasHistoryIndex((idx) => Math.max(0, idx - 1));
+  const redoFrontCanvas = () => setFrontCanvasHistoryIndex((idx) => Math.min(frontCanvasHistory.length - 1, idx + 1));
+
+  const { state: frontCanvasSaveState, error: frontCanvasSaveError } = useAutosave(frontCanvasFrame, async (frame) => {
+    const result = await updateInvitationFrontCanvas({ eventId, frame });
+    if (!result.ok) throw new Error(result.message);
+    router.refresh();
+  });
+
   const activeMedia = media.find((item) => item.id === activeId) ?? media[0];
   const isBackCanvasActive = activeMedia.id === "invitation-back";
+  const isFrontCanvasActive = activeMedia.id === "invitation-front" && isEditingFront;
 
   // Banquet media items preview one representative card at a time (a table's
   // seating card, a guest's place card, a table's number placard) out of
@@ -225,6 +392,7 @@ export default function PaperConstructor({
   const selectMedia = (id: MediaId) => {
     setActiveId(id);
     setBanquetIndex(0);
+    if (id !== "invitation-front") setIsEditingFront(false);
   };
   const banquetCount =
     activeMedia.id === "seatingChart"
@@ -318,10 +486,12 @@ export default function PaperConstructor({
     tableNumbers: "Downloading table numbers",
   };
 
+  const isAnyCanvasEditorActive = isBackCanvasActive || isFrontCanvasActive;
+
   return (
     <div
       className={
-        isBackCanvasActive
+        isAnyCanvasEditorActive
           ? "mt-6 rounded-[10px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:flex sm:items-start sm:gap-6"
           : /* Was `[..._minmax(0,240px)_1fr]` -- the middle column (the
              actual print-card preview, capped at 240px) got the SMALLEST
@@ -335,7 +505,7 @@ export default function PaperConstructor({
             "mt-6 rounded-[10px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:grid sm:grid-cols-[minmax(0,160px)_1fr_minmax(0,260px)] sm:items-start sm:gap-6"
       }
     >
-      <nav className={isBackCanvasActive ? "flex-none space-y-4 sm:w-40" : "space-y-4"}>
+      <nav className={isAnyCanvasEditorActive ? "flex-none space-y-4 sm:w-40" : "space-y-4"}>
         {groupedMedia.map(({ group, items }) => (
           <div key={group}>
             <p className="dash-h2 px-1 text-xs uppercase tracking-wide text-[var(--dash-accent)]">
@@ -385,6 +555,35 @@ export default function PaperConstructor({
             />
           </div>
         </div>
+      ) : isFrontCanvasActive ? (
+        <div className="mt-6 min-w-0 flex-1 sm:mt-0">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-[var(--dash-text-muted)]">
+              Write whatever you want on the front -- move, resize, or replace any line. Starts from your current
+              names/date/venue.
+            </p>
+            <AutosaveStatus state={frontCanvasSaveState} error={frontCanvasSaveError} />
+          </div>
+          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+            <CanvasFrameEditor
+              frame={frontCanvasFrame}
+              onUpdateFrame={updateFrontCanvasFrame}
+              onUndo={undoFrontCanvas}
+              canUndo={frontCanvasHistoryIndex > 0}
+              onRedo={redoFrontCanvas}
+              canRedo={frontCanvasHistoryIndex < frontCanvasHistory.length - 1}
+              toolbarRight={
+                <button
+                  type="button"
+                  onClick={() => setIsEditingFront(false)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  Done
+                </button>
+              }
+            />
+          </div>
+        </div>
       ) : (
         <>
           <div>
@@ -393,17 +592,20 @@ export default function PaperConstructor({
                 className="grid w-full max-w-[420px] overflow-hidden rounded-md shadow-md transition-[width] duration-200"
                 style={{ aspectRatio: activeMedia.aspectRatio, width: `${320 * zoom}px` }}
               >
-                {activeMedia.id === "invitation-front" && (
-                  <InvitationCardPreview
-                    theme={theme}
-                    names={names}
-                    eventDate={eventDate}
-                    locale={locale}
-                    venueName={venueName}
-                    venueAddress={venueAddress}
-                    side="front"
-                  />
-                )}
+                {activeMedia.id === "invitation-front" &&
+                  (hasCustomFront ? (
+                    <CanvasRenderer frames={[frontCanvasFrame]} />
+                  ) : (
+                    <InvitationCardPreview
+                      theme={theme}
+                      names={names}
+                      eventDate={eventDate}
+                      locale={locale}
+                      venueName={venueName}
+                      venueAddress={venueAddress}
+                      side="front"
+                    />
+                  ))}
                 {activeMedia.id === "envelope" && (
                   <EnvelopeCardPreview theme={theme} names={names} eventDate={eventDate} locale={locale} />
                 )}
@@ -453,13 +655,22 @@ export default function PaperConstructor({
                 +
               </button>
               {activeMedia.id === "invitation-front" && (
-                <button
-                  type="button"
-                  onClick={() => setActiveId("invitation-back")}
-                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
-                >
-                  ↺ Flip to back
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingFront(true)}
+                    className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                  >
+                    {hasCustomFront ? "Edit text" : "Customize text"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveId("invitation-back")}
+                    className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                  >
+                    ↺ Flip to back
+                  </button>
+                </>
               )}
             </div>
 
@@ -493,11 +704,21 @@ export default function PaperConstructor({
           <div className="mt-6 sm:mt-0">
             {activeMedia.id === "invitation-front" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
-                Names, date &amp; venue come from your{" "}
-                <Link href={`/dashboard/${eventId}/site#wedding-data-card`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
-                  {getLocalizedEventType(eventType, locale).label} data
-                </Link>
-                . Edit them there and this card updates automatically.
+                {hasCustomFront ? (
+                  <>
+                    This card now uses your own custom text -- click &quot;Edit text&quot; to change it, or
+                    rearrange/resize anything.
+                  </>
+                ) : (
+                  <>
+                    Names, date &amp; venue come from your{" "}
+                    <Link href={`/dashboard/${eventId}/site#wedding-data-card`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
+                      {getLocalizedEventType(eventType, locale).label} data
+                    </Link>
+                    . Edit them there and this card updates automatically -- or click &quot;Customize text&quot; to
+                    write your own instead.
+                  </>
+                )}
               </p>
             )}
             {activeMedia.id === "envelope" && (

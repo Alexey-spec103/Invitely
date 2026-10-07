@@ -14,6 +14,7 @@ import {
   setInvitationSent,
   recordInvitationSent,
   sendGuestInvitationEmail,
+  sendBulkGuestInvitationEmails,
   type SendChannel,
 } from "./actions";
 import BulkAddGuests from "./BulkAddGuests";
@@ -44,17 +45,53 @@ interface GuestManagerProps {
   rsvpStatusByGuestId: Record<string, boolean>;
 }
 
-function ShareLinkBanner({ eventSlug }: { eventSlug: string }) {
+/** dashboard-audit.md follow-up: "Copy site link" alone meant a host still
+ * had to paste it into WhatsApp/email themselves -- same compose-window
+ * pattern SendInviteMenu already proved for per-guest links (wa.me / sms: /
+ * mailto:), just pointed at the general site link instead of one guest's
+ * invite code, and with no phone/email lookup needed since this is the
+ * host sharing their own link, not inviting one specific person. */
+function ShareLinkBanner({ eventSlug, eventTitle }: { eventSlug: string; eventTitle: string }) {
   const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const shareRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!shareOpen) return;
+    const handlePointerDown = (event: MouseEvent) => {
+      if (shareRef.current && !shareRef.current.contains(event.target as Node)) {
+        setShareOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [shareOpen]);
+
+  const getUrl = () => `${window.location.origin}/e/${eventSlug}`;
 
   const handleCopy = async () => {
-    const url = `${window.location.origin}/e/${eventSlug}`;
+    const url = getUrl();
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       window.prompt("Copy this link:", url);
+    }
+  };
+
+  const handleShare = (channel: "whatsapp" | "sms" | "email") => {
+    setShareOpen(false);
+    const url = getUrl();
+    const message = `You're invited to ${eventTitle}! RSVP here: ${url}`;
+    if (channel === "whatsapp") {
+      // No phone number -- wa.me with no number opens WhatsApp's own
+      // contact picker instead of a single prefilled chat.
+      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    } else if (channel === "sms") {
+      window.location.href = `sms:?&body=${encodeURIComponent(message)}`;
+    } else {
+      window.location.href = `mailto:?subject=${encodeURIComponent(`You're invited to ${eventTitle}`)}&body=${encodeURIComponent(message)}`;
     }
   };
 
@@ -71,9 +108,53 @@ function ShareLinkBanner({ eventSlug }: { eventSlug: string }) {
         Add guests individually below instead if you&apos;d rather track who&apos;s RSVP&apos;d by name — each one gets
         their own personal link, separate from this shared one.
       </p>
-      <button type="button" onClick={handleCopy} className="dash-btn dash-btn-secondary mt-2 px-3 py-1 text-xs">
-        {copied ? "Link copied!" : "Copy site link"}
-      </button>
+      <div className="mt-2 flex items-center gap-2">
+        <button type="button" onClick={handleCopy} className="dash-btn dash-btn-secondary px-3 py-1 text-xs">
+          {copied ? "Link copied!" : "Copy site link"}
+        </button>
+        <div ref={shareRef} className="relative inline-block">
+          <button
+            type="button"
+            onClick={() => setShareOpen((value) => !value)}
+            aria-haspopup="menu"
+            aria-expanded={shareOpen}
+            className="dash-btn dash-btn-secondary px-3 py-1 text-xs"
+          >
+            Share link ↗
+          </button>
+          {shareOpen && (
+            <div
+              role="menu"
+              className="absolute left-0 top-full z-20 mt-1 w-40 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
+            >
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => handleShare("whatsapp")}
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
+              >
+                💬 WhatsApp
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => handleShare("sms")}
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
+              >
+                📱 SMS
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => handleShare("email")}
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
+              >
+                ✉️ Email
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -711,6 +792,12 @@ export default function GuestManager({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  // One-click counterpart to clicking "Send" -> "Email" on every guest row
+  // in turn -- sendBulkGuestInvitationEmails already skips anyone with no
+  // email on file or already marked sent, so this is always safe to offer
+  // whenever at least one guest could plausibly still need one.
+  const [bulkSending, setBulkSending] = useState(false);
+  const [bulkResult, setBulkResult] = useState<string | null>(null);
   // impeccable critique (Flexibility and Efficiency): the only way to remove
   // guests at scale was one-by-one, even right after a messy bulk import.
   // Bulk removal shares the same undo-toast path as single removal below
@@ -887,9 +974,31 @@ export default function GuestManager({
     setSelectedIds(new Set());
   };
 
+  const eligibleForBulkEmail = guests.filter(
+    (guest) => guest.site_enabled && guest.email && guest.invite_code && guest.invitation_sent_at == null
+  ).length;
+
+  const handleBulkSendEmails = async () => {
+    setBulkSending(true);
+    setBulkResult(null);
+    try {
+      const result = await sendBulkGuestInvitationEmails(eventId, window.location.origin);
+      if (!result.ok) throw new Error(result.message);
+      const parts = [`Sent to ${result.sent} guest${result.sent === 1 ? "" : "s"}`];
+      if (result.skipped > 0) parts.push(`${result.skipped} skipped (no email on file or already sent)`);
+      if (result.failed.length > 0) parts.push(`${result.failed.length} failed`);
+      setBulkResult(parts.join(" — "));
+      router.refresh();
+    } catch (err) {
+      setBulkResult(err instanceof Error ? err.message : "Failed to send");
+    } finally {
+      setBulkSending(false);
+    }
+  };
+
   return (
     <div>
-      <ShareLinkBanner eventSlug={eventSlug} />
+      <ShareLinkBanner eventSlug={eventSlug} eventTitle={eventTitle} />
 
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -1011,6 +1120,21 @@ export default function GuestManager({
             </span>
           </div>
           <StatusPills counts={statusCounts} active={statusFilter} onChange={setStatusFilter} />
+          {eligibleForBulkEmail > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handleBulkSendEmails}
+                disabled={bulkSending}
+                className="dash-btn dash-btn-secondary px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {bulkSending
+                  ? "Sending..."
+                  : `✉️ Email everyone who hasn't been sent one (${eligibleForBulkEmail})`}
+              </button>
+              {bulkResult && <span className="text-xs text-gray-500">{bulkResult}</span>}
+            </div>
+          )}
           {selectedIds.size > 0 ? (
             <div className="flex items-center gap-3 rounded-lg bg-gray-100 px-3 py-2">
               <label className="flex items-center gap-2 text-xs font-medium text-gray-700">

@@ -57,8 +57,10 @@ export type Database = {
           event_time: string | null
           event_type: string
           id: string
+          last_digest_sent_at: string | null
           owner_id: string
           plan_id: string
+          rsvp_digest_email: boolean
           rsvp_email_notifications: boolean
           site_password_enabled: boolean
           site_password_hash: string | null
@@ -85,8 +87,10 @@ export type Database = {
           event_time?: string | null
           event_type?: string
           id?: string
+          last_digest_sent_at?: string | null
           owner_id: string
           plan_id?: string
+          rsvp_digest_email?: boolean
           rsvp_email_notifications?: boolean
           site_password_enabled?: boolean
           site_password_hash?: string | null
@@ -113,8 +117,10 @@ export type Database = {
           event_time?: string | null
           event_type?: string
           id?: string
+          last_digest_sent_at?: string | null
           owner_id?: string
           plan_id?: string
+          rsvp_digest_email?: boolean
           rsvp_email_notifications?: boolean
           site_password_enabled?: boolean
           site_password_hash?: string | null

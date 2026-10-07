@@ -245,12 +245,16 @@ export const de: Dictionary = {
     },
     pricing: {
       heading: "Der Baukasten ist immer kostenlos",
-      subtext: "Gestalte deine Website, lade Gäste ein und verfolge Zusagen kostenlos. Zahle nur, wenn du eine eigene Domain, Papiereinladungen oder Bankett-Sitzordnung möchtest.",
+      subtext: "Gestalte deine Website, lade Gäste ein und verfolge Zusagen kostenlos — veröffentliche sie, sobald du bereit bist. Du zahlst für eine eigene Adresse ohne Invimbo-Badge, oder für Papiereinladungen ohne Wasserzeichen.",
       free: "Kostenlos",
       whatYouGet: "Was du bekommst",
       whatThisAdds: "Was das hinzufügt",
       badgeFree: "Immer kostenlos",
       badgePremium: "Entfernt das Wasserzeichen",
+      freeCaveat: "Zeigt ein kleines „Made with Invimbo“-Badge auf deiner veröffentlichten Website, und ein Wasserzeichen auf gedrucktem Papier.",
+      oneTime: "Einmalzahlung, kein Abo",
+      exampleCaption: "Ein echtes Invimbo-Design — deins kann so aussehen.",
+      valueAnchor: "Gedruckte, verschickte Einladungen kosten pro Gast meist mehr. Hier deckt eine einmalige Pauschale deine gesamte Gästeliste ab, egal wie viele Personen das sind.",
     },
     finalCta: {
       heading: "Kostenlos starten",

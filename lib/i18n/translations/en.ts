@@ -187,6 +187,17 @@ export interface Dictionary {
       whatThisAdds: string;
       badgeFree: string;
       badgePremium: string;
+      /** Disclosed directly on the Free card -- Free really does publish a
+       * live, working site (not a preview-only tier), so the honest fix is
+       * naming its one real trade-off up front, not implying it doesn't
+       * exist. See PlanSelectForm.tsx's own "what guests will actually see
+       * on Free" disclosure for the same honesty bar applied here. */
+      freeCaveat: string;
+      /** Matches PlanSelectForm.tsx's own exact wording ("one-time, not a
+       * subscription") for the same claim made in two places. */
+      oneTime: string;
+      exampleCaption: string;
+      valueAnchor: string;
     };
     finalCta: { heading: string; subtext: string };
     footer: {
@@ -482,12 +493,16 @@ export const en: Dictionary = {
     },
     pricing: {
       heading: "The constructor is always free",
-      subtext: "Design your site, invite guests, and track RSVPs at no cost. Pay only when you want a custom domain, paper invitations, or banquet seating.",
+      subtext: "Design your site, invite guests, and track RSVPs at no cost — publish it live whenever you're ready. Pay when you want your own address with no Invimbo badge, or watermark-free paper invitations.",
       free: "Free",
       whatYouGet: "What you get",
       whatThisAdds: "What this adds",
       badgeFree: "Always free",
       badgePremium: "Removes the watermark",
+      freeCaveat: "Shows a small \"Made with Invimbo\" badge on your live site, and a watermark on printed paper.",
+      oneTime: "One-time, not a subscription",
+      exampleCaption: "A real Invimbo design — yours can look like this.",
+      valueAnchor: "Printed, mailed invitations usually cost more than this per guest. One flat fee here covers your whole guest list, however many people you're inviting.",
     },
     finalCta: {
       heading: "Free to start",
