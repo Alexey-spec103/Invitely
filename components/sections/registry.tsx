@@ -276,6 +276,26 @@ export function sectionWillRender(section: SectionConfig, content: Record<string
     const venues = (data as { venues?: unknown }).venues;
     return Array.isArray(venues) && venues.length > 0;
   }
+  // Same "don't show an empty frame with nothing under it" principle as
+  // timeline/map above, for the two other sections that can end up with
+  // every one of their own text fields blank (confirmed live: an old test
+  // event's Letter section rendered its full decorative frame -- corner
+  // illustrations either side -- around a completely empty dark panel,
+  // because every OTHER always-on section (RSVP/Countdown/Gift/Guestbook/
+  // etc.) always gets at least a real title from DEFAULT_CONTENT_ON_ENABLE
+  // the moment it's switched on, but a host can still blank that title via
+  // the "Editable blocks" eye icon (applyHiddenFields) without the section
+  // itself turning off).
+  if (section.type === "letter") {
+    const { title, body, quote } = data as { title?: unknown; body?: unknown; quote?: unknown };
+    return Boolean((title as string)?.trim() || (body as string)?.trim() || (quote as string)?.trim());
+  }
+  if (section.type === "dressCode") {
+    const { title, description, colors } = data as { title?: unknown; description?: unknown; colors?: unknown };
+    return Boolean(
+      (title as string)?.trim() || (description as string)?.trim() || (Array.isArray(colors) && colors.length > 0)
+    );
+  }
   return true;
 }
 

@@ -13,6 +13,7 @@ import { formatAnswers } from "./formatAnswers";
 import BanquetTablesManager from "../banquet/BanquetTablesManager";
 import GuestTableAssignments from "../banquet/GuestTableAssignments";
 import RsvpNotificationToggle from "./RsvpNotificationToggle";
+import FirstVisitTour from "@/components/ui/FirstVisitTour";
 import type { GuestListRow } from "@/components/pdf/GuestListDocument";
 
 export default async function GuestsPage({ params }: PageProps<"/dashboard/[eventId]/guests">) {
@@ -190,6 +191,32 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
       <div className="mt-6">
         <SupportCard />
       </div>
+
+      {/* Site and Paper each already have their own FirstVisitTour
+       * (tourId="site-editor" / "paper-constructor") -- Guests was the one
+       * dashboard tab with none, confirmed by grepping for FirstVisitTour's
+       * usages before adding this. No targetSelector steps here (unlike
+       * those two): every step below is genuinely about the whole page
+       * (add a guest, send your way, see who's answered), not one findable
+       * widget, so a floating card is the right call per FirstVisitTour's
+       * own stated rule for when to skip anchoring. */}
+      <FirstVisitTour
+        tourId="guests"
+        steps={[
+          {
+            title: "👋 Add your guests",
+            body: "Add people one at a time below, or paste a whole list in at once — each gets their own RSVP link.",
+          },
+          {
+            title: "📤 Send invites your way",
+            body: "Copy your one shared link, or send each guest their own personal link by WhatsApp, SMS, or email — we track who's been sent what.",
+          },
+          {
+            title: "✅ See who's answered",
+            body: "Responses show up live below as guests RSVP — turn on email notifications so you don't have to keep checking back.",
+          },
+        ]}
+      />
 
       <GuestManager
         eventId={event.id}
