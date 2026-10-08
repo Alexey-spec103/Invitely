@@ -275,6 +275,38 @@ export type Database = {
           },
         ]
       }
+      guest_photos: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          storage_path: string
+          uploader_token: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          storage_path: string
+          uploader_token: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          storage_path?: string
+          uploader_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_photos_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rsvp_responses: {
         Row: {
           allergies: string | null
@@ -507,6 +539,14 @@ export type Database = {
         Args: {
           p_event_id: string
           p_full_name: string
+        }
+        Returns: string
+      }
+      record_guest_photo: {
+        Args: {
+          p_event_id: string
+          p_storage_path: string
+          p_uploader_token: string
         }
         Returns: string
       }

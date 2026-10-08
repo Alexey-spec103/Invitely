@@ -19,6 +19,8 @@ import {
   UtensilsCrossed,
   StickyNote,
   ArrowRight,
+  HelpCircle,
+  Luggage,
   type LucideIcon,
 } from "lucide-react";
 import { reorderSections, toggleSection, updateEnvelopeReveal } from "./actions";
@@ -52,6 +54,8 @@ const MODULE_ICON_COMPONENTS: Partial<Record<SectionType, LucideIcon>> = {
   video: Video,
   banquetNavigator: UtensilsCrossed,
   guestNotes: StickyNote,
+  faq: HelpCircle,
+  travel: Luggage,
 };
 
 // Every toggleable module, in the app's canonical order -- not derived from
@@ -82,6 +86,8 @@ const MODULE_GROUPS: Partial<Record<SectionType, string>> = {
   video: "Fun extras",
   banquetNavigator: "Logistics",
   guestNotes: "Logistics",
+  faq: "Logistics",
+  travel: "Logistics",
 };
 
 interface SectionModulesPanelProps {

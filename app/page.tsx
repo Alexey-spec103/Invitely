@@ -561,7 +561,6 @@ export default async function Home() {
               <div className="mt-6 flex items-center gap-3 text-xs font-semibold tracking-wide text-stone-400">
                 <span className="rounded border border-stone-700 px-2 py-1">VISA</span>
                 <span className="rounded border border-stone-700 px-2 py-1">MASTERCARD</span>
-                <span className="rounded border border-stone-700 px-2 py-1">PAYPAL</span>
               </div>
               <p className="mt-2 text-xs text-stone-500">{t.footer.paymentAccepted}</p>
             </div>

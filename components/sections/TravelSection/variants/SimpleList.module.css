@@ -1,0 +1,151 @@
+.section {
+  position: relative;
+  padding: 3rem 1rem;
+  color: var(--theme-text);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Same edge-safe-top reasoning as Gift's own SimpleList.module.css. */
+.sectionColor {
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+  --decor-gap: 1rem;
+  padding-top: calc(var(--decor-size) + var(--decor-edge-offset) + var(--decor-gap));
+  min-height: 30rem;
+}
+
+.accentTopLeft {
+  composes: cornerEdgeTopLeft from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+}
+
+.accentBottomRight {
+  composes: cornerEdgeBottomRight from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.9rem;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.75rem;
+}
+
+.description {
+  font-family: var(--theme-font-body);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 34rem;
+  margin: 0 auto 2rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  max-width: 48rem;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, transparent);
+  border-radius: 0.3rem;
+  background: color-mix(in srgb, var(--theme-accent) 8%, var(--theme-bg));
+}
+
+.cardMark {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.4rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--theme-accent);
+  opacity: 0.5;
+  mask-image: url("/patterns/corner-flourish.svg");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url("/patterns/corner-flourish.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  pointer-events: none;
+}
+
+.cardTitle {
+  font-family: var(--theme-font-heading);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.cardDescription {
+  font-family: var(--theme-font-body);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.cardPrice {
+  font-family: var(--theme-font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--theme-accent);
+}
+
+.cardPromo {
+  font-family: var(--theme-font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.cardLink {
+  font-family: var(--theme-font-body);
+  font-size: 0.8rem;
+  color: var(--theme-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  margin-top: auto;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 2.4rem;
+  }
+
+  .accentTopLeft,
+  .accentBottomRight {
+    --decor-size: 14rem;
+  }
+
+  .sectionColor {
+    --decor-size: 14rem;
+    min-height: 40rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .accentTopLeft,
+  .accentBottomRight {
+    --decor-size: 18rem;
+  }
+
+  .sectionColor {
+    --decor-size: 18rem;
+    min-height: 48rem;
+  }
+}

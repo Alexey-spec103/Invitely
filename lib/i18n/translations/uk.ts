@@ -50,6 +50,10 @@ export const uk: Dictionary = {
     successDeclining: "Дякуємо, що повідомили — нам буде вас бракувати!",
     notPublishedError: "Цей сайт ще не опубліковано, тому підтвердження поки не приймаються. Попросіть хазяїна опублікувати сайт.",
     submitFailedError: "Не вдалося надіслати вашу відповідь. Будь ласка, спробуйте ще раз за мить.",
+    oneTapGreeting: (name) => `Будете з нами, ${name}?`,
+    oneTapAccept: "Буду",
+    oneTapDecline: "Не зможу прийти",
+    oneTapMoreDetails: "Додати деталі (страва, гості, повідомлення)",
   },
   languageSwitcher: {
     label: "Мова",
@@ -70,6 +74,10 @@ export const uk: Dictionary = {
   gift: {
     viewLink: "Переглянути",
   },
+  travel: {
+    bookingLink: "Забронювати",
+    promoCodeLabel: "Промокод",
+  },
   guestbook: {
     empty: "Тут з'являтимуться повідомлення від гостей.",
   },
@@ -82,6 +90,15 @@ export const uk: Dictionary = {
   map: {
     mapTitle: (venueName) => `Карта: ${venueName}`,
     mapPlaceholder: "Додайте адресу, щоб побачити мапу",
+  },
+  guestPhotos: {
+    heading: "Додайте свої фото",
+    subtitle: (eventTitle) => `Поділіться своїми фото з ${eventTitle} — реєстрація не потрібна.`,
+    addPhotosButton: "Додати фото",
+    uploading: "Завантаження...",
+    uploaded: "Додано! Дякуємо.",
+    genericError: "Не вдалося завантажити це фото. Спробуйте ще раз.",
+    notPublished: "Сайт ще не опубліковано, тому фото поки не можна додати. Попросіть організатора опублікувати його.",
   },
   banquetNavigator: {
     yourName: "Ваше ім'я",

@@ -167,6 +167,77 @@
   margin: 0;
 }
 
+/* One-tap path: a guest resolved via their own personal invite link already
+   has a name on file, so the common case -- confirm or decline -- needs no
+   form at all. Large tap targets and a short, direct greeting are aimed at
+   older relatives, the audience most likely to struggle with a multi-field
+   form on a phone. */
+.quickGreeting {
+  font-family: var(--theme-font-body);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0 0 1.5rem;
+}
+
+.quickButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quickAcceptButton {
+  font-family: var(--theme-font-body);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 1rem 1.5rem;
+  min-height: 3.5rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--theme-accent);
+  color: var(--theme-accent-contrast);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.quickAcceptButton:disabled,
+.quickDeclineButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.quickDeclineButton {
+  font-family: var(--theme-font-body);
+  font-size: 0.95rem;
+  padding: 0.85rem 1.5rem;
+  min-height: 3rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 35%, transparent);
+  background: transparent;
+  color: var(--theme-text);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.quickMoreDetails {
+  display: block;
+  width: 100%;
+  margin: 1.25rem 0 0;
+  font-family: var(--theme-font-body);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.7;
+  background: none;
+  border: none;
+  color: var(--theme-text);
+  cursor: pointer;
+}
+
+.quickMoreDetails:hover {
+  opacity: 1;
+}
+
 @media (min-width: 640px) {
   .card {
     padding: 2.5rem 2rem;

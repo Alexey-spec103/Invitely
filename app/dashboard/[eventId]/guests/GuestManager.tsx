@@ -15,6 +15,7 @@ import {
   recordInvitationSent,
   sendGuestInvitationEmail,
   sendBulkGuestInvitationEmails,
+  sendBulkGuestReminderEmails,
   type SendChannel,
 } from "./actions";
 import BulkAddGuests from "./BulkAddGuests";
@@ -798,6 +799,12 @@ export default function GuestManager({
   // whenever at least one guest could plausibly still need one.
   const [bulkSending, setBulkSending] = useState(false);
   const [bulkResult, setBulkResult] = useState<string | null>(null);
+  // Reminder counterpart to the bulk-invite flow above -- same optimistic-
+  // free, sequential sendBulkGuestReminderEmails call, just a different
+  // eligible pool (already sent, still no response) and its own pending/
+  // result state so the two actions' loading spinners never collide.
+  const [reminderSending, setReminderSending] = useState(false);
+  const [reminderResult, setReminderResult] = useState<string | null>(null);
   // impeccable critique (Flexibility and Efficiency): the only way to remove
   // guests at scale was one-by-one, even right after a messy bulk import.
   // Bulk removal shares the same undo-toast path as single removal below
@@ -987,6 +994,18 @@ export default function GuestManager({
     (guest) => guest.site_enabled && guest.email && guest.invite_code && guest.invitation_sent_at == null
   ).length;
 
+  // Same precedence getGuestStatus already uses: a guest only counts as
+  // "hasn't responded" when they have no rsvp_responses row at all --
+  // rsvpStatusByGuestId[id] is undefined for them, true/false once they have.
+  const eligibleForReminder = guests.filter(
+    (guest) =>
+      guest.site_enabled &&
+      guest.email &&
+      guest.invite_code &&
+      guest.invitation_sent_at != null &&
+      rsvpStatusByGuestId[guest.id] === undefined
+  ).length;
+
   const handleBulkSendEmails = async () => {
     setBulkSending(true);
     setBulkResult(null);
@@ -1002,6 +1021,23 @@ export default function GuestManager({
       setBulkResult(err instanceof Error ? err.message : "Failed to send");
     } finally {
       setBulkSending(false);
+    }
+  };
+
+  const handleSendReminders = async () => {
+    setReminderSending(true);
+    setReminderResult(null);
+    try {
+      const result = await sendBulkGuestReminderEmails(eventId, window.location.origin);
+      if (!result.ok) throw new Error(result.message);
+      const parts = [`Reminded ${result.sent} guest${result.sent === 1 ? "" : "s"}`];
+      if (result.skipped > 0) parts.push(`${result.skipped} skipped (no email on file or already responded)`);
+      if (result.failed.length > 0) parts.push(`${result.failed.length} failed`);
+      setReminderResult(parts.join(" — "));
+    } catch (err) {
+      setReminderResult(err instanceof Error ? err.message : "Failed to send");
+    } finally {
+      setReminderSending(false);
     }
   };
 
@@ -1142,6 +1178,21 @@ export default function GuestManager({
                   : `✉️ Email everyone who hasn't been sent one (${eligibleForBulkEmail})`}
               </button>
               {bulkResult && <span className="text-xs text-gray-500">{bulkResult}</span>}
+            </div>
+          )}
+          {eligibleForReminder > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSendReminders}
+                disabled={reminderSending}
+                className="dash-btn dash-btn-secondary px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {reminderSending
+                  ? "Sending..."
+                  : `⏰ Remind guests who haven't responded (${eligibleForReminder})`}
+              </button>
+              {reminderResult && <span className="text-xs text-gray-500">{reminderResult}</span>}
             </div>
           )}
           {selectedIds.size > 0 ? (

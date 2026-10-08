@@ -37,7 +37,7 @@ export async function generateMetadata({
 
   const { data: event } = await supabase
     .from("events")
-    .select("title, event_date, site_config(content)")
+    .select("title, event_date, status, site_config(content)")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -45,7 +45,19 @@ export async function generateMetadata({
     return { title: "Event not found" };
   }
 
-  const description = getInviteDescription(event.event_date);
+  // Real guests here are mostly invited by pasting this link straight into
+  // WhatsApp/Telegram, not email (see `plan.md`'s own messenger-first
+  // framing) -- those apps only show a title/description/image, never the
+  // page itself, so a bare link or a generic site-wide card is effectively
+  // an invitation with no invitation in it. Kept minimal/generic pre-publish
+  // (no photo, a non-specific description) rather than guessing at content a
+  // host may still be drafting -- same boundary the page body itself already
+  // enforces via the "Guests can't see your site until it's published"
+  // banner.
+  const isPublished = event.status === "published";
+  const description = isPublished
+    ? getInviteDescription(event.event_date)
+    : "An invitation is being prepared for you.";
 
   // dashboard-audit.md B14 "Превью": a custom social-share image, falling
   // back to the start-screen (Hero) photo -- without either, the link card
@@ -59,18 +71,30 @@ export async function generateMetadata({
       ? (content.settings as Record<string, unknown>)
       : {};
   const hero = typeof content.hero === "object" && content.hero !== null ? (content.hero as Record<string, unknown>) : {};
-  const socialImageUrl =
-    (typeof settings.socialImageUrl === "string" && settings.socialImageUrl) ||
-    (typeof hero.photoUrl === "string" && hero.photoUrl) ||
-    undefined;
+  const socialImageUrl = isPublished
+    ? (typeof settings.socialImageUrl === "string" && settings.socialImageUrl) ||
+      (typeof hero.photoUrl === "string" && hero.photoUrl) ||
+      undefined
+    : undefined;
+
+  const host = (await headers()).get("host");
+  const pageUrl = host ? `https://${host}/e/${slug}` : undefined;
+  const title = isPublished ? event.title : "You're invited";
 
   return {
-    title: event.title,
+    title,
     description,
     openGraph: {
-      title: event.title,
+      title,
       description,
       type: "website",
+      url: pageUrl,
+      images: socialImageUrl ? [{ url: socialImageUrl, width: 1200, height: 630, alt: event.title }] : undefined,
+    },
+    twitter: {
+      card: socialImageUrl ? "summary_large_image" : "summary",
+      title,
+      description,
       images: socialImageUrl ? [socialImageUrl] : undefined,
     },
   };

@@ -37,6 +37,10 @@ import { VideoSection } from "@/components/sections/VideoSection";
 import type { VideoVariant } from "@/components/sections/VideoSection";
 import { BanquetNavigatorSection } from "@/components/sections/BanquetNavigatorSection";
 import { GuestNotesSection } from "@/components/sections/GuestNotesSection";
+import { FaqSection } from "@/components/sections/FaqSection";
+import type { FaqItem } from "@/components/sections/FaqSection";
+import { TravelSection } from "@/components/sections/TravelSection";
+import type { TravelItem } from "@/components/sections/TravelSection";
 import type { Tables } from "@/lib/supabase/database.types";
 import PhotoDropzone from "@/components/ui/PhotoDropzone";
 import {
@@ -61,6 +65,8 @@ import {
   updateVideoSection,
   updateBanquetNavigatorSection,
   updateGuestNotesSection,
+  updateFaqSection,
+  updateTravelSection,
   updateSectionBackground,
   toggleSection,
 } from "./actions";
@@ -68,6 +74,8 @@ import { updateWeddingData } from "../actions";
 import SectionToggleSwitch from "./SectionToggleSwitch";
 import { MODULE_ICONS } from "./SectionModulesPanel";
 import TimelineEventsManager from "./TimelineEventsManager";
+import FaqItemsManager from "./FaqItemsManager";
+import TravelItemsManager from "./TravelItemsManager";
 import QuoteSuggestionPicker from "@/components/site-editor/QuoteSuggestionPicker";
 import { DRESS_CODE_PALETTE } from "@/lib/dressCodePalette";
 import type { Theme } from "@/lib/themes";
@@ -166,6 +174,21 @@ interface GuestNotesDraft {
   hiddenFields?: string[];
 }
 
+interface FaqDraft {
+  title: string;
+  items: FaqItem[];
+  styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
+}
+
+interface TravelDraft {
+  title: string;
+  description: string;
+  items: TravelItem[];
+  styleOverrides?: StyleOverrides;
+  hiddenFields?: string[];
+}
+
 interface WeddingDataDraft {
   eventType: string;
   name1: string;
@@ -187,7 +210,9 @@ type SectionKey =
   | "guestbook"
   | "video"
   | "banquetNavigator"
-  | "guestNotes";
+  | "guestNotes"
+  | "faq"
+  | "travel";
 
 interface SiteInlineEditorProps {
   eventId: string;
@@ -223,6 +248,8 @@ interface SiteInlineEditorProps {
   video: { enabled: boolean; variant: VideoVariant; values: VideoDraft };
   banquetNavigator: { enabled: boolean; values: BanquetNavigatorDraft; seatingLabel: string };
   guestNotes: { enabled: boolean; values: GuestNotesDraft };
+  faq: { enabled: boolean; values: FaqDraft };
+  travel: { enabled: boolean; values: TravelDraft };
   /** dashboard-audit.md B12: the raw parsed sections array, purely so this
    * component can look up each section's own `.background` (see
    * registry.tsx) -- simpler than threading a `background` field through
@@ -506,6 +533,8 @@ const sectionLabels: Record<SectionKey, string> = {
   video: "Video",
   banquetNavigator: "Seating navigator",
   guestNotes: "Notes for guests",
+  faq: "FAQ",
+  travel: "Travel & Stay",
 };
 
 /** The dashboard's own owner never actually RSVPs from inside their own
@@ -547,6 +576,8 @@ export default function SiteInlineEditor({
   video,
   banquetNavigator,
   guestNotes,
+  faq,
+  travel,
   allSections,
 }: SiteInlineEditorProps) {
   const router = useRouter();
@@ -670,6 +701,8 @@ export default function SiteInlineEditor({
   const videoRef = useRef<HTMLDivElement>(null);
   const banquetNavigatorRef = useRef<HTMLDivElement>(null);
   const guestNotesRef = useRef<HTMLDivElement>(null);
+  const faqRef = useRef<HTMLDivElement>(null);
+  const travelRef = useRef<HTMLDivElement>(null);
   const sectionRefs = {
     hero: heroRef,
     letter: letterRef,
@@ -683,6 +716,8 @@ export default function SiteInlineEditor({
     video: videoRef,
     banquetNavigator: banquetNavigatorRef,
     guestNotes: guestNotesRef,
+    faq: faqRef,
+    travel: travelRef,
   };
 
   // --- Hero: names/date live on the `events` row (Wedding Data), photo +
@@ -858,6 +893,16 @@ export default function SiteInlineEditor({
     if (!result.ok) throw new Error(result.message);
     router.refresh();
   });
+  const faqField = useEditableSection<FaqDraft>(faq.values, async (value) => {
+    const result = await updateFaqSection({ eventId, faqVariant: "simple-list", ...value });
+    if (!result.ok) throw new Error(result.message);
+    router.refresh();
+  });
+  const travelField = useEditableSection<TravelDraft>(travel.values, async (value) => {
+    const result = await updateTravelSection({ eventId, travelVariant: "simple-list", ...value });
+    if (!result.ok) throw new Error(result.message);
+    router.refresh();
+  });
 
   const letterContext = useMemo<EditableFieldContextValue>(
     () => ({
@@ -982,6 +1027,26 @@ export default function SiteInlineEditor({
       guestNotesField.commitStyle,
     ]
   );
+  const faqContext = useMemo<EditableFieldContextValue>(
+    () => ({
+      editable: true,
+      selectedField: faqField.selectedField,
+      selectField: faqField.setSelectedField,
+      commitText: faqField.commitText,
+      commitStyle: faqField.commitStyle,
+    }),
+    [faqField.selectedField, faqField.setSelectedField, faqField.commitText, faqField.commitStyle]
+  );
+  const travelContext = useMemo<EditableFieldContextValue>(
+    () => ({
+      editable: true,
+      selectedField: travelField.selectedField,
+      selectField: travelField.setSelectedField,
+      commitText: travelField.commitText,
+      commitStyle: travelField.commitStyle,
+    }),
+    [travelField.selectedField, travelField.setSelectedField, travelField.commitText, travelField.commitStyle]
+  );
 
   // --- Floating toolbar: which section (if any) currently has a selected
   // field, and that field's live DOM node for position math. ---
@@ -1012,7 +1077,11 @@ export default function SiteInlineEditor({
                             ? { section: "banquetNavigator", field: banquetNavigatorField.selectedField }
                             : guestNotesField.selectedField
                               ? { section: "guestNotes", field: guestNotesField.selectedField }
-                              : null,
+                              : faqField.selectedField
+                                ? { section: "faq", field: faqField.selectedField }
+                                : travelField.selectedField
+                                  ? { section: "travel", field: travelField.selectedField }
+                                  : null,
     [
       heroSelectedField,
       letterField.selectedField,
@@ -1026,6 +1095,8 @@ export default function SiteInlineEditor({
       videoField.selectedField,
       banquetNavigatorField.selectedField,
       guestNotesField.selectedField,
+      faqField.selectedField,
+      travelField.selectedField,
     ]
   );
 
@@ -1122,7 +1193,11 @@ export default function SiteInlineEditor({
                         ? banquetNavigatorField
                         : activeSection === "guestNotes"
                           ? guestNotesField
-                          : null;
+                          : activeSection === "faq"
+                            ? faqField
+                            : activeSection === "travel"
+                              ? travelField
+                              : null;
 
   // EditableText deliberately renders no children for the field currently
   // selected (so a re-render mid-typing can't clobber the user's cursor --
@@ -1166,6 +1241,8 @@ export default function SiteInlineEditor({
     videoField.setSelectedField(null);
     banquetNavigatorField.setSelectedField(null);
     guestNotesField.setSelectedField(null);
+    faqField.setSelectedField(null);
+    travelField.setSelectedField(null);
   };
 
   const currentOverride: TextStyleOverride | undefined = selection
@@ -1191,7 +1268,11 @@ export default function SiteInlineEditor({
                         ? videoField.draft.styleOverrides?.[selection.field]
                         : selection.section === "banquetNavigator"
                           ? banquetNavigatorField.draft.styleOverrides?.[selection.field]
-                          : guestNotesField.draft.styleOverrides?.[selection.field]
+                          : selection.section === "guestNotes"
+                            ? guestNotesField.draft.styleOverrides?.[selection.field]
+                            : selection.section === "faq"
+                              ? faqField.draft.styleOverrides?.[selection.field]
+                              : travelField.draft.styleOverrides?.[selection.field]
     : undefined;
 
   const handleToolbarUpdate = (patch: TextStyleOverride) => {
@@ -1207,7 +1288,9 @@ export default function SiteInlineEditor({
     else if (selection.section === "guestbook") guestbookField.commitStyle(selection.field, { ...currentOverride, ...patch });
     else if (selection.section === "video") videoField.commitStyle(selection.field, { ...currentOverride, ...patch });
     else if (selection.section === "banquetNavigator") banquetNavigatorField.commitStyle(selection.field, { ...currentOverride, ...patch });
-    else guestNotesField.commitStyle(selection.field, { ...currentOverride, ...patch });
+    else if (selection.section === "guestNotes") guestNotesField.commitStyle(selection.field, { ...currentOverride, ...patch });
+    else if (selection.section === "faq") faqField.commitStyle(selection.field, { ...currentOverride, ...patch });
+    else travelField.commitStyle(selection.field, { ...currentOverride, ...patch });
   };
 
   const handleToolbarReset = () => {
@@ -1223,7 +1306,9 @@ export default function SiteInlineEditor({
     else if (selection.section === "guestbook") guestbookField.commitStyle(selection.field, null);
     else if (selection.section === "video") videoField.commitStyle(selection.field, null);
     else if (selection.section === "banquetNavigator") banquetNavigatorField.commitStyle(selection.field, null);
-    else guestNotesField.commitStyle(selection.field, null);
+    else if (selection.section === "guestNotes") guestNotesField.commitStyle(selection.field, null);
+    else if (selection.section === "faq") faqField.commitStyle(selection.field, null);
+    else travelField.commitStyle(selection.field, null);
   };
 
   const heroNames = weddingDataDraft.name2 ? [weddingDataDraft.name1, weddingDataDraft.name2] : [weddingDataDraft.name1];
@@ -1244,6 +1329,8 @@ export default function SiteInlineEditor({
     banquetNavigatorField.draft.hiddenFields
   );
   const guestNotesVisible = applyHiddenFields(guestNotesField.draft, guestNotesField.draft.hiddenFields);
+  const faqVisible = applyHiddenFields(faqField.draft, faqField.draft.hiddenFields);
+  const travelVisible = applyHiddenFields(travelField.draft, travelField.draft.hiddenFields);
 
   // dashboard-audit.md A3: the flat "Editable blocks" tree -- every text/
   // image/auto field across every section, in the same order it renders.
@@ -1756,6 +1843,112 @@ export default function SiteInlineEditor({
         scrollToField(guestNotesRef.current, "body");
       },
     },
+
+    sectionHeaderRow("faq", sectionLabels.faq, MODULE_ICONS.faq),
+    {
+      ...makeRow({
+        field: "title",
+        label: faqField.draft.title,
+        placeholder: `${sectionLabels.faq} title`,
+        type: "text",
+        hiddenFields: faqField.draft.hiddenFields,
+        commitHidden: faqField.commitHidden,
+      }),
+      onSelect: () => {
+        faqField.setSelectedField("title");
+        scrollToField(faqRef.current, "title");
+      },
+    },
+    ...faqField.draft.items.flatMap((item, index): BlockRowData[] => [
+      {
+        key: `faq.items.${index}`,
+        type: "group",
+        label: item.question.trim() || `Question ${index + 1}`,
+        hidden: false,
+        onSelect: () => {
+          faqField.setSelectedField(`items.${index}.question`);
+          scrollToField(faqRef.current, `items.${index}.question`);
+        },
+        onDelete: () =>
+          faqField.setDraft((prev) => ({ ...prev, items: prev.items.filter((_, i) => i !== index) })),
+      },
+      ...(["question", "answer"] as const).map(
+        (subfield): BlockRowData => ({
+          ...makeRow({
+            field: `items.${index}.${subfield}`,
+            label: item[subfield] ?? "",
+            placeholder: `Question ${index + 1} ${subfield}`,
+            type: "text",
+            hiddenFields: faqField.draft.hiddenFields,
+            commitHidden: faqField.commitHidden,
+          }),
+          onSelect: () => {
+            faqField.setSelectedField(`items.${index}.${subfield}`);
+            scrollToField(faqRef.current, `items.${index}.${subfield}`);
+          },
+        })
+      ),
+    ]),
+
+    sectionHeaderRow("travel", sectionLabels.travel, MODULE_ICONS.travel),
+    {
+      ...makeRow({
+        field: "title",
+        label: travelField.draft.title,
+        placeholder: `${sectionLabels.travel} title`,
+        type: "text",
+        hiddenFields: travelField.draft.hiddenFields,
+        commitHidden: travelField.commitHidden,
+      }),
+      onSelect: () => {
+        travelField.setSelectedField("title");
+        scrollToField(travelRef.current, "title");
+      },
+    },
+    {
+      ...makeRow({
+        field: "description",
+        label: travelField.draft.description,
+        placeholder: `${sectionLabels.travel} description`,
+        type: "text",
+        hiddenFields: travelField.draft.hiddenFields,
+        commitHidden: travelField.commitHidden,
+      }),
+      onSelect: () => {
+        travelField.setSelectedField("description");
+        scrollToField(travelRef.current, "description");
+      },
+    },
+    ...travelField.draft.items.flatMap((item, index): BlockRowData[] => [
+      {
+        key: `travel.items.${index}`,
+        type: "group",
+        label: item.name.trim() || `Place ${index + 1}`,
+        hidden: false,
+        onSelect: () => {
+          travelField.setSelectedField(`items.${index}.name`);
+          scrollToField(travelRef.current, `items.${index}.name`);
+        },
+        onDelete: () =>
+          travelField.setDraft((prev) => ({ ...prev, items: prev.items.filter((_, i) => i !== index) })),
+      },
+      ...(["name", "description", "priceText"] as const).map(
+        (subfield): BlockRowData => ({
+          ...makeRow({
+            field: `items.${index}.${subfield}`,
+            label: item[subfield] ?? "",
+            placeholder: `Place ${index + 1} ${subfield}`,
+            type: "text",
+            hiddenFields: travelField.draft.hiddenFields,
+            commitHidden: travelField.commitHidden,
+          }),
+          onSelect: () => {
+            travelField.setSelectedField(`items.${index}.${subfield}`);
+            scrollToField(travelRef.current, `items.${index}.${subfield}`);
+          },
+        })
+      ),
+    ]),
   ];
 
   // `key` above is each field's raw content-path (e.g. "title",
@@ -2439,6 +2632,96 @@ export default function SiteInlineEditor({
         ) : (
           <CollapsedSectionNote label={sectionLabels.guestNotes} />
         )}
+
+        <SectionHeader
+          label={sectionLabels.faq}
+          icon={MODULE_ICONS.faq}
+          enabled={isSectionOn("faq", faq.enabled)}
+          onToggle={(next) => handleToggleSection("faq", next)}
+          togglePending={togglePending === "faq"}
+          toggleError={toggleErrors.faq}
+          state={faqField.state}
+          error={faqField.error}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("faq")}
+              onChange={(fill) => handleBackgroundChange("faq", fill)}
+            />
+          }
+        />
+        {isSectionOn("faq", faq.enabled) ? (
+          <>
+            <div className="px-4 pt-3 pb-4" onClick={(event) => event.stopPropagation()}>
+              <FaqItemsManager
+                items={faqField.draft.items}
+                onChange={(items) => faqField.setDraft((prev) => ({ ...prev, items }))}
+              />
+            </div>
+            <RevealOnScroll root={scrollAreaRef}>
+              <SectionBackground fill={getSectionBackground("faq")}>
+                <div ref={faqRef}>
+                  <EditableFieldProvider value={faqContext}>
+                    <FaqSection
+                      variant="simple-list"
+                      title={faqVisible.title}
+                      items={faqVisible.items}
+                      styleOverrides={faqField.draft.styleOverrides}
+                      themeCategory={decorCategory}
+                    />
+                  </EditableFieldProvider>
+                </div>
+              </SectionBackground>
+            </RevealOnScroll>
+          </>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.faq} />
+        )}
+
+        <SectionHeader
+          label={sectionLabels.travel}
+          icon={MODULE_ICONS.travel}
+          enabled={isSectionOn("travel", travel.enabled)}
+          onToggle={(next) => handleToggleSection("travel", next)}
+          togglePending={togglePending === "travel"}
+          toggleError={toggleErrors.travel}
+          state={travelField.state}
+          error={travelField.error}
+          extra={
+            <SectionBackgroundButton
+              value={getSectionBackground("travel")}
+              onChange={(fill) => handleBackgroundChange("travel", fill)}
+            />
+          }
+        />
+        {isSectionOn("travel", travel.enabled) ? (
+          <>
+            <div className="px-4 pt-3 pb-4" onClick={(event) => event.stopPropagation()}>
+              <TravelItemsManager
+                items={travelField.draft.items}
+                onChange={(items) => travelField.setDraft((prev) => ({ ...prev, items }))}
+              />
+            </div>
+            <RevealOnScroll root={scrollAreaRef}>
+              <SectionBackground fill={getSectionBackground("travel")}>
+                <div ref={travelRef}>
+                  <EditableFieldProvider value={travelContext}>
+                    <TravelSection
+                      variant="simple-list"
+                      title={travelVisible.title}
+                      description={travelVisible.description}
+                      items={travelVisible.items}
+                      styleOverrides={travelField.draft.styleOverrides}
+                      themeCategory={decorCategory}
+                      locale={previewLocale}
+                    />
+                  </EditableFieldProvider>
+                </div>
+              </SectionBackground>
+            </RevealOnScroll>
+          </>
+        ) : (
+          <CollapsedSectionNote label={sectionLabels.travel} />
+        )}
       </ThemeProvider>
 
       {selection && toolbarPos && (
@@ -2454,7 +2737,9 @@ export default function SiteInlineEditor({
             selection.section === "guestbook" ||
             selection.section === "video" ||
             selection.section === "banquetNavigator" ||
-            selection.section === "guestNotes"
+            selection.section === "guestNotes" ||
+            selection.section === "faq" ||
+            selection.section === "travel"
           }
           onUpdate={handleToolbarUpdate}
           onReset={handleToolbarReset}
@@ -2491,7 +2776,25 @@ export default function SiteInlineEditor({
                         }));
                         clearSelection();
                       }
-                    : undefined
+                    : selection.section === "faq" && /^items\.\d+\./.test(selection.field)
+                      ? () => {
+                          const index = Number(selection.field.split(".")[1]);
+                          faqField.setDraft((prev) => ({
+                            ...prev,
+                            items: prev.items.filter((_, i) => i !== index),
+                          }));
+                          clearSelection();
+                        }
+                      : selection.section === "travel" && /^items\.\d+\./.test(selection.field)
+                        ? () => {
+                            const index = Number(selection.field.split(".")[1]);
+                            travelField.setDraft((prev) => ({
+                              ...prev,
+                              items: prev.items.filter((_, i) => i !== index),
+                            }));
+                            clearSelection();
+                          }
+                        : undefined
           }
         />
       )}

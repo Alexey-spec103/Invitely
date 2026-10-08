@@ -20,6 +20,10 @@ import { VideoSection, DEFAULT_VIDEO_VARIANT } from "./VideoSection";
 import type { VideoSectionProps } from "./VideoSection";
 import { GuestNotesSection, DEFAULT_GUEST_NOTES_VARIANT } from "./GuestNotesSection";
 import type { GuestNotesSectionProps } from "./GuestNotesSection";
+import { FaqSection, DEFAULT_FAQ_VARIANT } from "./FaqSection";
+import type { FaqSectionProps } from "./FaqSection";
+import { TravelSection, DEFAULT_TRAVEL_VARIANT } from "./TravelSection";
+import type { TravelSectionProps } from "./TravelSection";
 import type { BackgroundFill } from "@/lib/backgroundFills";
 import { BanquetNavigatorSection, DEFAULT_BANQUET_NAVIGATOR_VARIANT } from "./BanquetNavigatorSection";
 import type { BanquetNavigatorSectionProps, BanquetTableLookupResult } from "./BanquetNavigatorSection";
@@ -40,6 +44,8 @@ export const componentRegistry = {
   video: VideoSection,
   banquetNavigator: BanquetNavigatorSection,
   guestNotes: GuestNotesSection,
+  faq: FaqSection,
+  travel: TravelSection,
 };
 
 export type SectionType = keyof typeof componentRegistry;
@@ -66,6 +72,8 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   video: "Video",
   banquetNavigator: "Find My Table",
   guestNotes: "Notes for Guests",
+  faq: "FAQ",
+  travel: "Travel & Stay",
 };
 
 /** Design-audit finding: weddingpost.ru's own hamburger menu pairs every
@@ -91,6 +99,8 @@ export const SECTION_ICONS: Partial<Record<SectionType, string>> = {
   video: "🎥",
   banquetNavigator: "🍽️",
   guestNotes: "📌",
+  faq: "❓",
+  travel: "🧳",
 };
 
 export interface SectionConfig {
@@ -127,6 +137,8 @@ export const SECTION_ORDER: Record<SectionType, number> = {
   video: 9,
   banquetNavigator: 10,
   guestNotes: 11,
+  faq: 12,
+  travel: 13,
 };
 
 /** Variant a section starts with the first time it's toggled on before ever
@@ -145,6 +157,8 @@ export const DEFAULT_VARIANTS: Record<SectionType, string> = {
   video: DEFAULT_VIDEO_VARIANT,
   banquetNavigator: DEFAULT_BANQUET_NAVIGATOR_VARIANT,
   guestNotes: DEFAULT_GUEST_NOTES_VARIANT,
+  faq: DEFAULT_FAQ_VARIANT,
+  travel: DEFAULT_TRAVEL_VARIANT,
 };
 
 /**
@@ -247,6 +261,8 @@ export interface RenderSectionContext {
   gift: { preferences: GiftPreferenceItem[]; themeCategory?: ThemeCategory };
   dressCode?: { themeCategory?: ThemeCategory };
   guestNotes?: { themeCategory?: ThemeCategory };
+  faq?: { themeCategory?: ThemeCategory };
+  travel?: { themeCategory?: ThemeCategory };
   guestbook: { messages: GuestbookMessageItem[] };
   banquetNavigator: {
     onLookup: (fullName: string) => Promise<BanquetTableLookupResult>;
@@ -275,6 +291,12 @@ export function sectionWillRender(section: SectionConfig, content: Record<string
   if (section.type === "map") {
     const venues = (data as { venues?: unknown }).venues;
     return Array.isArray(venues) && venues.length > 0;
+  }
+  // Same "nothing to show yet" guard as timeline/map above -- FAQ/Travel
+  // are both pure repeatable-item lists with no meaningful empty state.
+  if (section.type === "faq" || section.type === "travel") {
+    const items = (data as { items?: unknown }).items;
+    return Array.isArray(items) && items.length > 0;
   }
   // Same "don't show an empty frame with nothing under it" principle as
   // timeline/map above, for the two other sections that can end up with
@@ -514,6 +536,29 @@ export function renderSection(
           variant={section.variant as GuestNotesSectionProps["variant"]}
           {...(data as Omit<GuestNotesSectionProps, "variant">)}
           themeCategory={context.guestNotes?.themeCategory}
+        />
+      );
+    }
+    case "faq": {
+      const Component = componentRegistry.faq;
+      return (
+        <Component
+          key={section.type}
+          variant={section.variant as FaqSectionProps["variant"]}
+          {...(data as Omit<FaqSectionProps, "variant">)}
+          themeCategory={context.faq?.themeCategory}
+        />
+      );
+    }
+    case "travel": {
+      const Component = componentRegistry.travel;
+      return (
+        <Component
+          key={section.type}
+          variant={section.variant as TravelSectionProps["variant"]}
+          {...(data as Omit<TravelSectionProps, "variant" | "locale">)}
+          themeCategory={context.travel?.themeCategory}
+          locale={locale}
         />
       );
     }

@@ -51,6 +51,10 @@ export const pl: Dictionary = {
     successDeclining: "Dziękujemy za odpowiedź — będzie nam Cię brakować!",
     notPublishedError: "Ta strona nie została jeszcze opublikowana, więc potwierdzenia nie mogą być wysyłane. Poproś gospodarza o jej publikację.",
     submitFailedError: "Nie udało się wysłać Twojego potwierdzenia. Spróbuj ponownie za chwilę.",
+    oneTapGreeting: (name) => `Będziesz z nami, ${name}?`,
+    oneTapAccept: "Będę tam",
+    oneTapDecline: "Nie dam rady",
+    oneTapMoreDetails: "Dodaj szczegóły (posiłek, goście, wiadomość)",
   },
   languageSwitcher: {
     label: "Język",
@@ -71,6 +75,10 @@ export const pl: Dictionary = {
   gift: {
     viewLink: "Zobacz",
   },
+  travel: {
+    bookingLink: "Zarezerwuj",
+    promoCodeLabel: "Kod promocyjny",
+  },
   guestbook: {
     empty: "Tutaj pojawią się wiadomości od gości.",
   },
@@ -83,6 +91,15 @@ export const pl: Dictionary = {
   map: {
     mapTitle: (venueName) => `Mapa: ${venueName}`,
     mapPlaceholder: "Dodaj adres, aby zobaczyć podgląd mapy",
+  },
+  guestPhotos: {
+    heading: "Dodaj swoje zdjęcia",
+    subtitle: (eventTitle) => `Podziel się zdjęciami z ${eventTitle} — konto nie jest potrzebne.`,
+    addPhotosButton: "Dodaj zdjęcia",
+    uploading: "Przesyłanie...",
+    uploaded: "Dodano! Dziękujemy.",
+    genericError: "Nie udało się przesłać tego zdjęcia. Spróbuj ponownie.",
+    notPublished: "Ta strona nie została jeszcze opublikowana, więc zdjęć nie można dodać. Poproś organizatora o publikację.",
   },
   banquetNavigator: {
     yourName: "Twoje imię i nazwisko",

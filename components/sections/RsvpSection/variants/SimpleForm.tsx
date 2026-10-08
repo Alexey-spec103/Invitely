@@ -38,6 +38,35 @@ export default function SimpleForm({
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // A guest who arrived via their own personal invite link already has a
+  // resolved name -- the common case for that audience is a single tap to
+  // confirm or decline, not a multi-field form. A guest on the general
+  // share link has no name yet, so there's nothing for a one-tap button to
+  // confirm; that path keeps the full form as its only option.
+  const isPersonalized = Boolean(defaultGuestName && defaultGuestName.trim());
+  const [showFullForm, setShowFullForm] = useState(false);
+
+  const handleQuickRsvp = async (attendingValue: boolean) => {
+    setError(null);
+    setPending(true);
+    try {
+      const result = await onSubmit({
+        guestName: (defaultGuestName ?? "").trim(),
+        attending: attendingValue,
+        partySize: 1,
+        honeypot,
+        formRenderedAt,
+      });
+      if (!result.ok) throw new Error(result.message);
+      setAttending(attendingValue);
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.genericError);
+    } finally {
+      setPending(false);
+    }
+  };
+
   // dashboard-audit critique 2026-10-04 (P1): the "fill in your name and
   // attendance" error used to stay on screen, unexplained, even after the
   // guest had already fixed both fields -- it only cleared on the next
@@ -113,6 +142,33 @@ export default function SimpleForm({
           </p>
         )}
 
+        {isPersonalized && !showFullForm ? (
+          <div>
+            <p className={styles.quickGreeting}>{t.oneTapGreeting(defaultGuestName!.trim())}</p>
+            {error && <p className={styles.error}>{error}</p>}
+            <div className={styles.quickButtons}>
+              <button
+                type="button"
+                disabled={pending}
+                className={styles.quickAcceptButton}
+                onClick={() => handleQuickRsvp(true)}
+              >
+                {t.oneTapAccept}
+              </button>
+              <button
+                type="button"
+                disabled={pending}
+                className={styles.quickDeclineButton}
+                onClick={() => handleQuickRsvp(false)}
+              >
+                {t.oneTapDecline}
+              </button>
+            </div>
+            <button type="button" className={styles.quickMoreDetails} onClick={() => setShowFullForm(true)}>
+              {t.oneTapMoreDetails}
+            </button>
+          </div>
+        ) : (
         <form className={styles.form} onSubmit={handleSubmit}>
           <div style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }} aria-hidden="true">
             <label htmlFor="rsvp-website">Website</label>
@@ -269,6 +325,7 @@ export default function SimpleForm({
             {pending ? t.sending : t.sendRsvp}
           </button>
         </form>
+        )}
       </div>
     </section>
   );

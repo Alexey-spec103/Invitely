@@ -51,6 +51,10 @@ export const ru: Dictionary = {
     successDeclining: "Спасибо, что сообщили — нам будет вас не хватать!",
     notPublishedError: "Этот сайт ещё не опубликован, поэтому подтверждения пока не принимаются. Попросите хозяина опубликовать сайт.",
     submitFailedError: "Не удалось отправить ваш ответ. Пожалуйста, попробуйте ещё раз через момент.",
+    oneTapGreeting: (name) => `Будете с нами, ${name}?`,
+    oneTapAccept: "Приду",
+    oneTapDecline: "Не смогу прийти",
+    oneTapMoreDetails: "Добавить детали (блюдо, гости, сообщение)",
   },
   languageSwitcher: {
     label: "Язык",
@@ -71,6 +75,10 @@ export const ru: Dictionary = {
   gift: {
     viewLink: "Смотреть",
   },
+  travel: {
+    bookingLink: "Забронировать",
+    promoCodeLabel: "Промокод",
+  },
   guestbook: {
     empty: "Здесь появятся сообщения от гостей.",
   },
@@ -83,6 +91,15 @@ export const ru: Dictionary = {
   map: {
     mapTitle: (venueName) => `Карта: ${venueName}`,
     mapPlaceholder: "Добавьте адрес, чтобы увидеть карту",
+  },
+  guestPhotos: {
+    heading: "Добавьте свои фото",
+    subtitle: (eventTitle) => `Поделитесь своими фото с ${eventTitle} — регистрация не нужна.`,
+    addPhotosButton: "Добавить фото",
+    uploading: "Загрузка...",
+    uploaded: "Добавлено! Спасибо.",
+    genericError: "Не удалось загрузить это фото. Попробуйте ещё раз.",
+    notPublished: "Сайт ещё не опубликован, поэтому фото пока нельзя добавить. Попросите организатора опубликовать его.",
   },
   banquetNavigator: {
     yourName: "Ваше имя",

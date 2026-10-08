@@ -21,6 +21,8 @@ import type { GuestbookVariant } from "@/components/sections/GuestbookSection";
 import type { VideoVariant } from "@/components/sections/VideoSection";
 import type { BanquetNavigatorVariant } from "@/components/sections/BanquetNavigatorSection";
 import type { GuestNotesVariant } from "@/components/sections/GuestNotesSection";
+import type { FaqVariant, FaqItem } from "@/components/sections/FaqSection";
+import type { TravelVariant, TravelItem } from "@/components/sections/TravelSection";
 import type { Json } from "@/lib/supabase/database.types";
 import type { BackgroundFill } from "@/lib/backgroundFills";
 import { DEFAULT_THEME_ID, getTheme } from "@/lib/themes";
@@ -1120,6 +1122,152 @@ export async function updateGuestNotesSection(input: UpdateGuestNotesSectionInpu
 
   if (configError2) {
     return { ok: false, message: configError2.message };
+  }
+
+  revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
+}
+
+interface UpdateFaqSectionInput {
+  eventId: string;
+  title: string;
+  items: FaqItem[];
+  faqVariant: FaqVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
+}
+
+/** Same shape as updateDressCodeSection above (title + a repeatable list,
+ * single variant). */
+export async function updateFaqSection(input: UpdateFaqSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const { data: existingConfig } = await supabase
+    .from("site_config")
+    .select("*")
+    .eq("event_id", input.eventId)
+    .maybeSingle();
+
+  const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
+  const existingContent = existingConfig ? parseContent(existingConfig.content) : {};
+
+  const sections = existingSections.some((section) => section.type === "faq")
+    ? existingSections.map((section) => (section.type === "faq" ? { ...section, variant: input.faqVariant } : section))
+    : [
+        ...existingSections,
+        { type: "faq", variant: input.faqVariant, order: SECTION_ORDER.faq, enabled: true },
+      ];
+
+  const content = {
+    ...existingContent,
+    faq: {
+      title: input.title,
+      items: input.items,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "faq"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "faq"),
+    },
+  };
+
+  const { error: faqConfigError } = existingConfig
+    ? await supabase
+        .from("site_config")
+        .update({
+          sections: sections as unknown as Json,
+          content: content as unknown as Json,
+        })
+        .eq("event_id", input.eventId)
+    : await supabase.from("site_config").insert({
+        event_id: input.eventId,
+        theme_id: DEFAULT_THEME_ID,
+        sections: sections as unknown as Json,
+        content: content as unknown as Json,
+      });
+
+  if (faqConfigError) {
+    return { ok: false, message: faqConfigError.message };
+  }
+
+  revalidatePath(`/dashboard/${input.eventId}/site`);
+  return { ok: true };
+}
+
+interface UpdateTravelSectionInput {
+  eventId: string;
+  title: string;
+  description?: string;
+  items: TravelItem[];
+  travelVariant: TravelVariant;
+  styleOverrides?: Record<string, TextStyleOverride>;
+  hiddenFields?: string[];
+}
+
+/** Same shape as updateFaqSection above (title + description + a repeatable
+ * list, single variant). */
+export async function updateTravelSection(input: UpdateTravelSectionInput): Promise<{ ok: true } | { ok: false; message: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const { data: existingConfig } = await supabase
+    .from("site_config")
+    .select("*")
+    .eq("event_id", input.eventId)
+    .maybeSingle();
+
+  const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
+  const existingContent = existingConfig ? parseContent(existingConfig.content) : {};
+
+  const sections = existingSections.some((section) => section.type === "travel")
+    ? existingSections.map((section) =>
+        section.type === "travel" ? { ...section, variant: input.travelVariant } : section
+      )
+    : [
+        ...existingSections,
+        { type: "travel", variant: input.travelVariant, order: SECTION_ORDER.travel, enabled: true },
+      ];
+
+  const content = {
+    ...existingContent,
+    travel: {
+      title: input.title,
+      description: input.description || undefined,
+      items: input.items,
+      styleOverrides: input.styleOverrides ?? existingStyleOverrides(existingContent, "travel"),
+      hiddenFields: input.hiddenFields ?? existingHiddenFields(existingContent, "travel"),
+    },
+  };
+
+  const { error: travelConfigError } = existingConfig
+    ? await supabase
+        .from("site_config")
+        .update({
+          sections: sections as unknown as Json,
+          content: content as unknown as Json,
+        })
+        .eq("event_id", input.eventId)
+    : await supabase.from("site_config").insert({
+        event_id: input.eventId,
+        theme_id: DEFAULT_THEME_ID,
+        sections: sections as unknown as Json,
+        content: content as unknown as Json,
+      });
+
+  if (travelConfigError) {
+    return { ok: false, message: travelConfigError.message };
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);

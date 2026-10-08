@@ -199,6 +199,57 @@ export async function sendGuestInvitationEmail(
   return { ok: true };
 }
 
+/** Reminder counterpart to sendGuestInvitationEmail above -- same delivery
+ * path (real email via Resend, same RSVP link), different copy and no
+ * recordInvitationSent call: a reminder isn't a new invitation, so it
+ * shouldn't touch invitation_sent_at/sent_channels or move the guest's
+ * status pill, which already reads "Sent" correctly for this guest. */
+export async function sendGuestReminderEmail(
+  guestId: string,
+  rsvpUrl: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const { data: guest, error: guestError } = await supabase
+    .from("guests")
+    .select("full_name, email, event_id")
+    .eq("id", guestId)
+    .single();
+
+  if (guestError || !guest) {
+    return { ok: false, message: guestError?.message ?? "Guest not found" };
+  }
+  if (!guest.email) {
+    return { ok: false, message: "This guest has no email on file" };
+  }
+
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("title")
+    .eq("id", guest.event_id)
+    .single();
+
+  if (eventError || !event) {
+    return { ok: false, message: eventError?.message ?? "Event not found" };
+  }
+
+  await sendEmail({
+    to: guest.email,
+    subject: `Don't forget to RSVP for ${event.title}`,
+    html: `<p>Hi ${guest.full_name},</p><p>Just a friendly reminder -- we haven't heard back from you yet for <strong>${event.title}</strong>.</p><p><a href="${rsvpUrl}">RSVP here</a></p>`,
+  });
+
+  return { ok: true };
+}
+
 export async function addGuestsBulk(
   eventId: string,
   rawText: string
@@ -606,5 +657,90 @@ export async function sendBulkGuestInvitationEmails(
   const skipped = (guests ?? []).length - eligible.length - failed.length;
 
   revalidatePath("/dashboard", "layout");
+  return { ok: true, sent, skipped: Math.max(skipped, 0), failed };
+}
+
+/** Bulk counterpart to sendGuestReminderEmail above -- same shape as
+ * sendBulkGuestInvitationEmails, but eligibility is the opposite population:
+ * guests who've already received an invitation (invitation_sent_at set) and
+ * still have no row at all in rsvp_responses, matching the same "Sent"
+ * status pill getGuestStatus already shows for them on this page (an
+ * accepted/declined guest has a response row and is correctly excluded). */
+export async function sendBulkGuestReminderEmails(
+  eventId: string,
+  baseUrl: string
+): Promise<
+  | { ok: true; sent: number; skipped: number; failed: { name: string; message: string }[] }
+  | { ok: false; message: string }
+> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Not authenticated" };
+  }
+
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("title, slug")
+    .eq("id", eventId)
+    .eq("owner_id", user.id)
+    .single();
+
+  if (eventError || !event) {
+    return { ok: false, message: eventError?.message ?? "Event not found" };
+  }
+
+  const { data: guests, error: guestsError } = await supabase
+    .from("guests")
+    .select("id, full_name, email, invite_code, invitation_sent_at, site_enabled")
+    .eq("event_id", eventId);
+
+  if (guestsError) {
+    return { ok: false, message: guestsError.message };
+  }
+
+  const { data: responses, error: responsesError } = await supabase
+    .from("rsvp_responses")
+    .select("guest_id")
+    .eq("event_id", eventId);
+
+  if (responsesError) {
+    return { ok: false, message: responsesError.message };
+  }
+
+  const respondedGuestIds = new Set((responses ?? []).map((response) => response.guest_id).filter(Boolean));
+
+  const eligible = (guests ?? []).filter(
+    (guest) =>
+      guest.site_enabled &&
+      guest.email &&
+      guest.invite_code &&
+      guest.invitation_sent_at != null &&
+      !respondedGuestIds.has(guest.id)
+  );
+
+  let sent = 0;
+  const failed: { name: string; message: string }[] = [];
+
+  for (const guest of eligible) {
+    const url = `${baseUrl}/e/${event.slug}?invite=${guest.invite_code}`;
+    try {
+      const result = await sendGuestReminderEmail(guest.id, url);
+      if (result.ok) {
+        sent += 1;
+      } else {
+        failed.push({ name: guest.full_name, message: result.message });
+      }
+    } catch (err) {
+      failed.push({ name: guest.full_name, message: err instanceof Error ? err.message : "Failed to send" });
+    }
+  }
+
+  const skipped = (guests ?? []).length - eligible.length - failed.length;
+
   return { ok: true, sent, skipped: Math.max(skipped, 0), failed };
 }

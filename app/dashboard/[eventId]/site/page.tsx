@@ -398,6 +398,56 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
     hiddenFields: extractHiddenFields(guestNotesContent),
   };
 
+  const faqSection = siteConfig
+    ? parseSections(siteConfig.sections).find((section) => section.type === "faq")
+    : undefined;
+  const faqContentExists = typeof content.faq === "object" && content.faq !== null;
+  const faqContent = faqContentExists ? (content.faq as Record<string, unknown>) : {};
+  const faqItems = Array.isArray(faqContent.items)
+    ? faqContent.items
+        .filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null)
+        .map((item) => ({
+          question: typeof item.question === "string" ? item.question : "",
+          answer: typeof item.answer === "string" ? item.answer : "",
+        }))
+    : faqContentExists
+      ? []
+      : [{ question: "New question", answer: "" }];
+  const faqEnabled = faqSection?.enabled ?? false;
+  const faqDefaultValues = {
+    title: typeof faqContent.title === "string" ? faqContent.title : "",
+    items: faqItems,
+    styleOverrides: extractStyleOverrides(faqContent),
+    hiddenFields: extractHiddenFields(faqContent),
+  };
+
+  const travelSection = siteConfig
+    ? parseSections(siteConfig.sections).find((section) => section.type === "travel")
+    : undefined;
+  const travelContentExists = typeof content.travel === "object" && content.travel !== null;
+  const travelContent = travelContentExists ? (content.travel as Record<string, unknown>) : {};
+  const travelItems = Array.isArray(travelContent.items)
+    ? travelContent.items
+        .filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null)
+        .map((item) => ({
+          name: typeof item.name === "string" ? item.name : "",
+          description: typeof item.description === "string" ? item.description : "",
+          promoCode: typeof item.promoCode === "string" ? item.promoCode : "",
+          priceText: typeof item.priceText === "string" ? item.priceText : "",
+          bookingUrl: typeof item.bookingUrl === "string" ? item.bookingUrl : "",
+        }))
+    : travelContentExists
+      ? []
+      : [{ name: "New place", description: "", promoCode: "", priceText: "", bookingUrl: "" }];
+  const travelEnabled = travelSection?.enabled ?? false;
+  const travelDefaultValues = {
+    title: typeof travelContent.title === "string" ? travelContent.title : "",
+    description: typeof travelContent.description === "string" ? travelContent.description : "",
+    items: travelItems,
+    styleOverrides: extractStyleOverrides(travelContent),
+    hiddenFields: extractHiddenFields(travelContent),
+  };
+
   const settingsContent =
     typeof content.settings === "object" && content.settings !== null
       ? (content.settings as Record<string, unknown>)
@@ -727,6 +777,8 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
                 seatingLabel: getEventType(event.event_type).seatingLabel,
               }}
               guestNotes={{ enabled: guestNotesEnabled, values: guestNotesDefaultValues }}
+              faq={{ enabled: faqEnabled, values: faqDefaultValues }}
+              travel={{ enabled: travelEnabled, values: travelDefaultValues }}
               allSections={allSections}
             />
         </div>

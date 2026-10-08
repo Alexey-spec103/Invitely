@@ -14,6 +14,7 @@ import BanquetTablesManager from "../banquet/BanquetTablesManager";
 import GuestTableAssignments from "../banquet/GuestTableAssignments";
 import RsvpNotificationToggle from "./RsvpNotificationToggle";
 import FirstVisitTour from "@/components/ui/FirstVisitTour";
+import GuestPhotoGallery from "./GuestPhotoGallery";
 import type { GuestListRow } from "@/components/pdf/GuestListDocument";
 
 export default async function GuestsPage({ params }: PageProps<"/dashboard/[eventId]/guests">) {
@@ -240,6 +241,8 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
         guests={allGuests}
         questions={rsvpQuestions}
       />
+
+      <GuestPhotoGallery eventId={event.id} eventSlug={event.slug} />
 
       {/* Direct feedback: this used to live on its own Banquet tab, mixed in
           with the printable-card showcase -- which read as "that whole tab

@@ -63,6 +63,12 @@ export interface Dictionary {
      * guard against an empty form before it's even sent. */
     notPublishedError: string;
     submitFailedError: string;
+    /** One-tap path, shown only to a guest already identified via their own
+     * personal invite link -- see SimpleForm.tsx's own comment. */
+    oneTapGreeting: (name: string) => string;
+    oneTapAccept: string;
+    oneTapDecline: string;
+    oneTapMoreDetails: string;
   };
   languageSwitcher: {
     label: string;
@@ -88,6 +94,13 @@ export interface Dictionary {
      * CompactBadges has no chrome of its own, nothing to translate there. */
     viewLink: string;
   };
+  travel: {
+    /** Travel section card's external booking link, and the label in front
+     * of a host-entered promo code -- the only two fixed chrome strings on
+     * an otherwise free-text card (name/description/price are host-typed). */
+    bookingLink: string;
+    promoCodeLabel: string;
+  };
   guestbook: {
     empty: string;
   };
@@ -111,6 +124,17 @@ export interface Dictionary {
      * empty/placeholder query to Google's embed API resolves to a globe-wide
      * zoomed-out view, not a 404 -- see mapEmbedSrc's own comment). */
     mapPlaceholder: string;
+  };
+  /** The guest-facing shared photo album at /e/[slug]/photos -- no login, a
+   * guest scans the host's QR code and adds their own event photos. */
+  guestPhotos: {
+    heading: string;
+    subtitle: (eventTitle: string) => string;
+    addPhotosButton: string;
+    uploading: string;
+    uploaded: string;
+    genericError: string;
+    notPublished: string;
   };
   banquetNavigator: {
     yourName: string;
@@ -293,6 +317,10 @@ export const en: Dictionary = {
     successDeclining: "Thanks for letting us know — you'll be missed!",
     notPublishedError: "This site isn't published yet, so RSVPs can't be submitted. Ask your host to publish it.",
     submitFailedError: "We couldn't submit your RSVP. Please try again in a moment.",
+    oneTapGreeting: (name) => `Will you be there, ${name}?`,
+    oneTapAccept: "I'll be there",
+    oneTapDecline: "Can't make it",
+    oneTapMoreDetails: "Add details (meal, guests, a message)",
   },
   languageSwitcher: {
     label: "Language",
@@ -313,6 +341,10 @@ export const en: Dictionary = {
   gift: {
     viewLink: "View",
   },
+  travel: {
+    bookingLink: "Book now",
+    promoCodeLabel: "Promo code",
+  },
   guestbook: {
     empty: "Guests' RSVP comments will appear here.",
   },
@@ -325,6 +357,15 @@ export const en: Dictionary = {
   map: {
     mapTitle: (venueName) => `Map: ${venueName}`,
     mapPlaceholder: "Add an address to preview the map",
+  },
+  guestPhotos: {
+    heading: "Add your photos",
+    subtitle: (eventTitle) => `Share your photos from ${eventTitle} — no account needed.`,
+    addPhotosButton: "Add photos",
+    uploading: "Uploading...",
+    uploaded: "Added! Thank you.",
+    genericError: "That photo couldn't be uploaded. Please try again.",
+    notPublished: "This site isn't published yet, so photos can't be added. Ask your host to publish it.",
   },
   banquetNavigator: {
     yourName: "Your name",

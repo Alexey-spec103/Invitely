@@ -1,0 +1,107 @@
+.section {
+  position: relative;
+  padding: 3rem 1rem;
+  color: var(--theme-text);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Same edge-safe-top reasoning as Gift/GuestNotes' own SimpleList/SimpleNote
+   (their own comments explain the min-height/padding-top math in full). */
+.sectionColor {
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+  --decor-gap: 1rem;
+  padding-top: calc(var(--decor-size) + var(--decor-edge-offset) + var(--decor-gap));
+  min-height: 24rem;
+}
+
+.accentTopLeft {
+  composes: cornerEdgeTopLeft from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+}
+
+.accentBottomRight {
+  composes: cornerEdgeBottomRight from "../../decorAnchors.module.css";
+  --decor-size: 9rem;
+  --decor-edge-offset: 1rem;
+}
+
+.title {
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
+  font-size: 1.9rem;
+  letter-spacing: 0.03em;
+  margin: 0 0 2rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 34rem;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.item {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent);
+}
+
+.item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.question {
+  font-family: var(--theme-font-heading);
+  font-weight: 500;
+  font-size: 1.05rem;
+  margin: 0 0 0.4rem;
+}
+
+.answer {
+  font-family: var(--theme-font-body);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  opacity: 0.85;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 2.4rem;
+  }
+
+  .accentTopLeft,
+  .accentBottomRight {
+    --decor-size: 14rem;
+  }
+
+  .sectionColor {
+    --decor-size: 14rem;
+    min-height: 30rem;
+  }
+
+  .question {
+    font-size: 1.15rem;
+  }
+
+  .answer {
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .accentTopLeft,
+  .accentBottomRight {
+    --decor-size: 18rem;
+  }
+
+  .sectionColor {
+    --decor-size: 18rem;
+    min-height: 34rem;
+  }
+}
