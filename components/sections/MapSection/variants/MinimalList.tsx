@@ -1,4 +1,5 @@
 import type { MapSectionVariantProps } from "../types";
+import { mapEmbedSrc } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./MinimalList.module.css";
@@ -12,8 +13,7 @@ export default function MinimalList({ title, venues, styleOverrides, locale }: M
           <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
         </h2>
         {(venues ?? []).map((venue, index) => {
-          const query = encodeURIComponent(`${venue.name}, ${venue.address}`);
-          const src = `https://www.google.com/maps?q=${query}&output=embed`;
+          const src = mapEmbedSrc(venue);
 
           return (
             <div key={`${venue.name}-${index}`} className={styles.entry}>
@@ -37,14 +37,18 @@ export default function MinimalList({ title, venues, styleOverrides, locale }: M
                 </p>
               </div>
               <div className={styles.mapWrapper}>
-                <iframe
-                  className={styles.map}
-                  src={src}
-                  title={t.mapTitle(venue.name)}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
+                {src ? (
+                  <iframe
+                    className={styles.map}
+                    src={src}
+                    title={t.mapTitle(venue.name)}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
+                ) : (
+                  <p className={styles.mapPlaceholder}>{t.mapPlaceholder}</p>
+                )}
               </div>
             </div>
           );

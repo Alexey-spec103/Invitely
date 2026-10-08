@@ -81,6 +81,7 @@ export const uk: Dictionary = {
   },
   map: {
     mapTitle: (venueName) => `Карта: ${venueName}`,
+    mapPlaceholder: "Додайте адресу, щоб побачити мапу",
   },
   banquetNavigator: {
     yourName: "Ваше ім'я",
@@ -96,7 +97,7 @@ export const uk: Dictionary = {
       `Схоже, ${guestName} відзначив(ла), що не зможе прийти — якщо це помилка, напишіть організатору.`,
   },
   landing: {
-    topBar: "Приймаємо Visa / Mastercard / PayPal · Миттєва доставка — надішліть посилання на запрошення в будь-яку точку світу",
+    topBar: "Приймаємо Visa / Mastercard · Миттєва доставка — надішліть посилання на запрошення в будь-яку точку світу",
     nav: { constructor: "Конструктор", themes: "Теми", whatsIncluded: "Що входить", pricing: "Тарифи", login: "Увійти" },
     mobileNav: { openMenu: "Відкрити меню", closeMenu: "Закрити меню" },
     cta: {
@@ -277,7 +278,7 @@ export const uk: Dictionary = {
       terms: "Умови використання",
       privacy: "Політика конфіденційності",
       rightsReserved: "© 2026 Invimbo. Усі права захищені.",
-      paymentAccepted: "Приймаємо Visa / Mastercard / PayPal",
+      paymentAccepted: "Приймаємо Visa / Mastercard",
     },
   },
   onboarding: {

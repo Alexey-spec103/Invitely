@@ -22,7 +22,7 @@ export default function PostageStamp({ names, eventDate, photoUrl, styleOverride
     <section className={styles.section}>
       {photoUrl ? (
         <div className={styles.stamp}>
-          <EditablePhoto src={photoUrl} className={styles.photo} />
+          <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
           <span className={styles.postmark} aria-hidden="true" />
         </div>
       ) : (

@@ -816,6 +816,12 @@ export default function GuestManager({
     label: string;
     timeoutId: ReturnType<typeof setTimeout>;
   } | null>(null);
+  // dashboard-audit.md: removal shows a clear "Removed X. Undo" toast, but
+  // adding a guest gave no feedback at all -- the form just cleared. Same
+  // fixed-bottom-right toast shell as pendingRemoval below, just without an
+  // Undo action (there's nothing to undo).
+  const [addedGuestName, setAddedGuestName] = useState<string | null>(null);
+  const addedToastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const statusCounts = useMemo(() => {
     const counts: Record<StatusFilter, number> = {
@@ -872,6 +878,9 @@ export default function GuestManager({
       if (!result.ok) throw new Error(result.message);
       reset();
       router.refresh();
+      if (addedToastTimeoutRef.current) clearTimeout(addedToastTimeoutRef.current);
+      setAddedGuestName(values.fullName);
+      addedToastTimeoutRef.current = setTimeout(() => setAddedGuestName(null), UNDO_WINDOW_MS);
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Failed to save");
     }
@@ -1296,6 +1305,18 @@ export default function GuestManager({
           >
             Undo
           </button>
+        </div>
+      )}
+
+      {addedGuestName && (
+        <div
+          role="status"
+          className={
+            "fixed right-6 z-50 flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm shadow-lg " +
+            (pendingRemoval ? "bottom-24" : "bottom-6")
+          }
+        >
+          <span className="text-gray-700">Added {addedGuestName}.</span>
         </div>
       )}
     </div>

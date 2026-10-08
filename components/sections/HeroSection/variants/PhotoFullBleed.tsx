@@ -63,7 +63,7 @@ export default function PhotoFullBleed({
 
   return (
     <section className={styles.section}>
-      <EditablePhoto src={photoUrl} className={styles.photo} />
+      <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
       <div className={styles.overlay} />
       <span className={styles.moon} aria-hidden="true" />
       <div className={styles.content}>

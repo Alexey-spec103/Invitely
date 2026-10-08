@@ -19,7 +19,7 @@ export default function VictorianCameo({ names, eventDate, photoUrl, styleOverri
       {photoUrl && (
         <div className={styles.locket}>
           <span className={styles.ring} aria-hidden="true" />
-          <EditablePhoto src={photoUrl} className={styles.photo} />
+          <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
         </div>
       )}
       {editable ? (

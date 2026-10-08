@@ -31,6 +31,7 @@ import {
 } from "@/components/sections/registry";
 import { BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 import SectionToggleSwitch from "./SectionToggleSwitch";
+import PremiumUpgradeModal from "@/components/ui/PremiumUpgradeModal";
 
 // Drawn icons for this list specifically -- flagged live as reading
 // "AI-generated" (craft-floor: "Unicode glyphs or emoji standing in for an
@@ -87,9 +88,12 @@ interface SectionModulesPanelProps {
   eventId: string;
   sections: SectionConfig[];
   /** dashboard-audit.md Block E part 1: whether the event's plan meets
-   * Basic. Toggling a gated module stays available regardless (that's the
-   * free "try it" part) -- this only drives the lock hint below, since the
-   * real enforcement lives in app/e/[slug]/page.tsx's public render. */
+   * Basic. Toggling a gated module ON still works (that's the free "try it"
+   * part) -- but now goes through PremiumUpgradeModal first (audit finding:
+   * the toggle used to just flip with zero sign anything was gated, and the
+   * module would then silently never render for guests), since the real
+   * enforcement lives in app/e/[slug]/page.tsx's public render. Turning one
+   * back off never needs the modal. */
   hasBasicAccess: boolean;
   /** Whether EnvelopeReveal shows on the public site's first visit -- a
    * site-wide setting (content.settings.envelopeRevealEnabled), not a real
@@ -148,6 +152,15 @@ export default function SectionModulesPanel({
   // inline. One shared message slot for every toggle in this panel, same
   // red-text convention PublishToggle uses.
   const [toggleError, setToggleError] = useState<string | null>(null);
+  // Audit finding: turning a gated module ON used to just flip the switch,
+  // identical in look to an unlocked one, while it would silently never
+  // render for guests. Same "modal before the action, Continue anyway does
+  // it" pattern Paper's PremiumUpgradeModal already uses for watermarked
+  // downloads -- turning OFF never routes through this.
+  const [pendingGateModal, setPendingGateModal] = useState<SectionType | null>(null);
+
+  const isGatedType = (type: SectionType) =>
+    !hasBasicAccess && (BASIC_GATED_SECTION_TYPES as readonly string[]).includes(type);
 
   const handleEnvelopeToggle = async (next: boolean) => {
     setToggleError(null);
@@ -179,6 +192,14 @@ export default function SectionModulesPanel({
     } finally {
       setPendingToggle(null);
     }
+  };
+
+  const requestToggle = (type: SectionType, next: boolean) => {
+    if (next && isGatedType(type)) {
+      setPendingGateModal(type);
+      return;
+    }
+    handleToggle(type, next);
   };
 
   const handleDrop = async (targetType: SectionType) => {
@@ -222,8 +243,7 @@ export default function SectionModulesPanel({
       {toggleError && <p className="mt-1 text-sm text-red-400">{toggleError}</p>}
       <ul className="mt-3 space-y-1">
         {order.map((type, index) => {
-          const isGated =
-            !hasBasicAccess && (BASIC_GATED_SECTION_TYPES as readonly string[]).includes(type);
+          const isGated = isGatedType(type);
           const ModuleIcon = MODULE_ICON_COMPONENTS[type];
           const group = MODULE_GROUPS[type];
           const showGroupLabel = group && group !== MODULE_GROUPS[order[index - 1]];
@@ -272,7 +292,7 @@ export default function SectionModulesPanel({
               </span>
               <SectionToggleSwitch
                 checked={enabled[type]}
-                onChange={(next) => handleToggle(type, next)}
+                onChange={(next) => requestToggle(type, next)}
                 disabled={pendingToggle === type}
                 label={`Turn ${SECTION_LABELS[type]} ${enabled[type] ? "off" : "on"}`}
               />
@@ -323,6 +343,21 @@ export default function SectionModulesPanel({
           A brief animated envelope guests tap open before seeing your site.
         </p>
       </div>
+
+      <PremiumUpgradeModal
+        open={pendingGateModal !== null}
+        onClose={() => setPendingGateModal(null)}
+        eventId={eventId}
+        action={pendingGateModal ? `Turning on ${SECTION_LABELS[pendingGateModal]}` : ""}
+        targetPlanId="basic"
+        consequence="won't show on your published site until you upgrade."
+        benefit="show it (and unlock the rest of Basic) on your site"
+        canContinueAnyway
+        continueLabel="Continue (preview only)"
+        onContinueAnyway={() => {
+          if (pendingGateModal) handleToggle(pendingGateModal, true);
+        }}
+      />
     </div>
   );
 }

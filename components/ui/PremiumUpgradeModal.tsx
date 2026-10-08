@@ -13,14 +13,27 @@ interface PremiumUpgradeModalProps {
    * filled into the modal's first line so it's obvious this fired because
    * of the exact action they took, not a generic upsell. */
   action: string;
+  /** Which plan clears the gate -- defaults to Premium (the paper-watermark
+   * gate this modal was first built for). SectionModulesPanel's Basic-gated
+   * modules pass "basic" instead, since Basic already covers them. */
+  targetPlanId?: string;
+  /** Rest of the first sentence, right after `action`. Defaults to the
+   * watermark gate's own wording. */
+  consequence?: string;
+  /** Rest of the "Upgrade to X (€Y) to ..." sentence. Defaults to the
+   * watermark gate's own wording. */
+  benefit?: string;
   /** Whether closing/continuing still lets the action happen (paper
    * downloads work watermarked on any plan) or the action is fully blocked
-   * until upgrade. Changes the continue button's label and presence. */
+   * until upgrade. Changes the continue button's presence. */
   canContinueAnyway?: boolean;
+  /** Label for the `canContinueAnyway` button. Defaults to the watermark
+   * gate's own "Continue with watermark" -- callers for a different kind of
+   * gate (e.g. a module that just won't publish yet) should pass their own,
+   * since "watermark" means nothing outside the paper-download context. */
+  continueLabel?: string;
   onContinueAnyway?: () => void;
 }
-
-const targetPlan = plans.premium;
 
 /** dashboard-audit.md follow-up: previously a gated action (paper
  * downloads) only got a small passive caption below the button after the
@@ -38,9 +51,15 @@ export default function PremiumUpgradeModal({
   onClose,
   eventId,
   action,
+  targetPlanId,
+  consequence,
+  benefit,
   canContinueAnyway,
+  continueLabel,
   onContinueAnyway,
 }: PremiumUpgradeModalProps) {
+  const targetPlan = plans[targetPlanId ?? "premium"] ?? plans.premium;
+
   useEffect(() => {
     if (!open) return;
     const handler = (event: KeyboardEvent) => {
@@ -76,11 +95,11 @@ export default function PremiumUpgradeModal({
         </div>
 
         <p className="text-sm text-[var(--dash-text)]">
-          {action} adds a &quot;Made with Invimbo&quot; watermark on your current plan.
+          {action} {consequence ?? 'adds a "Made with Invimbo" watermark on your current plan.'}
         </p>
         <p className="mt-2 text-sm text-[var(--dash-text-muted)]">
           Upgrade to <span className="font-semibold text-[var(--dash-text)]">{targetPlan.name}</span>{" "}
-          (€{targetPlan.priceEur}) to remove it from every invitation and banquet card.
+          (€{targetPlan.priceEur}) to {benefit ?? "remove it from every invitation and banquet card"}.
         </p>
 
         <div className="mt-5 flex flex-col gap-2">
@@ -99,7 +118,7 @@ export default function PremiumUpgradeModal({
               }}
               className="dash-btn dash-btn-neutral w-full justify-center text-sm"
             >
-              Continue with watermark
+              {continueLabel ?? "Continue with watermark"}
             </button>
           ) : (
             <button

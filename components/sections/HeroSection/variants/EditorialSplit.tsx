@@ -66,7 +66,7 @@ export default function EditorialSplit({
 
       {photoUrl && (
         <div className={styles.photoCol}>
-          <EditablePhoto src={photoUrl} className={styles.photo} />
+          <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
         </div>
       )}
     </section>

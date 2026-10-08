@@ -84,6 +84,24 @@
   border: 0;
 }
 
+/* Fills the same box the iframe would -- a venue with no address yet gets
+   this instead of a globe-wide Google Maps embed (see mapEmbedSrc). */
+.mapPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 1rem;
+  text-align: center;
+  font-family: var(--theme-font-body);
+  font-size: 0.85rem;
+  color: var(--theme-text);
+  opacity: 0.55;
+  background: color-mix(in srgb, var(--theme-accent) 6%, transparent);
+}
+
 @media (min-width: 640px) {
   .section {
     padding: 3.5rem 1.5rem;

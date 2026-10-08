@@ -191,11 +191,25 @@ export default function CanvasFrameEditor({
     const toolbarHeight = toolbarEl?.offsetHeight ?? 0;
     const toolbarWidth = toolbarEl?.offsetWidth ?? 0;
     const gap = 8;
+
+    // dashboard-audit.md: this editor also gets embedded at a fixed height
+    // next to a permanent Layers sidebar (Paper tab), where the available
+    // width -- and so canvasScale, which is width-only -- can shrink the
+    // rendered card well under the toolbar's own (deliberately unscaled, see
+    // above) height. The old "below the element" fallback stayed inside the
+    // element's own card, which on a card that short meant burying whatever
+    // other elements sat further down. Falling back to the CARD's bottom
+    // edge instead of the element's keeps the "above" placement unchanged
+    // (the common, spacious case) while guaranteeing the fallback never
+    // overlaps sibling elements, however small the card has been scaled to.
     const spaceAbove = rect.top - containerRect.top + scrollAreaEl.scrollTop;
-    const top =
-      spaceAbove - toolbarHeight - gap >= scrollAreaEl.scrollTop
-        ? spaceAbove - toolbarHeight - gap
-        : rect.bottom - containerRect.top + scrollAreaEl.scrollTop + gap;
+    const fitsAbove = spaceAbove - toolbarHeight - gap >= scrollAreaEl.scrollTop;
+    const cardRect = canvasAreaEl?.getBoundingClientRect() ?? null;
+    const cardBottom = cardRect ? cardRect.bottom - containerRect.top + scrollAreaEl.scrollTop : null;
+
+    const top = fitsAbove
+      ? spaceAbove - toolbarHeight - gap
+      : (cardBottom ?? rect.bottom - containerRect.top + scrollAreaEl.scrollTop) + gap;
     // Clamped so the popover always stays fully inside the visible scroll
     // area horizontally -- on a narrow viewport the toolbar can be close to
     // the full container width, so an unclamped left (matching wherever the
@@ -205,7 +219,7 @@ export default function CanvasFrameEditor({
     const maxLeft = scrollAreaEl.scrollLeft + scrollAreaEl.clientWidth - toolbarWidth - gap;
     const left = Math.max(minLeft, Math.min(rawLeft, maxLeft));
     setToolbarPos({ top, left });
-  }, [selectedTarget, scrollAreaEl, toolbarEl]);
+  }, [selectedTarget, scrollAreaEl, toolbarEl, canvasAreaEl]);
 
   useEffect(() => {
     const id = setTimeout(recomputeToolbarPos, 0);

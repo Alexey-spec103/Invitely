@@ -46,7 +46,7 @@ export default function VintageOrnamental({
           </>
         )}
         <div className={styles.inner}>
-          {photoUrl && <EditablePhoto src={photoUrl} className={styles.photo} />}
+          {photoUrl && <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />}
           {editable ? (
             <p className={styles.names}>
               <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />

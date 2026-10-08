@@ -34,7 +34,7 @@ export default function HandLetteringHero({
       ) : (
         <span className={styles.moon} aria-hidden="true" />
       )}
-      {photoUrl && <EditablePhoto src={photoUrl} className={styles.photo} />}
+      {photoUrl && <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />}
       <span className={styles.eyebrow}>
         <EditableText field="eyebrow" value={eyebrow || "We're getting married"} style={styleOverrides?.["eyebrow"]} />
       </span>

@@ -6,6 +6,11 @@ import styles from "./EditablePhoto.module.css";
 interface EditablePhotoProps {
   src: string;
   className?: string;
+  /** Descriptive alt text -- the couple's names, e.g. "Claire & Nathaniel".
+   * Optional only because a couple of call sites render this before names
+   * are guaranteed non-empty; falls back to "" (decorative) rather than a
+   * hardcoded placeholder when omitted. */
+  alt?: string;
 }
 
 /** Every Hero photo variant rendered a bare `<img>` -- the only way to
@@ -31,18 +36,18 @@ interface EditablePhotoProps {
  * On the public site (no EditableFieldProvider, `editable` is false) this
  * renders as a plain `<img>` -- zero extra DOM/behavior, matching every
  * other EditableText-based field's public/editor split. */
-export default function EditablePhoto({ src, className }: EditablePhotoProps) {
+export default function EditablePhoto({ src, className, alt = "" }: EditablePhotoProps) {
   const { editable } = useEditableField();
 
   if (!editable) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt="" className={className} />;
+    return <img src={src} alt={alt} className={className} />;
   }
 
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt="" className={className} data-field="photoUrl" />
+      <img src={src} alt={alt} className={className} data-field="photoUrl" />
       <button
         type="button"
         className={styles.editBadge}

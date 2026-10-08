@@ -107,6 +107,10 @@ export interface Dictionary {
     /** iframe `title` attribute (accessibility only, not visible text) for
      * each embedded venue map, across all 3 variants. */
     mapTitle: (venueName: string) => string;
+    /** Shown instead of the iframe when a venue has no address yet (an
+     * empty/placeholder query to Google's embed API resolves to a globe-wide
+     * zoomed-out view, not a 404 -- see mapEmbedSrc's own comment). */
+    mapPlaceholder: string;
   };
   banquetNavigator: {
     yourName: string;
@@ -320,6 +324,7 @@ export const en: Dictionary = {
   },
   map: {
     mapTitle: (venueName) => `Map: ${venueName}`,
+    mapPlaceholder: "Add an address to preview the map",
   },
   banquetNavigator: {
     yourName: "Your name",
@@ -336,7 +341,7 @@ export const en: Dictionary = {
       `Looks like ${guestName} is marked as not attending — reach out to the host if that's not right.`,
   },
   landing: {
-    topBar: "Visa / Mastercard / PayPal accepted · Instant delivery — send your invite link anywhere in the world",
+    topBar: "Visa / Mastercard accepted · Instant delivery — send your invite link anywhere in the world",
     nav: { constructor: "Constructor", themes: "Themes", whatsIncluded: "What's included", pricing: "Pricing", login: "Login" },
     mobileNav: { openMenu: "Open menu", closeMenu: "Close menu" },
     cta: {
@@ -517,7 +522,7 @@ export const en: Dictionary = {
       terms: "Terms of service",
       privacy: "Privacy policy",
       rightsReserved: "© 2026 Invimbo. All rights reserved.",
-      paymentAccepted: "Visa / Mastercard / PayPal accepted",
+      paymentAccepted: "Visa / Mastercard accepted",
     },
   },
   onboarding: {

@@ -24,7 +24,7 @@ export default function GothicFrame({ names, eventDate, photoUrl, styleOverrides
     <section className={styles.section}>
       {photoUrl ? (
         <div className={styles.stage}>
-          <EditablePhoto src={photoUrl} className={styles.photo} />
+          <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
         </div>
       ) : (
         <span className={styles.archOutline} aria-hidden="true" />

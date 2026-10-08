@@ -71,6 +71,7 @@ export const es: Dictionary = {
   },
   map: {
     mapTitle: (venueName) => `Mapa: ${venueName}`,
+    mapPlaceholder: "Añade una dirección para previsualizar el mapa",
   },
   banquetNavigator: {
     yourName: "Tu nombre",
@@ -88,7 +89,7 @@ export const es: Dictionary = {
       `Parece que ${guestName} indicó que no asistirá — si esto es un error, contacta al anfitrión.`,
   },
   landing: {
-    topBar: "Visa / Mastercard / PayPal aceptados · Entrega instantánea — envía tu enlace de invitación a cualquier parte del mundo",
+    topBar: "Visa / Mastercard aceptados · Entrega instantánea — envía tu enlace de invitación a cualquier parte del mundo",
     nav: { constructor: "Constructor", themes: "Temas", whatsIncluded: "Qué incluye", pricing: "Precios", login: "Iniciar sesión" },
     mobileNav: { openMenu: "Abrir menú", closeMenu: "Cerrar menú" },
     cta: {
@@ -269,7 +270,7 @@ export const es: Dictionary = {
       terms: "Términos del servicio",
       privacy: "Política de privacidad",
       rightsReserved: "© 2026 Invimbo. Todos los derechos reservados.",
-      paymentAccepted: "Visa / Mastercard / PayPal aceptados",
+      paymentAccepted: "Visa / Mastercard aceptados",
     },
   },
   onboarding: {

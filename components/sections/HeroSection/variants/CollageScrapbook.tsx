@@ -30,7 +30,7 @@ export default function CollageScrapbook({
           ) : (
             <span className={styles.sprig} aria-hidden="true" />
           )}
-          <EditablePhoto src={photoUrl} className={styles.photo} />
+          <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
         </div>
       )}
       {editable ? (
