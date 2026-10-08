@@ -10,12 +10,23 @@ import type { ThemeCategory } from "./types";
  * callers validate against `HERO_VARIANTS` the same way `site/page.tsx`
  * already validates any stored variant.
  */
+// "photo-full-bleed" ($HERO_VARIANT_LAYOUT_LABEL -> "Photo Invitation") used
+// to live only in `dark`, reachable for barely a fraction of its themes via
+// `stableIndex` below -- a real, live, filterable gallery option (see
+// `layoutLabelFor` + ThemeGallery's "Layout" filter chip) that was
+// effectively invisible by accident of distribution, not by design. No
+// theme-category decor dependency (PhotoFullBleed.tsx reads only
+// names/eventDate/photoUrl/styleOverrides, confirmed by reading it -- unlike
+// e.g. boho-asymmetric, which needs `themeCategory` for its illustrated
+// vine), so it's safe to add to any category purely on editorial fit: the
+// moods where a couple's own full-bleed photo reads as elegant rather than
+// fighting an illustrated motif for attention.
 const CATEGORY_HERO_VARIANTS: Record<ThemeCategory, string[]> = {
-  romantic: ["monogram-center", "hand-lettering", "editorial-split", "watercolor-bloom"],
-  modern: ["editorial-minimal", "minimal-text", "art-deco-crest"],
+  romantic: ["monogram-center", "hand-lettering", "editorial-split", "watercolor-bloom", "photo-full-bleed"],
+  modern: ["editorial-minimal", "minimal-text", "art-deco-crest", "photo-full-bleed"],
   botanical: ["botanical-frame", "boho-asymmetric", "signature", "watercolor-botanical"],
   boho: ["boho-asymmetric", "hand-lettering", "watercolor-bloom"],
-  luxury: ["monogram-crest", "letterpress", "art-deco-crest", "vintage-ornamental", "alcohol-ink-gold"],
+  luxury: ["monogram-crest", "letterpress", "art-deco-crest", "vintage-ornamental", "alcohol-ink-gold", "photo-full-bleed"],
   // watercolor-bloom added for dark/coastal/vintage alongside their existing
   // archetypes -- it's the same "colorful wreath framing the names" device
   // romantic uses, gated by category via WATERCOLOR_BLOOM_DECOR, generic
@@ -25,11 +36,11 @@ const CATEGORY_HERO_VARIANTS: Record<ThemeCategory, string[]> = {
   dark: ["photo-full-bleed", "monogram-crest", "art-deco-crest", "gothic-frame", "bare-branch", "watercolor-bloom"],
   coastal: ["coastal-wave", "minimal-text", "editorial-minimal", "watercolor-bloom"],
   rustic: ["collage-scrapbook", "letterpress", "boho-asymmetric", "folk-ornament"],
-  vintage: ["vintage-ornamental", "letterpress", "botanical-frame", "postage-stamp", "victorian-cameo", "watercolor-bloom"],
-  minimal: ["minimal-text", "editorial-minimal", "monogram-center", "left-aligned", "stacked-grid"],
-  marble: ["monogram-crest", "letterpress", "art-deco-crest", "victorian-cameo", "watercolor-bloom"],
+  vintage: ["vintage-ornamental", "letterpress", "botanical-frame", "postage-stamp", "victorian-cameo", "watercolor-bloom", "photo-full-bleed"],
+  minimal: ["minimal-text", "editorial-minimal", "monogram-center", "left-aligned", "stacked-grid", "photo-full-bleed"],
+  marble: ["monogram-crest", "letterpress", "art-deco-crest", "victorian-cameo", "watercolor-bloom", "photo-full-bleed"],
   cosmic: ["monogram-crest", "art-deco-crest", "gothic-frame", "bare-branch", "watercolor-bloom"],
-  peony: ["monogram-center", "hand-lettering", "editorial-split", "watercolor-bloom"],
+  peony: ["monogram-center", "hand-lettering", "editorial-split", "watercolor-bloom", "photo-full-bleed"],
   provence: ["botanical-frame", "watercolor-botanical", "signature", "watercolor-bloom"],
 };
 

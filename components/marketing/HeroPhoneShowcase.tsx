@@ -12,6 +12,21 @@ import styles from "./HeroPhoneShowcase.module.css";
 
 const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
 
+/** Hero-only exception to `previewPhotoFor`'s own rule (see
+ * lib/themes/previewMedia.ts's file header): the 100-card theme gallery
+ * deliberately never shows a posed couple, since that would misrepresent a
+ * stock couple as *that specific theme's* real result. This single hero
+ * mockup is a different context -- one marketing showcase, already paired
+ * with the obviously-placeholder name "Claire & Nathaniel" everywhere else
+ * on this page, not 100 cards each implicitly claiming "this is what you
+ * get." A real, free-license Unsplash photo (same sourcing policy as every
+ * other photo in this codebase -- man in black suit, woman in white dress,
+ * hands held, elegant and uncluttered enough to carry the grayscale
+ * treatment below), kept local to this file rather than added to the
+ * shared THEME_PREVIEW_PHOTOS pool so the gallery's own no-couple-photos
+ * rule stays intact everywhere else. */
+const HERO_SHOWCASE_PHOTO = "https://images.unsplash.com/photo-1606495186270-395860907235";
+
 // Real, finished copy for the Letter/Timeline frames -- never lorem-ipsum
 // placeholder text, matching the same couple across every frame regardless
 // of which theme/section that frame happens to show.
@@ -46,9 +61,30 @@ const TIMELINE_CONTENT = {
 // with zero illustrated decoration at all, which is what prompted picking
 // explicit variants everywhere in this file rather than trusting the
 // per-theme "recommended" pick for a showcase specifically):
-// - Hero/boho-asymmetric: a full-height illustrated vine framing the whole
-//   screen (needs `themeCategory` passed -- BohoAsymmetric.tsx falls back
-//   to a plain tinted mask without it).
+// - Hero/victorian-cameo: the couple's real photo framed INSIDE an ornate
+//   circular locket, not flooding the whole screen. Direct product-owner
+//   correction, with their own real weddingpost.ru invitation as the
+//   reference: an earlier version of this frame used photo-full-bleed --
+//   on a real portrait photo, full-bleed `object-fit: cover` across an
+//   entire phone screen crops unpredictably (confirmed live elsewhere in
+//   the product: a portrait shot lost almost its whole subject to a wide/
+//   short crop window) and reads as "a site showing off a cropped photo,"
+//   not "a beautiful invitation." A second attempt used editorial-split
+//   (photo in a plain bordered rectangle, closer to the actual reference
+//   image) but that variant's CSS *restructures* at a real `min-width:
+//   768px` media query (column -> row, centered -> right-aligned) -- this
+//   component fakes a phone by `transform: scale()`-ing a 375px-wide div,
+//   which doesn't change the REAL browser viewport `@media` evaluates
+//   against, so on an actual desktop visit editorial-split flipped to its
+//   desktop layout inside the shrunk mockup and overflowed/clipped text,
+//   confirmed live. victorian-cameo's own breakpoints only scale sizes up
+//   (16rem locket -> 20rem), never restructure, so it shrinks cleanly
+//   inside this mockup at any real viewport width -- same safe shape
+//   `photo-full-bleed` already had, with a real contained photo instead of
+//   a full-bleed crop. Replaces an even earlier boho-asymmetric pick that
+//   looked hand-picked-rich on paper but in practice confined its
+//   illustrated vine to a thin strip down the right edge, leaving roughly
+//   two-thirds of the frame bare tan background.
 // - Letter/ornate-border: a framed, decorated card -- pairs naturally with
 //   marble's dramatic dark palette.
 // - Timeline/vertical-line: clean and legible at this small mockup size;
@@ -57,9 +93,9 @@ const TIMELINE_CONTENT = {
 //   from provence's own soft palette rather than an added illustration.
 const SHOWCASE_FRAMES = [
   {
-    themeId: "boho-marigold-festival",
+    themeId: "romantic-rosewater",
     section: "hero" as const,
-    variant: "boho-asymmetric" as const,
+    variant: "victorian-cameo" as const,
     frameClass: styles.frameBoho,
     dotClass: styles.progressDotBoho,
   },
@@ -121,7 +157,11 @@ export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
 
                   let content: React.ReactNode;
                   if (section === "hero") {
-                    const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
+                    const rawPhoto: string =
+                      (variant as string) === "victorian-cameo" || (variant as string) === "photo-full-bleed"
+                        ? HERO_SHOWCASE_PHOTO
+                        : previewPhotoFor(theme.id, theme.category);
+                    const photoUrl = `${rawPhoto}?w=500&q=70&fit=crop&auto=format`;
                     content = (
                       <HeroSection
                         variant={variant}

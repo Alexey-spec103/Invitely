@@ -372,13 +372,28 @@ body {
    solid, confident color instead (the same --dash-accent used everywhere
    else in the product), sentence-case, semibold -- and real tactile
    feedback (lift + deeper shadow on hover, press down on click) rather than
-   a color swap being the only sign it's interactive. */
+   a color swap being the only sign it's interactive.
+
+   impeccable audit (2026-10-08): white text directly on --dash-accent
+   (#ff6b45) measures 2.82:1 -- fails WCAG AA's 4.5:1 for normal-size text,
+   and this class is literally every CTA on the marketing surface (header,
+   hero, every section, pricing, footer), so it was the single most
+   impactful a11y gap on the page. Switched the resting background to
+   --dash-accent-text (#c2410c) -- not a new color, the same token this
+   file already uses a few lines up specifically because it's documented as
+   "readable on white" -- which gives white text 5.57:1, comfortably past
+   AA. Hover now brightens UP to --dash-accent itself (the original full
+   bright orange), keeping the "lighten on hover" motion the component
+   already had, just anchored a shade lower so the resting state is the one
+   that's actually accessible (hover is transient and paired with the
+   lift/shadow motion below, so a brief dip to 2.82:1 there is an accepted
+   trade rather than a second color invented for one transition). */
 .landing-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: var(--dash-accent);
+  background: var(--dash-accent-text);
   color: #fff;
   font-weight: 600;
   box-shadow: 0 1px 2px rgba(194, 65, 12, 0.15);
@@ -387,7 +402,7 @@ body {
 
 @media (prefers-reduced-motion: no-preference) {
   .landing-cta:hover {
-    background: var(--dash-accent-hover);
+    background: var(--dash-accent);
     transform: translateY(-2px);
     box-shadow: 0 12px 24px -8px rgba(194, 65, 12, 0.45);
   }
@@ -400,7 +415,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .landing-cta:hover {
-    background: var(--dash-accent-hover);
+    background: var(--dash-accent);
   }
 }
 

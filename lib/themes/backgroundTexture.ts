@@ -42,7 +42,16 @@ export interface BackgroundTexture {
 }
 
 export const BACKGROUND_TEXTURE: Partial<Record<ThemeCategory, BackgroundTexture>> = {
-  romantic: { image: "/patterns/texture/paper-grain-warm.svg" },
+  // Same fiber+speckle grain base as the original paper-grain-warm.svg
+  // pilot, now with ~24 fine stroke-only leaf-and-vein sprigs scattered
+  // over it (mulberry32-style hand-placed, not filled blobs like
+  // botanical/peony's own scatters) -- "romantic" was the one category
+  // that never got the scatter pass the rest of this file describes below;
+  // a competitor comparison (the product owner's own real weddingpost.ru
+  // invitation) surfaced a genuine gap: their reference background is a
+  // delicate repeating *line-art* botanical texture, not flat grain. Stroke
+  // (not fill) is the deliberate difference from every other scatter here.
+  romantic: { image: "/patterns/texture/romantic-leaf-line-scatter.svg" },
   // Same seeded-PRNG scatter template: kept the linen weave base, added
   // ~24 small terracotta/rust tribal diamond marks (mulberry32 seed 412) --
   // echoes decorMotifs.ts's earthy boho palette without competing with the

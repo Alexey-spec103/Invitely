@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="760">
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.9" numOctaves="2" stitchTiles="stitch" result="fiber" seed="7" />
+    <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" stitchTiles="stitch" result="speckle" seed="3" />
+    <feBlend in="fiber" in2="speckle" mode="multiply" result="grain" />
+    <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0.12  0 0 0 0 0.08  0 0 0 0 0.03  0 0 0 0.16 0" />
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grain)" />
+  <g fill="none" stroke="#8a5f52" stroke-width="2" stroke-linecap="round">
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.34" transform="translate(58 92) rotate(24) scale(1.0)" />
+    <path d="M 0,-24 L 0,24" opacity="0.34" transform="translate(58 92) rotate(24) scale(1.0)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.26" transform="translate(214 58) rotate(142) scale(0.7)" />
+    <path d="M 0,-24 L 0,24" opacity="0.26" transform="translate(214 58) rotate(142) scale(0.7)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.38" transform="translate(389 121) rotate(301) scale(1.2)" />
+    <path d="M 0,-24 L 0,24" opacity="0.38" transform="translate(389 121) rotate(301) scale(1.2)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.22" transform="translate(527 44) rotate(88) scale(0.6)" />
+    <path d="M 0,-24 L 0,24" opacity="0.22" transform="translate(527 44) rotate(88) scale(0.6)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.32" transform="translate(676 133) rotate(205) scale(1.0)" />
+    <path d="M 0,-24 L 0,24" opacity="0.32" transform="translate(676 133) rotate(205) scale(1.0)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.28" transform="translate(95 247) rotate(317) scale(0.85)" />
+    <path d="M 0,-24 L 0,24" opacity="0.28" transform="translate(95 247) rotate(317) scale(0.85)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.36" transform="translate(293 289) rotate(63) scale(1.1)" />
+    <path d="M 0,-24 L 0,24" opacity="0.36" transform="translate(293 289) rotate(63) scale(1.1)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.24" transform="translate(451 236) rotate(174) scale(0.65)" />
+    <path d="M 0,-24 L 0,24" opacity="0.24" transform="translate(451 236) rotate(174) scale(0.65)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.33" transform="translate(620 302) rotate(39) scale(0.95)" />
+    <path d="M 0,-24 L 0,24" opacity="0.33" transform="translate(620 302) rotate(39) scale(0.95)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.27" transform="translate(733 251) rotate(260) scale(0.75)" />
+    <path d="M 0,-24 L 0,24" opacity="0.27" transform="translate(733 251) rotate(260) scale(0.75)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.40" transform="translate(29 406) rotate(112) scale(1.25)" />
+    <path d="M 0,-24 L 0,24" opacity="0.40" transform="translate(29 406) rotate(112) scale(1.25)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.20" transform="translate(178 441) rotate(330) scale(0.55)" />
+    <path d="M 0,-24 L 0,24" opacity="0.20" transform="translate(178 441) rotate(330) scale(0.55)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.35" transform="translate(356 398) rotate(197) scale(1.05)" />
+    <path d="M 0,-24 L 0,24" opacity="0.35" transform="translate(356 398) rotate(197) scale(1.05)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.29" transform="translate(502 455) rotate(74) scale(0.9)" />
+    <path d="M 0,-24 L 0,24" opacity="0.29" transform="translate(502 455) rotate(74) scale(0.9)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.26" transform="translate(667 412) rotate(281) scale(0.7)" />
+    <path d="M 0,-24 L 0,24" opacity="0.26" transform="translate(667 412) rotate(281) scale(0.7)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.37" transform="translate(130 558) rotate(16) scale(1.15)" />
+    <path d="M 0,-24 L 0,24" opacity="0.37" transform="translate(130 558) rotate(16) scale(1.15)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.22" transform="translate(284 601) rotate(228) scale(0.6)" />
+    <path d="M 0,-24 L 0,24" opacity="0.22" transform="translate(284 601) rotate(228) scale(0.6)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.34" transform="translate(439 567) rotate(355) scale(1.0)" />
+    <path d="M 0,-24 L 0,24" opacity="0.34" transform="translate(439 567) rotate(355) scale(1.0)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.28" transform="translate(597 619) rotate(149) scale(0.8)" />
+    <path d="M 0,-24 L 0,24" opacity="0.28" transform="translate(597 619) rotate(149) scale(0.8)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.39" transform="translate(718 560) rotate(66) scale(1.2)" />
+    <path d="M 0,-24 L 0,24" opacity="0.39" transform="translate(718 560) rotate(66) scale(1.2)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.23" transform="translate(63 698) rotate(243) scale(0.65)" />
+    <path d="M 0,-24 L 0,24" opacity="0.23" transform="translate(63 698) rotate(243) scale(0.65)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.31" transform="translate(221 722) rotate(108) scale(0.95)" />
+    <path d="M 0,-24 L 0,24" opacity="0.31" transform="translate(221 722) rotate(108) scale(0.95)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.26" transform="translate(405 689) rotate(19) scale(0.75)" />
+    <path d="M 0,-24 L 0,24" opacity="0.26" transform="translate(405 689) rotate(19) scale(0.75)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.36" transform="translate(561 735) rotate(293) scale(1.1)" />
+    <path d="M 0,-24 L 0,24" opacity="0.36" transform="translate(561 735) rotate(293) scale(1.1)" />
+    <path d="M 0,-29 C 15,-20 15,20 0,29 C -15,20 -15,-20 0,-29 Z" opacity="0.21" transform="translate(700 701) rotate(161) scale(0.55)" />
+    <path d="M 0,-24 L 0,24" opacity="0.21" transform="translate(700 701) rotate(161) scale(0.55)" />
+  </g>
+</svg>

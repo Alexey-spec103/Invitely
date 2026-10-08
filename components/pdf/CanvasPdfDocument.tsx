@@ -72,13 +72,17 @@ function CanvasPdfPage({ frame }: { frame: CanvasFrame }) {
 }
 
 /** Just the paintable content of a canvas frame (background image + sorted
- * elements), at PDF_SCALE, with no `<Page>` of its own -- lets a page that
- * isn't otherwise canvas-driven (InvitationDocument's canvas-designed back
- * side) embed one frame's design inside a `<Page>` it already controls the
- * size/background-color of. */
-export function CanvasPdfFrameContent({ frame }: { frame: CanvasFrame }) {
-  const width = frame.width * PDF_SCALE;
-  const height = frame.height * PDF_SCALE;
+ * elements), at PDF_SCALE by default, with no `<Page>` of its own -- lets a
+ * page that isn't otherwise canvas-driven (InvitationDocument's canvas-
+ * designed back/front sides) embed one frame's design inside a `<Page>` it
+ * already controls the size/background-color of. `scale` is only ever
+ * overridden for a physically non-A5 page -- EnvelopeDocument's 649x459pt
+ * landscape panel can't use PDF_SCALE (which assumes a 420pt-wide page);
+ * it passes its own `ENVELOPE_WIDTH / CANVAS_DESIGN_WIDTH` instead so a
+ * 1200-design-unit-wide frame fills the actual envelope width. */
+export function CanvasPdfFrameContent({ frame, scale = PDF_SCALE }: { frame: CanvasFrame; scale?: number }) {
+  const width = frame.width * scale;
+  const height = frame.height * scale;
 
   const styles = StyleSheet.create({
     backgroundImage: {
@@ -102,19 +106,19 @@ export function CanvasPdfFrameContent({ frame }: { frame: CanvasFrame }) {
         <Image src={frame.background.imageUrl} style={styles.backgroundImage} />
       )}
       {sortedElements.map((element) => (
-        <CanvasPdfElement key={element.id} element={element} />
+        <CanvasPdfElement key={element.id} element={element} scale={scale} />
       ))}
     </>
   );
 }
 
-export function CanvasPdfElement({ element }: { element: CanvasElement }) {
+export function CanvasPdfElement({ element, scale = PDF_SCALE }: { element: CanvasElement; scale?: number }) {
   const positionStyle = {
     position: "absolute" as const,
-    left: element.x * PDF_SCALE,
-    top: element.y * PDF_SCALE,
-    width: element.width * PDF_SCALE,
-    height: element.height * PDF_SCALE,
+    left: element.x * scale,
+    top: element.y * scale,
+    width: element.width * scale,
+    height: element.height * scale,
     transform: element.rotation ? `rotate(${element.rotation}deg)` : undefined,
   };
 
@@ -127,12 +131,12 @@ export function CanvasPdfElement({ element }: { element: CanvasElement }) {
           // actually has it -- same per-character fallback a browser does
           // automatically, which this needs to opt into explicitly.
           fontFamily: canvasFontFamiliesFor(element.fontFamily),
-          fontSize: element.fontSize * PDF_SCALE,
+          fontSize: element.fontSize * scale,
           fontWeight: element.fontWeight,
           color: element.color,
           textAlign: element.textAlign,
           lineHeight: element.lineHeight,
-          letterSpacing: element.letterSpacing ? element.letterSpacing * PDF_SCALE : undefined,
+          letterSpacing: element.letterSpacing ? element.letterSpacing * scale : undefined,
         }}
       >
         {element.text}
@@ -163,7 +167,7 @@ export function CanvasPdfElement({ element }: { element: CanvasElement }) {
       style={{
         ...positionStyle,
         objectFit: element.objectFit,
-        borderRadius: element.borderRadius ? element.borderRadius * PDF_SCALE : undefined,
+        borderRadius: element.borderRadius ? element.borderRadius * scale : undefined,
       }}
     />
   );

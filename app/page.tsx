@@ -18,6 +18,7 @@ import {
   Pencil,
   Sliders,
   BadgeCheck,
+  Info,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InvitelyLogo from "@/components/InvitelyLogo";
@@ -243,7 +244,7 @@ export default async function Home() {
               <InvitelyLogo className="relative h-16 w-16 rotate-[-8deg] shadow-lg shadow-orange-900/15 sm:h-20 sm:w-20" />
             </div>
             <h1
-              className="hero-load-item text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl lg:text-6xl"
+              className="hero-load-item font-[family-name:var(--font-source-serif-4)] text-4xl font-normal tracking-tight text-stone-900 sm:text-5xl lg:text-6xl"
               style={{ "--stagger-i": 0 } as CSSProperties}
             >
               {t.hero.headline}
@@ -327,7 +328,7 @@ export default async function Home() {
       <section id="constructor" className="landing-reveal scroll-mt-[120px] py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
           <div>
-            <h2 className="text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
+            <h2 className="font-[family-name:var(--font-source-serif-4)] text-3xl font-normal tracking-tight text-stone-900 sm:text-4xl">
               {t.constructorSection.heading}
             </h2>
             <p className="mt-4 max-w-md text-stone-600">{t.constructorSection.subtext(fontCount)}</p>
@@ -367,7 +368,7 @@ export default async function Home() {
 
       <section id="themes" className="landing-reveal scroll-mt-[120px] border-t border-stone-100 bg-stone-50 py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
+          <h2 className="font-[family-name:var(--font-source-serif-4)] text-center text-3xl font-normal tracking-tight text-stone-900">
             {t.themesSection.heading}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">{t.themesSection.subtext}</p>
@@ -379,7 +380,7 @@ export default async function Home() {
 
       <section id="whats-included" className="landing-reveal scroll-mt-[120px] py-24">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
+          <h2 className="font-[family-name:var(--font-source-serif-4)] text-center text-3xl font-normal tracking-tight text-stone-900">
             {t.whatsIncluded.heading}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">{t.whatsIncluded.subtext}</p>
@@ -414,7 +415,7 @@ export default async function Home() {
 
       <section id="pricing" className="landing-reveal scroll-mt-[120px] border-t border-stone-100 bg-stone-50 py-24">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-stone-900">
+          <h2 className="font-[family-name:var(--font-source-serif-4)] text-center text-3xl font-normal tracking-tight text-stone-900">
             {t.pricing.heading}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">{t.pricing.subtext}</p>
@@ -422,14 +423,24 @@ export default async function Home() {
             {/* Anchors the price to a real, finished result rather than
                 leaving it as an abstract number next to text -- see
                 PRICING_EXAMPLE_THEME_ID's own comment. */}
-            <div className="mx-auto w-48 shrink-0 -rotate-2 overflow-hidden rounded-2xl shadow-[0_24px_50px_-20px_rgba(60,40,20,0.35)] ring-4 ring-white sm:w-56 lg:mx-0">
-              <InvitationCardPreview
-                theme={pricingExampleTheme}
-                names={["Claire", "Nathaniel"]}
-                eventDate="2027-05-15"
-                side="front"
-                locale={locale}
-              />
+            <div className="mx-auto w-48 shrink-0 -rotate-2 sm:w-56 lg:mx-0">
+              {/* InvitationCardPreview's FlipCard renders its faces
+                  `position: absolute`, which contributes zero height to a
+                  block-level parent and collapses the whole card to 0px --
+                  same bug class PlatformFanSection.module.css's `.item`
+                  comment already documents. `grid` + a definite
+                  `aspect-ratio` (same 420/595 ratio used there) is the
+                  proven fix: the grid item stretches to fill the
+                  aspect-ratio-derived box instead of collapsing. */}
+              <div className="grid aspect-[420/595] overflow-hidden rounded-2xl shadow-[0_24px_50px_-20px_rgba(60,40,20,0.35)] ring-4 ring-white">
+                <InvitationCardPreview
+                  theme={pricingExampleTheme}
+                  names={["Claire", "Nathaniel"]}
+                  eventDate="2027-05-15"
+                  side="front"
+                  locale={locale}
+                />
+              </div>
               <p className="mt-3 hidden text-center text-xs text-stone-500 lg:block">{t.pricing.exampleCaption}</p>
             </div>
             <div>
@@ -468,11 +479,20 @@ export default async function Home() {
                         app/e/[slug]/page.tsx -- visibility is gated on
                         event.status === "published", never on plan_id), so
                         removing this card would misrepresent the product.
-                        The honest fix is naming its one trade-off here
-                        instead of implying it doesn't exist. */}
+                        The honest fix is naming its one trade-off here --
+                        and naming it where a visitor actually reads it.
+                        Direct product-owner correction: the original
+                        text-xs/text-stone-500 treatment was the same muted
+                        fine-print register as every other card's throwaway
+                        detail, so it read as hedge-y small print rather
+                        than the one fact most likely to change a visitor's
+                        decision. A visitor deciding whether Free is enough
+                        for them needs this to be the second thing they see
+                        on this card, not the last. */}
                     {plan.id === "free" && (
-                      <p className="mt-3 border-t border-stone-100 pt-3 text-xs text-stone-500">
-                        {t.pricing.freeCaveat}
+                      <p className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-sm font-medium text-amber-900">
+                        <Info className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
+                        <span>{t.pricing.freeCaveat}</span>
                       </p>
                     )}
                   </div>
@@ -497,7 +517,7 @@ export default async function Home() {
             stays sharp instead of smeared. */}
         <div className="mx-auto grid max-w-4xl items-center gap-10 px-6 text-center md:grid-cols-[1fr_auto] md:text-left">
           <div>
-            <h2 className="text-3xl font-semibold tracking-tight text-stone-900">{t.finalCta.heading}</h2>
+            <h2 className="font-[family-name:var(--font-source-serif-4)] text-3xl font-normal tracking-tight text-stone-900">{t.finalCta.heading}</h2>
             <p className="mt-4 text-lg text-stone-600">{t.finalCta.subtext}</p>
             <div className="mt-8">
               <Link href={ctaHref} className="landing-cta px-8 py-3 text-base">

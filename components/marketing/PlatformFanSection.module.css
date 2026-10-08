@@ -49,6 +49,15 @@
   width: 100%;
   aspect-ratio: 6 / 5;
   min-height: 340px;
+  /* .table/.place/.envelope sit close enough to the right/left edges that
+     their own `rotate()` swings a corner past 100% -- with nothing to clip
+     it, that silently widened the whole page's scrollWidth beyond the
+     viewport (confirmed via a real mobile-width check: 432px body vs 375px
+     viewport). Clipping at this container's own edge is the correct fix --
+     it's already the visual frame this fanned-out composition is scattered
+     inside, so a sliver of a rotated corner disappearing here is invisible,
+     not a new crop. */
+  overflow: hidden;
 }
 
 .item {
@@ -132,6 +141,81 @@
   aspect-ratio: 252 / 144;
   transform: rotate(6deg);
   z-index: 7;
+}
+
+/* Below ~640px the scatter composition above stops working: the same
+   width% figures that read as an artful pile of paper on a desktop-width
+   canvas shrink every card to confetti once .fanWrap itself is only
+   ~340px wide, and .fanWrap's aspect-ratio/min-height (tuned for the
+   scatter) leaves a dead gap of empty space beneath the shrunken cluster.
+   Confirmed messy live via a real mobile-width render (the iframe-own-
+   viewport technique -- resize_window doesn't work in this environment).
+   Below this breakpoint, abandon absolute scatter for a plain 2-column
+   grid: each card becomes a real, legibly-sized grid cell instead of a
+   tiny absolutely-positioned tile, with a small per-card rotation kept
+   (a transform, so it doesn't affect grid flow) for the same "real paper,
+   not a spreadsheet" personality the desktop version has -- a tidy
+   corkboard-of-photos feel rather than a shuffled deck. The phone closes
+   the grid full-width and centered, capped narrower than a column so it
+   doesn't read as oversized next to the paper cards it's meant to match. */
+@media (max-width: 640px) {
+  .fanWrap {
+    position: static;
+    aspect-ratio: auto;
+    min-height: 0;
+    overflow: visible;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem 1rem;
+    padding: 0.25rem 0 0.5rem;
+  }
+
+  .item {
+    position: static;
+    top: auto;
+    left: auto;
+    width: 100%;
+    z-index: auto;
+  }
+
+  .envelope {
+    order: 1;
+    transform: rotate(-3deg);
+  }
+
+  .invitation {
+    order: 2;
+    transform: rotate(-1.5deg);
+  }
+
+  .program {
+    order: 3;
+    transform: rotate(2deg);
+  }
+
+  .table {
+    order: 4;
+    transform: rotate(2.5deg);
+  }
+
+  .dressCode {
+    order: 5;
+    transform: rotate(-2.5deg);
+  }
+
+  .place {
+    order: 6;
+    transform: rotate(3deg);
+  }
+
+  .phone {
+    order: 7;
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 42%;
+    max-width: 10.5rem;
+    transform: rotate(-2deg);
+  }
 }
 
 /* Phone frame -- a plain CSS bezel (no product photo behind it, unlike the

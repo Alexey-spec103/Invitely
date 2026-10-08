@@ -166,7 +166,7 @@ export default function DashboardShell({
           <span className="hidden h-4 w-px bg-[var(--dash-border)] sm:block" />
           <EventSwitcher events={events} currentEventId={navEventId} />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           {publish && <CopyLinkButton slug={publish.slug} customDomain={publish.customDomain} />}
           {publish && (
             // Competitor research (Greenvelope's "send a self-test" step):

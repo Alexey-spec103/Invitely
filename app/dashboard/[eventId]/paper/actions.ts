@@ -73,3 +73,35 @@ export async function updateInvitationFrontCanvas(input: {
 }): Promise<{ ok: true } | { ok: false; message: string }> {
   return patchInvitationsContent(input.eventId, { frontCanvas: input.frame as unknown as Json });
 }
+
+/** Clears a saved front-canvas design, returning the card to its original
+ * static (names/date/venue-from-Site-tab) preview -- the "Revert to
+ * default" control. `null` (not omitting the key) is what actually erases
+ * it: patchInvitationsContent only ever merges keys in, so leaving
+ * `frontCanvas` out of the patch would keep the old saved value. */
+export async function clearInvitationFrontCanvas(
+  eventId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  return patchInvitationsContent(eventId, { frontCanvas: null });
+}
+
+export async function updateInvitationEnvelopeCanvas(input: {
+  eventId: string;
+  frame: CanvasFrame;
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  return patchInvitationsContent(input.eventId, { envelopeCanvas: input.frame as unknown as Json });
+}
+
+export async function updateInvitationProgramCanvas(input: {
+  eventId: string;
+  frame: CanvasFrame;
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  return patchInvitationsContent(input.eventId, { programCanvas: input.frame as unknown as Json });
+}
+
+export async function updateInvitationDressCodeCanvas(input: {
+  eventId: string;
+  frame: CanvasFrame;
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  return patchInvitationsContent(input.eventId, { dressCodeCanvas: input.frame as unknown as Json });
+}

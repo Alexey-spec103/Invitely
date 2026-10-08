@@ -284,18 +284,28 @@
   transform: scale(calc(100cqw / 375px)) translateY(-325px);
 }
 
-/* boho-asymmetric (BohoAsymmetric.tsx) is explicitly *bottom*-anchored, not
-   centered like the other two frames -- its own comment: "bottom-anchored
-   for the theme gallery crop". Confirmed live: the base rule's -325px
-   (right for a centered variant) shifted the crop window well past this
-   frame's actual content, landing on the blank space after the section's
-   812px ends -- the real, still-visible half of "glitches and cropping"
-   after the vh->px fix above landed everywhere else. A bottom-anchored
-   block needs only a tiny upward nudge (the crop window is 784px tall,
-   almost the full 812px section, so there's barely 28px of slack to
-   center), not the ~40%-of-height shift a vertically-centered block needs. */
+/* This frame now shows editorial-split (HeroPhoneShowcase.tsx) --
+   `justify-content: center` content inside the shared 812px section box, so
+   (unlike a top/bottom-anchored variant) there's little vertical content to
+   crop around either way; the small -14px nudge left over from this slot's
+   earlier occupants still lands the frame correctly, confirmed live after
+   the swap. */
 .frameBoho .screenScaleInner {
   transform: scale(calc(100cqw / 375px)) translateY(-14px);
+}
+
+/* Elegant grayscale treatment for the hero's one real couple photo
+ * (HERO_SHOWCASE_PHOTO in HeroPhoneShowcase.tsx) -- a deliberate editorial
+ * choice for THIS marketing mockup only, not a change to how
+ * EditorialSplit/PhotoFullBleed look for real hosts (their own uploaded
+ * photos stay full color everywhere else these variants are used). Targets
+ * the real `<img>` EditablePhoto renders -- a plain element selector
+ * reaches through that component's own CSS-module scoping fine, since
+ * module hashing only renames the classes written in ITS file, not element
+ * selectors written here. Slight warmth (sepia) keeps it from reading cold
+ * or newsprint-flat; contrast lifted a touch so it doesn't go muddy. */
+.frameBoho img {
+  filter: grayscale(0.85) sepia(0.12) contrast(1.05);
 }
 
 .frameArtDeco .screenScaleInner {

@@ -36,6 +36,14 @@ export interface PaperContent {
    * something the structured fields can't say ("мало ли он хочет что-то
    * своё написать"). Same opt-in, zero-migration pattern as backCanvas. */
   frontCanvas?: CanvasFrame;
+  /** Same opt-in "Customize text" pattern as frontCanvas, extended to the
+   * envelope's recipient-facing side, the program/order-of-events card, and
+   * the dress-code card -- a host writing their own wording on any of these
+   * isn't limited to the structured fields either. All three stay under the
+   * same `invitations` jsonb key as front/backCanvas, zero migration. */
+  envelopeCanvas?: CanvasFrame;
+  programCanvas?: CanvasFrame;
+  dressCodeCanvas?: CanvasFrame;
 }
 
 export function getPaperContent(content: Record<string, unknown>): PaperContent {
@@ -98,6 +106,18 @@ export function getPaperContent(content: Record<string, unknown>): PaperContent 
     typeof invitationsContent.frontCanvas === "object" && invitationsContent.frontCanvas !== null
       ? (invitationsContent.frontCanvas as unknown as CanvasFrame)
       : undefined;
+  const envelopeCanvas =
+    typeof invitationsContent.envelopeCanvas === "object" && invitationsContent.envelopeCanvas !== null
+      ? (invitationsContent.envelopeCanvas as unknown as CanvasFrame)
+      : undefined;
+  const programCanvas =
+    typeof invitationsContent.programCanvas === "object" && invitationsContent.programCanvas !== null
+      ? (invitationsContent.programCanvas as unknown as CanvasFrame)
+      : undefined;
+  const dressCodeCanvas =
+    typeof invitationsContent.dressCodeCanvas === "object" && invitationsContent.dressCodeCanvas !== null
+      ? (invitationsContent.dressCodeCanvas as unknown as CanvasFrame)
+      : undefined;
 
   return {
     venueName,
@@ -110,5 +130,8 @@ export function getPaperContent(content: Record<string, unknown>): PaperContent 
     backMessage,
     backCanvas,
     frontCanvas,
+    envelopeCanvas,
+    programCanvas,
+    dressCodeCanvas,
   };
 }

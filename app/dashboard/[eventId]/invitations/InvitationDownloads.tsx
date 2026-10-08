@@ -38,6 +38,9 @@ interface InvitationDownloadsProps {
   backMessage?: string;
   backCanvas?: CanvasFrame;
   frontCanvas?: CanvasFrame;
+  envelopeCanvas?: CanvasFrame;
+  programCanvas?: CanvasFrame;
+  dressCodeCanvas?: CanvasFrame;
   dressCodeTitle: string;
   dressCodeDescription?: string;
   dressCodeColors: DressCodeColorItem[];
@@ -77,6 +80,9 @@ export default function InvitationDownloads({
   backMessage,
   backCanvas,
   frontCanvas,
+  envelopeCanvas,
+  programCanvas,
+  dressCodeCanvas,
   dressCodeTitle,
   dressCodeDescription,
   dressCodeColors,
@@ -123,7 +129,7 @@ export default function InvitationDownloads({
         import("@/components/pdf/ProgramCardDocument"),
       ]);
       const blob = await pdf(
-        <ProgramCardDocument theme={theme} title={timelineTitle} events={timelineEvents} />
+        <ProgramCardDocument theme={theme} title={timelineTitle} events={timelineEvents} frame={programCanvas} />
       ).toBlob();
       saveBlob(blob, "program-card.pdf");
     } catch (err) {
@@ -147,6 +153,7 @@ export default function InvitationDownloads({
           title={dressCodeTitle || "Dress Code"}
           description={dressCodeDescription}
           colors={dressCodeColors}
+          frame={dressCodeCanvas}
         />
       ).toBlob();
       saveBlob(blob, "dress-code-card.pdf");
@@ -166,7 +173,7 @@ export default function InvitationDownloads({
         import("@/components/pdf/EnvelopeDocument"),
       ]);
       const blob = await pdf(
-        <EnvelopeDocument theme={theme} names={names} eventDate={eventDate} locale={locale} />
+        <EnvelopeDocument theme={theme} names={names} eventDate={eventDate} locale={locale} frame={envelopeCanvas} />
       ).toBlob();
       saveBlob(blob, "envelope.pdf");
     } catch (err) {

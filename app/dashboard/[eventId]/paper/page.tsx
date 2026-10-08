@@ -148,6 +148,9 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
         backMessage={paperContent.backMessage}
         backCanvas={paperContent.backCanvas}
         frontCanvas={paperContent.frontCanvas}
+        envelopeCanvas={paperContent.envelopeCanvas}
+        programCanvas={paperContent.programCanvas}
+        dressCodeCanvas={paperContent.dressCodeCanvas}
         tableCardData={banquetCardData.tableCardData}
         tableNames={banquetCardData.tableNames}
         allGuestNames={banquetCardData.allGuestNames}
@@ -182,6 +185,9 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
           backMessage={paperContent.backMessage || undefined}
           backCanvas={paperContent.backCanvas}
           frontCanvas={paperContent.frontCanvas}
+          envelopeCanvas={paperContent.envelopeCanvas}
+          programCanvas={paperContent.programCanvas}
+          dressCodeCanvas={paperContent.dressCodeCanvas}
           dressCodeTitle={paperContent.dressCodeTitle}
           dressCodeDescription={paperContent.dressCodeDescription}
           dressCodeColors={paperContent.dressCodeColors}

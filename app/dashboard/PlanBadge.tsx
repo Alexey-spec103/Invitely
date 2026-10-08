@@ -66,11 +66,24 @@ export default function PlanBadge({ planId, eventId }: PlanBadgeProps) {
         aria-expanded={open}
         className={
           isFree
-            ? "flex h-9 items-center gap-1.5 rounded-full bg-[var(--dash-accent)] px-3.5 text-xs font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)]"
-            : "flex h-9 items-center gap-1.5 rounded-full border border-[var(--dash-border)] px-3 text-xs font-semibold text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-text)]"
+            ? "flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-[var(--dash-accent)] px-3.5 text-xs font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)]"
+            : "flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full border border-[var(--dash-border)] px-3 text-xs font-semibold text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-text)]"
         }
       >
-        {isFree ? `Upgrade your link — €${basicPrice}` : `${plan.name} plan`}
+        {isFree ? (
+          <>
+            {/* Same hidden-on-mobile/shown-from-sm pattern the sibling "See
+                what guests see" link already uses in DashboardShell --
+                without it, this button's full text wraps across 3 lines
+                inside its fixed h-9 height once the header row's squeezed
+                for space on a narrow screen, clipping "Upgrade" off the top
+                (confirmed via a real mobile-width check). */}
+            <span className="sm:hidden">Upgrade — €{basicPrice}</span>
+            <span className="hidden sm:inline">Upgrade your link — €{basicPrice}</span>
+          </>
+        ) : (
+          `${plan.name} plan`
+        )}
       </button>
 
       {open && (

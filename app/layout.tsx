@@ -19,6 +19,7 @@ import {
   Cormorant,
   Sacramento,
   Gilda_Display,
+  Source_Serif_4,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
@@ -193,6 +194,23 @@ const gildaDisplay = Gilda_Display({
   weight: ["400"],
 });
 
+// The marketing LANDING page's own heading voice (app/page.tsx), distinct
+// from the theme fonts above (which style guest-facing invitation content,
+// chosen per-theme). The landing page itself defaulted to Geist Sans (the
+// global body font) for every heading -- clean, but a geometric grotesque
+// reads as a SaaS-tool register, not the elegant wedding-stationery one a
+// visitor should feel on arrival. Measured a real competitor rather than
+// guessing: Greenvelope.com's own <h1>/<h2> computed style is literally
+// "Source Serif 4", weight 300, ~40px -- a light-weight serif is the
+// concrete, free (Google Fonts), elegant-not-playful alternative that
+// comparison surfaced. weddingpost.ru's own landing heading, by contrast,
+// is Montserrat 600 (a bold modern sans) -- not the register to copy here.
+const sourceSerif4 = Source_Serif_4({
+  variable: "--font-source-serif-4",
+  subsets: ["latin", "cyrillic"],
+  weight: ["300", "400", "500"],
+});
+
 export const metadata: Metadata = {
   title: {
     default: "Invimbo — event websites, live in minutes",
@@ -212,7 +230,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} ${inter.variable} ${playfairDisplay.variable} ${fraunces.variable} ${alexBrush.variable} ${cinzel.variable} ${libreBaskerville.variable} ${spaceGrotesk.variable} ${caveat.variable} ${ebGaramond.variable} ${parisienne.variable} ${marcellus.variable} ${bodoniModa.variable} ${italiana.variable} ${cormorant.variable} ${sacramento.variable} ${gildaDisplay.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} ${inter.variable} ${playfairDisplay.variable} ${fraunces.variable} ${alexBrush.variable} ${cinzel.variable} ${libreBaskerville.variable} ${spaceGrotesk.variable} ${caveat.variable} ${ebGaramond.variable} ${parisienne.variable} ${marcellus.variable} ${bodoniModa.variable} ${italiana.variable} ${cormorant.variable} ${sacramento.variable} ${gildaDisplay.variable} ${sourceSerif4.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

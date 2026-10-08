@@ -74,6 +74,7 @@ export default function PhotoDropzone({
           "group relative mt-1 flex h-56 items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition " +
           (isDragging ? "border-rose-400 bg-rose-50" : "border-gray-300 bg-gray-50 hover:border-gray-400")
         }
+        style={value ? { backgroundColor: "#111827" } : undefined}
       >
         <input
           ref={inputRef}
@@ -92,8 +93,18 @@ export default function PhotoDropzone({
               exit={{ opacity: 0 }}
               className="absolute inset-0"
             >
+              {/* `object-contain`, not `object-cover` -- a management preview's
+                  one job is letting the host see what they actually
+                  uploaded. `cover` on a portrait photo inside this wide,
+                  short (h-56) box hid almost the entire subject behind a
+                  sliver of background, with no way to tell from this view
+                  alone (confirmed live: a shoulder-and-collar crop of a
+                  portrait read as a broken/garbage image, not a cropping
+                  choice). The actual published Hero section still frames/
+                  fills the photo however that variant's own design calls
+                  for -- this only changes the editing-time preview. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={value} alt="" className="h-full w-full object-cover" />
+              <img src={value} alt="" className="h-full w-full object-contain" />
               {/* Always-visible action bar, not hover-only -- a hidden overlay
                   never appears at all on touch devices, which is how this
                   "Remove" control went missing in practice. */}

@@ -1,8 +1,11 @@
 import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
+import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument";
 import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
+import type { CanvasFrame } from "@/lib/canvas/types";
+import { pdfBackgroundColor } from "@/lib/backgroundFills";
 
 export interface ProgramCardEvent {
   time: string;
@@ -14,17 +17,28 @@ export interface ProgramCardDocumentProps {
   theme: Theme;
   title?: string;
   events: ProgramCardEvent[];
+  /** Canvas-designed order-of-events card -- same opt-in contract as
+   * InvitationDocument's frontFrame. Takes over the page entirely when
+   * present, falls back to the structured time/title/description layout
+   * otherwise. Same A5 page/scale as the invitation, so the shared
+   * PDF_SCALE (CanvasPdfFrameContent's default) applies unchanged. */
+  frame?: CanvasFrame;
 }
 
-export function ProgramCardDocument({ theme, title, events }: ProgramCardDocumentProps) {
+export function ProgramCardDocument({ theme, title, events, frame }: ProgramCardDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
   style.headingFont.forEach(registerCanvasPdfFont);
   style.bodyFont.forEach(registerCanvasPdfFont);
+  if (frame) {
+    for (const family of collectFontFamilies([frame])) {
+      registerCanvasPdfFont(family);
+    }
+  }
 
   const styles = StyleSheet.create({
     page: {
-      backgroundColor: style.background,
+      backgroundColor: frame ? pdfBackgroundColor(frame.background) : style.background,
       color: style.text,
       padding: 48,
       display: "flex",
@@ -79,29 +93,35 @@ export function ProgramCardDocument({ theme, title, events }: ProgramCardDocumen
 
   return (
     <Document>
-      <Page size="A5" style={styles.page}>
-        <View style={styles.border} fixed />
-        <View style={styles.flourishTopLeft} fixed>
-          <CornerFlourish color={style.accent} />
-        </View>
-        <View style={styles.flourishBottomRight} fixed>
-          <CornerFlourish color={style.accent} rotate={180} />
-        </View>
-
-        <Text style={styles.title}>{title || "Order of the day"}</Text>
-
-        {events.map((event, index) => (
-          <View key={index} style={styles.row}>
-            <Text style={styles.time}>{event.time}</Text>
-            <View style={styles.eventBody}>
-              <Text style={styles.eventTitle}>{event.title}</Text>
-              {event.description && (
-                <Text style={styles.eventDescription}>{event.description}</Text>
-              )}
-            </View>
+      {frame ? (
+        <Page size="A5" style={{ position: "relative", backgroundColor: styles.page.backgroundColor }}>
+          <CanvasPdfFrameContent frame={frame} />
+        </Page>
+      ) : (
+        <Page size="A5" style={styles.page}>
+          <View style={styles.border} fixed />
+          <View style={styles.flourishTopLeft} fixed>
+            <CornerFlourish color={style.accent} />
           </View>
-        ))}
-      </Page>
+          <View style={styles.flourishBottomRight} fixed>
+            <CornerFlourish color={style.accent} rotate={180} />
+          </View>
+
+          <Text style={styles.title}>{title || "Order of the day"}</Text>
+
+          {events.map((event, index) => (
+            <View key={index} style={styles.row}>
+              <Text style={styles.time}>{event.time}</Text>
+              <View style={styles.eventBody}>
+                <Text style={styles.eventTitle}>{event.title}</Text>
+                {event.description && (
+                  <Text style={styles.eventDescription}>{event.description}</Text>
+                )}
+              </View>
+            </View>
+          ))}
+        </Page>
+      )}
     </Document>
   );
 }

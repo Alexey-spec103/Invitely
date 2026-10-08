@@ -16,13 +16,19 @@
   text-align: center;
 }
 
-/* The decorative tier -- genuine script, the section's one dominant
-   display moment (this variant is the closest structural match to the
-   reference's own "large monogram-style letters flanking a portrait
-   photo" sample). */
+/* The decorative tier -- a thin elegant SERIF display letter, not script.
+   Was --theme-font-script (cursive): a direct, measured comparison against
+   the product owner's own real weddingpost.ru invitation (this variant's
+   actual reference, per the comment below) showed their big flanking
+   letters are a light serif, not handwriting -- script here was a guess
+   that didn't match the thing it was built to match. --theme-font-heading
+   is always a real serif per-theme (Cinzel/Fraunces/Cormorant/Gilda
+   Display/etc., confirmed across every theme file), so this stays
+   genuinely different per theme while fixing the register. A lighter
+   weight than the body default reads as "elegant," not just "big." */
 .bigLetter {
-  font-family: var(--theme-font-script);
-  font-weight: 400;
+  font-family: var(--theme-font-heading);
+  font-weight: 300;
   font-size: 5rem;
   line-height: 1;
   color: var(--theme-accent);
@@ -98,15 +104,21 @@
   max-width: 20rem;
 }
 
-/* Arch top -- a rounded-top photo slot (the reference's own "editorial
-   portrait" designs use this shape), flat sides/bottom. The grayscale/
-   contrast filter is a color choice, not chrome, so it stays. */
+/* A clean rectangle with a soft offset shadow, like a real photograph set
+   down on the page -- not the arch-top mask this used to be. Measured
+   against the actual reference (the product owner's own weddingpost.ru
+   invitation): their photo is a plain bordered rectangle, not an arch; the
+   arch was never confirmed against the real thing it was supposedly
+   modeled on. The grayscale/contrast filter is a color choice, not chrome,
+   so it stays -- it's what makes the photo read as "classic portrait,"
+   not the shape. */
 .photo {
   display: block;
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
-  border-radius: 50% 50% 0 0;
+  border-radius: 2px;
+  box-shadow: 0 1.25rem 2.5rem -1rem rgba(20, 14, 10, 0.35), 0 0.25rem 0.75rem rgba(20, 14, 10, 0.18);
   filter: grayscale(100%) contrast(1.05);
 }
 

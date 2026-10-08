@@ -31,7 +31,7 @@ export default function EventSwitcher({ events, currentEventId }: EventSwitcherP
     <select
       value={currentEventId}
       onChange={(event) => handleChange(event.target.value)}
-      className="rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1 text-sm font-medium text-[var(--dash-text)] focus:border-[var(--dash-accent)] focus:outline-none"
+      className="min-w-0 max-w-[55vw] rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1 text-sm font-medium text-[var(--dash-text)] focus:border-[var(--dash-accent)] focus:outline-none sm:max-w-none"
       aria-label="Switch event"
     >
       {events.map((event) => (

@@ -1,8 +1,11 @@
 import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
+import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument";
 import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
+import type { CanvasFrame } from "@/lib/canvas/types";
+import { pdfBackgroundColor } from "@/lib/backgroundFills";
 
 export interface DressCodeCardColor {
   hex: string;
@@ -14,17 +17,30 @@ export interface DressCodeCardDocumentProps {
   title: string;
   description?: string;
   colors: DressCodeCardColor[];
+  /** Canvas-designed dress-code card -- same opt-in contract as
+   * InvitationDocument's frontFrame. Takes over the page entirely when
+   * present (including the color swatches, which the canvas editor has no
+   * dedicated element for -- a host customizing this is writing their own
+   * wording, same as the on-screen DressCodeCardPreview's own swap to
+   * CanvasRenderer), falls back to the structured title/description/
+   * swatches layout otherwise. Same A5 page as the invitation. */
+  frame?: CanvasFrame;
 }
 
-export function DressCodeCardDocument({ theme, title, description, colors }: DressCodeCardDocumentProps) {
+export function DressCodeCardDocument({ theme, title, description, colors, frame }: DressCodeCardDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
   style.headingFont.forEach(registerCanvasPdfFont);
   style.bodyFont.forEach(registerCanvasPdfFont);
+  if (frame) {
+    for (const family of collectFontFamilies([frame])) {
+      registerCanvasPdfFont(family);
+    }
+  }
 
   const styles = StyleSheet.create({
     page: {
-      backgroundColor: style.background,
+      backgroundColor: frame ? pdfBackgroundColor(frame.background) : style.background,
       color: style.text,
       padding: 48,
       display: "flex",
@@ -88,27 +104,33 @@ export function DressCodeCardDocument({ theme, title, description, colors }: Dre
 
   return (
     <Document>
-      <Page size="A5" style={styles.page}>
-        <View style={styles.border} fixed />
-        <View style={styles.flourishTopLeft} fixed>
-          <CornerFlourish color={style.accent} />
-        </View>
-        <View style={styles.flourishBottomRight} fixed>
-          <CornerFlourish color={style.accent} rotate={180} />
-        </View>
+      {frame ? (
+        <Page size="A5" style={{ position: "relative", backgroundColor: styles.page.backgroundColor }}>
+          <CanvasPdfFrameContent frame={frame} />
+        </Page>
+      ) : (
+        <Page size="A5" style={styles.page}>
+          <View style={styles.border} fixed />
+          <View style={styles.flourishTopLeft} fixed>
+            <CornerFlourish color={style.accent} />
+          </View>
+          <View style={styles.flourishBottomRight} fixed>
+            <CornerFlourish color={style.accent} rotate={180} />
+          </View>
 
-        <Text style={styles.title}>{title}</Text>
-        {description && <Text style={styles.description}>{description}</Text>}
+          <Text style={styles.title}>{title}</Text>
+          {description && <Text style={styles.description}>{description}</Text>}
 
-        <View style={styles.swatchRow}>
-          {colors.map((color, index) => (
-            <View key={index} style={styles.swatchColumn}>
-              <View style={{ ...styles.swatch, backgroundColor: color.hex }} />
-              {color.label && <Text style={styles.swatchLabel}>{color.label}</Text>}
-            </View>
-          ))}
-        </View>
-      </Page>
+          <View style={styles.swatchRow}>
+            {colors.map((color, index) => (
+              <View key={index} style={styles.swatchColumn}>
+                <View style={{ ...styles.swatch, backgroundColor: color.hex }} />
+                {color.label && <Text style={styles.swatchLabel}>{color.label}</Text>}
+              </View>
+            ))}
+          </View>
+        </Page>
+      )}
     </Document>
   );
 }

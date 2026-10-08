@@ -4,7 +4,14 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { updateInvitationBackCanvas, updateInvitationFrontCanvas } from "./actions";
+import {
+  updateInvitationBackCanvas,
+  updateInvitationFrontCanvas,
+  clearInvitationFrontCanvas,
+  updateInvitationEnvelopeCanvas,
+  updateInvitationProgramCanvas,
+  updateInvitationDressCodeCanvas,
+} from "./actions";
 import { getEventType } from "@/lib/eventTypes";
 import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
 import { useAutosave } from "@/lib/useAutosave";
@@ -45,6 +52,12 @@ interface PaperConstructorProps {
    * host opens "Customize text" on the front card. See `createFrontCanvasSeed`
    * for what a freshly-opened editor starts from. */
   frontCanvas?: CanvasFrame;
+  /** Same opt-in "Customize text" pattern as frontCanvas, for the envelope,
+   * program, and dress-code cards -- see `createEnvelopeCanvasSeed` /
+   * `createProgramCanvasSeed` / `createDressCodeCanvasSeed`. */
+  envelopeCanvas?: CanvasFrame;
+  programCanvas?: CanvasFrame;
+  dressCodeCanvas?: CanvasFrame;
   tableCardData: TableCardData[];
   tableNames: string[];
   allGuestNames: string[];
@@ -242,6 +255,290 @@ function createFrontCanvasSeed(args: {
   };
 }
 
+// The envelope's print panel is landscape (649 x 459pt, see
+// EnvelopeDocument.tsx), not A5 -- its canvas needs its own height so the
+// on-screen editor/preview (keyed off this aspect ratio via CanvasRenderer's
+// own width/height scaling) and the PDF export (ENVELOPE_CANVAS_SCALE in
+// EnvelopeDocument.tsx) agree on the same shape.
+const ENVELOPE_CANVAS_HEIGHT = Math.round((CANVAS_DESIGN_WIDTH * 459) / 649);
+
+/** First time a host opens "Customize text" on the envelope with no saved
+ * design yet: seed the same return-address names/date + "Guest address"
+ * hint the static EnvelopeCardPreview already shows, in the event's real
+ * theme colors -- editing from something that already looks right, not a
+ * blank panel. */
+function createEnvelopeCanvasSeed(args: {
+  theme: Theme;
+  names: string[];
+  eventDate: string;
+  locale: Locale;
+}): CanvasFrame {
+  const { theme, names, eventDate, locale } = args;
+  const textColor = theme.vars["--theme-text"];
+  const accentColor = theme.vars["--theme-accent"];
+
+  const elements: CanvasElement[] = [
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 60,
+      y: 50,
+      width: 500,
+      height: 50,
+      rotation: 0,
+      zIndex: 1,
+      text: names.join(" & "),
+      fontFamily: "Playfair Display",
+      fontSize: 26,
+      fontWeight: 600,
+      color: textColor,
+      textAlign: "left",
+      lineHeight: 1.2,
+      letterSpacing: 0,
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 60,
+      y: 100,
+      width: 500,
+      height: 30,
+      rotation: 0,
+      zIndex: 2,
+      text: formatEventDate(eventDate, locale).toUpperCase(),
+      fontFamily: "Inter",
+      fontSize: 14,
+      fontWeight: 500,
+      color: accentColor,
+      textAlign: "left",
+      lineHeight: 1.3,
+      letterSpacing: 1,
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 60,
+      y: ENVELOPE_CANVAS_HEIGHT - 140,
+      width: CANVAS_DESIGN_WIDTH - 120,
+      height: 60,
+      rotation: 0,
+      zIndex: 3,
+      text: "Guest address",
+      fontFamily: "Inter",
+      fontSize: 16,
+      fontWeight: 400,
+      color: accentColor,
+      textAlign: "center",
+      lineHeight: 1.3,
+      letterSpacing: 2,
+    },
+  ];
+
+  return {
+    id: crypto.randomUUID(),
+    name: "Envelope",
+    width: CANVAS_DESIGN_WIDTH,
+    height: ENVELOPE_CANVAS_HEIGHT,
+    background: { color: theme.vars["--theme-bg"] },
+    elements,
+  };
+}
+
+/** First time a host opens "Customize text" on the program card: seed the
+ * title plus one text block per existing timeline event (time + title on
+ * one line, description below it if there is one), stacked top to bottom --
+ * reproduces the static ProgramCardPreview's own reading order. */
+function createProgramCanvasSeed(args: { theme: Theme; title?: string; events: ProgramCardEvent[] }): CanvasFrame {
+  const { theme, title, events } = args;
+  const textColor = theme.vars["--theme-text"];
+  const accentColor = theme.vars["--theme-accent"];
+
+  const elements: CanvasElement[] = [
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: 90,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 80,
+      rotation: 0,
+      zIndex: 1,
+      text: title || "Order of the day",
+      fontFamily: "Playfair Display",
+      fontSize: 44,
+      fontWeight: 600,
+      color: textColor,
+      textAlign: "center",
+      lineHeight: 1.2,
+      letterSpacing: 0,
+    },
+  ];
+
+  let y = 230;
+  let zIndex = 2;
+  for (const event of events) {
+    elements.push({
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 36,
+      rotation: 0,
+      zIndex: zIndex++,
+      text: [event.time, event.title].filter(Boolean).join("  —  "),
+      fontFamily: "Inter",
+      fontSize: 22,
+      fontWeight: 500,
+      color: accentColor,
+      textAlign: "left",
+      lineHeight: 1.3,
+      letterSpacing: 0,
+    });
+    y += 44;
+    if (event.description) {
+      elements.push({
+        id: crypto.randomUUID(),
+        type: "text",
+        x: 100,
+        y,
+        width: CANVAS_DESIGN_WIDTH - 200,
+        height: 30,
+        rotation: 0,
+        zIndex: zIndex++,
+        text: event.description,
+        fontFamily: "Inter",
+        fontSize: 16,
+        fontWeight: 400,
+        color: textColor,
+        textAlign: "left",
+        lineHeight: 1.3,
+        letterSpacing: 0,
+      });
+      y += 40;
+    }
+    y += 20;
+  }
+
+  return {
+    id: crypto.randomUUID(),
+    name: "Program",
+    width: CANVAS_DESIGN_WIDTH,
+    height: BACK_CANVAS_HEIGHT,
+    background: { color: theme.vars["--theme-bg"] },
+    elements,
+  };
+}
+
+/** First time a host opens "Customize text" on the dress-code card: seed
+ * the title + description as text. The canvas editor has no dedicated
+ * color-swatch element, so the swatches themselves aren't reproduced here --
+ * a host opening this wants to write their own wording ("мало ли он хочет
+ * что-то своё написать"), same reasoning as every other card's seed. */
+function createDressCodeCanvasSeed(args: { theme: Theme; title: string; description?: string }): CanvasFrame {
+  const { theme, title, description } = args;
+  const textColor = theme.vars["--theme-text"];
+
+  const elements: CanvasElement[] = [
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: BACK_CANVAS_HEIGHT / 2 - 100,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 100,
+      rotation: 0,
+      zIndex: 1,
+      text: title || "Dress Code",
+      fontFamily: "Playfair Display",
+      fontSize: 48,
+      fontWeight: 600,
+      color: textColor,
+      textAlign: "center",
+      lineHeight: 1.2,
+      letterSpacing: 0,
+    },
+  ];
+
+  if (description) {
+    elements.push({
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 160,
+      y: BACK_CANVAS_HEIGHT / 2 + 20,
+      width: CANVAS_DESIGN_WIDTH - 320,
+      height: 120,
+      rotation: 0,
+      zIndex: 2,
+      text: description,
+      fontFamily: "Inter",
+      fontSize: 22,
+      fontWeight: 400,
+      color: textColor,
+      textAlign: "center",
+      lineHeight: 1.4,
+      letterSpacing: 0,
+    });
+  }
+
+  return {
+    id: crypto.randomUUID(),
+    name: "Dress code",
+    width: CANVAS_DESIGN_WIDTH,
+    height: BACK_CANVAS_HEIGHT,
+    background: { color: theme.vars["--theme-bg"] },
+    elements,
+  };
+}
+
+/** Shared state/autosave/undo-redo shape for the envelope/program/dress-code
+ * canvases -- the front/back canvases (shipped earlier) manage this inline
+ * instead since they predate this hook; kept that way rather than risking a
+ * refactor of already-working code for this round. */
+function useCardCanvas(args: {
+  eventId: string;
+  initial: CanvasFrame | undefined;
+  createSeed: () => CanvasFrame;
+  save: (input: { eventId: string; frame: CanvasFrame }) => Promise<{ ok: true } | { ok: false; message: string }>;
+  router: ReturnType<typeof useRouter>;
+}) {
+  const { eventId, initial, createSeed, save, router } = args;
+  const [isEditing, setIsEditing] = useState(false);
+  const [hasCustom, setHasCustom] = useState(Boolean(initial));
+  const [history, setHistory] = useState<CanvasFrame[]>([initial ?? createSeed()]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const frame = history[historyIndex];
+
+  const updateFrame = (updater: (f: CanvasFrame) => CanvasFrame) => {
+    const next = updater(frame);
+    setHistory((prev) => [...prev.slice(0, historyIndex + 1), next]);
+    setHistoryIndex((idx) => idx + 1);
+    setHasCustom(true);
+  };
+  const undo = () => setHistoryIndex((idx) => Math.max(0, idx - 1));
+  const redo = () => setHistoryIndex((idx) => Math.min(history.length - 1, idx + 1));
+
+  const { state: saveState, error: saveError } = useAutosave(frame, async (f) => {
+    const result = await save({ eventId, frame: f });
+    if (!result.ok) throw new Error(result.message);
+    router.refresh();
+  });
+
+  return {
+    isEditing,
+    setIsEditing,
+    hasCustom,
+    frame,
+    updateFrame,
+    undo,
+    canUndo: historyIndex > 0,
+    redo,
+    canRedo: historyIndex < history.length - 1,
+    saveState,
+    saveError,
+  };
+}
+
 type MediaId =
   | "invitation-front"
   | "invitation-back"
@@ -288,6 +585,9 @@ export default function PaperConstructor({
   backMessage: initialBackMessage,
   backCanvas: initialBackCanvas,
   frontCanvas: initialFrontCanvas,
+  envelopeCanvas: initialEnvelopeCanvas,
+  programCanvas: initialProgramCanvas,
+  dressCodeCanvas: initialDressCodeCanvas,
   tableCardData,
   tableNames,
   allGuestNames,
@@ -380,9 +680,49 @@ export default function PaperConstructor({
     router.refresh();
   });
 
+  // "Revert to default" -- clears the saved design and goes back to the
+  // original static (names/date/venue-from-Site-tab) preview. Re-seeding
+  // the history (rather than leaving the last custom frame sitting there)
+  // means opening "Customize text" again afterward starts clean, not from
+  // whatever was reverted away from.
+  const revertFrontCanvas = async () => {
+    const result = await clearInvitationFrontCanvas(eventId);
+    if (!result.ok) return;
+    setHasCustomFront(false);
+    setIsEditingFront(false);
+    setFrontCanvasHistory([createFrontCanvasSeed({ theme, names, eventDate, venueName, venueAddress, locale })]);
+    setFrontCanvasHistoryIndex(0);
+    router.refresh();
+  };
+
+  const envelopeCanvasState = useCardCanvas({
+    eventId,
+    initial: initialEnvelopeCanvas,
+    createSeed: () => createEnvelopeCanvasSeed({ theme, names, eventDate, locale }),
+    save: updateInvitationEnvelopeCanvas,
+    router,
+  });
+  const programCanvasState = useCardCanvas({
+    eventId,
+    initial: initialProgramCanvas,
+    createSeed: () => createProgramCanvasSeed({ theme, title: timelineTitle, events: timelineEvents }),
+    save: updateInvitationProgramCanvas,
+    router,
+  });
+  const dressCodeCanvasState = useCardCanvas({
+    eventId,
+    initial: initialDressCodeCanvas,
+    createSeed: () => createDressCodeCanvasSeed({ theme, title: dressCodeTitle || "Dress Code", description: dressCodeDescription }),
+    save: updateInvitationDressCodeCanvas,
+    router,
+  });
+
   const activeMedia = media.find((item) => item.id === activeId) ?? media[0];
   const isBackCanvasActive = activeMedia.id === "invitation-back";
   const isFrontCanvasActive = activeMedia.id === "invitation-front" && isEditingFront;
+  const isEnvelopeCanvasActive = activeMedia.id === "envelope" && envelopeCanvasState.isEditing;
+  const isProgramCanvasActive = activeMedia.id === "program" && programCanvasState.isEditing;
+  const isDressCodeCanvasActive = activeMedia.id === "dressCode" && dressCodeCanvasState.isEditing;
 
   // Banquet media items preview one representative card at a time (a table's
   // seating card, a guest's place card, a table's number placard) out of
@@ -393,6 +733,9 @@ export default function PaperConstructor({
     setActiveId(id);
     setBanquetIndex(0);
     if (id !== "invitation-front") setIsEditingFront(false);
+    if (id !== "envelope") envelopeCanvasState.setIsEditing(false);
+    if (id !== "program") programCanvasState.setIsEditing(false);
+    if (id !== "dressCode") dressCodeCanvasState.setIsEditing(false);
   };
   const banquetCount =
     activeMedia.id === "seatingChart"
@@ -486,7 +829,8 @@ export default function PaperConstructor({
     tableNumbers: "Downloading table numbers",
   };
 
-  const isAnyCanvasEditorActive = isBackCanvasActive || isFrontCanvasActive;
+  const isAnyCanvasEditorActive =
+    isBackCanvasActive || isFrontCanvasActive || isEnvelopeCanvasActive || isProgramCanvasActive || isDressCodeCanvasActive;
 
   return (
     <div
@@ -584,6 +928,93 @@ export default function PaperConstructor({
             />
           </div>
         </div>
+      ) : isEnvelopeCanvasActive ? (
+        <div className="mt-6 min-w-0 flex-1 sm:mt-0">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-[var(--dash-text-muted)]">
+              Write whatever you want on the envelope -- move, resize, or replace any line. Starts from your current
+              names/date.
+            </p>
+            <AutosaveStatus state={envelopeCanvasState.saveState} error={envelopeCanvasState.saveError} />
+          </div>
+          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+            <CanvasFrameEditor
+              frame={envelopeCanvasState.frame}
+              onUpdateFrame={envelopeCanvasState.updateFrame}
+              onUndo={envelopeCanvasState.undo}
+              canUndo={envelopeCanvasState.canUndo}
+              onRedo={envelopeCanvasState.redo}
+              canRedo={envelopeCanvasState.canRedo}
+              toolbarRight={
+                <button
+                  type="button"
+                  onClick={() => envelopeCanvasState.setIsEditing(false)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  Done
+                </button>
+              }
+            />
+          </div>
+        </div>
+      ) : isProgramCanvasActive ? (
+        <div className="mt-6 min-w-0 flex-1 sm:mt-0">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-[var(--dash-text-muted)]">
+              Write whatever you want on the program card -- move, resize, or replace any line. Starts from your
+              current schedule.
+            </p>
+            <AutosaveStatus state={programCanvasState.saveState} error={programCanvasState.saveError} />
+          </div>
+          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+            <CanvasFrameEditor
+              frame={programCanvasState.frame}
+              onUpdateFrame={programCanvasState.updateFrame}
+              onUndo={programCanvasState.undo}
+              canUndo={programCanvasState.canUndo}
+              onRedo={programCanvasState.redo}
+              canRedo={programCanvasState.canRedo}
+              toolbarRight={
+                <button
+                  type="button"
+                  onClick={() => programCanvasState.setIsEditing(false)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  Done
+                </button>
+              }
+            />
+          </div>
+        </div>
+      ) : isDressCodeCanvasActive ? (
+        <div className="mt-6 min-w-0 flex-1 sm:mt-0">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-[var(--dash-text-muted)]">
+              Write whatever you want on the dress-code card -- move, resize, or replace any line. Starts from your
+              current wording.
+            </p>
+            <AutosaveStatus state={dressCodeCanvasState.saveState} error={dressCodeCanvasState.saveError} />
+          </div>
+          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+            <CanvasFrameEditor
+              frame={dressCodeCanvasState.frame}
+              onUpdateFrame={dressCodeCanvasState.updateFrame}
+              onUndo={dressCodeCanvasState.undo}
+              canUndo={dressCodeCanvasState.canUndo}
+              onRedo={dressCodeCanvasState.redo}
+              canRedo={dressCodeCanvasState.canRedo}
+              toolbarRight={
+                <button
+                  type="button"
+                  onClick={() => dressCodeCanvasState.setIsEditing(false)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  Done
+                </button>
+              }
+            />
+          </div>
+        </div>
       ) : (
         <>
           <div>
@@ -606,20 +1037,29 @@ export default function PaperConstructor({
                       side="front"
                     />
                   ))}
-                {activeMedia.id === "envelope" && (
-                  <EnvelopeCardPreview theme={theme} names={names} eventDate={eventDate} locale={locale} />
-                )}
-                {activeMedia.id === "program" && (
-                  <ProgramCardPreview theme={theme} title={timelineTitle} events={timelineEvents} />
-                )}
-                {activeMedia.id === "dressCode" && (
-                  <DressCodeCardPreview
-                    theme={theme}
-                    title={dressCodeTitle || "Dress Code"}
-                    description={dressCodeDescription}
-                    colors={dressCodeColors}
-                  />
-                )}
+                {activeMedia.id === "envelope" &&
+                  (envelopeCanvasState.hasCustom ? (
+                    <CanvasRenderer frames={[envelopeCanvasState.frame]} />
+                  ) : (
+                    <EnvelopeCardPreview theme={theme} names={names} eventDate={eventDate} locale={locale} />
+                  ))}
+                {activeMedia.id === "program" &&
+                  (programCanvasState.hasCustom ? (
+                    <CanvasRenderer frames={[programCanvasState.frame]} />
+                  ) : (
+                    <ProgramCardPreview theme={theme} title={timelineTitle} events={timelineEvents} />
+                  ))}
+                {activeMedia.id === "dressCode" &&
+                  (dressCodeCanvasState.hasCustom ? (
+                    <CanvasRenderer frames={[dressCodeCanvasState.frame]} />
+                  ) : (
+                    <DressCodeCardPreview
+                      theme={theme}
+                      title={dressCodeTitle || "Dress Code"}
+                      description={dressCodeDescription}
+                      colors={dressCodeColors}
+                    />
+                  ))}
                 {activeMedia.id === "seatingChart" && tableCardData[banquetItemIndex] && (
                   <TableCardPreview
                     theme={theme}
@@ -637,7 +1077,7 @@ export default function PaperConstructor({
               </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-center gap-2">
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
               <button
                 type="button"
                 onClick={() => setZoom((z) => Math.max(ZOOM_MIN, +(z - ZOOM_STEP).toFixed(2)))}
@@ -663,6 +1103,11 @@ export default function PaperConstructor({
                   >
                     {hasCustomFront ? "Edit text" : "Customize text"}
                   </button>
+                  {hasCustomFront && (
+                    <button type="button" onClick={revertFrontCanvas} className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm">
+                      Revert to default
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => setActiveId("invitation-back")}
@@ -671,6 +1116,33 @@ export default function PaperConstructor({
                     ↺ Flip to back
                   </button>
                 </>
+              )}
+              {activeMedia.id === "envelope" && (
+                <button
+                  type="button"
+                  onClick={() => envelopeCanvasState.setIsEditing(true)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  {envelopeCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                </button>
+              )}
+              {activeMedia.id === "program" && (
+                <button
+                  type="button"
+                  onClick={() => programCanvasState.setIsEditing(true)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  {programCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                </button>
+              )}
+              {activeMedia.id === "dressCode" && (
+                <button
+                  type="button"
+                  onClick={() => dressCodeCanvasState.setIsEditing(true)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  {dressCodeCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                </button>
               )}
             </div>
 
@@ -723,25 +1195,44 @@ export default function PaperConstructor({
             )}
             {activeMedia.id === "envelope" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
-                The return address uses the same names &amp; date as your invitation — nothing else to set here.
+                {envelopeCanvasState.hasCustom ? (
+                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
+                ) : (
+                  <>
+                    The return address uses the same names &amp; date as your invitation. Click &quot;Customize
+                    text&quot; to write your own instead.
+                  </>
+                )}
               </p>
             )}
             {activeMedia.id === "program" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
-                Edit your schedule in the{" "}
-                <Link href={`/dashboard/${eventId}/site`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
-                  Site tab
-                </Link>
-                &apos;s Timeline card — changes show up here automatically.
+                {programCanvasState.hasCustom ? (
+                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
+                ) : (
+                  <>
+                    Edit your schedule in the{" "}
+                    <Link href={`/dashboard/${eventId}/site`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
+                      Site tab
+                    </Link>
+                    &apos;s Timeline card, or click &quot;Customize text&quot; to write your own instead.
+                  </>
+                )}
               </p>
             )}
             {activeMedia.id === "dressCode" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
-                Edit your palette in the{" "}
-                <Link href={`/dashboard/${eventId}/site`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
-                  Site tab
-                </Link>
-                &apos;s Dress code card — changes show up here automatically.
+                {dressCodeCanvasState.hasCustom ? (
+                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
+                ) : (
+                  <>
+                    Edit your palette in the{" "}
+                    <Link href={`/dashboard/${eventId}/site`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
+                      Site tab
+                    </Link>
+                    &apos;s Dress code card, or click &quot;Customize text&quot; to write your own instead.
+                  </>
+                )}
               </p>
             )}
             {activeMedia.id === "seatingChart" && (
