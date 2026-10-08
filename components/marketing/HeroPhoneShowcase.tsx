@@ -20,12 +20,14 @@ const SHOWCASE_NAMES: [string, string] = ["Claire", "Nathaniel"];
  * with the obviously-placeholder name "Claire & Nathaniel" everywhere else
  * on this page, not 100 cards each implicitly claiming "this is what you
  * get." A real, free-license Unsplash photo (same sourcing policy as every
- * other photo in this codebase -- man in black suit, woman in white dress,
- * hands held, elegant and uncluttered enough to carry the grayscale
- * treatment below), kept local to this file rather than added to the
- * shared THEME_PREVIEW_PHOTOS pool so the gallery's own no-couple-photos
- * rule stays intact everywhere else. */
-const HERO_SHOWCASE_PHOTO = "https://images.unsplash.com/photo-1606495186270-395860907235";
+* other photo in this codebase), kept local to this file rather than added
+ * to the shared THEME_PREVIEW_PHOTOS pool so the gallery's own no-couple-
+ * photos rule stays intact everywhere else. A first pick (a wide hand-
+ * holding shot) was swapped after direct product-owner feedback: the two
+ * subjects sat far apart with empty space between them, reading as two
+ * people at the edges of the frame rather than a couple -- this one is a
+ * close embrace, centered, the actual complaint rather than a guess at it. */
+const HERO_SHOWCASE_PHOTO = "https://images.unsplash.com/photo-1624228652954-9e3725a2a4f8";
 
 // Real, finished copy for the Letter/Timeline frames -- never lorem-ipsum
 // placeholder text, matching the same couple across every frame regardless

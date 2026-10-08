@@ -44,6 +44,11 @@ export interface PaperContent {
   envelopeCanvas?: CanvasFrame;
   programCanvas?: CanvasFrame;
   dressCodeCanvas?: CanvasFrame;
+  /** Save-the-date and thank-you cards, same opt-in pattern as the rest --
+   * a coordinated set alongside the invitation, not just front/back/
+   * envelope/program/dress-code. */
+  saveTheDateCanvas?: CanvasFrame;
+  thankYouCanvas?: CanvasFrame;
 }
 
 export function getPaperContent(content: Record<string, unknown>): PaperContent {
@@ -118,6 +123,14 @@ export function getPaperContent(content: Record<string, unknown>): PaperContent 
     typeof invitationsContent.dressCodeCanvas === "object" && invitationsContent.dressCodeCanvas !== null
       ? (invitationsContent.dressCodeCanvas as unknown as CanvasFrame)
       : undefined;
+  const saveTheDateCanvas =
+    typeof invitationsContent.saveTheDateCanvas === "object" && invitationsContent.saveTheDateCanvas !== null
+      ? (invitationsContent.saveTheDateCanvas as unknown as CanvasFrame)
+      : undefined;
+  const thankYouCanvas =
+    typeof invitationsContent.thankYouCanvas === "object" && invitationsContent.thankYouCanvas !== null
+      ? (invitationsContent.thankYouCanvas as unknown as CanvasFrame)
+      : undefined;
 
   return {
     venueName,
@@ -133,5 +146,7 @@ export function getPaperContent(content: Record<string, unknown>): PaperContent 
     envelopeCanvas,
     programCanvas,
     dressCodeCanvas,
+    saveTheDateCanvas,
+    thankYouCanvas,
   };
 }

@@ -105,3 +105,17 @@ export async function updateInvitationDressCodeCanvas(input: {
 }): Promise<{ ok: true } | { ok: false; message: string }> {
   return patchInvitationsContent(input.eventId, { dressCodeCanvas: input.frame as unknown as Json });
 }
+
+export async function updateInvitationSaveTheDateCanvas(input: {
+  eventId: string;
+  frame: CanvasFrame;
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  return patchInvitationsContent(input.eventId, { saveTheDateCanvas: input.frame as unknown as Json });
+}
+
+export async function updateInvitationThankYouCanvas(input: {
+  eventId: string;
+  frame: CanvasFrame;
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  return patchInvitationsContent(input.eventId, { thankYouCanvas: input.frame as unknown as Json });
+}

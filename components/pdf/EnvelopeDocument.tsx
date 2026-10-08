@@ -6,7 +6,6 @@ import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
 import { CANVAS_DESIGN_WIDTH } from "@/lib/canvas/types";
-import { pdfBackgroundColor } from "@/lib/backgroundFills";
 import { formatEventDate } from "@/components/paper/formatEventDate";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
@@ -52,7 +51,12 @@ export function EnvelopeDocument({ theme, names, eventDate, locale = DEFAULT_LOC
 
   const styles = StyleSheet.create({
     page: {
-      backgroundColor: frame ? pdfBackgroundColor(frame.background) : style.background,
+      // Always the theme's own background, not `frame`'s -- the border and
+      // corner flourish now always render (see below), so this page's
+      // background is never fully owned by the canvas frame the way other
+      // canvas-backed PDF pages' are; the frame's own background is set to
+      // transparent for exactly this reason (see createEnvelopeCanvasSeed).
+      backgroundColor: style.background,
       color: style.text,
       padding: 28,
       display: "flex",
@@ -101,29 +105,36 @@ export function EnvelopeDocument({ theme, names, eventDate, locale = DEFAULT_LOC
 
   return (
     <Document>
-      {frame ? (
-        <Page size={[ENVELOPE_WIDTH, ENVELOPE_HEIGHT]} style={{ position: "relative", backgroundColor: styles.page.backgroundColor }}>
+      <Page size={[ENVELOPE_WIDTH, ENVELOPE_HEIGHT]} style={styles.page}>
+        <View style={styles.border} fixed />
+        {/* Only bottom-right -- the return address sits top-left, matching
+            the on-screen EnvelopeCardPreview's own corners="bottomRightOnly".
+            Kept outside the `frame` branch below (was previously INSIDE a
+            `frame ? ... : ...` split that replaced this whole page, border
+            and flourish included, the instant a host customized the text --
+            same real bug fixed on-screen in EnvelopeCardPreview.tsx, for
+            the same reason: the canvas data model has no decorative-shape
+            element type to carry this chrome itself, so it has to keep
+            living here, with only the text layer swapped out under it. */}
+        <View style={styles.flourishBottomRight} fixed>
+          <CornerFlourish color={style.accent} rotate={180} />
+        </View>
+
+        {frame ? (
           <CanvasPdfFrameContent frame={frame} scale={ENVELOPE_CANVAS_SCALE} />
-        </Page>
-      ) : (
-        <Page size={[ENVELOPE_WIDTH, ENVELOPE_HEIGHT]} style={styles.page}>
-          <View style={styles.border} fixed />
-          {/* Only bottom-right -- the return address sits top-left, matching
-              the on-screen EnvelopeCardPreview's own corners="bottomRightOnly". */}
-          <View style={styles.flourishBottomRight} fixed>
-            <CornerFlourish color={style.accent} rotate={180} />
-          </View>
+        ) : (
+          <>
+            <View style={styles.returnFlourish}>
+              <Text style={styles.returnNames}>{names.join(" & ")}</Text>
+              <Text style={styles.returnDate}>{formatEventDate(eventDate, locale).toUpperCase()}</Text>
+            </View>
 
-          <View style={styles.returnFlourish}>
-            <Text style={styles.returnNames}>{names.join(" & ")}</Text>
-            <Text style={styles.returnDate}>{formatEventDate(eventDate, locale).toUpperCase()}</Text>
-          </View>
-
-          <View style={styles.addressArea}>
-            <Text style={styles.addressHint}>Guest address</Text>
-          </View>
-        </Page>
-      )}
+            <View style={styles.addressArea}>
+              <Text style={styles.addressHint}>Guest address</Text>
+            </View>
+          </>
+        )}
+      </Page>
     </Document>
   );
 }

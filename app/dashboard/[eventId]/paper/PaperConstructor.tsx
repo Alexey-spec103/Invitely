@@ -11,6 +11,8 @@ import {
   updateInvitationEnvelopeCanvas,
   updateInvitationProgramCanvas,
   updateInvitationDressCodeCanvas,
+  updateInvitationSaveTheDateCanvas,
+  updateInvitationThankYouCanvas,
 } from "./actions";
 import { getEventType } from "@/lib/eventTypes";
 import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
@@ -26,6 +28,8 @@ import InvitationCardPreview from "@/components/paper/InvitationCardPreview";
 import EnvelopeCardPreview from "@/components/paper/EnvelopeCardPreview";
 import ProgramCardPreview, { type ProgramCardEvent } from "@/components/paper/ProgramCardPreview";
 import DressCodeCardPreview, { type DressCodeCardColor } from "@/components/paper/DressCodeCardPreview";
+import SaveTheDateCardPreview from "@/components/paper/SaveTheDateCardPreview";
+import ThankYouCardPreview from "@/components/paper/ThankYouCardPreview";
 import TableCardPreview from "@/components/paper/TableCardPreview";
 import PlaceCardPreview from "@/components/paper/PlaceCardPreview";
 import TableNumberCardPreview from "@/components/paper/TableNumberCardPreview";
@@ -58,6 +62,12 @@ interface PaperConstructorProps {
   envelopeCanvas?: CanvasFrame;
   programCanvas?: CanvasFrame;
   dressCodeCanvas?: CanvasFrame;
+  /** Save-the-date and thank-you cards -- same opt-in pattern, always
+   * available (unlike program/dressCode, which only appear once the Site
+   * tab has timeline/dress-code data) since both just need the event's
+   * names/date, always present. */
+  saveTheDateCanvas?: CanvasFrame;
+  thankYouCanvas?: CanvasFrame;
   tableCardData: TableCardData[];
   tableNames: string[];
   allGuestNames: string[];
@@ -339,7 +349,14 @@ function createEnvelopeCanvasSeed(args: {
     name: "Envelope",
     width: CANVAS_DESIGN_WIDTH,
     height: ENVELOPE_CANVAS_HEIGHT,
-    background: { color: theme.vars["--theme-bg"] },
+    // Transparent, not theme-bg -- this frame now renders INSIDE
+    // EnvelopeCardPreview's own .customContent slot (see that component),
+    // layered above its liner/border/corner decor. An opaque background
+    // here would paint over the bottom portion of the liner's accent-
+    // colored triangle wherever the two overlap -- confirmed by reasoning
+    // through the actual z-index stacking (.customContent: 2, .liner:
+    // auto), not assumed safe.
+    background: { color: "transparent" },
     elements,
   };
 }
@@ -491,6 +508,178 @@ function createDressCodeCanvasSeed(args: { theme: Theme; title: string; descript
   };
 }
 
+/** First time a host opens "Customize text" on the save-the-date card: seed
+ * the names/date + a "Formal invitation to follow" line, in the event's real
+ * theme colors -- reproduces the static SaveTheDateCardPreview's own reading
+ * order. Transparent background, not theme-bg -- this frame renders INSIDE
+ * SaveTheDateCardPreview's own .customContent slot, layered above its border
+ * and corner decor, same reasoning as createEnvelopeCanvasSeed. */
+function createSaveTheDateCanvasSeed(args: { theme: Theme; names: string[]; eventDate: string; locale: Locale }): CanvasFrame {
+  const { theme, names, eventDate, locale } = args;
+  const textColor = theme.vars["--theme-text"];
+  const accentColor = theme.vars["--theme-accent"];
+
+  const elements: CanvasElement[] = [
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: BACK_CANVAS_HEIGHT / 2 - 160,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 50,
+      rotation: 0,
+      zIndex: 1,
+      text: "Save the date",
+      fontFamily: "Inter",
+      fontSize: 22,
+      fontWeight: 500,
+      color: accentColor,
+      textAlign: "center",
+      lineHeight: 1.3,
+      letterSpacing: 3,
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: BACK_CANVAS_HEIGHT / 2 - 90,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 90,
+      rotation: 0,
+      zIndex: 2,
+      text: names.join(" & "),
+      fontFamily: "Playfair Display",
+      fontSize: 46,
+      fontWeight: 600,
+      color: textColor,
+      textAlign: "center",
+      lineHeight: 1.2,
+      letterSpacing: 0,
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: BACK_CANVAS_HEIGHT / 2 + 30,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 40,
+      rotation: 0,
+      zIndex: 3,
+      text: formatEventDate(eventDate, locale),
+      fontFamily: "Inter",
+      fontSize: 24,
+      fontWeight: 400,
+      color: textColor,
+      textAlign: "center",
+      lineHeight: 1.3,
+      letterSpacing: 1,
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 160,
+      y: BACK_CANVAS_HEIGHT / 2 + 100,
+      width: CANVAS_DESIGN_WIDTH - 320,
+      height: 40,
+      rotation: 0,
+      zIndex: 4,
+      text: "Formal invitation to follow",
+      fontFamily: "Inter",
+      fontSize: 16,
+      fontWeight: 400,
+      color: accentColor,
+      textAlign: "center",
+      lineHeight: 1.4,
+      letterSpacing: 0,
+    },
+  ];
+
+  return {
+    id: crypto.randomUUID(),
+    name: "Save the date",
+    width: CANVAS_DESIGN_WIDTH,
+    height: BACK_CANVAS_HEIGHT,
+    background: { color: "transparent" },
+    elements,
+  };
+}
+
+/** First time a host opens "Customize text" on the thank-you card: seed a
+ * warm thank-you message plus the names, in the event's real theme colors.
+ * Transparent background, same reasoning as createSaveTheDateCanvasSeed --
+ * this frame renders INSIDE ThankYouCardPreview's own .customContent slot. */
+function createThankYouCanvasSeed(args: { theme: Theme; names: string[] }): CanvasFrame {
+  const { theme, names } = args;
+  const textColor = theme.vars["--theme-text"];
+  const accentColor = theme.vars["--theme-accent"];
+
+  const elements: CanvasElement[] = [
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: BACK_CANVAS_HEIGHT / 2 - 150,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 90,
+      rotation: 0,
+      zIndex: 1,
+      text: "Thank You",
+      fontFamily: "Playfair Display",
+      fontSize: 50,
+      fontWeight: 600,
+      color: textColor,
+      textAlign: "center",
+      lineHeight: 1.2,
+      letterSpacing: 0,
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 160,
+      y: BACK_CANVAS_HEIGHT / 2 - 30,
+      width: CANVAS_DESIGN_WIDTH - 320,
+      height: 120,
+      rotation: 0,
+      zIndex: 2,
+      text: "Thank you for celebrating with us -- your presence meant more than words can say.",
+      fontFamily: "Inter",
+      fontSize: 22,
+      fontWeight: 400,
+      color: textColor,
+      textAlign: "center",
+      lineHeight: 1.4,
+      letterSpacing: 0,
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "text",
+      x: 100,
+      y: BACK_CANVAS_HEIGHT / 2 + 110,
+      width: CANVAS_DESIGN_WIDTH - 200,
+      height: 50,
+      rotation: 0,
+      zIndex: 3,
+      text: names.join(" & "),
+      fontFamily: "Playfair Display",
+      fontSize: 28,
+      fontWeight: 600,
+      color: accentColor,
+      textAlign: "center",
+      lineHeight: 1.3,
+      letterSpacing: 1,
+    },
+  ];
+
+  return {
+    id: crypto.randomUUID(),
+    name: "Thank you",
+    width: CANVAS_DESIGN_WIDTH,
+    height: BACK_CANVAS_HEIGHT,
+    background: { color: "transparent" },
+    elements,
+  };
+}
+
 /** Shared state/autosave/undo-redo shape for the envelope/program/dress-code
  * canvases -- the front/back canvases (shipped earlier) manage this inline
  * instead since they predate this hook; kept that way rather than risking a
@@ -545,6 +734,8 @@ type MediaId =
   | "envelope"
   | "program"
   | "dressCode"
+  | "saveTheDate"
+  | "thankYou"
   | "seatingChart"
   | "placeCards"
   | "tableNumbers";
@@ -588,6 +779,8 @@ export default function PaperConstructor({
   envelopeCanvas: initialEnvelopeCanvas,
   programCanvas: initialProgramCanvas,
   dressCodeCanvas: initialDressCodeCanvas,
+  saveTheDateCanvas: initialSaveTheDateCanvas,
+  thankYouCanvas: initialThankYouCanvas,
   tableCardData,
   tableNames,
   allGuestNames,
@@ -610,6 +803,11 @@ export default function PaperConstructor({
     if (dressCodeColors.length > 0) {
       list.push({ id: "dressCode", label: "Dress-code card", group: "Extras", aspectRatio: "420 / 595" });
     }
+    // Save-the-date and thank-you cards only need names/date, always
+    // present -- unlike program/dressCode, they aren't gated on Site-tab
+    // data existing yet.
+    list.push({ id: "saveTheDate", label: "Save the date", group: "Extras", aspectRatio: "420 / 595" });
+    list.push({ id: "thankYou", label: "Thank you", group: "Extras", aspectRatio: "420 / 595" });
     if (tableCardData.length > 0) {
       list.push({ id: "seatingChart", label: "Seating chart", group: "Banquet", aspectRatio: "420 / 595" });
     }
@@ -716,6 +914,20 @@ export default function PaperConstructor({
     save: updateInvitationDressCodeCanvas,
     router,
   });
+  const saveTheDateCanvasState = useCardCanvas({
+    eventId,
+    initial: initialSaveTheDateCanvas,
+    createSeed: () => createSaveTheDateCanvasSeed({ theme, names, eventDate, locale }),
+    save: updateInvitationSaveTheDateCanvas,
+    router,
+  });
+  const thankYouCanvasState = useCardCanvas({
+    eventId,
+    initial: initialThankYouCanvas,
+    createSeed: () => createThankYouCanvasSeed({ theme, names }),
+    save: updateInvitationThankYouCanvas,
+    router,
+  });
 
   const activeMedia = media.find((item) => item.id === activeId) ?? media[0];
   const isBackCanvasActive = activeMedia.id === "invitation-back";
@@ -723,6 +935,8 @@ export default function PaperConstructor({
   const isEnvelopeCanvasActive = activeMedia.id === "envelope" && envelopeCanvasState.isEditing;
   const isProgramCanvasActive = activeMedia.id === "program" && programCanvasState.isEditing;
   const isDressCodeCanvasActive = activeMedia.id === "dressCode" && dressCodeCanvasState.isEditing;
+  const isSaveTheDateCanvasActive = activeMedia.id === "saveTheDate" && saveTheDateCanvasState.isEditing;
+  const isThankYouCanvasActive = activeMedia.id === "thankYou" && thankYouCanvasState.isEditing;
 
   // Banquet media items preview one representative card at a time (a table's
   // seating card, a guest's place card, a table's number placard) out of
@@ -736,6 +950,8 @@ export default function PaperConstructor({
     if (id !== "envelope") envelopeCanvasState.setIsEditing(false);
     if (id !== "program") programCanvasState.setIsEditing(false);
     if (id !== "dressCode") dressCodeCanvasState.setIsEditing(false);
+    if (id !== "saveTheDate") saveTheDateCanvasState.setIsEditing(false);
+    if (id !== "thankYou") thankYouCanvasState.setIsEditing(false);
   };
   const banquetCount =
     activeMedia.id === "seatingChart"
@@ -830,7 +1046,13 @@ export default function PaperConstructor({
   };
 
   const isAnyCanvasEditorActive =
-    isBackCanvasActive || isFrontCanvasActive || isEnvelopeCanvasActive || isProgramCanvasActive || isDressCodeCanvasActive;
+    isBackCanvasActive ||
+    isFrontCanvasActive ||
+    isEnvelopeCanvasActive ||
+    isProgramCanvasActive ||
+    isDressCodeCanvasActive ||
+    isSaveTheDateCanvasActive ||
+    isThankYouCanvasActive;
 
   return (
     <div
@@ -1015,6 +1237,64 @@ export default function PaperConstructor({
             />
           </div>
         </div>
+      ) : isSaveTheDateCanvasActive ? (
+        <div className="mt-6 min-w-0 flex-1 sm:mt-0">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-[var(--dash-text-muted)]">
+              Write whatever you want on the save-the-date card -- move, resize, or replace any line. Starts from
+              your current names/date.
+            </p>
+            <AutosaveStatus state={saveTheDateCanvasState.saveState} error={saveTheDateCanvasState.saveError} />
+          </div>
+          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+            <CanvasFrameEditor
+              frame={saveTheDateCanvasState.frame}
+              onUpdateFrame={saveTheDateCanvasState.updateFrame}
+              onUndo={saveTheDateCanvasState.undo}
+              canUndo={saveTheDateCanvasState.canUndo}
+              onRedo={saveTheDateCanvasState.redo}
+              canRedo={saveTheDateCanvasState.canRedo}
+              toolbarRight={
+                <button
+                  type="button"
+                  onClick={() => saveTheDateCanvasState.setIsEditing(false)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  Done
+                </button>
+              }
+            />
+          </div>
+        </div>
+      ) : isThankYouCanvasActive ? (
+        <div className="mt-6 min-w-0 flex-1 sm:mt-0">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-[var(--dash-text-muted)]">
+              Write whatever you want on the thank-you card -- move, resize, or replace any line. Starts from your
+              current names.
+            </p>
+            <AutosaveStatus state={thankYouCanvasState.saveState} error={thankYouCanvasState.saveError} />
+          </div>
+          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+            <CanvasFrameEditor
+              frame={thankYouCanvasState.frame}
+              onUpdateFrame={thankYouCanvasState.updateFrame}
+              onUndo={thankYouCanvasState.undo}
+              canUndo={thankYouCanvasState.canUndo}
+              onRedo={thankYouCanvasState.redo}
+              canRedo={thankYouCanvasState.canRedo}
+              toolbarRight={
+                <button
+                  type="button"
+                  onClick={() => thankYouCanvasState.setIsEditing(false)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  Done
+                </button>
+              }
+            />
+          </div>
+        </div>
       ) : (
         <>
           <div>
@@ -1037,12 +1317,29 @@ export default function PaperConstructor({
                       side="front"
                     />
                   ))}
-                {activeMedia.id === "envelope" &&
-                  (envelopeCanvasState.hasCustom ? (
-                    <CanvasRenderer frames={[envelopeCanvasState.frame]} />
-                  ) : (
-                    <EnvelopeCardPreview theme={theme} names={names} eventDate={eventDate} locale={locale} />
-                  ))}
+                {activeMedia.id === "envelope" && (
+                  <EnvelopeCardPreview theme={theme} names={names} eventDate={eventDate} locale={locale}>
+                    {envelopeCanvasState.hasCustom ? (
+                      <CanvasRenderer
+                        frames={[
+                          // Force transparent regardless of what's actually
+                          // stored -- a saved frame from before this fix
+                          // still has an opaque theme-bg background baked
+                          // into its own JSON (seeds only ever apply once,
+                          // at first customization; this component has no
+                          // way to retroactively rewrite already-saved
+                          // data), which would otherwise keep covering the
+                          // liner/border for every event that customized
+                          // its envelope before today. An envelope frame
+                          // never has a legitimate reason to paint its own
+                          // opaque background now that it always renders
+                          // inside this component's own decorated shell.
+                          { ...envelopeCanvasState.frame, background: { color: "transparent" } },
+                        ]}
+                      />
+                    ) : undefined}
+                  </EnvelopeCardPreview>
+                )}
                 {activeMedia.id === "program" &&
                   (programCanvasState.hasCustom ? (
                     <CanvasRenderer frames={[programCanvasState.frame]} />
@@ -1060,6 +1357,24 @@ export default function PaperConstructor({
                       colors={dressCodeColors}
                     />
                   ))}
+                {activeMedia.id === "saveTheDate" && (
+                  <SaveTheDateCardPreview theme={theme} names={names} eventDate={eventDate} locale={locale}>
+                    {saveTheDateCanvasState.hasCustom ? (
+                      <CanvasRenderer
+                        frames={[{ ...saveTheDateCanvasState.frame, background: { color: "transparent" } }]}
+                      />
+                    ) : undefined}
+                  </SaveTheDateCardPreview>
+                )}
+                {activeMedia.id === "thankYou" && (
+                  <ThankYouCardPreview theme={theme} names={names}>
+                    {thankYouCanvasState.hasCustom ? (
+                      <CanvasRenderer
+                        frames={[{ ...thankYouCanvasState.frame, background: { color: "transparent" } }]}
+                      />
+                    ) : undefined}
+                  </ThankYouCardPreview>
+                )}
                 {activeMedia.id === "seatingChart" && tableCardData[banquetItemIndex] && (
                   <TableCardPreview
                     theme={theme}
@@ -1142,6 +1457,24 @@ export default function PaperConstructor({
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
                   {dressCodeCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                </button>
+              )}
+              {activeMedia.id === "saveTheDate" && (
+                <button
+                  type="button"
+                  onClick={() => saveTheDateCanvasState.setIsEditing(true)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  {saveTheDateCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                </button>
+              )}
+              {activeMedia.id === "thankYou" && (
+                <button
+                  type="button"
+                  onClick={() => thankYouCanvasState.setIsEditing(true)}
+                  className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
+                >
+                  {thankYouCanvasState.hasCustom ? "Edit text" : "Customize text"}
                 </button>
               )}
             </div>
@@ -1232,6 +1565,24 @@ export default function PaperConstructor({
                     </Link>
                     &apos;s Dress code card, or click &quot;Customize text&quot; to write your own instead.
                   </>
+                )}
+              </p>
+            )}
+            {activeMedia.id === "saveTheDate" && (
+              <p className="text-xs text-[var(--dash-text-muted)]">
+                {saveTheDateCanvasState.hasCustom ? (
+                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
+                ) : (
+                  <>Uses your event&apos;s names and date. Click &quot;Customize text&quot; to write your own instead.</>
+                )}
+              </p>
+            )}
+            {activeMedia.id === "thankYou" && (
+              <p className="text-xs text-[var(--dash-text-muted)]">
+                {thankYouCanvasState.hasCustom ? (
+                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
+                ) : (
+                  <>Uses your event&apos;s names. Click &quot;Customize text&quot; to write your own instead.</>
                 )}
               </p>
             )}

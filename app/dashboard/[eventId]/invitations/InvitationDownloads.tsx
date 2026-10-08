@@ -41,6 +41,8 @@ interface InvitationDownloadsProps {
   envelopeCanvas?: CanvasFrame;
   programCanvas?: CanvasFrame;
   dressCodeCanvas?: CanvasFrame;
+  saveTheDateCanvas?: CanvasFrame;
+  thankYouCanvas?: CanvasFrame;
   dressCodeTitle: string;
   dressCodeDescription?: string;
   dressCodeColors: DressCodeColorItem[];
@@ -83,6 +85,8 @@ export default function InvitationDownloads({
   envelopeCanvas,
   programCanvas,
   dressCodeCanvas,
+  saveTheDateCanvas,
+  thankYouCanvas,
   dressCodeTitle,
   dressCodeDescription,
   dressCodeColors,
@@ -176,6 +180,42 @@ export default function InvitationDownloads({
         <EnvelopeDocument theme={theme} names={names} eventDate={eventDate} locale={locale} frame={envelopeCanvas} />
       ).toBlob();
       saveBlob(blob, "envelope.pdf");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+    } finally {
+      setPendingId(null);
+    }
+  };
+
+  const generateSaveTheDateCard = async () => {
+    setError(null);
+    setPendingId("savethedate");
+    try {
+      const [{ pdf }, { SaveTheDateCardDocument }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("@/components/pdf/SaveTheDateCardDocument"),
+      ]);
+      const blob = await pdf(
+        <SaveTheDateCardDocument theme={theme} names={names} eventDate={eventDate} locale={locale} frame={saveTheDateCanvas} />
+      ).toBlob();
+      saveBlob(blob, "save-the-date.pdf");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+    } finally {
+      setPendingId(null);
+    }
+  };
+
+  const generateThankYouCard = async () => {
+    setError(null);
+    setPendingId("thankyou");
+    try {
+      const [{ pdf }, { ThankYouCardDocument }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("@/components/pdf/ThankYouCardDocument"),
+      ]);
+      const blob = await pdf(<ThankYouCardDocument theme={theme} names={names} frame={thankYouCanvas} />).toBlob();
+      saveBlob(blob, "thank-you.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate PDF");
     } finally {
@@ -313,6 +353,12 @@ export default function InvitationDownloads({
             {pendingId === "dresscode" ? "Generating..." : "Download dress-code card PDF"}
           </button>
         )}
+        <button type="button" onClick={generateSaveTheDateCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
+          {pendingId === "savethedate" ? "Generating..." : "Download save-the-date PDF"}
+        </button>
+        <button type="button" onClick={generateThankYouCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
+          {pendingId === "thankyou" ? "Generating..." : "Download thank-you card PDF"}
+        </button>
       </div>
 
       {error && (

@@ -1,0 +1,72 @@
+.face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10%;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  overflow: hidden;
+}
+
+.border {
+  position: absolute;
+  inset: 5%;
+  border: 1px solid var(--theme-accent);
+  pointer-events: none;
+}
+
+/* Same slot/z-index shape as EnvelopeCardPreview's .customContent -- when a
+   host customizes this card's text, CanvasRenderer renders in here instead
+   of the default eyebrow/names/date/note, still stacked above .border and
+   CardCornerDecor so the decor survives customization. */
+.customContent {
+  position: absolute;
+  inset: 5%;
+  z-index: 2;
+}
+
+.eyebrow {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 0.8em;
+  font-family: var(--theme-font-body);
+  font-size: clamp(0.5rem, 2.4cqw, 0.7rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--theme-accent);
+}
+
+.names {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 0.3em;
+  font-family: var(--theme-font-heading);
+  font-weight: 600;
+  font-size: clamp(1rem, 6.5cqw, 1.6rem);
+  text-align: center;
+}
+
+.date {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 1.2em;
+  font-family: var(--theme-font-body);
+  font-size: clamp(0.6rem, 3cqw, 0.85rem);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.note {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--theme-font-body);
+  font-size: clamp(0.45rem, 2cqw, 0.6rem);
+  text-align: center;
+  opacity: 0.8;
+}

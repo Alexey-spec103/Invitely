@@ -40,6 +40,16 @@
   pointer-events: none;
 }
 
+/* Same slot/z-index as .returnFlourish + .addressArea combined -- when a
+   host customizes this envelope's text, CanvasRenderer renders in here
+   instead of them, still stacked above .liner/.border/CardCornerDecor so
+   the decor survives customization instead of being replaced by it. */
+.customContent {
+  position: absolute;
+  inset: 3%;
+  z-index: 2;
+}
+
 .returnFlourish {
   position: relative;
   z-index: 2;
