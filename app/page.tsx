@@ -525,6 +525,31 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* The "What's included" grid above sells hosts an FAQ module for
+          THEIR guests -- this section turns the same idea on the marketing
+          page itself: resolve a skeptical visitor's real objections right
+          after pricing/trust signals, right before the final CTA asks them
+          to act. Native <details>/<summary> -- fully keyboard-operable and
+          accessible with zero client JS, no new component needed. */}
+      <section id="faq" className="landing-reveal scroll-mt-[120px] border-t border-stone-100 bg-white py-24">
+        <div className="mx-auto max-w-3xl px-6">
+          <h2 className="text-center font-[family-name:var(--font-source-serif-4)] text-3xl font-normal tracking-tight text-stone-900">
+            {t.faq.heading}
+          </h2>
+          <div className="mt-10 divide-y divide-stone-200 border-y border-stone-200">
+            {t.faq.items.map((item, index) => (
+              <details key={index} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-medium text-stone-900 marker:content-none">
+                  {item.question}
+                  <span className="flex-none text-xl font-light text-stone-400 transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-stone-600">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="landing-reveal relative isolate overflow-hidden border-t border-stone-100 bg-gradient-to-b from-white to-orange-50 py-24">
         {/* Round 2: a full-bleed blurred-past-recognition background here had
             the same "нет нашего видео" problem as the hero's old ambient

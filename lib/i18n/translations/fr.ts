@@ -120,7 +120,7 @@ export const fr: Dictionary = {
     hero: {
       eyebrow: "Une plateforme événementielle, pas juste une invitation",
       headline: "Votre événement, à l'image exacte de vos envies",
-      accent: "avec un effet wahou",
+      accent: "jusqu'à la dernière carte de table",
       subtext:
         "Un magnifique site événementiel, des invitations papier assorties et un plan de table — un seul style, partout où vos invités le voient. Partez d'un thème de designer, ou composez le vôtre à partir d'une toile vierge.",
       checklistFree: "Concevoir est gratuit — payez seulement si vous voulez ce lien en ligne",
@@ -276,6 +276,34 @@ export const fr: Dictionary = {
       oneTime: "Paiement unique, pas d'abonnement",
       exampleCaption: "Un vrai modèle Invimbo — le vôtre peut y ressembler.",
       valueAnchor: "Les invitations imprimées et envoyées par courrier coûtent généralement plus cher par invité. Ici, un tarif unique couvre toute votre liste d'invités, quel que soit leur nombre.",
+    },
+    faq: {
+      heading: "Questions avant de commencer",
+      items: [
+        {
+          question: "Dois-je savoir designer ou coder ?",
+          answer:
+            "Non. Choisissez un thème de designer — polices, couleurs, mise en page sont déjà faits. Cliquez sur n'importe quel texte de la page en direct pour le modifier ; rien à apprendre, rien à installer.",
+        },
+        {
+          question: "Est-ce vraiment gratuit, ou y a-t-il un piège ?",
+          answer:
+            "Le constructeur lui-même est gratuit, sans limite de temps — concevez tout votre site, invitez vos invités et suivez les RSVP sans frais. Le seul compromis du plan gratuit est un petit badge \"Made with Invimbo\" sur votre site en direct et un filigrane sur le papier imprimé, affichés dès le départ, pas après coup.",
+        },
+        {
+          question: "Est-ce un abonnement ?",
+          answer: "Non. Chaque plan payant est un tarif unique, pas un prélèvement récurrent.",
+        },
+        {
+          question: "Mes invités ont-ils besoin d'un compte ou d'une appli ?",
+          answer: "Non. Ils ouvrent votre lien, voient votre site et confirment leur présence — rien à télécharger, rien à créer.",
+        },
+        {
+          question: "Est-ce que ça ressemblera vraiment à MON événement, pas à un modèle générique ?",
+          answer:
+            "Chaque thème est un véritable point de départ, pas une mise en page verrouillée — changez les couleurs, les polices, les photos, déplacez les éléments où vous voulez, ou partez d'une toile vierge. Parcourez la galerie complète ci-dessus avant de décider.",
+        },
+      ],
     },
     finalCta: {
       heading: "Gratuit pour commencer",

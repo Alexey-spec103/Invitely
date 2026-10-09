@@ -57,7 +57,17 @@ function extractHiddenFields(content: Record<string, unknown>): string[] | undef
 
 export default async function SitePage({ params, searchParams }: PageProps<"/dashboard/[eventId]/site">) {
   const { eventId } = await params;
-  const { checkout } = await searchParams;
+  const { checkout, firstVisit } = await searchParams;
+  // Set by OnboardingWizard.tsx's onSubmit on the very first redirect after
+  // finishing onboarding -- step 3 of the wizard already built real
+  // anticipation with a live preview that updated as the host typed their
+  // names, so landing here on the dense module-toggle list and the
+  // watermark-upsell banner (both real, useful, but not the payoff that
+  // preview promised) undercut it. Only reorders what a FIRST-TIME visit
+  // shows first; every later visit to this same page (no query param) keeps
+  // the normal order -- settings/modules are exactly what a returning host
+  // actually wants quick access to.
+  const isFirstVisit = firstVisit === "1";
   const user = await getAuthedUser();
 
   if (!user) {
@@ -487,73 +497,13 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
     venueAddress: event.venue_address ?? "",
   };
 
-  return (
-    <div
-      className={`-mx-4 -my-6 min-h-[calc(100vh-73px)] bg-[var(--dash-bg)] px-4 py-6 text-[var(--dash-text)] sm:-mx-10 sm:-my-10 sm:px-10 sm:py-10 ${
-        hasBasicAccess ? "" : "pb-24"
-      }`}
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="dash-h1 text-[var(--dash-text)]">Site</h1>
-        <div className="flex flex-wrap items-center gap-2">
-          <EventTypeSwitcher
-            eventId={event.id}
-            currentEventType={event.event_type}
-            name1={event.subtitle_names?.[0] ?? ""}
-            name2={event.subtitle_names?.[1]}
-            locale={locale}
-          />
-          <Link
-            href={`/dashboard/${event.id}/canvas`}
-            className="rounded-full border border-[var(--dash-border)] px-3.5 py-1.5 text-xs font-medium text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
-          >
-            🎨 Free canvas
-          </Link>
-        </div>
-      </div>
-
-      {/* Direct feedback: checkout redirected back to /plan, which has no
-          link on it at all -- a host who'd just paid landed on a page with
-          nothing to show for it. success_url (plan/actions.ts) now points
-          here instead, where the real link and the domain-claim card
-          already live, so "I paid, now what" resolves on arrival.
-          Gated on hasBasicAccess (not just the query param) -- the plan
-          upgrade itself only happens when Stripe's webhook
-          (app/api/stripe/webhook/route.ts) fires and updates plan_id, which
-          is a separate, async, server-to-server call that can lag behind
-          (or, in local dev with no `stripe listen` forwarding configured,
-          never arrive at all) the browser's redirect back here. Showing
-          "Payment received" unconditionally off the query param alone told
-          a host their link was ready even when the DB write never landed --
-          indistinguishable from a real failure from their side. */}
-      {checkout === "success" &&
-        (hasBasicAccess ? (
-          <div className="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5">
-            <p className="text-base font-bold text-emerald-900">🎉 Payment received — your link is ready.</p>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <a
-                href={`/e/${event.slug}`}
-                target="_blank"
-                rel="noreferrer"
-                className="dash-btn dash-btn-primary"
-              >
-                Open your link →
-              </a>
-              <a href="#custom-domain-card" className="text-sm font-semibold text-emerald-800 underline">
-                Or claim a nicer address (yourname.invimbo.com)
-              </a>
-            </div>
-          </div>
-        ) : (
-          <div className="mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5">
-            <p className="text-base font-bold text-amber-900">⏳ Confirming your payment…</p>
-            <p className="mt-1 text-sm text-amber-800">
-              Stripe is finishing up — this page will unlock automatically in a few seconds. If it doesn&apos;t,
-              refresh, or contact support if your card was charged and this still doesn&apos;t update.
-            </p>
-          </div>
-        ))}
-
+  // Extracted so isFirstVisit can reorder the two blocks below (preview
+  // first, selling/modules second) without duplicating either's JSX --
+  // returning the finished site to a first-time visitor before the
+  // module-toggle list and watermark-upsell banner, see the isFirstVisit
+  // comment above.
+  const sellingAndModulesBlock = (
+    <>
       <FeatureCarousel />
 
       <FirstVisitTour
@@ -595,8 +545,11 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
         hasBasicAccess={hasBasicAccess}
         envelopeRevealEnabled={envelopeRevealEnabled}
       />
+    </>
+  );
 
-      <div className="mt-6 lg:grid lg:grid-cols-[420px_1fr] lg:items-start lg:gap-6">
+  const previewGrid = (
+    <div className="mt-6 lg:grid lg:grid-cols-[420px_1fr] lg:items-start lg:gap-6">
       <div className="flex flex-col gap-2">
         {/* dashboard-audit.md B13: weddingpost.ru's own reminder banner sits
             directly above its inline wedding-data fields, not at the very
@@ -798,7 +751,90 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           Open full preview in a new tab
         </a>
       </div>
+    </div>
+  );
+
+  return (
+    <div
+      className={`-mx-4 -my-6 min-h-[calc(100vh-73px)] bg-[var(--dash-bg)] px-4 py-6 text-[var(--dash-text)] sm:-mx-10 sm:-my-10 sm:px-10 sm:py-10 ${
+        hasBasicAccess ? "" : "pb-24"
+      }`}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="dash-h1 text-[var(--dash-text)]">Site</h1>
+        <div className="flex flex-wrap items-center gap-2">
+          <EventTypeSwitcher
+            eventId={event.id}
+            currentEventType={event.event_type}
+            name1={event.subtitle_names?.[0] ?? ""}
+            name2={event.subtitle_names?.[1]}
+            locale={locale}
+          />
+          <Link
+            href={`/dashboard/${event.id}/canvas`}
+            className="rounded-full border border-[var(--dash-border)] px-3.5 py-1.5 text-xs font-medium text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+          >
+            🎨 Free canvas
+          </Link>
+        </div>
       </div>
+
+      {/* Direct feedback: checkout redirected back to /plan, which has no
+          link on it at all -- a host who'd just paid landed on a page with
+          nothing to show for it. success_url (plan/actions.ts) now points
+          here instead, where the real link and the domain-claim card
+          already live, so "I paid, now what" resolves on arrival.
+          Gated on hasBasicAccess (not just the query param) -- the plan
+          upgrade itself only happens when Stripe's webhook
+          (app/api/stripe/webhook/route.ts) fires and updates plan_id, which
+          is a separate, async, server-to-server call that can lag behind
+          (or, in local dev with no `stripe listen` forwarding configured,
+          never arrive at all) the browser's redirect back here. Showing
+          "Payment received" unconditionally off the query param alone told
+          a host their link was ready even when the DB write never landed --
+          indistinguishable from a real failure from their side. */}
+      {checkout === "success" &&
+        (hasBasicAccess ? (
+          <div className="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5">
+            <p className="text-base font-bold text-emerald-900">🎉 Payment received — your link is ready.</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <a
+                href={`/e/${event.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="dash-btn dash-btn-primary"
+              >
+                Open your link →
+              </a>
+              <a href="#custom-domain-card" className="text-sm font-semibold text-emerald-800 underline">
+                Or claim a nicer address (yourname.invimbo.com)
+              </a>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5">
+            <p className="text-base font-bold text-amber-900">⏳ Confirming your payment…</p>
+            <p className="mt-1 text-sm text-amber-800">
+              Stripe is finishing up — this page will unlock automatically in a few seconds. If it doesn&apos;t,
+              refresh, or contact support if your card was charged and this still doesn&apos;t update.
+            </p>
+          </div>
+        ))}
+
+      {/* First-visit-after-onboarding: finished site before the settings/
+          modules clutter -- see isFirstVisit's own comment above. Every
+          later visit keeps the original order (selling/modules first). */}
+      {isFirstVisit ? (
+        <>
+          {previewGrid}
+          {sellingAndModulesBlock}
+        </>
+      ) : (
+        <>
+          {sellingAndModulesBlock}
+          {previewGrid}
+        </>
+      )}
 
       {/* Direct feedback: wanted the pay CTA pinned both top (header's
           PlanBadge, now sticky) AND bottom -- a host scrolled deep into a

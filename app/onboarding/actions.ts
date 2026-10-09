@@ -15,7 +15,7 @@ interface CompleteOnboardingInput {
 
 export async function completeOnboarding(
   input: CompleteOnboardingInput
-): Promise<{ ok: true } | { ok: false; message: string }> {
+): Promise<{ ok: true; eventId: string } | { ok: false; message: string }> {
   const supabase = await createClient();
 
   const {
@@ -30,8 +30,9 @@ export async function completeOnboarding(
   const names = type.namesMode === "couple" ? [input.name1, input.name2 ?? ""] : [input.name1];
   const title = type.titleTemplate(names);
 
+  let event;
   try {
-    await createEvent(user.id, {
+    event = await createEvent(user.id, {
       eventType: type.id,
       names,
       title,
@@ -49,5 +50,13 @@ export async function completeOnboarding(
   // every single new user. The client navigates on router.push after
   // checking `ok`, same as every other action in this codebase that
   // reports success/failure via a plain return value.
-  return { ok: true };
+  //
+  // eventId returned (not just `ok: true`) so the client can push straight
+  // to this event's own Site tab instead of the generic /dashboard, which
+  // itself just redirects to events[0]'s Site tab -- skips that extra hop
+  // and lets the client mark the visit as a first-visit (see
+  // OnboardingWizard.tsx's onSubmit and the Site page's own firstVisit
+  // handling) so the finished site can be shown before the settings/upsell
+  // cards, right after step 3's own live-preview payoff.
+  return { ok: true, eventId: event.id };
 }

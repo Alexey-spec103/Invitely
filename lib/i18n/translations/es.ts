@@ -120,7 +120,7 @@ export const es: Dictionary = {
     hero: {
       eyebrow: "Una plataforma de eventos, no solo una invitación",
       headline: "Tu evento, con el estilo exacto que imaginaste",
-      accent: "con efecto wow",
+      accent: "hasta la última tarjeta de mesa",
       subtext:
         "Un hermoso sitio web de evento, invitaciones de papel a juego y organización de invitados — un solo estilo, en todas partes donde tus invitados lo vean. Empieza con un tema de diseñador, o crea el tuyo desde un lienzo en blanco.",
       checklistFree: "Diseñar es gratis — paga solo si quieres este enlace exacto en vivo",
@@ -276,6 +276,34 @@ export const es: Dictionary = {
       oneTime: "Pago único, no es una suscripción",
       exampleCaption: "Un diseño real de Invimbo — el tuyo puede verse así.",
       valueAnchor: "Las invitaciones impresas y enviadas por correo suelen costar más por invitado. Aquí, una tarifa única cubre a toda tu lista de invitados, sean cuantos sean.",
+    },
+    faq: {
+      heading: "Preguntas antes de empezar",
+      items: [
+        {
+          question: "¿Necesito saber diseñar o programar?",
+          answer:
+            "No. Elige un tema de diseñador y todo —tipografías, colores, maquetación— ya está hecho. Haz clic en cualquier texto de la página en vivo para editarlo; no hay nada que aprender ni instalar.",
+        },
+        {
+          question: "¿Es realmente gratis, o hay truco?",
+          answer:
+            "El constructor en sí es gratis, sin límite de tiempo: diseña todo tu sitio, invita a tus invitados y haz seguimiento de las confirmaciones sin coste. La única contrapartida en el plan gratuito es una pequeña marca \"Hecho con Invimbo\" en tu sitio en vivo y una marca de agua en el papel impreso, mostradas desde el principio, no después de que hayas construido algo.",
+        },
+        {
+          question: "¿Es una suscripción?",
+          answer: "No. Cada plan de pago es una tarifa única y plana, no un cargo recurrente.",
+        },
+        {
+          question: "¿Mis invitados necesitan una cuenta o una app?",
+          answer: "No. Abren tu enlace, ven tu sitio y confirman asistencia — nada que descargar, nada que registrar.",
+        },
+        {
+          question: "¿Se verá como MI evento, no como una plantilla genérica?",
+          answer:
+            "Cada tema es un punto de partida real, no un diseño bloqueado: cambia colores, tipografías y fotos, arrastra elementos donde quieras, o empieza desde un lienzo en blanco. Explora la galería completa más arriba antes de decidir.",
+        },
+      ],
     },
     finalCta: {
       heading: "Gratis para empezar",

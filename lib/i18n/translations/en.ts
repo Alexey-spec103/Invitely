@@ -228,6 +228,18 @@ export interface Dictionary {
       exampleCaption: string;
       valueAnchor: string;
     };
+    /** The marketing page's own "What's included" grid sells hosts an FAQ
+     * module for THEIR guests -- this section is the same idea turned on the
+     * marketing page itself, answering the real objections a skeptical
+     * visitor has before they'll act. Placed after pricing/trust signals,
+     * right before the final CTA, so doubts are resolved right before the
+     * ask -- not a generic SaaS FAQ, every answer ties to a claim already
+     * made elsewhere on this page or in the product (free-tier watermark,
+     * one-time pricing, no-account guest flow, real theme breadth). */
+    faq: {
+      heading: string;
+      items: { question: string; answer: string }[];
+    };
     finalCta: { heading: string; subtext: string };
     footer: {
       tagline: string;
@@ -397,7 +409,7 @@ export const en: Dictionary = {
     hero: {
       eyebrow: "An event platform, not just an invitation",
       headline: "Your event, styled exactly how you imagined it",
-      accent: "with a wow effect",
+      accent: "down to the last place card",
       subtext:
         "A beautiful event website, matching paper invitations, and guest seating — one style, everywhere your guests see it. Start from a designer theme, or drag your own together from a blank canvas.",
       checklistFree: "Free to design — pay only if you want this exact link live",
@@ -553,6 +565,35 @@ export const en: Dictionary = {
       oneTime: "One-time, not a subscription",
       exampleCaption: "A real Invimbo design — yours can look like this.",
       valueAnchor: "Printed, mailed invitations usually cost more than this per guest. One flat fee here covers your whole guest list, however many people you're inviting.",
+    },
+    faq: {
+      heading: "Questions before you start",
+      items: [
+        {
+          question: "Do I need to know how to design or code?",
+          answer:
+            "No. Pick a designer theme and everything — fonts, colors, layout — is already done. Click any text on the live page to edit it; nothing to learn, nothing to install.",
+        },
+        {
+          question: "Is it really free, or is there a catch?",
+          answer:
+            "The constructor itself is free with no time limit — design your whole site, invite guests, and track RSVPs at no cost. The only trade-off on Free is a small \"Made with Invimbo\" badge on your live site and a watermark on printed paper, both shown to you up front, not after you've built something.",
+        },
+        {
+          question: "Is this a subscription?",
+          answer: "No. Every paid plan is one flat, one-time fee — not a recurring charge.",
+        },
+        {
+          question: "Do my guests need an account or an app?",
+          answer:
+            "No. They open your link, see your site, and RSVP — nothing to download, nothing to sign up for.",
+        },
+        {
+          question: "Will it actually look like MY event, not a generic template?",
+          answer:
+            "Every theme is a real starting point, not a locked layout — swap colors, fonts, and photos, drag elements anywhere, or start from a blank canvas. Browse the full gallery above before you decide.",
+        },
+      ],
     },
     finalCta: {
       heading: "Free to start",

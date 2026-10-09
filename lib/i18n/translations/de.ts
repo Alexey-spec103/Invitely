@@ -120,7 +120,7 @@ export const de: Dictionary = {
     hero: {
       eyebrow: "Eine Event-Plattform, nicht nur eine Einladung",
       headline: "Dein Event, gestaltet genau so, wie du es dir vorgestellt hast",
-      accent: "mit Wow-Effekt",
+      accent: "bis zur letzten Tischkarte",
       subtext:
         "Eine wunderschöne Event-Website, dazu passende Papiereinladungen und Sitzordnung — ein Stil, überall wo deine Gäste ihn sehen. Starte mit einem Designer-Theme oder gestalte alles frei auf einer leeren Fläche.",
       checklistFree: "Kostenlos gestalten — zahle nur, wenn dieser Link live gehen soll",
@@ -276,6 +276,34 @@ export const de: Dictionary = {
       oneTime: "Einmalzahlung, kein Abo",
       exampleCaption: "Ein echtes Invimbo-Design — deins kann so aussehen.",
       valueAnchor: "Gedruckte, verschickte Einladungen kosten pro Gast meist mehr. Hier deckt eine einmalige Pauschale deine gesamte Gästeliste ab, egal wie viele Personen das sind.",
+    },
+    faq: {
+      heading: "Fragen vor dem Start",
+      items: [
+        {
+          question: "Muss ich designen oder programmieren können?",
+          answer:
+            "Nein. Wähle ein Designer-Theme — Schriften, Farben, Layout sind bereits fertig. Klicke auf jeden Text der Live-Seite, um ihn zu bearbeiten; nichts zu lernen, nichts zu installieren.",
+        },
+        {
+          question: "Ist es wirklich kostenlos, oder gibt es einen Haken?",
+          answer:
+            "Der Konstruktor selbst ist kostenlos und ohne Zeitlimit — gestalte deine ganze Seite, lade Gäste ein und verfolge RSVPs ohne Kosten. Der einzige Kompromiss im kostenlosen Plan ist ein kleines \"Made with Invimbo\"-Badge auf deiner Live-Seite und ein Wasserzeichen auf gedrucktem Papier — von Anfang an sichtbar, nicht erst, nachdem du etwas gebaut hast.",
+        },
+        {
+          question: "Ist das ein Abo?",
+          answer: "Nein. Jeder bezahlte Plan ist eine einmalige Pauschale, keine wiederkehrende Zahlung.",
+        },
+        {
+          question: "Brauchen meine Gäste ein Konto oder eine App?",
+          answer: "Nein. Sie öffnen deinen Link, sehen deine Seite und sagen zu — nichts herunterladen, nichts registrieren.",
+        },
+        {
+          question: "Sieht es wirklich nach MEINEM Event aus, nicht nach einer generischen Vorlage?",
+          answer:
+            "Jedes Theme ist ein echter Ausgangspunkt, kein festes Layout — Farben, Schriften und Fotos tauschen, Elemente frei verschieben, oder mit einer leeren Leinwand starten. Durchstöbere die ganze Galerie oben, bevor du dich entscheidest.",
+        },
+      ],
     },
     finalCta: {
       heading: "Kostenlos starten",

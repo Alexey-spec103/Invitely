@@ -130,7 +130,7 @@ export const pl: Dictionary = {
     hero: {
       eyebrow: "Platforma eventowa, nie tylko zaproszenie",
       headline: "Twoje wydarzenie, dokładnie takie, jak sobie wymarzyłeś",
-      accent: "z efektem wow",
+      accent: "aż po ostatnią winietkę",
       subtext:
         "Piękna strona wydarzenia, pasujące zaproszenia papierowe i rozmieszczenie gości — jeden styl, wszędzie tam, gdzie widzą go twoi goście. Zacznij od motywu zaprojektowanego przez naszych grafików albo stwórz własny od pustej kartki.",
       checklistFree: "Projektowanie jest darmowe — płacisz tylko, jeśli chcesz tę publikację na żywo",
@@ -286,6 +286,34 @@ export const pl: Dictionary = {
       oneTime: "Płatność jednorazowa, nie subskrypcja",
       exampleCaption: "Prawdziwy projekt Invimbo — Twój może wyglądać podobnie.",
       valueAnchor: "Drukowane, wysyłane pocztą zaproszenia zwykle kosztują więcej za gościa. Tu jedna stała opłata obejmuje całą Twoją listę gości, niezależnie od liczby osób.",
+    },
+    faq: {
+      heading: "Pytania przed startem",
+      items: [
+        {
+          question: "Czy muszę umieć projektować albo programować?",
+          answer:
+            "Nie. Wybierz motyw od projektanta — czcionki, kolory, układ są już gotowe. Kliknij dowolny tekst na żywej stronie, by go edytować; nic do nauki, nic do instalacji.",
+        },
+        {
+          question: "Czy to naprawdę darmowe, czy jest haczyk?",
+          answer:
+            "Sam konstruktor jest darmowy bez limitu czasu — projektuj całą stronę, zapraszaj gości i śledź RSVP bez opłat. Jedyny kompromis w planie darmowym to mały znaczek \"Made with Invimbo\" na żywej stronie i znak wodny na drukowanym papierze — pokazane od razu, nie po tym, jak coś już zbudujesz.",
+        },
+        {
+          question: "Czy to subskrypcja?",
+          answer: "Nie. Każdy płatny plan to jedna stała opłata, nie cykliczna płatność.",
+        },
+        {
+          question: "Czy moi goście potrzebują konta albo aplikacji?",
+          answer: "Nie. Otwierają Twój link, widzą stronę i potwierdzają obecność — nic do pobrania, nic do rejestracji.",
+        },
+        {
+          question: "Czy to naprawdę będzie wyglądać jak MOJE wydarzenie, a nie generyczny szablon?",
+          answer:
+            "Każdy motyw to prawdziwy punkt startowy, nie zablokowany układ — zmień kolory, czcionki, zdjęcia, przeciągaj elementy gdziekolwiek, albo zacznij od pustego płótna. Przejrzyj całą galerię powyżej, zanim zdecydujesz.",
+        },
+      ],
     },
     finalCta: {
       heading: "Zacznij za darmo",

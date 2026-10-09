@@ -164,7 +164,11 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
     try {
       const result = await completeOnboarding(values);
       if (!result.ok) throw new Error(result.message);
-      router.push("/dashboard");
+      // Straight to this event's own Site tab (skips /dashboard's own
+      // redirect-to-events[0] hop), flagged as a first visit so the Site
+      // page can lead with the finished site instead of the settings/
+      // upsell cards -- see SitePage's own firstVisit handling.
+      router.push(`/dashboard/${result.eventId}/site?firstVisit=1`);
     } catch (err) {
       setFormError(err instanceof Error ? err.message : t.saveFailed);
     }
@@ -363,7 +367,29 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
           <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
         )}
 
-        <div className="mt-6 flex items-center justify-between">
+        {/* sticky, not just mt-6 -- step 2's theme gallery renders inside its
+            own max-h-[52rem] scroll container, which on a typical viewport
+            is itself taller than the screen. A user scrolling *inside* the
+            gallery looking for a way to confirm their pick never finds one
+            there, and the real Next button sits below it, out of view,
+            discoverable only by then scrolling the *outer* page too -- the
+            same nested-scroll confusion behind the login-link complaint
+            found elsewhere today. Pinning the footer to the viewport bottom
+            means Next/Back are always reachable regardless of how tall any
+            given step's own content gets, not just a one-off fix sized to
+            today's 124-theme count. bg-white matches the card's own
+            background so scrolled content doesn't show through underneath;
+            the negative margins + matching padding let the bar span the
+            card's full width (the form has its own p-8) instead of just the
+            inner content column. z-10 -- confirmed live: without it, step
+            2's own per-card countdown-timer demo (ThemeGallery.module.css's
+            .phoneTimer, z-index: 2 inside the scrollable gallery) visibly
+            bled through this bar's white background whenever a card's
+            bottom edge happened to scroll to the same screen position as
+            this footer -- a plain opaque bg-white isn't enough on its own
+            to win a stacking fight against a positioned descendant with its
+            own z-index. */}
+        <div className="relative z-10 -mx-8 sticky bottom-0 mt-6 flex items-center justify-between border-t border-gray-100 bg-white px-8 py-4">
           <button
             type="button"
             onClick={handleBack}

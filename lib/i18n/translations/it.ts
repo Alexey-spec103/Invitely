@@ -120,7 +120,7 @@ export const it: Dictionary = {
     hero: {
       eyebrow: "Una piattaforma per eventi, non solo un invito",
       headline: "Il tuo evento, esattamente come lo immaginavi",
-      accent: "con effetto wow",
+      accent: "fino all'ultimo segnaposto",
       subtext:
         "Un bellissimo sito per il tuo evento, inviti cartacei coordinati e disposizione dei tavoli — un unico stile, ovunque i tuoi ospiti lo vedano. Parti da un tema di design, oppure crea il tuo da una tela vuota.",
       checklistFree: "Progettare è gratis — paghi solo se vuoi questo link esatto online",
@@ -276,6 +276,34 @@ export const it: Dictionary = {
       oneTime: "Pagamento unico, non un abbonamento",
       exampleCaption: "Un design Invimbo reale — il tuo può essere così.",
       valueAnchor: "Gli inviti stampati e spediti di solito costano di più per ospite. Qui una tariffa unica copre tutta la tua lista invitati, per quanti siano.",
+    },
+    faq: {
+      heading: "Domande prima di iniziare",
+      items: [
+        {
+          question: "Devo saper progettare o programmare?",
+          answer:
+            "No. Scegli un tema da designer — font, colori, layout sono già pronti. Clicca su qualsiasi testo della pagina live per modificarlo; niente da imparare, niente da installare.",
+        },
+        {
+          question: "È davvero gratis, o c'è un trucco?",
+          answer:
+            "Il costruttore stesso è gratuito e senza limiti di tempo — progetta tutto il tuo sito, invita gli ospiti e segui gli RSVP senza costi. L'unico compromesso del piano gratuito è un piccolo badge \"Made with Invimbo\" sul tuo sito live e una filigrana sulla carta stampata, mostrati subito, non dopo che hai già costruito qualcosa.",
+        },
+        {
+          question: "È un abbonamento?",
+          answer: "No. Ogni piano a pagamento è una tariffa unica, non un addebito ricorrente.",
+        },
+        {
+          question: "I miei ospiti hanno bisogno di un account o di un'app?",
+          answer: "No. Aprono il tuo link, vedono il sito e confermano la presenza — niente da scaricare, niente da registrare.",
+        },
+        {
+          question: "Sembrerà davvero il MIO evento, non un modello generico?",
+          answer:
+            "Ogni tema è un vero punto di partenza, non un layout bloccato — cambia colori, font e foto, trascina gli elementi ovunque, o parti da una tela vuota. Sfoglia la galleria completa qui sopra prima di decidere.",
+        },
+      ],
     },
     finalCta: {
       heading: "Gratis per iniziare",
