@@ -7,10 +7,14 @@ import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
 
 interface MobileNavProps {
-  /** Login stays out of the always-visible mobile header row (Logo + hamburger
-   * + CTA is already tight at 390px) and lives in this dropdown instead, next
-   * to the same anchor links -- only when logged out, matching the desktop
-   * header's own `!user` check. */
+  /** 2026-10-09 usability audit (reversing the prior approach documented
+   * here): login buried one tap inside this dropdown, with no always-visible
+   * affordance, was confirmed live as a real discoverability failure --
+   * a generic hamburger icon next to a loud orange CTA gives a visitor no
+   * reason to expect "login" lives behind it. Now rendered as a small,
+   * always-visible text link in the compact header row itself, next to the
+   * hamburger -- only when logged out, matching the desktop header's own
+   * `!user` check. No longer duplicated inside the dropdown below. */
   showLogin: boolean;
   locale: Locale;
 }
@@ -33,7 +37,15 @@ export default function MobileNav({ showLogin, locale }: MobileNavProps) {
   ];
 
   return (
-    <div className="md:hidden">
+    <div className="flex items-center gap-1 md:hidden">
+      {showLogin && (
+        <Link
+          href="/login"
+          className="rounded-full px-2.5 py-1.5 text-sm font-semibold text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+        >
+          {t.nav.login}
+        </Link>
+      )}
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
@@ -56,15 +68,6 @@ export default function MobileNav({ showLogin, locale }: MobileNavProps) {
                 {link.label}
               </a>
             ))}
-            {showLogin && (
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                className="rounded-lg px-2 py-2 text-sm font-medium text-stone-600 hover:bg-stone-50 hover:text-stone-900"
-              >
-                {t.nav.login}
-              </Link>
-            )}
           </nav>
         </div>
       )}

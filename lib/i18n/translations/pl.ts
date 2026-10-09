@@ -270,6 +270,8 @@ export const pl: Dictionary = {
         { title: "Zaproszenia papierowe", description: "Gotowe do druku zaproszenia PDF, koperty i karty programu, spersonalizowane dla każdego gościa z kodem QR." },
         { title: "Rozmieszczenie na bankiecie", description: "Przydzielaj stoliki — po imieniu i nazwisku, nie tylko liczbowo — i generuj karty stolika i miejsca do druku." },
         { title: "Własna domena", description: "Skieruj swoją domenę na stronę albo zachowaj czytelny link, który dajemy za darmo." },
+        { title: "FAQ dla gości", description: "Odpowiedz na pytania, które pojawiają się wciąż od nowa — parking, osoby towarzyszące, godziny — prosto na swojej stronie." },
+        { title: "Podróż i nocleg", description: "Poleć hotele z kodami rabatowymi i linkami do rezerwacji, żeby goście z daleka wiedzieli, gdzie się zatrzymać." },
       ],
     },
     pricing: {

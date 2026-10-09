@@ -19,6 +19,8 @@ import {
   Sliders,
   BadgeCheck,
   Info,
+  HelpCircle,
+  Hotel,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import InvitelyLogo from "@/components/InvitelyLogo";
@@ -57,7 +59,10 @@ const PRICING_EXAMPLE_THEME_ID = "peony-blush-burgundy";
 // module-level constants can hold.
 const HERO_CHECKLIST_ICONS = [BadgeCheck, Palette, Wand2, ClipboardCheck, Printer];
 const CONSTRUCTOR_FEATURE_ICONS = [Type, Palette, Wand2, Pencil, Printer, Sliders];
-const MODULE_ICONS = [Wand2, Sparkles, Mail, Clock, MapPin, ClipboardCheck, Timer, MessagesSquare, Video, Printer, Users2, Globe];
+const MODULE_ICONS = [
+  Wand2, Sparkles, Mail, Clock, MapPin, ClipboardCheck, Timer, MessagesSquare, Video, Printer, Users2, Globe,
+  HelpCircle, Hotel,
+];
 
 // Each paid tier's own `features` array starts with "Everything in ..." for
 // the /dashboard/[eventId]/plan page's cumulative comparison -- on the
@@ -115,7 +120,7 @@ export default async function Home() {
   const statBar = [
     { value: `${themeCount}`, label: t.statBar.themes },
     { value: `${fontCount}+`, label: t.statBar.fonts },
-    { value: "12", label: t.statBar.modules },
+    { value: `${t.whatsIncluded.modules.length}`, label: t.statBar.modules },
     { value: "1", label: t.statBar.oneLink },
   ];
 
@@ -200,9 +205,14 @@ export default async function Home() {
               <LanguageSwitcher currentLocale={locale} availableLocales={SUPPORTED_LOCALES} label={languageLabel} />
               <MobileNav showLogin={!user} locale={locale} />
               {!user && (
+                // 2026-10-09 design audit: plain grey text next to a loud
+                // orange primary CTA read as equal to the anchor-nav links
+                // around it -- a returning user's eye skipped right past
+                // it. Same outlined-pill shape as the filled .landing-cta,
+                // same accent color family, just not competing with it.
                 <Link
                   href="/login"
-                  className="hidden text-sm font-medium text-stone-600 transition-colors hover:text-stone-900 md:inline"
+                  className="hidden rounded-full border border-[var(--dash-accent-text)] px-4 py-1.5 text-sm font-semibold text-[var(--dash-accent-text)] transition-colors hover:bg-[var(--dash-accent-text)] hover:text-white md:inline"
                 >
                   {t.nav.login}
                 </Link>

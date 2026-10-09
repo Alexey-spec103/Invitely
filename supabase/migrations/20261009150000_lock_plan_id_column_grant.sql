@@ -69,14 +69,27 @@ create trigger guard_events_plan_id_update
 -- "service-role-only" column), so excluding that column here would break
 -- the real verification flow, not just a theoretical exploit of it.
 
-revoke update on public.events from anon, authenticated;
+-- Built from the live table's actual column list rather than a hardcoded
+-- one -- this repo's migrations directory and the live database have
+-- drifted before (confirmed live: a GRANT naming rsvp_email_notifications
+-- failed with "column does not exist" because its own add-column migration,
+-- 20260930130000, hadn't been run yet on this database). Reading
+-- information_schema at apply time means this GRANT can never go stale
+-- against whatever columns actually exist, now or after a future migration
+-- adds more -- it only ever needs to keep excluding the two protected ones.
+do $$
+declare
+  grantable_columns text;
+begin
+  select string_agg(quote_ident(column_name), ', ' order by column_name)
+  into grantable_columns
+  from information_schema.columns
+  where table_schema = 'public'
+    and table_name = 'events'
+    and column_name not in ('last_digest_sent_at', 'site_password_hash');
 
-grant update (
-  id, owner_id, slug, title, subtitle_names, event_type, event_date, event_time,
-  venue_name, venue_address, venue_city, venue_lat, venue_lng, status, plan_id,
-  default_locale, supported_locales, custom_domain, custom_domain_verification_token,
-  custom_domain_verified_at, site_password_enabled, site_password_unlock_token,
-  rsvp_email_notifications, rsvp_digest_email, created_at, updated_at
-) on public.events to anon, authenticated;
+  execute 'revoke update on public.events from anon, authenticated';
+  execute format('grant update (%s) on public.events to anon, authenticated', grantable_columns);
+end $$;
 
 notify pgrst, 'reload schema';

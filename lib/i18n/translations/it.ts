@@ -260,6 +260,8 @@ export const it: Dictionary = {
         { title: "Inviti cartacei", description: "Inviti, buste e libretti in PDF pronti per la stampa, personalizzati per ogni ospite con un codice QR." },
         { title: "Disposizione del banchetto", description: "Assegna i tavoli — per nome, non solo per numero — e genera carte tavolo e segnaposto da stampare." },
         { title: "Dominio personalizzato", description: "Punta il tuo dominio verso il tuo sito, oppure mantieni il link leggibile che ti offriamo gratis." },
+        { title: "FAQ per i tuoi ospiti", description: "Rispondi alle domande che ti faranno in continuazione — parcheggio, accompagnatori, orari — direttamente sul tuo sito." },
+        { title: "Viaggio e alloggio", description: "Consiglia hotel con codici promozionali e link di prenotazione, così gli ospiti da fuori sanno dove alloggiare." },
       ],
     },
     pricing: {

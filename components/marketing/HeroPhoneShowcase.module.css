@@ -387,6 +387,16 @@
   }
 }
 
+/* Each layer's delay (0s/4s/8s) is exactly 1/3 of this 12s duration, so a
+   layer's own local 33% mark lands exactly when the NEXT layer's local 0%
+   begins. The fade-out used to also end at 33%, reaching opacity:0 at the
+   same instant the next layer was still at opacity:0 (that layer's own
+   fade-in only completes at its local 7% = 0.84s later) -- a real ~0.88s
+   window where every layer was transparent at once, confirmed live as a
+   blank flash. Extending the fade-out to end at 40% instead keeps this
+   layer visible (ramping down from ~1 to 0) through the next layer's entire
+   fade-in window, so the two overlap into an actual crossfade with no gap
+   where neither is showing. */
 @keyframes framePlay {
   0% {
     opacity: 0;
@@ -403,7 +413,7 @@
     transform: translateY(0) scale(1);
     filter: blur(0);
   }
-  33% {
+  40% {
     opacity: 0;
     transform: translateY(-22px) scale(0.96);
     filter: blur(8px);
@@ -433,7 +443,7 @@
     transform: rotate(-9deg) translateY(0) scale(1);
     filter: blur(0);
   }
-  33% {
+  40% {
     opacity: 0;
     transform: rotate(-9deg) translateY(-14px) scale(0.96);
     filter: blur(8px);

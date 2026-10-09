@@ -260,6 +260,8 @@ export const de: Dictionary = {
         { title: "Papiereinladungen", description: "Druckfertige PDF-Einladungen, Umschläge und Programmkarten, personalisiert pro Gast mit QR-Code." },
         { title: "Bankett-Sitzordnung", description: "Weise Tische zu — nach Namen, nicht nur nach Kopfzahl — und erstelle Tisch- und Platzkarten zum Drucken." },
         { title: "Eigene Domain", description: "Verweise deine eigene Domain auf deine Website, oder behalte den lesbaren Link, den wir dir kostenlos geben." },
+        { title: "FAQ für deine Gäste", description: "Beantworte die Fragen, die immer wieder kommen — Parken, Begleitpersonen, Zeitplan — direkt auf deiner Website." },
+        { title: "Reise & Unterkunft", description: "Empfiehl Hotels mit Rabattcodes und Buchungslinks, damit auswärtige Gäste wissen, wo sie übernachten." },
       ],
     },
     pricing: {

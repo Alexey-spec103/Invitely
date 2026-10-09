@@ -260,6 +260,8 @@ export const fr: Dictionary = {
         { title: "Invitations papier", description: "Invitations, enveloppes et programmes PDF prêts à imprimer, personnalisés par invité avec un QR code." },
         { title: "Placement au banquet", description: "Attribuez les tables — par nom, pas juste par nombre — et générez des cartes de table et de place à imprimer." },
         { title: "Domaine personnalisé", description: "Pointez votre propre domaine vers votre site, ou gardez le lien lisible que nous vous offrons gratuitement." },
+        { title: "FAQ pour vos invités", description: "Répondez aux questions qu'on vous posera sans cesse — parking, accompagnants, horaires — directement sur votre site." },
+        { title: "Voyage et hébergement", description: "Recommandez des hôtels avec codes promo et liens de réservation, pour que les invités venant de loin sachent où loger." },
       ],
     },
     pricing: {

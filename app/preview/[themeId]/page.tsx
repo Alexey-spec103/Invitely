@@ -52,16 +52,31 @@ export default async function ThemePreviewPage({ params }: PageProps<"/preview/[
 
   return (
     <>
-      <div className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-stone-200 bg-white/90 px-4 py-2.5 backdrop-blur">
-        <p className="text-xs text-stone-500">
-          <span className="font-semibold text-stone-900">{theme.name}</span> — live demo preview
+      <div className="sticky top-0 z-40 flex items-center justify-between gap-2 border-b border-stone-200 bg-white/90 px-4 py-2.5 backdrop-blur">
+        <p className="truncate text-xs text-stone-500">
+          <span className="font-semibold text-stone-900">{theme.name}</span>
+          {/* Hidden below sm, not just truncated -- at 375px the theme name
+              alone already competes with Login + the CTA for room; this
+              suffix is the one part safe to drop first. */}
+          <span className="hidden sm:inline"> — live demo preview</span>
         </p>
-        <Link
-          href={`/onboarding?theme=${theme.id}`}
-          className="shrink-0 rounded-full bg-[var(--dash-accent-text)] px-3.5 py-1.5 text-xs font-bold text-white transition hover:bg-[var(--dash-accent)]"
-        >
-          Use this style →
-        </Link>
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          {/* 2026-10-09 usability audit: this page had no way back to the
+              main site or to login at all -- a shopper who already has an
+              account and lands here (e.g. from a shared preview link) was
+              stuck with only the browser back button. Visible at every
+              width, not just sm+ -- a prior version hid this on mobile,
+              which is exactly the kind of gap this fix exists to close. */}
+          <Link href="/login" className="shrink-0 text-xs font-medium text-stone-500 underline underline-offset-2 hover:text-stone-900">
+            Log in
+          </Link>
+          <Link
+            href={`/onboarding?theme=${theme.id}`}
+            className="shrink-0 rounded-full bg-[var(--dash-accent-text)] px-3.5 py-1.5 text-xs font-bold text-white transition hover:bg-[var(--dash-accent)]"
+          >
+            Use this style →
+          </Link>
+        </div>
       </div>
       <ThemeProvider theme={theme}>
         <HeroSection

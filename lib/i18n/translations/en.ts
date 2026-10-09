@@ -537,6 +537,8 @@ export const en: Dictionary = {
         { title: "Paper invitations", description: "Print-ready PDF invites, envelopes, and program cards, personalized per guest with a QR code." },
         { title: "Banquet seating", description: "Assign tables — by name, not just headcount — and generate table & place cards to print." },
         { title: "Custom domain", description: "Point your own domain at your site, or keep the readable link we give you free." },
+        { title: "FAQ for your guests", description: "Answer the questions you'll get asked over and over — parking, plus-ones, timing — right on your site." },
+        { title: "Travel & accommodations", description: "Recommend hotels with promo codes and booking links, so out-of-town guests know where to stay." },
       ],
     },
     pricing: {

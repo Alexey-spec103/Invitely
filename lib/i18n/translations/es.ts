@@ -260,6 +260,8 @@ export const es: Dictionary = {
         { title: "Invitaciones de papel", description: "Invitaciones, sobres y tarjetas de programa en PDF listos para imprimir, personalizados por invitado con un código QR." },
         { title: "Organización del banquete", description: "Asigna mesas — por nombre, no solo por número — y genera tarjetas de mesa y de sitio para imprimir." },
         { title: "Dominio personalizado", description: "Apunta tu propio dominio a tu sitio, o conserva el enlace legible que te damos gratis." },
+        { title: "Preguntas frecuentes", description: "Responde las preguntas que te harán una y otra vez — aparcamiento, acompañantes, horarios — directamente en tu sitio." },
+        { title: "Viaje y alojamiento", description: "Recomienda hoteles con códigos promocionales y enlaces de reserva, para que los invitados de fuera sepan dónde alojarse." },
       ],
     },
     pricing: {
