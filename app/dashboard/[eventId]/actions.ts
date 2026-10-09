@@ -520,5 +520,12 @@ export async function deleteEventAction(
     return { ok: false, message: err instanceof Error ? err.message : "Failed to delete event" };
   }
 
+  // The event-switcher dropdown reads its list from `/dashboard/[eventId]/
+  // layout.tsx`'s own `listEvents()` call -- without revalidating that
+  // layout segment, a deleted event kept showing up there (confirmed live)
+  // even though the row was genuinely gone and visiting its own URL
+  // correctly redirected away. "layout" (not the default "page") so every
+  // nested dashboard route sharing this layout picks up the fresh list.
+  revalidatePath("/dashboard/[eventId]", "layout");
   redirect("/dashboard");
 }
