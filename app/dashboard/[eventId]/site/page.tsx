@@ -14,6 +14,7 @@ import ModuleCard from "@/components/ui/ModuleCard";
 import SiteInlineEditor from "./SiteInlineEditor";
 import SiteSettingsEditForm from "./SiteSettingsEditForm";
 import LinkPreviewCard from "./LinkPreviewCard";
+import PaymentSuccessCard from "./PaymentSuccessCard";
 import DomainEditForm from "./DomainEditForm";
 import PasswordProtectionCard from "./PasswordProtectionCard";
 import { getInviteDescription } from "@/lib/socialPreview";
@@ -88,6 +89,17 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
     .select("*")
     .eq("event_id", event.id)
     .maybeSingle();
+
+  // Same not-yet-applied-migration guard as app/dashboard/[eventId]/guests/
+  // page.tsx's own identical query -- rsvp_email_notifications isn't in
+  // lib/events.ts's shared EVENT_COLUMNS for that reason, only needed here
+  // for the post-payment success card's one line of copy below.
+  const { data: notificationSettings } = await supabase
+    .from("events")
+    .select("rsvp_email_notifications")
+    .eq("id", event.id)
+    .maybeSingle();
+  const rsvpEmailNotifications = notificationSettings?.rsvp_email_notifications ?? true;
 
   const heroSection = siteConfig
     ? parseSections(siteConfig.sections).find((section) => section.type === "hero")
@@ -473,6 +485,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
   // dashboard-audit.md Block E: shared across the module lock hints and the
   // custom-domain card below -- both gate on the same Basic threshold.
   const hasBasicAccess = planMeets(event.plan_id, "basic");
+  const hasPremiumAccess = planMeets(event.plan_id, "premium");
   let theme;
   try {
     theme = applyColorVariant(getTheme(siteConfig?.theme_id ?? DEFAULT_THEME_ID), siteConfig?.color_variant_id);
@@ -795,22 +808,13 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           indistinguishable from a real failure from their side. */}
       {checkout === "success" &&
         (hasBasicAccess ? (
-          <div className="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5">
-            <p className="text-base font-bold text-emerald-900">🎉 Payment received — your link is ready.</p>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <a
-                href={`/e/${event.slug}`}
-                target="_blank"
-                rel="noreferrer"
-                className="dash-btn dash-btn-primary"
-              >
-                Open your link →
-              </a>
-              <a href="#custom-domain-card" className="text-sm font-semibold text-emerald-800 underline">
-                Or claim a nicer address (yourname.invimbo.com)
-              </a>
-            </div>
-          </div>
+          <PaymentSuccessCard
+            eventId={event.id}
+            slug={event.slug}
+            appDomain={process.env.NEXT_PUBLIC_APP_DOMAIN ?? "invimbo.com"}
+            hasPremiumAccess={hasPremiumAccess}
+            rsvpEmailNotifications={rsvpEmailNotifications}
+          />
         ) : (
           <div className="mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5">
             <p className="text-base font-bold text-amber-900">⏳ Confirming your payment…</p>
