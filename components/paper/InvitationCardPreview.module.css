@@ -39,9 +39,9 @@
 
 .date {
   margin: 1.1em 0 0;
-  font-family: var(--theme-font-body);
-  font-size: clamp(0.55rem, 2.6cqw, 0.75rem);
-  letter-spacing: 0.08em;
+  font-family: var(--theme-font-heading);
+  font-size: clamp(0.6rem, 2.6cqw, 0.8rem);
+  letter-spacing: 0.12em;
   text-align: center;
 }
 

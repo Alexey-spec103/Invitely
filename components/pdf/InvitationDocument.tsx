@@ -116,9 +116,9 @@ export function InvitationDocument({
       textAlign: "center",
     },
     date: {
-      fontFamily: style.bodyFont,
-      fontSize: 13,
-      letterSpacing: 1,
+      fontFamily: style.headingFont,
+      fontSize: 14,
+      letterSpacing: 1.5,
       marginTop: 20,
       textAlign: "center",
     },
@@ -188,7 +188,7 @@ export function InvitationDocument({
           }}
         >
           <CanvasPdfFrameContent frame={frontFrame} />
-          {locked && <PdfWatermark repeat={36} />}
+          {locked && <PdfWatermark repeat={36} color={style.text} />}
         </Page>
       ) : (
         <Page size="A5" style={styles.page}>
@@ -228,7 +228,7 @@ export function InvitationDocument({
               </View>
             </>
           )}
-          {locked && <PdfWatermark repeat={36} />}
+          {locked && <PdfWatermark repeat={36} color={style.text} />}
         </Page>
       )}
 
@@ -244,7 +244,7 @@ export function InvitationDocument({
           }}
         >
           <CanvasPdfFrameContent frame={backFrame} />
-          {locked && <PdfWatermark repeat={36} />}
+          {locked && <PdfWatermark repeat={36} color={style.text} />}
         </Page>
       ) : (
         backMessage && (
@@ -252,7 +252,7 @@ export function InvitationDocument({
             <View style={styles.border} fixed />
             <Text style={styles.backAmpersand}>&</Text>
             <Text style={styles.backMessage}>{backMessage}</Text>
-            {locked && <PdfWatermark repeat={36} />}
+            {locked && <PdfWatermark repeat={36} color={style.text} />}
           </Page>
         )
       )}

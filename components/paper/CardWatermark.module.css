@@ -14,7 +14,7 @@
   align-content: flex-start;
   justify-content: center;
   transform: rotate(-28deg);
-  opacity: 0.18;
+  opacity: 0.26;
   pointer-events: none;
   z-index: 5;
 }
@@ -23,7 +23,12 @@
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: #000;
+  /* Themed, not a fixed #000 -- a dark-background theme (e.g. dark-plum-
+     velvet) made black text at any reasonable opacity nearly invisible
+     against its own near-black background. --theme-text is already chosen
+     per theme for contrast against --theme-bg, so reusing it here
+     guarantees the watermark reads on every theme, light or dark. */
+  color: var(--theme-text);
   margin: 0.6em 0.8em;
   white-space: nowrap;
 }

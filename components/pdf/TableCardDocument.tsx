@@ -81,7 +81,7 @@ export function TableCardDocument({ theme, tables, locked }: TableCardDocumentPr
               {name}
             </Text>
           ))}
-          {locked && <PdfWatermark repeat={28} />}
+          {locked && <PdfWatermark repeat={28} color={style.text} />}
         </Page>
       ))}
     </Document>

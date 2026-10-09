@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     alignContent: "flex-start",
     justifyContent: "center",
     transform: "rotate(-28deg)",
-    opacity: 0.16,
+    opacity: 0.24,
   },
 });
 
@@ -23,8 +23,21 @@ const styles = StyleSheet.create({
  * a browser does). Fires off the plan tier lib/plans.ts already claims
  * requires Premium for this material, not a real charge -- the PDF still
  * generates and downloads, just visibly marked. */
-export function PdfWatermark({ repeat = 32, fontSize = 10 }: { repeat?: number; fontSize?: number }) {
-  const labelStyle = { fontSize, fontWeight: 700 as const, letterSpacing: 1, color: "#000000", marginHorizontal: 8, marginVertical: 10 };
+export function PdfWatermark({
+  repeat = 32,
+  fontSize = 10,
+  color = "#000000",
+}: {
+  repeat?: number;
+  fontSize?: number;
+  /** Themed, not always black -- a dark-background theme made a fixed black
+   * label nearly invisible against its own near-black background at any
+   * reasonable opacity. Callers should pass the theme's own text color
+   * (already chosen for contrast against its background) rather than
+   * relying on the black default. */
+  color?: string;
+}) {
+  const labelStyle = { fontSize, fontWeight: 700 as const, letterSpacing: 1, color, marginHorizontal: 8, marginVertical: 10 };
 
   return (
     <View style={styles.wrap} fixed>

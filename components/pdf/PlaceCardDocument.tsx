@@ -70,7 +70,7 @@ export function PlaceCardDocument({ theme, guestNames, locked }: PlaceCardDocume
             <CornerFlourish color={style.accent} rotate={180} size={20} />
           </View>
           <Text style={styles.guestName}>{name}</Text>
-          {locked && <PdfWatermark repeat={8} fontSize={7} />}
+          {locked && <PdfWatermark repeat={8} fontSize={7} color={style.text} />}
         </Page>
       ))}
     </Document>

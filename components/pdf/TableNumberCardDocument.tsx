@@ -62,7 +62,7 @@ export function TableNumberCardDocument({ theme, tableNames, locked }: TableNumb
             <CornerFlourish color={style.accent} rotate={180} size={28} />
           </View>
           <Text style={styles.tableName}>{name}</Text>
-          {locked && <PdfWatermark repeat={14} fontSize={9} />}
+          {locked && <PdfWatermark repeat={14} fontSize={9} color={style.text} />}
         </Page>
       ))}
     </Document>
