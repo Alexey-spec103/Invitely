@@ -211,13 +211,43 @@ const sourceSerif4 = Source_Serif_4({
   weight: ["300", "400", "500"],
 });
 
+// Same hardcoded production origin as app/robots.ts and app/sitemap.ts --
+// no env var for this exists anywhere in the codebase yet. Needed so
+// Next.js can resolve metadataBase for canonical URLs and any relative
+// OG/Twitter image path on every page that doesn't set its own.
+const SITE_URL = "https://www.invimbo.com";
+
+const siteTitle = "Invimbo — event websites, live in minutes";
+const siteDescription =
+  "Design a beautiful event website, matching paper invitations, and guest seating — one style, everywhere your guests see it.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Invimbo — event websites, live in minutes",
+    default: siteTitle,
     template: "%s | Invimbo",
   },
-  description:
-    "Design a beautiful event website, matching paper invitations, and guest seating — one style, everywhere your guests see it.",
+  description: siteDescription,
+  alternates: {
+    canonical: "/",
+  },
+  // Separate from the per-event guest-page metadata (app/e/[slug]/page.tsx's
+  // own generateMetadata) -- this is only the landing page's own social
+  // preview. No image set: nothing in public/ is framed/sized as an actual
+  // social card (the available screenshots are dashboard UI captures), and
+  // shipping a wrong/placeholder image is worse than omitting it.
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    url: SITE_URL,
+    siteName: "Invimbo",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: siteTitle,
+    description: siteDescription,
+  },
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

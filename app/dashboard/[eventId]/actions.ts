@@ -72,6 +72,54 @@ interface UpdateThemeInput {
   themeId: string;
 }
 
+// The 5 decor-preserved canvas cards (Envelope/Program/Dress-code/Save-the-
+// -Date/Thank-You) keep their own border+corner-decor chrome live-tracking
+// the current theme, but a text element's *color* is a one-time snapshot of
+// whatever the theme's text/accent color was at the moment a host first
+// customized that card -- switching themes afterward left that color frozen,
+// which could go illegible against a very different new background (e.g.
+// pale cream text, fine on a dark theme, nearly invisible on a light one).
+const CANVAS_RECOLOR_KEYS = [
+  "envelopeCanvas",
+  "programCanvas",
+  "dressCodeCanvas",
+  "saveTheDateCanvas",
+  "thankYouCanvas",
+] as const;
+
+/** Re-colors only the text elements whose color exactly matches the OLD
+ * theme's own --theme-text/--theme-accent tokens -- a value-matching
+ * heuristic, not a stored "is this theme-derived" flag, so it covers
+ * already-saved customizations from before this fix with no migration.
+ * Anything that doesn't match (a host's genuine custom color pick, or an
+ * element with no theme-linked color) is left exactly as the host set it. */
+function recolorFrameForThemeChange(
+  frame: unknown,
+  oldTextColor: string,
+  oldAccentColor: string,
+  newTextColor: string,
+  newAccentColor: string
+): { frame: unknown; changed: boolean } {
+  if (!frame || typeof frame !== "object" || !Array.isArray((frame as { elements?: unknown }).elements)) {
+    return { frame, changed: false };
+  }
+  const f = frame as { elements: Array<Record<string, unknown>> };
+  let changed = false;
+  const elements = f.elements.map((el) => {
+    if (el.type !== "text" || typeof el.color !== "string") return el;
+    if (el.color === oldTextColor && oldTextColor !== newTextColor) {
+      changed = true;
+      return { ...el, color: newTextColor };
+    }
+    if (el.color === oldAccentColor && oldAccentColor !== newAccentColor) {
+      changed = true;
+      return { ...el, color: newAccentColor };
+    }
+    return el;
+  });
+  return { frame: changed ? { ...f, elements } : frame, changed };
+}
+
 /** Hero's layout has no manual picker anymore (removed along with the old
  * per-section forms -- layout is theme-owned now, matching how it already
  * worked at event-creation time via `recommendedHeroVariantFor`). For that
@@ -122,10 +170,49 @@ export async function updateTheme(
 
   const { data: existingConfig } = await supabase
     .from("site_config")
-    .select("theme_id, sections")
+    .select("theme_id, sections, content")
     .eq("event_id", input.eventId)
     .maybeSingle();
   const previousThemeId = existingConfig?.theme_id;
+
+  // Re-color any of the 5 decor-preserved canvas cards' text that matches
+  // the OLD theme's own text/accent colors -- see recolorFrameForThemeChange
+  // above for why. Never fails the theme switch itself: an unknown/deleted
+  // old theme id just skips recoloring.
+  let canvasRecolorPatch: Record<string, unknown> | undefined;
+  if (previousThemeId && previousThemeId !== input.themeId) {
+    try {
+      const oldTheme = getTheme(previousThemeId);
+      const newTheme = getTheme(input.themeId);
+      const existingContentForRecolor = existingConfig ? parseContent(existingConfig.content) : {};
+      const existingInvitations =
+        typeof existingContentForRecolor.invitations === "object" && existingContentForRecolor.invitations !== null
+          ? (existingContentForRecolor.invitations as Record<string, unknown>)
+          : {};
+      let anyChanged = false;
+      const nextInvitations: Record<string, unknown> = { ...existingInvitations };
+      for (const key of CANVAS_RECOLOR_KEYS) {
+        if (key in existingInvitations) {
+          const { frame: recoloredFrame, changed } = recolorFrameForThemeChange(
+            existingInvitations[key],
+            oldTheme.vars["--theme-text"],
+            oldTheme.vars["--theme-accent"],
+            newTheme.vars["--theme-text"],
+            newTheme.vars["--theme-accent"]
+          );
+          if (changed) {
+            nextInvitations[key] = recoloredFrame;
+            anyChanged = true;
+          }
+        }
+      }
+      if (anyChanged) {
+        canvasRecolorPatch = { ...existingContentForRecolor, invitations: nextInvitations };
+      }
+    } catch {
+      // Unknown theme id on either side -- skip recoloring.
+    }
+  }
 
   const existingSections = existingConfig ? parseSections(existingConfig.sections) : [];
   const sections: SectionConfig[] = existingSections.some((section) => section.type === "hero")
@@ -147,6 +234,7 @@ export async function updateTheme(
           theme_id: input.themeId,
           color_variant_id: null,
           sections: sectionsWithRecommendedVariants as unknown as Json,
+          ...(canvasRecolorPatch ? { content: canvasRecolorPatch as unknown as Json } : {}),
         })
         .eq("event_id", input.eventId)
     : await supabase.from("site_config").insert({

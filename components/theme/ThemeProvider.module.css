@@ -25,3 +25,24 @@
   background-repeat: repeat, repeat;
   background-size: 100% 900px, auto;
 }
+
+/* accessibility-audit: the guest-facing site had no scoped focus-visible
+   rule anywhere, so keyboard users (explicitly including the product's own
+   older-relative audience) fell back to the browser's faint default outline
+   -- measured live at ~1.56:1 against a white background, well under WCAG
+   2.2's 3:1 minimum for focus indicators (SC 1.4.11). --theme-accent is
+   already chosen per theme to contrast against --theme-bg for links/buttons
+   elsewhere, so reusing it here (same pattern as .marketing-shell's own
+   focus-visible rule in globals.css, which uses --dash-accent) adapts
+   per-theme instead of hardcoding one color that could clash on some
+   themes. Global element selectors, not :global(.wrapper a) -- this needs
+   to reach every real interactive element inside, including ones many
+   nested components deep (RSVP inputs, nav links, one-tap RSVP buttons). */
+.wrapper :global(a:focus-visible),
+.wrapper :global(button:focus-visible),
+.wrapper :global(input:focus-visible),
+.wrapper :global(textarea:focus-visible),
+.wrapper :global(select:focus-visible) {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 2px;
+}
