@@ -250,9 +250,21 @@ export async function sendGuestReminderEmail(
   return { ok: true };
 }
 
-export async function addGuestsBulk(
+interface BulkGuestRow {
+  fullName: string;
+  groupLabel?: string;
+  email?: string;
+  phone?: string;
+}
+
+// Shared by both bulk-add paths below. A bulk paste/import is forgiving by
+// design (that's the whole point of the feature) -- rejecting the entire
+// batch over one malformed field would undo that. Drop just that field
+// rather than the whole row, so a name still imports even if e.g. a phone
+// number landed in the email column during a spreadsheet paste.
+async function insertGuestRows(
   eventId: string,
-  rawText: string
+  rows: BulkGuestRow[]
 ): Promise<{ ok: true; count: number } | { ok: false; message: string }> {
   const supabase = await createClient();
 
@@ -264,17 +276,10 @@ export async function addGuestsBulk(
     return { ok: false, message: "Not authenticated" };
   }
 
-  const rows = parseGuestLines(rawText);
-
   if (rows.length === 0) {
-    return { ok: false, message: "No guest names found — paste one name per line." };
+    return { ok: false, message: "No guest names found." };
   }
 
-  // A bulk paste is forgiving by design (that's the whole point of the
-  // feature) -- rejecting the entire batch over one misaligned column would
-  // undo that. Drop just the malformed field rather than the whole row, so
-  // a name still imports even if e.g. a phone number landed in the email
-  // column during a spreadsheet paste.
   const { error } = await supabase.from("guests").insert(
     rows.map((row) => ({
       event_id: eventId,
@@ -291,6 +296,33 @@ export async function addGuestsBulk(
 
   revalidatePath(`/dashboard/${eventId}/guests`);
   return { ok: true, count: rows.length };
+}
+
+export async function addGuestsBulk(
+  eventId: string,
+  rawText: string
+): Promise<{ ok: true; count: number } | { ok: false; message: string }> {
+  const rows = parseGuestLines(rawText);
+  if (rows.length === 0) {
+    return { ok: false, message: "No guest names found — paste one name per line." };
+  }
+  return insertGuestRows(eventId, rows);
+}
+
+// CSV import's own insert path -- deliberately NOT routed through
+// addGuestsBulk/parseGuestLines. That text format splits a line on tabs OR
+// commas, which is exactly wrong for a name that legitimately contains a
+// comma (e.g. "Lee, David") -- a real CSV file already parses that
+// correctly as one field, so re-flattening it into comma-sensitive text
+// just to re-split it would reintroduce the very bug CSV parsing exists to
+// avoid. This takes already-structured rows straight to the same insert
+// `insertGuestRows` uses for the paste flow, with no lossy text step
+// between.
+export async function addGuestsStructured(
+  eventId: string,
+  rows: BulkGuestRow[]
+): Promise<{ ok: true; count: number } | { ok: false; message: string }> {
+  return insertGuestRows(eventId, rows);
 }
 
 interface UpdateGuestInput {

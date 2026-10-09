@@ -5,8 +5,6 @@ import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument"
 import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
-import { pdfBackgroundColor } from "@/lib/backgroundFills";
-
 export interface ProgramCardEvent {
   time: string;
   title: string;
@@ -38,7 +36,12 @@ export function ProgramCardDocument({ theme, title, events, frame }: ProgramCard
 
   const styles = StyleSheet.create({
     page: {
-      backgroundColor: frame ? pdfBackgroundColor(frame.background) : style.background,
+      // Always the theme's own background, not `frame`'s -- the border and
+      // corner flourish now always render (see below), so this page's
+      // background is never fully owned by the canvas frame the way other
+      // canvas-backed PDF pages' are; the frame's own background is set to
+      // transparent for exactly this reason (see createProgramCanvasSeed).
+      backgroundColor: style.background,
       color: style.text,
       padding: 48,
       display: "flex",
@@ -93,35 +96,43 @@ export function ProgramCardDocument({ theme, title, events, frame }: ProgramCard
 
   return (
     <Document>
-      {frame ? (
-        <Page size="A5" style={{ position: "relative", backgroundColor: styles.page.backgroundColor }}>
+      <Page size="A5" style={styles.page}>
+        <View style={styles.border} fixed />
+        {/* Kept outside the `frame` branch below -- was previously INSIDE a
+            `frame ? ... : ...` split that replaced this whole page, border
+            and flourishes included, the instant a host customized the text.
+            Same real bug fixed on-screen in ProgramCardPreview.tsx and in
+            the PDF for EnvelopeDocument.tsx, for the same reason: the canvas
+            data model has no decorative-shape element type to carry this
+            chrome itself, so it has to keep living here, with only the
+            content layer swapped out under it. */}
+        <View style={styles.flourishTopLeft} fixed>
+          <CornerFlourish color={style.accent} />
+        </View>
+        <View style={styles.flourishBottomRight} fixed>
+          <CornerFlourish color={style.accent} rotate={180} />
+        </View>
+
+        {frame ? (
           <CanvasPdfFrameContent frame={frame} />
-        </Page>
-      ) : (
-        <Page size="A5" style={styles.page}>
-          <View style={styles.border} fixed />
-          <View style={styles.flourishTopLeft} fixed>
-            <CornerFlourish color={style.accent} />
-          </View>
-          <View style={styles.flourishBottomRight} fixed>
-            <CornerFlourish color={style.accent} rotate={180} />
-          </View>
+        ) : (
+          <>
+            <Text style={styles.title}>{title || "Order of the day"}</Text>
 
-          <Text style={styles.title}>{title || "Order of the day"}</Text>
-
-          {events.map((event, index) => (
-            <View key={index} style={styles.row}>
-              <Text style={styles.time}>{event.time}</Text>
-              <View style={styles.eventBody}>
-                <Text style={styles.eventTitle}>{event.title}</Text>
-                {event.description && (
-                  <Text style={styles.eventDescription}>{event.description}</Text>
-                )}
+            {events.map((event, index) => (
+              <View key={index} style={styles.row}>
+                <Text style={styles.time}>{event.time}</Text>
+                <View style={styles.eventBody}>
+                  <Text style={styles.eventTitle}>{event.title}</Text>
+                  {event.description && (
+                    <Text style={styles.eventDescription}>{event.description}</Text>
+                  )}
+                </View>
               </View>
-            </View>
-          ))}
-        </Page>
-      )}
+            ))}
+          </>
+        )}
+      </Page>
     </Document>
   );
 }

@@ -442,7 +442,10 @@ function createProgramCanvasSeed(args: { theme: Theme; title?: string; events: P
     name: "Program",
     width: CANVAS_DESIGN_WIDTH,
     height: BACK_CANVAS_HEIGHT,
-    background: { color: theme.vars["--theme-bg"] },
+    // Transparent, not theme-bg -- this frame renders INSIDE
+    // ProgramCardPreview's own .customContent slot, layered above its
+    // border and corner decor, same reasoning as createEnvelopeCanvasSeed.
+    background: { color: "transparent" },
     elements,
   };
 }
@@ -503,7 +506,10 @@ function createDressCodeCanvasSeed(args: { theme: Theme; title: string; descript
     name: "Dress code",
     width: CANVAS_DESIGN_WIDTH,
     height: BACK_CANVAS_HEIGHT,
-    background: { color: theme.vars["--theme-bg"] },
+    // Transparent, not theme-bg -- this frame renders INSIDE
+    // DressCodeCardPreview's own .customContent slot, layered above its
+    // border and corner decor, same reasoning as createEnvelopeCanvasSeed.
+    background: { color: "transparent" },
     elements,
   };
 }
@@ -1340,23 +1346,29 @@ export default function PaperConstructor({
                     ) : undefined}
                   </EnvelopeCardPreview>
                 )}
-                {activeMedia.id === "program" &&
-                  (programCanvasState.hasCustom ? (
-                    <CanvasRenderer frames={[programCanvasState.frame]} />
-                  ) : (
-                    <ProgramCardPreview theme={theme} title={timelineTitle} events={timelineEvents} />
-                  ))}
-                {activeMedia.id === "dressCode" &&
-                  (dressCodeCanvasState.hasCustom ? (
-                    <CanvasRenderer frames={[dressCodeCanvasState.frame]} />
-                  ) : (
-                    <DressCodeCardPreview
-                      theme={theme}
-                      title={dressCodeTitle || "Dress Code"}
-                      description={dressCodeDescription}
-                      colors={dressCodeColors}
-                    />
-                  ))}
+                {activeMedia.id === "program" && (
+                  <ProgramCardPreview theme={theme} title={timelineTitle} events={timelineEvents}>
+                    {programCanvasState.hasCustom ? (
+                      <CanvasRenderer
+                        frames={[{ ...programCanvasState.frame, background: { color: "transparent" } }]}
+                      />
+                    ) : undefined}
+                  </ProgramCardPreview>
+                )}
+                {activeMedia.id === "dressCode" && (
+                  <DressCodeCardPreview
+                    theme={theme}
+                    title={dressCodeTitle || "Dress Code"}
+                    description={dressCodeDescription}
+                    colors={dressCodeColors}
+                  >
+                    {dressCodeCanvasState.hasCustom ? (
+                      <CanvasRenderer
+                        frames={[{ ...dressCodeCanvasState.frame, background: { color: "transparent" } }]}
+                      />
+                    ) : undefined}
+                  </DressCodeCardPreview>
+                )}
                 {activeMedia.id === "saveTheDate" && (
                   <SaveTheDateCardPreview theme={theme} names={names} eventDate={eventDate} locale={locale}>
                     {saveTheDateCanvasState.hasCustom ? (

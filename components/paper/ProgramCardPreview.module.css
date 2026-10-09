@@ -19,6 +19,16 @@
   pointer-events: none;
 }
 
+/* Same slot/z-index shape as EnvelopeCardPreview's .customContent -- when a
+   host customizes this card's text, CanvasRenderer renders in here instead
+   of the default title+schedule, still stacked above .border and
+   CardCornerDecor so the decor survives customization. */
+.customContent {
+  position: absolute;
+  inset: 5%;
+  z-index: 2;
+}
+
 .title {
   margin: 0 0 1em;
   font-family: var(--theme-font-heading);

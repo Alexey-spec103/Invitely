@@ -5,7 +5,6 @@ import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument"
 import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
-import { pdfBackgroundColor } from "@/lib/backgroundFills";
 
 export interface DressCodeCardColor {
   hex: string;
@@ -18,12 +17,13 @@ export interface DressCodeCardDocumentProps {
   description?: string;
   colors: DressCodeCardColor[];
   /** Canvas-designed dress-code card -- same opt-in contract as
-   * InvitationDocument's frontFrame. Takes over the page entirely when
-   * present (including the color swatches, which the canvas editor has no
-   * dedicated element for -- a host customizing this is writing their own
-   * wording, same as the on-screen DressCodeCardPreview's own swap to
-   * CanvasRenderer), falls back to the structured title/description/
-   * swatches layout otherwise. Same A5 page as the invitation. */
+   * InvitationDocument's frontFrame. Takes over the title/description/
+   * swatches content when present (the canvas editor has no dedicated
+   * swatch element -- a host customizing this is writing their own wording,
+   * same as the on-screen DressCodeCardPreview's own swap to
+   * CanvasRenderer), falls back to the structured layout otherwise. The
+   * border/corner flourish always render either way -- see the `<Page>`
+   * below. Same A5 page as the invitation. */
   frame?: CanvasFrame;
 }
 
@@ -40,7 +40,12 @@ export function DressCodeCardDocument({ theme, title, description, colors, frame
 
   const styles = StyleSheet.create({
     page: {
-      backgroundColor: frame ? pdfBackgroundColor(frame.background) : style.background,
+      // Always the theme's own background, not `frame`'s -- the border and
+      // corner flourish now always render (see below), so this page's
+      // background is never fully owned by the canvas frame the way other
+      // canvas-backed PDF pages' are; the frame's own background is set to
+      // transparent for exactly this reason (see createDressCodeCanvasSeed).
+      backgroundColor: style.background,
       color: style.text,
       padding: 48,
       display: "flex",
@@ -104,33 +109,38 @@ export function DressCodeCardDocument({ theme, title, description, colors, frame
 
   return (
     <Document>
-      {frame ? (
-        <Page size="A5" style={{ position: "relative", backgroundColor: styles.page.backgroundColor }}>
+      <Page size="A5" style={styles.page}>
+        <View style={styles.border} fixed />
+        {/* Kept outside the `frame` branch below -- was previously INSIDE a
+            `frame ? ... : ...` split that replaced this whole page, border
+            and flourishes included, the instant a host customized the text.
+            Same real bug fixed on-screen in DressCodeCardPreview.tsx and in
+            the PDF for EnvelopeDocument.tsx. */}
+        <View style={styles.flourishTopLeft} fixed>
+          <CornerFlourish color={style.accent} />
+        </View>
+        <View style={styles.flourishBottomRight} fixed>
+          <CornerFlourish color={style.accent} rotate={180} />
+        </View>
+
+        {frame ? (
           <CanvasPdfFrameContent frame={frame} />
-        </Page>
-      ) : (
-        <Page size="A5" style={styles.page}>
-          <View style={styles.border} fixed />
-          <View style={styles.flourishTopLeft} fixed>
-            <CornerFlourish color={style.accent} />
-          </View>
-          <View style={styles.flourishBottomRight} fixed>
-            <CornerFlourish color={style.accent} rotate={180} />
-          </View>
+        ) : (
+          <>
+            <Text style={styles.title}>{title}</Text>
+            {description && <Text style={styles.description}>{description}</Text>}
 
-          <Text style={styles.title}>{title}</Text>
-          {description && <Text style={styles.description}>{description}</Text>}
-
-          <View style={styles.swatchRow}>
-            {colors.map((color, index) => (
-              <View key={index} style={styles.swatchColumn}>
-                <View style={{ ...styles.swatch, backgroundColor: color.hex }} />
-                {color.label && <Text style={styles.swatchLabel}>{color.label}</Text>}
-              </View>
-            ))}
-          </View>
-        </Page>
-      )}
+            <View style={styles.swatchRow}>
+              {colors.map((color, index) => (
+                <View key={index} style={styles.swatchColumn}>
+                  <View style={{ ...styles.swatch, backgroundColor: color.hex }} />
+                  {color.label && <Text style={styles.swatchLabel}>{color.label}</Text>}
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+      </Page>
     </Document>
   );
 }
