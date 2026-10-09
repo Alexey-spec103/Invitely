@@ -106,6 +106,7 @@ export const fr: Dictionary = {
       `Il semble que ${guestName} ait indiqué ne pas pouvoir venir — si c'est une erreur, contactez l'hôte.`,
   },
   landing: {
+    skipToContent: "Aller au contenu",
     topBar: "Visa / Mastercard acceptés · Livraison instantanée — envoyez votre lien d'invitation partout dans le monde",
     nav: { constructor: "Constructeur", themes: "Thèmes", whatsIncluded: "Inclus", pricing: "Tarifs", login: "Connexion" },
     mobileNav: { openMenu: "Ouvrir le menu", closeMenu: "Fermer le menu" },

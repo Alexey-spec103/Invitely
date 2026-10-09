@@ -1,6 +1,20 @@
+import { timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { sendEmail } from "@/lib/email";
+
+/** Constant-time string comparison -- a plain `!==` leaks the secret's
+ * content (not just its length) through how many characters matched before
+ * the first mismatch, via response-time variance. `timingSafeEqual` throws
+ * on a length mismatch rather than returning false, so the length check
+ * must happen first -- that's safe to do in variable time, since the
+ * secret's length isn't the sensitive part, its content is. */
+function timingSafeStringEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
 
 /** Vercel Cron (see vercel.json) hits this once a day with no session at
  * all -- same "server-to-server, no auth.uid()" situation as the Stripe
@@ -16,7 +30,8 @@ export async function GET(request: NextRequest) {
   if (!expectedSecret) {
     return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
   }
-  if (request.headers.get("authorization") !== `Bearer ${expectedSecret}`) {
+  const providedAuth = request.headers.get("authorization") ?? "";
+  if (!timingSafeStringEqual(providedAuth, `Bearer ${expectedSecret}`)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

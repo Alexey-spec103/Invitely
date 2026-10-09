@@ -106,6 +106,7 @@ export const es: Dictionary = {
       `Parece que ${guestName} indicó que no asistirá — si esto es un error, contacta al anfitrión.`,
   },
   landing: {
+    skipToContent: "Saltar al contenido",
     topBar: "Visa / Mastercard aceptados · Entrega instantánea — envía tu enlace de invitación a cualquier parte del mundo",
     nav: { constructor: "Constructor", themes: "Temas", whatsIncluded: "Qué incluye", pricing: "Precios", login: "Iniciar sesión" },
     mobileNav: { openMenu: "Abrir menú", closeMenu: "Cerrar menú" },

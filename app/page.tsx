@@ -146,6 +146,17 @@ export default async function Home() {
 
   return (
     <div className="marketing-shell bg-white font-sans">
+      {/* 2026-10-09 accessibility audit: a long page (60+ headings) with no
+          way for a keyboard user to bypass the header/nav straight to the
+          actual content -- sr-only until focused, same accent color as the
+          page's own CTA so it reads as this page's chrome, not a generic
+          browser default. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-[var(--dash-accent-text)] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white focus:shadow-lg"
+      >
+        {t.skipToContent}
+      </a>
       {/* landing-audit.md priority 19: weddingpost.ru's own site opens with a
           bar above the header, on every screen, pre-empting the "can I even
           pay from here" objection before the visitor reaches the hero.
@@ -204,7 +215,7 @@ export default async function Home() {
         </header>
       </div>
 
-      <section className="relative isolate overflow-hidden bg-gradient-to-b from-orange-50 via-orange-50 to-white">
+      <section id="main-content" className="relative isolate overflow-hidden bg-gradient-to-b from-orange-50 via-orange-50 to-white">
         {/* Round 5: replaces round 4's side-by-side phone+video card
             entirely -- direct feedback: "что если видео как-то сделать на
             заднем фоне полностью вообще? чтобы это было мило, не мешало

@@ -58,7 +58,7 @@ export default async function ThemePreviewPage({ params }: PageProps<"/preview/[
         </p>
         <Link
           href={`/onboarding?theme=${theme.id}`}
-          className="shrink-0 rounded-full bg-[#ff6b45] px-3.5 py-1.5 text-xs font-bold text-white transition hover:bg-[#e85a37]"
+          className="shrink-0 rounded-full bg-[var(--dash-accent-text)] px-3.5 py-1.5 text-xs font-bold text-white transition hover:bg-[var(--dash-accent)]"
         >
           Use this style →
         </Link>

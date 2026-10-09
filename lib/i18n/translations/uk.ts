@@ -114,6 +114,7 @@ export const uk: Dictionary = {
       `Схоже, ${guestName} відзначив(ла), що не зможе прийти — якщо це помилка, напишіть організатору.`,
   },
   landing: {
+    skipToContent: "Перейти до вмісту",
     topBar: "Приймаємо Visa / Mastercard · Миттєва доставка — надішліть посилання на запрошення в будь-яку точку світу",
     nav: { constructor: "Конструктор", themes: "Теми", whatsIncluded: "Що входить", pricing: "Тарифи", login: "Увійти" },
     mobileNav: { openMenu: "Відкрити меню", closeMenu: "Закрити меню" },

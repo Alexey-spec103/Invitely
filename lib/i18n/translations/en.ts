@@ -156,6 +156,7 @@ export interface Dictionary {
     resultNotAttending: (guestName: string) => string;
   };
   landing: {
+    skipToContent: string;
     topBar: string;
     nav: { constructor: string; themes: string; whatsIncluded: string; pricing: string; login: string };
     mobileNav: { openMenu: string; closeMenu: string };
@@ -382,6 +383,7 @@ export const en: Dictionary = {
       `Looks like ${guestName} is marked as not attending — reach out to the host if that's not right.`,
   },
   landing: {
+    skipToContent: "Skip to content",
     topBar: "Visa / Mastercard accepted · Instant delivery — send your invite link anywhere in the world",
     nav: { constructor: "Constructor", themes: "Themes", whatsIncluded: "What's included", pricing: "Pricing", login: "Login" },
     mobileNav: { openMenu: "Open menu", closeMenu: "Close menu" },

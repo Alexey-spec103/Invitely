@@ -115,6 +115,7 @@ export const ru: Dictionary = {
       `Похоже, ${guestName} отметил(а), что не сможет прийти — если это ошибка, напишите организатору.`,
   },
   landing: {
+    skipToContent: "Перейти к содержимому",
     topBar: "Принимаем Visa / Mastercard · Мгновенная доставка — отправьте ссылку на приглашение в любую точку мира",
     nav: { constructor: "Конструктор", themes: "Темы", whatsIncluded: "Что входит", pricing: "Тарифы", login: "Войти" },
     mobileNav: { openMenu: "Открыть меню", closeMenu: "Закрыть меню" },

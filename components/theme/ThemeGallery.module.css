@@ -339,7 +339,10 @@
 .hoverRevealBtn {
   transform: translateY(6px);
   transition: transform 0.18s ease;
-  background: var(--dash-accent, #ff6b45);
+  /* --dash-accent-text, not --dash-accent -- white text on the raw accent
+     measures 2.82:1, below WCAG AA's 4.5:1 (same fix already applied to the
+     shared .landing-cta button in app/globals.css). */
+  background: var(--dash-accent-text, #c2410c);
   color: #fff;
   font-family: var(--dash-font-body, inherit);
   font-weight: 600;

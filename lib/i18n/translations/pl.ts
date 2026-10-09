@@ -116,6 +116,7 @@ export const pl: Dictionary = {
       `Wygląda na to, że ${guestName} zaznaczył(a) brak obecności — jeśli to pomyłka, skontaktuj się z organizatorem.`,
   },
   landing: {
+    skipToContent: "Przejdź do treści",
     topBar: "Akceptujemy Visa / Mastercard · Natychmiastowa dostawa — wyślij link z zaproszeniem w dowolne miejsce na świecie",
     nav: { constructor: "Kreator", themes: "Motywy", whatsIncluded: "Co zawiera", pricing: "Cennik", login: "Zaloguj się" },
     mobileNav: { openMenu: "Otwórz menu", closeMenu: "Zamknij menu" },

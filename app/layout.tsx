@@ -250,6 +250,28 @@ export const metadata: Metadata = {
   },
 };
 
+// Basic Organization + WebSite JSON-LD -- every field here is already
+// established elsewhere in this codebase (SITE_URL/siteTitle/siteDescription
+// above, /icon.svg is a real Next.js file-convention icon this app already
+// serves) rather than invented. No social profile links, founding date, or
+// other unverifiable facts -- an honest minimal schema, not a padded one.
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Invimbo",
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon.svg`,
+  description: siteDescription,
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: siteTitle,
+  url: SITE_URL,
+  description: siteDescription,
+};
+
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // Was hardcoded "en" regardless of which locale actually rendered below it
   // (cookie or geo-IP resolved, same as every guest-facing page -- see
@@ -263,6 +285,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} ${inter.variable} ${playfairDisplay.variable} ${fraunces.variable} ${alexBrush.variable} ${cinzel.variable} ${libreBaskerville.variable} ${spaceGrotesk.variable} ${caveat.variable} ${ebGaramond.variable} ${parisienne.variable} ${marcellus.variable} ${bodoniModa.variable} ${italiana.variable} ${cormorant.variable} ${sacramento.variable} ${gildaDisplay.variable} ${sourceSerif4.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* eslint-disable-next-line react/no-danger -- static, codebase-
+            controlled JSON, not user input; the standard way to emit JSON-LD
+            in the App Router (there's no JSX-native equivalent). */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        {/* eslint-disable-next-line react/no-danger */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         {children}
         {/* No-op when not deployed on Vercel -- the script simply never
             finds an endpoint to report to, same "safe to leave in" shape

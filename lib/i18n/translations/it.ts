@@ -106,6 +106,7 @@ export const it: Dictionary = {
       `Sembra che ${guestName} abbia segnalato di non partecipare — se è un errore, contatta l'organizzatore.`,
   },
   landing: {
+    skipToContent: "Vai al contenuto",
     topBar: "Visa / Mastercard accettati · Consegna istantanea — invia il link del tuo invito ovunque nel mondo",
     nav: { constructor: "Costruttore", themes: "Temi", whatsIncluded: "Cosa include", pricing: "Prezzi", login: "Accedi" },
     mobileNav: { openMenu: "Apri menu", closeMenu: "Chiudi menu" },

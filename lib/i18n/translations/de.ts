@@ -106,6 +106,7 @@ export const de: Dictionary = {
       `${guestName} scheint als „nicht teilnehmend" markiert zu sein — falls das ein Fehler ist, wende dich an die Gastgeber.`,
   },
   landing: {
+    skipToContent: "Zum Inhalt springen",
     topBar: "Visa / Mastercard werden akzeptiert · Sofortige Zustellung — versende deinen Einladungslink überallhin",
     nav: { constructor: "Baukasten", themes: "Designs", whatsIncluded: "Leistungen", pricing: "Preise", login: "Anmelden" },
     mobileNav: { openMenu: "Menü öffnen", closeMenu: "Menü schließen" },

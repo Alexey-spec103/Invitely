@@ -49,6 +49,28 @@ export async function updatePlan(
   return { ok: true };
 }
 
+// Same hardcoded production origin as app/robots.ts, app/sitemap.ts, and
+// app/layout.tsx -- no env var for this exists anywhere in the codebase yet.
+const PRODUCTION_ORIGIN = "https://www.invimbo.com";
+const LOCAL_DEV_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"];
+
+/** Builds the origin Stripe Checkout redirects back to after payment, from
+ * request headers that are all client-influenceable (`origin`,
+ * `x-forwarded-host`, `host`) -- previously used unvalidated, which let a
+ * forged header redirect a paying user's post-checkout landing to an
+ * external domain (security-baseline audit finding). Only the known real
+ * origins for this app are trusted; anything else falls back to the real
+ * production origin rather than echoing an unverified value. */
+function resolveCheckoutOrigin(headerList: Headers): string {
+  const candidate =
+    headerList.get("origin") ??
+    `https://${headerList.get("x-forwarded-host") ?? headerList.get("host") ?? ""}`;
+  if (candidate === PRODUCTION_ORIGIN || LOCAL_DEV_ORIGINS.includes(candidate)) {
+    return candidate;
+  }
+  return PRODUCTION_ORIGIN;
+}
+
 interface CreateCheckoutSessionInput {
   eventId: string;
   planId: string;
@@ -90,10 +112,7 @@ export async function createCheckoutSession(
     return { ok: false, message: "Event not found" };
   }
 
-  const headerList = await headers();
-  const origin =
-    headerList.get("origin") ??
-    `https://${headerList.get("x-forwarded-host") ?? headerList.get("host")}`;
+  const origin = resolveCheckoutOrigin(await headers());
 
   const stripe = getStripeClient();
   const session = await stripe.checkout.sessions.create({
