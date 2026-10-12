@@ -17,7 +17,7 @@ import { OCCASION_CATEGORIES } from "@/lib/themes/occasionCategories";
 import { useFavoriteThemes } from "@/lib/useFavoriteThemes";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
 import { CATEGORY_STYLE_ICONS, LAYOUT_STYLE_ICONS } from "@/components/icons/StyleFilterIcons";
-import { recommendedHeroVariantFor } from "@/lib/themes/recommendedHeroVariant";
+import { recommendedHeroVariantFor, PHOTO_PROMINENT_HERO_VARIANTS } from "@/lib/themes/recommendedHeroVariant";
 import { highlightFeaturesFor } from "@/lib/themes/highlightFeatures";
 import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
@@ -613,6 +613,9 @@ export function ThemeGalleryCard({
         </div>
       )}
 
+      {PHOTO_PROMINENT_HERO_VARIANTS.has(heroVariant) && (
+        <p className={styles.customizeCaption}>📷 This style is built around a photo — add yours for the full look</p>
+      )}
       <p className={styles.customizeCaption}>Everything can be customized further in the constructor</p>
 
       <div className={styles.cardFooter}>

@@ -98,3 +98,24 @@ export function layoutLabelFor(themeId: string, category: ThemeCategory): string
   const variant = recommendedHeroVariantFor(themeId, category);
   return HERO_VARIANT_LAYOUT_LABEL[variant] ?? "Classic";
 }
+
+/** theme-photo-fallback audit (2026-10-12): the 8 Hero variants that render
+ * the host's own uploaded photo as the design's centerpiece. Every one of
+ * them already has a graceful no-photo fallback (confirmed live, no broken/
+ * empty state) -- this isn't about fixing rendering, it's used by callers
+ * (ThemeGallery's card preview, the onboarding photo-upload step) to tell a
+ * host up front that this style is designed around a photo they'll add,
+ * instead of letting the gap between the catalog preview and their
+ * still-photo-less first draft be a silent surprise. Plain strings, not
+ * `HeroVariant`, for the same reason the rest of this file is -- see its
+ * own top-of-file comment. */
+export const PHOTO_PROMINENT_HERO_VARIANTS = new Set<string>([
+  "photo-full-bleed",
+  "editorial-split",
+  "hand-lettering",
+  "vintage-ornamental",
+  "collage-scrapbook",
+  "gothic-frame",
+  "postage-stamp",
+  "victorian-cameo",
+]);

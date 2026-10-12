@@ -15,6 +15,7 @@ import SiteInlineEditor from "./SiteInlineEditor";
 import SiteSettingsEditForm from "./SiteSettingsEditForm";
 import LinkPreviewCard from "./LinkPreviewCard";
 import PaymentSuccessCard from "./PaymentSuccessCard";
+import SendingGuideCard from "./SendingGuideCard";
 import DomainEditForm from "./DomainEditForm";
 import PasswordProtectionCard from "./PasswordProtectionCard";
 import { getInviteDescription } from "@/lib/socialPreview";
@@ -824,6 +825,18 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             </p>
           </div>
         ))}
+
+      {/* post-payment-guidance audit (2026-10-12): the celebratory card
+          above only ever shows once, on the `checkout=success` redirect --
+          every later visit, a paid host has nowhere to re-find "how does
+          sending actually work." This is that permanent equivalent. */}
+      {hasBasicAccess && checkout !== "success" && (
+        <SendingGuideCard
+          eventId={event.id}
+          hasPremiumAccess={hasPremiumAccess}
+          rsvpEmailNotifications={rsvpEmailNotifications}
+        />
+      )}
 
       {/* First-visit-after-onboarding: finished site before the settings/
           modules clutter -- see isFirstVisit's own comment above. Every
