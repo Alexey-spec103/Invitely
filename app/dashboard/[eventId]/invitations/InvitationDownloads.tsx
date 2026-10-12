@@ -133,7 +133,13 @@ export default function InvitationDownloads({
         import("@/components/pdf/ProgramCardDocument"),
       ]);
       const blob = await pdf(
-        <ProgramCardDocument theme={theme} title={timelineTitle} events={timelineEvents} frame={programCanvas} />
+        <ProgramCardDocument
+          theme={theme}
+          title={timelineTitle}
+          events={timelineEvents}
+          frame={programCanvas}
+          locked={locked}
+        />
       ).toBlob();
       saveBlob(blob, "program-card.pdf");
     } catch (err) {
@@ -158,6 +164,7 @@ export default function InvitationDownloads({
           description={dressCodeDescription}
           colors={dressCodeColors}
           frame={dressCodeCanvas}
+          locked={locked}
         />
       ).toBlob();
       saveBlob(blob, "dress-code-card.pdf");
@@ -177,7 +184,14 @@ export default function InvitationDownloads({
         import("@/components/pdf/EnvelopeDocument"),
       ]);
       const blob = await pdf(
-        <EnvelopeDocument theme={theme} names={names} eventDate={eventDate} locale={locale} frame={envelopeCanvas} />
+        <EnvelopeDocument
+          theme={theme}
+          names={names}
+          eventDate={eventDate}
+          locale={locale}
+          frame={envelopeCanvas}
+          locked={locked}
+        />
       ).toBlob();
       saveBlob(blob, "envelope.pdf");
     } catch (err) {
@@ -196,7 +210,14 @@ export default function InvitationDownloads({
         import("@/components/pdf/SaveTheDateCardDocument"),
       ]);
       const blob = await pdf(
-        <SaveTheDateCardDocument theme={theme} names={names} eventDate={eventDate} locale={locale} frame={saveTheDateCanvas} />
+        <SaveTheDateCardDocument
+          theme={theme}
+          names={names}
+          eventDate={eventDate}
+          locale={locale}
+          frame={saveTheDateCanvas}
+          locked={locked}
+        />
       ).toBlob();
       saveBlob(blob, "save-the-date.pdf");
     } catch (err) {
@@ -214,7 +235,9 @@ export default function InvitationDownloads({
         import("@react-pdf/renderer"),
         import("@/components/pdf/ThankYouCardDocument"),
       ]);
-      const blob = await pdf(<ThankYouCardDocument theme={theme} names={names} frame={thankYouCanvas} />).toBlob();
+      const blob = await pdf(
+        <ThankYouCardDocument theme={theme} names={names} frame={thankYouCanvas} locked={locked} />
+      ).toBlob();
       saveBlob(blob, "thank-you.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate PDF");

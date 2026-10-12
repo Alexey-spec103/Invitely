@@ -2,6 +2,7 @@ import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument";
+import { PdfWatermark } from "./PdfWatermark";
 import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
@@ -23,6 +24,9 @@ export interface EnvelopeDocumentProps {
    * (ENVELOPE_WIDTH / CANVAS_DESIGN_WIDTH below), not the shared PDF_SCALE
    * every A5 card uses -- this page is a different physical shape. */
   frame?: CanvasFrame;
+  /** dashboard-audit.md B21: true when the event's plan is below Premium.
+   * (QA-audit, 2026-10-12: no watermark gating existed here at all.) */
+  locked?: boolean;
 }
 
 // Sized to a standard C5 envelope (162 x 229mm), printed landscape — the
@@ -38,7 +42,14 @@ const ENVELOPE_HEIGHT = 459;
 // needs its own scale to actually fill it edge to edge.
 const ENVELOPE_CANVAS_SCALE = ENVELOPE_WIDTH / CANVAS_DESIGN_WIDTH;
 
-export function EnvelopeDocument({ theme, names, eventDate, locale = DEFAULT_LOCALE, frame }: EnvelopeDocumentProps) {
+export function EnvelopeDocument({
+  theme,
+  names,
+  eventDate,
+  locale = DEFAULT_LOCALE,
+  frame,
+  locked,
+}: EnvelopeDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
   style.headingFont.forEach(registerCanvasPdfFont);
@@ -134,6 +145,7 @@ export function EnvelopeDocument({ theme, names, eventDate, locale = DEFAULT_LOC
             </View>
           </>
         )}
+        {locked && <PdfWatermark repeat={36} color={style.text} />}
       </Page>
     </Document>
   );

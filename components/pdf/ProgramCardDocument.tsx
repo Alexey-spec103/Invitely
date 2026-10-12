@@ -2,6 +2,7 @@ import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument";
+import { PdfWatermark } from "./PdfWatermark";
 import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
@@ -21,9 +22,14 @@ export interface ProgramCardDocumentProps {
    * otherwise. Same A5 page/scale as the invitation, so the shared
    * PDF_SCALE (CanvasPdfFrameContent's default) applies unchanged. */
   frame?: CanvasFrame;
+  /** dashboard-audit.md B21: true when the event's plan is below Premium.
+   * (QA-audit, 2026-10-12: this document had no watermark gating at all --
+   * a Free/Basic host could download a clean program card, the one paid
+   * material this product's own Paper-tab banner explicitly names.) */
+  locked?: boolean;
 }
 
-export function ProgramCardDocument({ theme, title, events, frame }: ProgramCardDocumentProps) {
+export function ProgramCardDocument({ theme, title, events, frame, locked }: ProgramCardDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
   style.headingFont.forEach(registerCanvasPdfFont);
@@ -132,6 +138,7 @@ export function ProgramCardDocument({ theme, title, events, frame }: ProgramCard
             ))}
           </>
         )}
+        {locked && <PdfWatermark repeat={36} color={style.text} />}
       </Page>
     </Document>
   );

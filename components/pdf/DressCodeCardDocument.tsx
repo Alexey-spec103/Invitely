@@ -2,6 +2,7 @@ import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument";
+import { PdfWatermark } from "./PdfWatermark";
 import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
@@ -25,9 +26,19 @@ export interface DressCodeCardDocumentProps {
    * border/corner flourish always render either way -- see the `<Page>`
    * below. Same A5 page as the invitation. */
   frame?: CanvasFrame;
+  /** dashboard-audit.md B21: true when the event's plan is below Premium.
+   * (QA-audit, 2026-10-12: no watermark gating existed here at all.) */
+  locked?: boolean;
 }
 
-export function DressCodeCardDocument({ theme, title, description, colors, frame }: DressCodeCardDocumentProps) {
+export function DressCodeCardDocument({
+  theme,
+  title,
+  description,
+  colors,
+  frame,
+  locked,
+}: DressCodeCardDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
   style.headingFont.forEach(registerCanvasPdfFont);
@@ -140,6 +151,7 @@ export function DressCodeCardDocument({ theme, title, description, colors, frame
             </View>
           </>
         )}
+        {locked && <PdfWatermark repeat={36} color={style.text} />}
       </Page>
     </Document>
   );

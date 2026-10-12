@@ -2,6 +2,7 @@ import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { getPdfThemeStyle } from "@/lib/pdf/theme-styles";
 import { registerPdfFonts, registerCanvasPdfFont } from "@/lib/pdf/fonts";
 import { CanvasPdfFrameContent, collectFontFamilies } from "./CanvasPdfDocument";
+import { PdfWatermark } from "./PdfWatermark";
 import { CornerFlourish, cornerFlourishStyles } from "./CornerFlourish";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
@@ -18,6 +19,9 @@ export interface SaveTheDateCardDocumentProps {
    * render (see below); only the text layer swaps out when a host
    * customizes this card. */
   frame?: CanvasFrame;
+  /** dashboard-audit.md B21: true when the event's plan is below Premium.
+   * (QA-audit, 2026-10-12: no watermark gating existed here at all.) */
+  locked?: boolean;
 }
 
 export function SaveTheDateCardDocument({
@@ -26,6 +30,7 @@ export function SaveTheDateCardDocument({
   eventDate,
   locale = DEFAULT_LOCALE,
   frame,
+  locked,
 }: SaveTheDateCardDocumentProps) {
   registerPdfFonts();
   const style = getPdfThemeStyle(theme);
@@ -113,6 +118,7 @@ export function SaveTheDateCardDocument({
             <Text style={styles.note}>Formal invitation to follow</Text>
           </>
         )}
+        {locked && <PdfWatermark repeat={36} color={style.text} />}
       </Page>
     </Document>
   );
