@@ -18,6 +18,24 @@ function getClient(): Resend {
   return client;
 }
 
+/** Escapes a string before it's interpolated into email HTML. Without this,
+ * a guest-submitted RSVP field (name, allergies, message) containing a raw
+ * `<a href=...>` tag renders as a real, clickable link inside a
+ * legitimately support@invimbo.com-signed email to the host -- a
+ * ready-made phishing vector (security-review, 2026-10-12). Apply at the
+ * point each untrusted value is about to enter a template string, not
+ * here in sendEmail/wrapEmailHtml -- by then subject/html are already
+ * fully-formed strings with no way to tell trusted markup from escaped
+ * user content apart. */
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 interface SendEmailInput {
   to: string;
   subject: string;

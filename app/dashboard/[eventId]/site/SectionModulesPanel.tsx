@@ -303,9 +303,19 @@ export default function SectionModulesPanel({
                 label={`Turn ${SECTION_LABELS[type]} ${enabled[type] ? "off" : "on"}`}
               />
             </div>
-            {isGated && expandedGateInfo === type && (
+            {/* UX audit (2026-10-12): this used to only appear after clicking
+                the small "Basic" badge -- easy to never discover, which left
+                a gated module's toggle in an ambiguous state once switched
+                on (is it configuring something guests can't see yet, or is
+                it inert?). Now it also shows automatically once the module
+                is actually ON, the moment that ambiguity exists; the
+                click-to-expand badge still works too, for previewing the
+                explanation before turning it on. */}
+            {isGated && (enabled[type] || expandedGateInfo === type) && (
               <p className="border-t border-[var(--dash-border)] px-3 py-2 text-xs text-[var(--dash-text-muted)]">
-                Turn this on and preview it freely — it only shows on your published site once you&apos;re on the Basic plan or above.
+                {enabled[type]
+                  ? "Visible to you here, but it won't show on your published site until you're on the Basic plan or above."
+                  : "Turn this on and preview it freely — it only shows on your published site once you're on the Basic plan or above."}
               </p>
             )}
             {/* Direct feedback: turning this on doesn't do anything by

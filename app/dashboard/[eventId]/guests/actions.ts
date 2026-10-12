@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { parseGuestLines } from "./parseGuestLines";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { resolveEmailLocale } from "@/lib/i18n/locales";
 
@@ -192,10 +192,16 @@ export async function sendGuestInvitationEmail(
   }
 
   const t = getDictionary(resolveEmailLocale(event.default_locale)).email;
+  // guest.full_name and event.title are host-entered, not guest-submitted
+  // (lower risk than the public RSVP form's own fields -- see VULN-001/002,
+  // security-review 2026-10-12), but escaped for consistency and
+  // defense-in-depth at near-zero cost.
+  const safeFullName = escapeHtml(guest.full_name);
+  const safeEventTitle = escapeHtml(event.title);
   await sendEmail({
     to: guest.email,
     subject: t.guestInvitation.subject(event.title),
-    html: `<p>${t.common.greeting(guest.full_name)}</p><p>${t.guestInvitation.invitedTo(event.title)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
+    html: `<p>${t.common.greeting(safeFullName)}</p><p>${t.guestInvitation.invitedTo(safeEventTitle)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
   });
 
   await recordInvitationSent(guestId, "email");
@@ -245,10 +251,12 @@ export async function sendGuestReminderEmail(
   }
 
   const t = getDictionary(resolveEmailLocale(event.default_locale)).email;
+  const safeFullName = escapeHtml(guest.full_name);
+  const safeEventTitle = escapeHtml(event.title);
   await sendEmail({
     to: guest.email,
     subject: t.guestReminder.subject(event.title),
-    html: `<p>${t.common.greeting(guest.full_name)}</p><p>${t.guestReminder.reminderText(event.title)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
+    html: `<p>${t.common.greeting(safeFullName)}</p><p>${t.guestReminder.reminderText(safeEventTitle)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
   });
 
   return { ok: true };

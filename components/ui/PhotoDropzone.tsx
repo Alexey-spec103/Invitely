@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ImagePlus, X, Loader2 } from "lucide-react";
 import { uploadEventPhoto } from "@/lib/photoUpload";
+import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
 
 interface PhotoDropzoneProps {
   value?: string;
@@ -41,6 +42,7 @@ export default function PhotoDropzone({
   const [isDragging, setIsDragging] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const reduceMotion = usePrefersReducedMotion();
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
@@ -88,9 +90,9 @@ export default function PhotoDropzone({
           {value ? (
             <motion.div
               key="preview"
-              initial={{ opacity: 0 }}
+              initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              exit={reduceMotion ? undefined : { opacity: 0 }}
               className="absolute inset-0"
             >
               {/* `object-contain`, not `object-cover` -- a management preview's
@@ -131,9 +133,9 @@ export default function PhotoDropzone({
             <motion.button
               key="empty"
               type="button"
-              initial={{ opacity: 0 }}
+              initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              exit={reduceMotion ? undefined : { opacity: 0 }}
               onClick={() => inputRef.current?.click()}
               disabled={isBusy}
               className="flex flex-col items-center gap-1.5 text-gray-500"

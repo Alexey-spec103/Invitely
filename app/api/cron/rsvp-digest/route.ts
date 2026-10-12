@@ -1,7 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { resolveEmailLocale } from "@/lib/i18n/locales";
 
@@ -97,14 +97,20 @@ export async function GET(request: NextRequest) {
     // facing emails (guests/actions.ts, e/[slug]/actions.ts).
     const t = getDictionary(resolveEmailLocale(event.default_locale)).email;
 
+    // response.guest_name is guest-submitted, free-text, from the same
+    // public RSVP form as VULN-001 (security-review, 2026-10-12) -- escape
+    // before it lands in the host's inbox. event.title is host-controlled
+    // but escaped too for consistency.
+    const safeEventTitle = escapeHtml(event.title);
     const rows = newResponses
-      .map((response) =>
-        response.attending ? t.hostDigest.guestYes(response.guest_name || "—") : t.hostDigest.guestNo(response.guest_name || "—")
-      )
+      .map((response) => {
+        const safeGuestName = escapeHtml(response.guest_name || "—");
+        return response.attending ? t.hostDigest.guestYes(safeGuestName) : t.hostDigest.guestNo(safeGuestName);
+      })
       .join("");
 
     const html = [
-      t.hostDigest.intro(newResponses.length, event.title),
+      t.hostDigest.intro(newResponses.length, safeEventTitle),
       `<ul>${rows}</ul>`,
       t.hostDigest.runningTotal(totalResponded, totalYes, totalNo),
       t.hostDigest.manageNote(`${SITE_URL}/dashboard/${event.id}/guests`),
@@ -113,6 +119,7 @@ export async function GET(request: NextRequest) {
     try {
       await sendEmail({
         to: ownerEmail,
+        // Plain text, not HTML -- the raw title, not the HTML-escaped one.
         subject: t.hostDigest.subject(newResponses.length, event.title),
         html,
       });

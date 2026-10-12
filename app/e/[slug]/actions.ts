@@ -1,11 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { RsvpFormInput } from "@/components/sections/RsvpSection";
 import type { BanquetTableLookupResult } from "@/components/sections/BanquetNavigatorSection";
 import type { Json } from "@/lib/supabase/database.types";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { resolveEmailLocale, type Locale } from "@/lib/i18n/locales";
 
@@ -33,6 +33,32 @@ export async function submitRsvp(
   }
 
   const supabase = await createClient();
+
+  // Rate limit: the honeypot + timing checks above stop an unsophisticated
+  // bot, but a scripted one that waits a couple seconds between requests
+  // sails through both uncontested -- this closes that gap (form-strategy
+  // audit, 2026-10-12). x-forwarded-for's first entry is the original
+  // client IP (Vercel appends proxy hops after it); falls back to
+  // x-real-ip, then a constant so a request with neither header -- e.g.
+  // local dev without a proxy in front -- still gets rate-limited as "one
+  // shared IP" rather than skipping the check entirely.
+  const headerList = await headers();
+  const forwardedFor = headerList.get("x-forwarded-for");
+  const ipAddress = forwardedFor?.split(",")[0]?.trim() || headerList.get("x-real-ip") || "unknown";
+  const { data: withinLimit, error: rateLimitError } = await supabase.rpc("check_and_log_rsvp_submission", {
+    p_event_id: eventId,
+    p_ip_address: ipAddress,
+  });
+  if (rateLimitError) {
+    // Fails open, not closed -- a logging/RPC outage shouldn't block every
+    // real guest's RSVP; it only means this one submission went unlogged
+    // for rate-limiting purposes.
+    console.error("submitRsvp rate-limit check failed", rateLimitError);
+  } else if (withinLimit === false) {
+    // Same silent-success pattern as the honeypot/timing checks above: a
+    // bot gets no signal it was specifically rate-limited.
+    return { ok: true };
+  }
 
   // A guest arriving via the site's general share link (no personal invite
   // code) has no existing `guests` row -- find-or-create one by name so
@@ -148,9 +174,11 @@ export async function submitRsvp(
         // took in their own chosen language, which is the more accurate
         // signal than the host's own event-setup language for this one email.
         const guestT = getDictionary(locale).email;
+        const safeGuestName = escapeHtml(input.guestName);
+        const safeEventTitle = escapeHtml(eventTitle);
         const html = input.attending
-          ? guestT.guestConfirmation.acceptedBody(input.guestName, eventTitle)
-          : guestT.guestConfirmation.declinedBody(input.guestName, eventTitle);
+          ? guestT.guestConfirmation.acceptedBody(safeGuestName, safeEventTitle)
+          : guestT.guestConfirmation.declinedBody(safeGuestName, safeEventTitle);
 
         await sendEmail({
           to: guestEmail,
@@ -218,19 +246,29 @@ export async function submitRsvp(
       // so this path is defensive/effectively unreachable, not a real
       // user-facing string worth its own 8-locale dictionary entry.
       const guestName = input.guestName || "A guest";
+      // Every value here is guest-submitted, free-text, and lands in the
+      // host's inbox inside a support@invimbo.com-signed email -- escape
+      // all of it before interpolation (security-review, 2026-10-12;
+      // VULN-001). eventTitle is host-controlled, not guest-controlled,
+      // but escaped too for consistency/defense in depth at near-zero cost.
+      const safeGuestName = escapeHtml(guestName);
+      const safeEventTitle = escapeHtml(eventTitle);
       const detailLines = [
-        hostT.hostNewRsvp.headline(guestName, eventTitle, input.attending),
+        hostT.hostNewRsvp.headline(safeGuestName, safeEventTitle, input.attending),
         summaryLine,
         input.attending ? hostT.hostNewRsvp.partySize(partySize) : "",
         input.attending && input.attendeeNames?.length
-          ? hostT.hostNewRsvp.namesLabel(input.attendeeNames.filter(Boolean).join(", "))
+          ? hostT.hostNewRsvp.namesLabel(escapeHtml(input.attendeeNames.filter(Boolean).join(", ")))
           : "",
-        input.allergies ? hostT.hostNewRsvp.allergiesLabel(input.allergies) : "",
-        input.comment ? hostT.hostNewRsvp.messageLabel(input.comment) : "",
+        input.allergies ? hostT.hostNewRsvp.allergiesLabel(escapeHtml(input.allergies)) : "",
+        input.comment ? hostT.hostNewRsvp.messageLabel(escapeHtml(input.comment)) : "",
       ].filter(Boolean);
 
       await sendEmail({
         to: ownerEmail,
+        // Plain text, not HTML -- uses the raw guestName, not safeGuestName
+        // (HTML-escaping would literally put "&#39;" etc. into the subject
+        // line for a name with an apostrophe).
         subject: input.attending
           ? hostT.hostNewRsvp.acceptedSubject(guestName)
           : hostT.hostNewRsvp.declinedSubject(guestName),

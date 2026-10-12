@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Palette, PenLine, Share2 } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
+import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
 
 // Icons only -- title/text come from dict.onboarding.howItWorks.steps
 // (same order: Pick a style, Add your details, Share your site), zipped by
@@ -19,6 +20,7 @@ const STEP_ICONS = [Palette, PenLine, Share2];
 export default function HowItWorksClip({ locale }: { locale: Locale }) {
   const [open, setOpen] = useState(true);
   const t = getDictionary(locale).onboarding.howItWorks;
+  const reduceMotion = usePrefersReducedMotion();
 
   return (
     <div className="mt-3 rounded-lg border border-rose-100 bg-rose-50/60 p-3">
@@ -35,7 +37,11 @@ export default function HowItWorksClip({ locale }: { locale: Locale }) {
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          transition={{ duration: 0.2 }}
+          // Tied to a functional open/close toggle, not a one-time scroll
+          // reveal, so there's no "skip entirely" state to render instead
+          // (the content must still show/hide) -- collapsing the duration
+          // to 0 under reduced motion is the equivalent here.
+          transition={{ duration: reduceMotion ? 0 : 0.2 }}
           className="mt-2 grid grid-cols-3 gap-2"
         >
           {t.steps.map(({ title, text }, i) => {
@@ -45,7 +51,7 @@ export default function HowItWorksClip({ locale }: { locale: Locale }) {
               key={title}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
+              transition={{ delay: reduceMotion ? 0 : i * 0.08, duration: reduceMotion ? 0 : undefined }}
               className="rounded-md bg-white p-2 text-center shadow-sm"
             >
               <Icon className="mx-auto h-4 w-4 text-rose-500" aria-hidden="true" />

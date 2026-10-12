@@ -84,12 +84,25 @@ export async function claimInvimboSubdomain(input: ClaimInvimboSubdomainInput): 
     .update({
       custom_domain: hostname,
       custom_domain_verification_token: null,
-      custom_domain_verified_at: new Date().toISOString(),
     })
     .eq("id", input.eventId);
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  // custom_domain_verified_at is the one column lib/supabase/proxy.ts trusts
+  // as proof of ownership for routing -- it's locked against direct writes
+  // from this (authenticated, not service-role) client (security-review,
+  // 2026-10-12; see 20261012120000_lock_custom_domain_verified_at.sql) and
+  // can only be set through this ownership-checked RPC. Legitimate here with
+  // no DNS proof needed: this is a free invimbo.com subdomain, which we
+  // already own outright.
+  const { error: verifyError } = await supabase.rpc("mark_custom_domain_verified", {
+    p_event_id: input.eventId,
+  });
+  if (verifyError) {
+    throw new Error(verifyError.message);
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
@@ -141,12 +154,22 @@ export async function requestDomainVerification(input: RequestDomainVerification
     .update({
       custom_domain: domain,
       custom_domain_verification_token: crypto.randomUUID(),
-      custom_domain_verified_at: null,
     })
     .eq("id", input.eventId);
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  // Resets verified_at for the new domain via the same locked-column RPC
+  // used everywhere else this column changes (see claimInvimboSubdomain) --
+  // a fresh domain has no proof behind it yet, regardless of whether the
+  // previous one did.
+  const { error: clearError } = await supabase.rpc("clear_custom_domain_verification", {
+    p_event_id: input.eventId,
+  });
+  if (clearError) {
+    throw new Error(clearError.message);
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
@@ -201,10 +224,14 @@ export async function checkDomainVerification(input: CheckDomainVerificationInpu
     throw new Error("TXT record found, but the value doesn't match. Double-check what you pasted.");
   }
 
-  const { error: updateError } = await supabase
-    .from("events")
-    .update({ custom_domain_verified_at: new Date().toISOString() })
-    .eq("id", input.eventId);
+  // The real verification is the resolveTxt() call above, which only this
+  // trusted server code can perform -- this RPC just records that it
+  // succeeded. It can't be skipped to fake a verification: the column
+  // itself is locked against direct writes from this client (see
+  // claimInvimboSubdomain for the full reasoning).
+  const { error: updateError } = await supabase.rpc("mark_custom_domain_verified", {
+    p_event_id: input.eventId,
+  });
 
   if (updateError) {
     throw new Error(updateError.message);
@@ -233,12 +260,18 @@ export async function clearDomainVerification(input: ClearDomainVerificationInpu
     .update({
       custom_domain: null,
       custom_domain_verification_token: null,
-      custom_domain_verified_at: null,
     })
     .eq("id", input.eventId);
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  const { error: clearError } = await supabase.rpc("clear_custom_domain_verification", {
+    p_event_id: input.eventId,
+  });
+  if (clearError) {
+    throw new Error(clearError.message);
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);

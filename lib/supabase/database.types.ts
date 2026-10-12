@@ -502,6 +502,25 @@ export type Database = {
         }
         Returns: string | null
       }
+      check_and_log_rsvp_submission: {
+        Args: {
+          p_event_id: string
+          p_ip_address: string
+        }
+        Returns: boolean
+      }
+      mark_custom_domain_verified: {
+        Args: {
+          p_event_id: string
+        }
+        Returns: undefined
+      }
+      clear_custom_domain_verification: {
+        Args: {
+          p_event_id: string
+        }
+        Returns: undefined
+      }
       lookup_guest_by_invite_code: {
         Args: {
           p_event_id: string

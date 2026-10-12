@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
 
 interface TourStep {
   title: string;
@@ -46,6 +47,7 @@ export default function FirstVisitTour({ tourId, steps }: FirstVisitTourProps) {
   const [visible, setVisible] = useState(false);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const reduceMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     // impeccable critique P-adjacent: this used to pop in at `0ms -- the
@@ -173,7 +175,7 @@ export default function FirstVisitTour({ tourId, steps }: FirstVisitTourProps) {
       <motion.div
         ref={cardRef}
         key={step}
-        initial={{ opacity: 0, y: 12 }}
+        initial={reduceMotion ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         className={
           targetRect

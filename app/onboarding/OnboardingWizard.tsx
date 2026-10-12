@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
 import { HeroSection, DEFAULT_HERO_VARIANT, HERO_VARIANTS } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import ThemeProvider from "@/components/theme/ThemeProvider";
@@ -76,6 +77,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
   const searchParams = useSearchParams();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
+  const reduceMotion = usePrefersReducedMotion();
   const [formError, setFormError] = useState<string | null>(null);
   // zodResolver validates the whole schema on every trigger() call (Zod has
   // no concept of partial-object validation once a .superRefine() is
@@ -207,10 +209,18 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
           {t.stepOf(step + 1, STEPS.length)}
         </p>
 
+        <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={stepKey}
-          initial={{ opacity: 0, x: 24 * direction }}
+          // `initial={false}` under reduced motion (RevealOnScroll.tsx's own
+          // pattern) skips the enter transition entirely rather than running
+          // it at a near-zero duration. `exit={undefined}` does the
+          // equivalent for AnimatePresence's unmount animation -- with no
+          // exit variant, the outgoing step is removed instantly instead of
+          // sliding out (motion-audit, 2026-10-12).
+          initial={reduceMotion ? false : { opacity: 0, x: 24 * direction }}
           animate={{ opacity: 1, x: 0 }}
+          exit={reduceMotion ? undefined : { opacity: 0, x: -24 * direction }}
           transition={{ duration: 0.2, ease: "easeOut" }}
         >
             {stepKey === "eventType" && (
@@ -282,10 +292,14 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                   type="text"
                   autoFocus
                   className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  aria-invalid={attemptedSteps.has(step) && errors.name1 ? true : undefined}
+                  aria-describedby={attemptedSteps.has(step) && errors.name1 ? "name1-error" : undefined}
                   {...register("name1")}
                 />
                 {attemptedSteps.has(step) && errors.name1 && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name1.message}</p>
+                  <p id="name1-error" role="alert" className="mt-1 text-sm text-red-600">
+                    {errors.name1.message}
+                  </p>
                 )}
                 {/* Single/title-mode titleTemplate appends a possessive +
                     the event type (e.g. "{name}'s Birthday") on top of
@@ -314,10 +328,14 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                       id="name2"
                       type="text"
                       className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                      aria-invalid={attemptedSteps.has(step) && errors.name2 ? true : undefined}
+                      aria-describedby={attemptedSteps.has(step) && errors.name2 ? "name2-error" : undefined}
                       {...register("name2")}
                     />
                     {attemptedSteps.has(step) && errors.name2 && (
-                      <p className="mt-1 text-sm text-red-600">{errors.name2.message}</p>
+                      <p id="name2-error" role="alert" className="mt-1 text-sm text-red-600">
+                        {errors.name2.message}
+                      </p>
                     )}
                   </>
                 )}
@@ -354,17 +372,20 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                   type="date"
                   autoFocus
                   className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  aria-invalid={attemptedSteps.has(step) && errors.eventDate ? true : undefined}
+                  aria-describedby={attemptedSteps.has(step) && errors.eventDate ? "eventDate-error" : undefined}
                   {...register("eventDate")}
                 />
                 {attemptedSteps.has(step) && errors.eventDate && (
-                  <p className="mt-1 text-sm text-red-600">{errors.eventDate.message}</p>
+                  <p id="eventDate-error" role="alert" className="mt-1 text-sm text-red-600">{errors.eventDate.message}</p>
                 )}
               </div>
             )}
         </motion.div>
+        </AnimatePresence>
 
         {formError && (
-          <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
+          <p role="alert" className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
         )}
 
         {/* sticky, not just mt-6 -- step 2's theme gallery renders inside its

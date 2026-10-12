@@ -145,7 +145,11 @@ export default function SimpleForm({
         {isPersonalized && !showFullForm ? (
           <div>
             <p className={styles.quickGreeting}>{t.oneTapGreeting(defaultGuestName!.trim())}</p>
-            {error && <p className={styles.error}>{error}</p>}
+            {error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            )}
             <div className={styles.quickButtons}>
               <button
                 type="button"
@@ -189,17 +193,21 @@ export default function SimpleForm({
             <input
               id="rsvp-guest-name"
               type="text"
+              autoComplete="name"
               className={styles.input}
               value={guestName}
               onChange={(event) => setGuestName(event.target.value)}
+              aria-invalid={error != null && !guestName.trim() ? true : undefined}
+              aria-describedby={error ? "rsvp-form-error" : undefined}
             />
           </div>
 
           <div className={styles.field}>
             <span className={styles.label}>{t.willYouJoin}</span>
-            <div className={styles.attendingToggle}>
+            <div className={styles.attendingToggle} aria-describedby={error ? "rsvp-form-error" : undefined}>
               <button
                 type="button"
+                aria-pressed={attending === true}
                 className={attending === true ? styles.toggleButtonActive : styles.toggleButton}
                 onClick={() => setAttending(true)}
               >
@@ -207,6 +215,7 @@ export default function SimpleForm({
               </button>
               <button
                 type="button"
+                aria-pressed={attending === false}
                 className={attending === false ? styles.toggleButtonActive : styles.toggleButton}
                 onClick={() => setAttending(false)}
               >
@@ -319,7 +328,11 @@ export default function SimpleForm({
             />
           </div>
 
-          {error && <p className={styles.error}>{error}</p>}
+          {error && (
+            <p id="rsvp-form-error" className={styles.error} role="alert">
+              {error}
+            </p>
+          )}
 
           <button type="submit" disabled={pending} className={styles.submitButton}>
             {pending ? t.sending : t.sendRsvp}

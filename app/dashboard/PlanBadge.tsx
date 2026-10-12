@@ -53,8 +53,17 @@ export default function PlanBadge({ planId, eventId }: PlanBadgeProps) {
   // sitting right next to DashboardShell's own new, plan-independent "Copy
   // your link" button -- publishing for free was never actually gated on
   // payment (PublishToggle/PlanSelectForm), so the two controls side by side
-  // contradicted each other. "Upgrade your link" keeps the same urgency
-  // without implying a host needs to pay before they have any link at all.
+  // contradicted each other.
+  //
+  // UX audit (2026-10-12): this pill and the Site page's own bottom-bar CTA
+  // ("Happy with it? Remove the badge -- €19", same price, same
+  // /dashboard/[eventId]/plan destination) are the SAME offer, kept in two
+  // places on purpose -- a host scrolled deep shouldn't have to scroll back
+  // to find it. But "Upgrade your link" vs "Remove the badge" read as two
+  // different purchases rather than the same one seen twice. Matching the
+  // bottom bar's wording here (which already names the thing Basic actually
+  // changes, chosen over a vaguer "Upgrade"/"Get your link" for the same
+  // reason) makes both read as one consistent offer.
   const isFree = plan.id === DEFAULT_PLAN_ID;
   const basicPrice = plans.basic?.priceEur ?? 19;
 
@@ -78,8 +87,8 @@ export default function PlanBadge({ planId, eventId }: PlanBadgeProps) {
                 inside its fixed h-9 height once the header row's squeezed
                 for space on a narrow screen, clipping "Upgrade" off the top
                 (confirmed via a real mobile-width check). */}
-            <span className="sm:hidden">Upgrade — €{basicPrice}</span>
-            <span className="hidden sm:inline">Upgrade your link — €{basicPrice}</span>
+            <span className="sm:hidden">Remove badge — €{basicPrice}</span>
+            <span className="hidden sm:inline">Remove the badge — €{basicPrice}</span>
           </>
         ) : (
           `${plan.name} plan`
