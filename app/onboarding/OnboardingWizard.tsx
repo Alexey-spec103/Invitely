@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { track } from "@vercel/analytics";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
 import { HeroSection, DEFAULT_HERO_VARIANT, HERO_VARIANTS } from "@/components/sections/HeroSection";
@@ -48,14 +49,79 @@ function buildOnboardingSchema(t: Dictionary["onboarding"]) {
 
 type OnboardingFormValues = z.infer<ReturnType<typeof buildOnboardingSchema>>;
 
-const STEPS = ["eventType", "themeId", "names", "eventDate"] as const;
+// multi-step-form-design + onboarding-wizard-design audits (2026-10-12):
+// two independent findings on the old 4-step order, both acted on here.
+// (1) themeId used to come right after eventType, before the user had
+// typed anything personal -- the highest-effort, most-browsing step
+// opened the form instead of a low-friction identity step building
+// investment first. Names now comes second, theme last.
+// (2) eventDate was a single-field step on its own -- the textbook
+// "arbitrary chunking" anti-pattern (1-2 fields, no reason to be its own
+// page). Folded into the names step as a combined "who & when" step --
+// neither is individually high-effort, and it drops the wizard from 4
+// steps to 3 without losing any real staging.
+const STEPS = ["eventType", "names", "themeId"] as const;
 type StepKey = (typeof STEPS)[number];
 const STEP_FIELDS: Record<StepKey, (keyof OnboardingFormValues)[]> = {
   eventType: ["eventType"],
+  names: ["name1", "name2", "eventDate"],
   themeId: ["themeId"],
-  names: ["name1", "name2"],
-  eventDate: ["eventDate"],
 };
+
+// onboarding-wizard-design + multi-step-form-design audits (2026-10-12),
+// both independently flagged the same gap: wizard state lived only in
+// React component state, so a refresh, an accidental tab close, or any
+// interruption mid-flow (realistic for event planning done on a phone)
+// lost everything, including an uploaded photo and a theme pick made
+// after browsing up to 124 options. Same localStorage-draft shape this
+// session's FeatureCarousel already uses for its own dismiss-persistence.
+const ONBOARDING_DRAFT_KEY = "invimbo:onboardingDraft:v1";
+// A months-old abandoned draft resurfacing without context would read as
+// a bug, not a feature -- expiring it keeps "resume where I left off"
+// limited to genuinely recent interruptions.
+const ONBOARDING_DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+interface OnboardingDraft {
+  savedAt: number;
+  step: number;
+  values: OnboardingFormValues;
+}
+
+function readOnboardingDraft(): OnboardingDraft | null {
+  try {
+    const raw = localStorage.getItem(ONBOARDING_DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<OnboardingDraft>;
+    if (typeof parsed.savedAt !== "number" || typeof parsed.step !== "number" || !parsed.values) {
+      return null;
+    }
+    if (Date.now() - parsed.savedAt > ONBOARDING_DRAFT_MAX_AGE_MS) {
+      return null;
+    }
+    return parsed as OnboardingDraft;
+  } catch {
+    // Private-browsing/restricted storage, or malformed JSON -- treat the
+    // same as "no draft," never crash the wizard over this.
+    return null;
+  }
+}
+
+function writeOnboardingDraft(step: number, values: OnboardingFormValues) {
+  try {
+    const draft: OnboardingDraft = { savedAt: Date.now(), step, values };
+    localStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify(draft));
+  } catch {
+    // Storage full/restricted -- draft just won't persist, not fatal.
+  }
+}
+
+function clearOnboardingDraft() {
+  try {
+    localStorage.removeItem(ONBOARDING_DRAFT_KEY);
+  } catch {
+    // ignore
+  }
+}
 
 function resolveInitialThemeId(requested: string | null): string {
   if (!requested) return DEFAULT_THEME_ID;
@@ -84,8 +150,8 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
   // involved), so an early step's own trigger() already resolves later,
   // still-untouched fields as invalid and stores that in `errors` -- without
   // this gate, eventDate's "required" message was showing in red the
-  // instant step 4 first rendered, before the date input had been touched
-  // at all. Scoped per step (not per field): each step's JSX only ever
+  // instant its step first rendered, before the date input had been
+  // touched at all. Scoped per step (not per field): each step's JSX only ever
   // reads the error(s) belonging to that step, so one Set suffices.
   const [attemptedSteps, setAttemptedSteps] = useState<Set<number>>(new Set());
 
@@ -99,6 +165,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
     trigger,
     control,
     setValue,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
@@ -143,6 +210,54 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
     ? [name1 || eventType.namePrompts[0], name2 || eventType.namePrompts[1]]
     : [name1 || eventType.namePrompts[0]];
 
+  // Restores a saved draft once, on mount -- deliberately not combined
+  // with the save-effect below despite both touching the same data, so
+  // this runs exactly once regardless of how often the watched fields
+  // change afterward. Any divergence between this effect's run and the
+  // save-effect seeing stale (pre-restore) values on this same first
+  // commit self-corrects on the very next render once reset()/setStep()
+  // land, which the skip-first-run guard below prevents from mattering
+  // anyway (see isFirstDraftSaveRef).
+  useEffect(() => {
+    const draft = readOnboardingDraft();
+    if (draft) {
+      // A `?theme=` link (e.g. "Start with this theme" elsewhere in the
+      // product) is a fresh, explicit choice made just now -- it should win
+      // over whatever an older abandoned draft happened to have selected,
+      // not get silently overridden by it.
+      const requestedTheme = searchParams.get("theme");
+      reset(requestedTheme ? { ...draft.values, themeId: resolveInitialThemeId(requestedTheme) } : draft.values);
+      setStep(Math.min(Math.max(draft.step, 0), STEPS.length - 1));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Skips the very first effect run (the initial mount, before the
+  // restore effect above has had a chance to land its reset()/setStep()
+  // in a committed render) so this never has a window to write blank
+  // defaults over a draft that was just read -- only real, user-driven
+  // changes (including the change reset()/setStep() themselves cause)
+  // persist from here on.
+  const isFirstDraftSaveRef = useRef(true);
+  useEffect(() => {
+    if (isFirstDraftSaveRef.current) {
+      isFirstDraftSaveRef.current = false;
+      return;
+    }
+    writeOnboardingDraft(step, { eventType: eventTypeId, themeId, name1, name2, photoUrl, eventDate });
+  }, [step, eventTypeId, themeId, name1, name2, photoUrl, eventDate]);
+
+  // onboarding-wizard-design audit (2026-10-12): zero drop-off
+  // instrumentation existed anywhere in this flow -- no way to know which
+  // step loses people, or whether completing the wizard correlates with
+  // actually using the product afterward. `stepKey` dependency (not
+  // `step`) means this also fires correctly on a restored draft landing
+  // on a step other than 0.
+  useEffect(() => {
+    track("onboarding_step_view", { step: stepKey, stepIndex: step });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepKey]);
+
   const goToStep = (next: number, dir: 1 | -1) => {
     setDirection(dir);
     setStep(next);
@@ -166,6 +281,8 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
     try {
       const result = await completeOnboarding(values);
       if (!result.ok) throw new Error(result.message);
+      track("onboarding_completed", { eventType: values.eventType });
+      clearOnboardingDraft();
       // Straight to this event's own Site tab (skips /dashboard's own
       // redirect-to-events[0] hop), flagged as a first visit so the Site
       // page can lead with the finished site instead of the settings/
@@ -340,6 +457,28 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                   </>
                 )}
 
+                {/* multi-step-form-design audit (2026-10-12): eventDate used
+                    to be its own step -- a single field with nothing else on
+                    it, the "arbitrary chunking" anti-pattern this skill
+                    flags by name. Folded in here instead: neither "who" nor
+                    "when" is individually high-effort, so combining them
+                    loses no real staging while cutting the wizard from 4
+                    steps to 3. */}
+                <label htmlFor="eventDate" className="mt-5 block text-lg font-semibold text-gray-900">
+                  📅 {eventType.dateLabel}
+                </label>
+                <input
+                  id="eventDate"
+                  type="date"
+                  className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  aria-invalid={attemptedSteps.has(step) && errors.eventDate ? true : undefined}
+                  aria-describedby={attemptedSteps.has(step) && errors.eventDate ? "eventDate-error" : undefined}
+                  {...register("eventDate")}
+                />
+                {attemptedSteps.has(step) && errors.eventDate && (
+                  <p id="eventDate-error" role="alert" className="mt-1 text-sm text-red-600">{errors.eventDate.message}</p>
+                )}
+
                 <div className="mt-5">
                   <Controller
                     control={control}
@@ -359,26 +498,6 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                     )}
                   />
                 </div>
-              </div>
-            )}
-
-            {stepKey === "eventDate" && (
-              <div className="mt-4">
-                <label htmlFor="eventDate" className="block text-lg font-semibold text-gray-900">
-                  📅 {eventType.dateLabel}
-                </label>
-                <input
-                  id="eventDate"
-                  type="date"
-                  autoFocus
-                  className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-                  aria-invalid={attemptedSteps.has(step) && errors.eventDate ? true : undefined}
-                  aria-describedby={attemptedSteps.has(step) && errors.eventDate ? "eventDate-error" : undefined}
-                  {...register("eventDate")}
-                />
-                {attemptedSteps.has(step) && errors.eventDate && (
-                  <p id="eventDate-error" role="alert" className="mt-1 text-sm text-red-600">{errors.eventDate.message}</p>
-                )}
               </div>
             )}
         </motion.div>
