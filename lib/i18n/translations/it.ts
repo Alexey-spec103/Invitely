@@ -303,6 +303,11 @@ export const it: Dictionary = {
           answer:
             "Ogni tema è un vero punto di partenza, non un layout bloccato — cambia colori, font e foto, trascina gli elementi ovunque, o parti da una tela vuota. Sfoglia la galleria completa qui sopra prima di decidere.",
         },
+        {
+          question: "In cosa è diverso dagli altri costruttori di siti per matrimoni?",
+          answer:
+            "La maggior parte fa pagare un abbonamento solo per un sito. Qui paghi una tariffa unica, una sola volta — e lo stesso tema si ritrova anche sugli inviti stampati e sui segnaposto, non solo sul sito. Nessuna app per gli ospiti, nessun abbonamento per te.",
+        },
       ],
     },
     finalCta: {

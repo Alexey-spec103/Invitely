@@ -313,6 +313,11 @@ export const pl: Dictionary = {
           answer:
             "Każdy motyw to prawdziwy punkt startowy, nie zablokowany układ — zmień kolory, czcionki, zdjęcia, przeciągaj elementy gdziekolwiek, albo zacznij od pustego płótna. Przejrzyj całą galerię powyżej, zanim zdecydujesz.",
         },
+        {
+          question: "Czym to się różni od innych kreatorów stron ślubnych?",
+          answer:
+            "Większość pobiera abonament tylko za stronę. Tu płacisz jedną stałą opłatę, raz — i ten sam motyw przechodzi też na drukowane zaproszenia i winietki, nie tylko na stronę. Żadnej aplikacji dla gości, żadnej subskrypcji dla Ciebie.",
+        },
       ],
     },
     finalCta: {

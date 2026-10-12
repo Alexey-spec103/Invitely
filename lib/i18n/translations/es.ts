@@ -303,6 +303,11 @@ export const es: Dictionary = {
           answer:
             "Cada tema es un punto de partida real, no un diseño bloqueado: cambia colores, tipografías y fotos, arrastra elementos donde quieras, o empieza desde un lienzo en blanco. Explora la galería completa más arriba antes de decidir.",
         },
+        {
+          question: "¿En qué se diferencia esto de otros creadores de webs de boda?",
+          answer:
+            "La mayoría cobra una suscripción solo por la web. Aquí pagas una tarifa única, una sola vez — y ese mismo tema se traslada también a tus invitaciones impresas y tarjetas de mesa, no solo al sitio. Sin app para los invitados, sin suscripción para ti.",
+        },
       ],
     },
     finalCta: {

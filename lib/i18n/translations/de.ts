@@ -303,6 +303,11 @@ export const de: Dictionary = {
           answer:
             "Jedes Theme ist ein echter Ausgangspunkt, kein festes Layout — Farben, Schriften und Fotos tauschen, Elemente frei verschieben, oder mit einer leeren Leinwand starten. Durchstöbere die ganze Galerie oben, bevor du dich entscheidest.",
         },
+        {
+          question: "Was unterscheidet das von anderen Hochzeitsseiten-Baukästen?",
+          answer:
+            "Die meisten verlangen ein Abo nur für eine Website. Hier zahlst du einmal, pauschal — und dasselbe Theme setzt sich auch auf deinen gedruckten Einladungen und Tischkarten fort, nicht nur auf der Seite. Keine App für Gäste, kein Abo für dich.",
+        },
       ],
     },
     finalCta: {

@@ -651,6 +651,11 @@ export const en: Dictionary = {
           answer:
             "Every theme is a real starting point, not a locked layout — swap colors, fonts, and photos, drag elements anywhere, or start from a blank canvas. Browse the full gallery above before you decide.",
         },
+        {
+          question: "How is this different from other wedding site builders?",
+          answer:
+            "Most charge a recurring subscription just for a website. Here it's one flat fee, once — and that same theme carries through to your printed invitations and banquet cards too, not just the site. No app for guests, no subscription for you.",
+        },
       ],
     },
     finalCta: {

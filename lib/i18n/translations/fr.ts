@@ -303,6 +303,11 @@ export const fr: Dictionary = {
           answer:
             "Chaque thème est un véritable point de départ, pas une mise en page verrouillée — changez les couleurs, les polices, les photos, déplacez les éléments où vous voulez, ou partez d'une toile vierge. Parcourez la galerie complète ci-dessus avant de décider.",
         },
+        {
+          question: "En quoi est-ce différent des autres créateurs de sites de mariage ?",
+          answer:
+            "La plupart facturent un abonnement rien que pour un site. Ici, vous payez un tarif unique, une seule fois — et ce même thème se retrouve aussi sur vos faire-part imprimés et vos marque-places, pas seulement sur le site. Aucune appli pour les invités, aucun abonnement pour vous.",
+        },
       ],
     },
     finalCta: {
