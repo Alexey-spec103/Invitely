@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { planMeets } from "@/lib/plans";
 import { sendEmail } from "@/lib/email";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { resolveEmailLocale } from "@/lib/i18n/locales";
 
 const DOMAIN_PATTERN = /^(?!-)[a-z0-9-]{1,63}(?<!-)(\.(?!-)[a-z0-9-]{1,63}(?<!-))+$/i;
 const SUBDOMAIN_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
@@ -52,7 +54,7 @@ export async function claimInvimboSubdomain(input: ClaimInvimboSubdomainInput): 
 
   const { data: event, error: eventError } = await supabase
     .from("events")
-    .select("plan_id, title")
+    .select("plan_id, title, default_locale")
     .eq("id", input.eventId)
     .single();
 
@@ -98,12 +100,11 @@ export async function claimInvimboSubdomain(input: ClaimInvimboSubdomainInput): 
   // itself on the email succeeding.
   try {
     if (user.email) {
+      const t = getDictionary(resolveEmailLocale(event.default_locale)).email;
       await sendEmail({
         to: user.email,
-        subject: `Your invimbo.com address is live: ${hostname}`,
-        html: `<p>Your event site is now reachable at <strong>https://${hostname}</strong>, alongside your original link.</p>
-<p>This address is included with your plan for as long as it's active — nothing to renew, no extra domain purchase, no expiry date to track.</p>
-<p>Questions? Just reply to this email or reach us at support@invimbo.com.</p>`,
+        subject: t.domainLive.subject(hostname),
+        html: [t.domainLive.liveAt(hostname), t.domainLive.includedNote, t.domainLive.questionsNote].join("\n"),
       });
     }
   } catch (emailError) {

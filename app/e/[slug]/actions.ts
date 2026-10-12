@@ -7,7 +7,7 @@ import type { BanquetTableLookupResult } from "@/components/sections/BanquetNavi
 import type { Json } from "@/lib/supabase/database.types";
 import { sendEmail } from "@/lib/email";
 import { getDictionary } from "@/lib/i18n/dictionary";
-import type { Locale } from "@/lib/i18n/locales";
+import { resolveEmailLocale, type Locale } from "@/lib/i18n/locales";
 
 export async function submitRsvp(
   eventId: string,
@@ -142,13 +142,21 @@ export async function submitRsvp(
         const { data: event } = await supabase.from("events").select("title").eq("id", eventId).single();
         const eventTitle = event?.title ?? "the event";
 
+        // Uses `locale` (the guest's own resolved page-view language, same
+        // one driving `t.rsvp` above) rather than the event's default_locale
+        // -- this confirmation is a direct reply to an action the guest just
+        // took in their own chosen language, which is the more accurate
+        // signal than the host's own event-setup language for this one email.
+        const guestT = getDictionary(locale).email;
         const html = input.attending
-          ? `<p>Hi ${input.guestName},</p><p>Thank you, we'll see you there! Your RSVP for <strong>${eventTitle}</strong> is confirmed.</p>`
-          : `<p>Hi ${input.guestName},</p><p>Thanks for letting us know you won't be able to make it to <strong>${eventTitle}</strong>. We'll miss you!</p>`;
+          ? guestT.guestConfirmation.acceptedBody(input.guestName, eventTitle)
+          : guestT.guestConfirmation.declinedBody(input.guestName, eventTitle);
 
         await sendEmail({
           to: guestEmail,
-          subject: input.attending ? `You're confirmed for ${eventTitle}` : `RSVP received for ${eventTitle}`,
+          subject: input.attending
+            ? guestT.guestConfirmation.acceptedSubject(eventTitle)
+            : guestT.guestConfirmation.declinedSubject(eventTitle),
           html,
         });
       }
@@ -171,7 +179,7 @@ export async function submitRsvp(
     // guests/RsvpNotificationToggle.tsx for where this gets flipped.
     const { data: notificationEvent } = await supabase
       .from("events")
-      .select("title, rsvp_email_notifications")
+      .select("title, rsvp_email_notifications, default_locale")
       .eq("id", eventId)
       .single();
 
@@ -185,6 +193,11 @@ export async function submitRsvp(
 
     if (ownerEmail) {
       const eventTitle = notificationEvent?.title ?? "your event";
+      // The host's own language: this is a notification ABOUT the event,
+      // sent to whoever set it up, not a reply to this guest's own
+      // page-view locale -- same reasoning as guestT above resolves the
+      // opposite direction correctly for the guest's own confirmation.
+      const hostT = getDictionary(resolveEmailLocale(notificationEvent?.default_locale)).email;
 
       // Direct feedback: a host had to open the dashboard to see where RSVPs
       // stood overall -- this one extra query turns every instant email into
@@ -198,25 +211,29 @@ export async function submitRsvp(
       const totalResponded = allResponses?.length ?? 0;
       const totalYes = allResponses?.filter((response) => response.attending).length ?? 0;
       const totalNo = totalResponded - totalYes;
-      const summaryLine =
-        totalResponded > 0
-          ? `<p style="color:#6b7280;font-size:13px;">${totalResponded} response${totalResponded === 1 ? "" : "s"} so far: ${totalYes} yes, ${totalNo} no.</p>`
-          : "";
+      const summaryLine = totalResponded > 0 ? hostT.hostNewRsvp.responseSummary(totalResponded, totalYes, totalNo) : "";
 
+      // "A guest" fallback stays English regardless of host locale -- the
+      // RSVP form already requires a name (form-strategy audit, 2026-10-09),
+      // so this path is defensive/effectively unreachable, not a real
+      // user-facing string worth its own 8-locale dictionary entry.
+      const guestName = input.guestName || "A guest";
       const detailLines = [
-        `<p><strong>${input.guestName || "A guest"}</strong> ${input.attending ? "is coming" : "can't make it"} to ${eventTitle}.</p>`,
+        hostT.hostNewRsvp.headline(guestName, eventTitle, input.attending),
         summaryLine,
-        input.attending ? `<p>Party size: ${partySize}</p>` : "",
+        input.attending ? hostT.hostNewRsvp.partySize(partySize) : "",
         input.attending && input.attendeeNames?.length
-          ? `<p>Names: ${input.attendeeNames.filter(Boolean).join(", ")}</p>`
+          ? hostT.hostNewRsvp.namesLabel(input.attendeeNames.filter(Boolean).join(", "))
           : "",
-        input.allergies ? `<p>Allergies / dietary needs: ${input.allergies}</p>` : "",
-        input.comment ? `<p>Message: ${input.comment}</p>` : "",
+        input.allergies ? hostT.hostNewRsvp.allergiesLabel(input.allergies) : "",
+        input.comment ? hostT.hostNewRsvp.messageLabel(input.comment) : "",
       ].filter(Boolean);
 
       await sendEmail({
         to: ownerEmail,
-        subject: input.attending ? `New RSVP: ${input.guestName || "a guest"} is coming` : `New RSVP: ${input.guestName || "a guest"} can't make it`,
+        subject: input.attending
+          ? hostT.hostNewRsvp.acceptedSubject(guestName)
+          : hostT.hostNewRsvp.declinedSubject(guestName),
         html: detailLines.join(""),
       });
     }

@@ -10,6 +10,17 @@ function guestWordUk(count: number): string {
   return "гостей";
 }
 
+/** Same reasoning as guestWordUk above, for "відповідь" (response) -- used
+ * by the email dictionary's RSVP-count copy (1 відповідь, 2-4 відповіді,
+ * 5+ відповідей). */
+function responseWordUk(count: number): string {
+  const lastDigit = count % 10;
+  const lastTwo = count % 100;
+  if (lastDigit === 1 && lastTwo !== 11) return "відповідь";
+  if (lastDigit >= 2 && lastDigit <= 4 && !(lastTwo >= 12 && lastTwo <= 14)) return "відповіді";
+  return "відповідей";
+}
+
 export const uk: Dictionary = {
   siteHeader: {
     menu: "Меню",
@@ -437,6 +448,59 @@ export const uk: Dictionary = {
       namePrompts: ["Як називається подія?"],
       dateLabel: "Коли подія?",
       heroEyebrow: "Вас запрошують",
+    },
+  },
+  email: {
+    common: {
+      greeting: (guestName) => `Привіт, ${guestName}!`,
+      rsvpLinkLabel: "Відповісти тут",
+    },
+    guestInvitation: {
+      subject: (eventTitle) => `Вас запрошують на ${eventTitle}`,
+      invitedTo: (eventTitle) => `Вас запрошують на <strong>${eventTitle}</strong>.`,
+    },
+    guestReminder: {
+      subject: (eventTitle) => `Не забудьте підтвердити участь у ${eventTitle}`,
+      reminderText: (eventTitle) =>
+        `Просто дружнє нагадування — ми ще не отримали від вас відповідь щодо <strong>${eventTitle}</strong>.`,
+    },
+    guestConfirmation: {
+      acceptedSubject: (eventTitle) => `Вашу участь у ${eventTitle} підтверджено`,
+      declinedSubject: (eventTitle) => `Відповідь отримано для ${eventTitle}`,
+      acceptedBody: (guestName, eventTitle) =>
+        `<p>Привіт, ${guestName}!</p><p>Дякуємо, побачимось там! Вашу участь у <strong>${eventTitle}</strong> підтверджено.</p>`,
+      declinedBody: (guestName, eventTitle) =>
+        `<p>Привіт, ${guestName}!</p><p>Дякуємо, що повідомили — шкода, що ви не зможете бути на <strong>${eventTitle}</strong>. Будемо сумувати!</p>`,
+    },
+    hostNewRsvp: {
+      acceptedSubject: (guestName) => `Нова відповідь: ${guestName} прийде`,
+      declinedSubject: (guestName) => `Нова відповідь: ${guestName} не зможе прийти`,
+      headline: (guestName, eventTitle, attending) =>
+        `<p><strong>${guestName}</strong> ${attending ? "прийде" : "не зможе прийти"} на ${eventTitle}.</p>`,
+      responseSummary: (total, yes, no) =>
+        `<p style="color:#6b7280;font-size:13px;">${total} ${responseWordUk(total)} наразі: ${yes} так, ${no} ні.</p>`,
+      partySize: (size) => `<p>Кількість осіб: ${size}</p>`,
+      namesLabel: (names) => `<p>Імена: ${names}</p>`,
+      allergiesLabel: (text) => `<p>Алергії / харчові потреби: ${text}</p>`,
+      messageLabel: (text) => `<p>Повідомлення: ${text}</p>`,
+    },
+    hostDigest: {
+      subject: (count, eventTitle) => `Підсумок RSVP: ${count} нов${count === 1 ? "а" : "их"} ${responseWordUk(count)} для ${eventTitle}`,
+      intro: (count, eventTitle) =>
+        `<p>${count} нов${count === 1 ? "а" : "их"} ${responseWordUk(count)} для <strong>${eventTitle}</strong> з часу останнього оновлення:</p>`,
+      guestYes: (guestName) => `<li>${guestName} — так</li>`,
+      guestNo: (guestName) => `<li>${guestName} — ні</li>`,
+      runningTotal: (total, yes, no) =>
+        `<p style="color:#6b7280;font-size:13px;">Разом: ${total} відповіли, ${yes} так, ${no} ні.</p>`,
+      manageNote: (guestsUrl) =>
+        `<p style="color:#9ca3af;font-size:12px;">Отримуєте це щодня? <a href="${guestsUrl}" style="color:#9ca3af;">Можна вимкнути будь-коли</a> на вкладці «Гості» вашої події.</p>`,
+    },
+    domainLive: {
+      subject: (hostname) => `Вашу адресу invimbo.com активовано: ${hostname}`,
+      liveAt: (hostname) => `<p>Сайт вашої події тепер доступний за адресою <strong>https://${hostname}</strong>, на додаток до вашого початкового посилання.</p>`,
+      includedNote:
+        "<p>Ця адреса включена у ваш тариф, доки він активний — нічого продовжувати, жодної додаткової покупки домену, жодної дати закінчення, за якою треба стежити.</p>",
+      questionsNote: "<p>Є питання? Просто дайте відповідь на цей лист або напишіть нам на support@invimbo.com.</p>",
     },
   },
 };

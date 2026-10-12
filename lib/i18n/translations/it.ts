@@ -431,4 +431,57 @@ export const it: Dictionary = {
       heroEyebrow: "Sei invitato/a",
     },
   },
+  email: {
+    common: {
+      greeting: (guestName) => `Ciao ${guestName},`,
+      rsvpLinkLabel: "Rispondi qui",
+    },
+    guestInvitation: {
+      subject: (eventTitle) => `Sei invitato/a a ${eventTitle}`,
+      invitedTo: (eventTitle) => `Sei invitato/a a <strong>${eventTitle}</strong>.`,
+    },
+    guestReminder: {
+      subject: (eventTitle) => `Non dimenticare di confermare per ${eventTitle}`,
+      reminderText: (eventTitle) =>
+        `Solo un promemoria amichevole — non abbiamo ancora ricevuto una tua risposta per <strong>${eventTitle}</strong>.`,
+    },
+    guestConfirmation: {
+      acceptedSubject: (eventTitle) => `Sei confermato/a per ${eventTitle}`,
+      declinedSubject: (eventTitle) => `Risposta ricevuta per ${eventTitle}`,
+      acceptedBody: (guestName, eventTitle) =>
+        `<p>Ciao ${guestName},</p><p>Grazie, ci vediamo lì! La tua conferma per <strong>${eventTitle}</strong> è registrata.</p>`,
+      declinedBody: (guestName, eventTitle) =>
+        `<p>Ciao ${guestName},</p><p>Grazie per averci fatto sapere che non potrai essere presente a <strong>${eventTitle}</strong>. Ci mancherai!</p>`,
+    },
+    hostNewRsvp: {
+      acceptedSubject: (guestName) => `Nuova risposta: ${guestName} ci sarà`,
+      declinedSubject: (guestName) => `Nuova risposta: ${guestName} non potrà venire`,
+      headline: (guestName, eventTitle, attending) =>
+        `<p><strong>${guestName}</strong> ${attending ? "ci sarà" : "non potrà venire"} a ${eventTitle}.</p>`,
+      responseSummary: (total, yes, no) =>
+        `<p style="color:#6b7280;font-size:13px;">${total} risposta${total === 1 ? "" : "e"} finora: ${yes} sì, ${no} no.</p>`,
+      partySize: (size) => `<p>Numero di persone: ${size}</p>`,
+      namesLabel: (names) => `<p>Nomi: ${names}</p>`,
+      allergiesLabel: (text) => `<p>Allergie / esigenze alimentari: ${text}</p>`,
+      messageLabel: (text) => `<p>Messaggio: ${text}</p>`,
+    },
+    hostDigest: {
+      subject: (count, eventTitle) => `Riepilogo RSVP: ${count} nuova${count === 1 ? "" : "e"} risposta${count === 1 ? "" : "e"} per ${eventTitle}`,
+      intro: (count, eventTitle) =>
+        `<p>${count} nuova${count === 1 ? "" : "e"} risposta${count === 1 ? "" : "e"} per <strong>${eventTitle}</strong> dal tuo ultimo aggiornamento:</p>`,
+      guestYes: (guestName) => `<li>${guestName} — sì</li>`,
+      guestNo: (guestName) => `<li>${guestName} — no</li>`,
+      runningTotal: (total, yes, no) =>
+        `<p style="color:#6b7280;font-size:13px;">Totale: ${total} hanno risposto, ${yes} sì, ${no} no.</p>`,
+      manageNote: (guestsUrl) =>
+        `<p style="color:#9ca3af;font-size:12px;">Ricevi questo ogni giorno? <a href="${guestsUrl}" style="color:#9ca3af;">Disattivalo quando vuoi</a> dalla scheda Ospiti del tuo evento.</p>`,
+    },
+    domainLive: {
+      subject: (hostname) => `Il tuo indirizzo invimbo.com è attivo: ${hostname}`,
+      liveAt: (hostname) => `<p>Il sito del tuo evento è ora raggiungibile su <strong>https://${hostname}</strong>, oltre al tuo link originale.</p>`,
+      includedNote:
+        "<p>Questo indirizzo è incluso nel tuo piano finché è attivo — niente da rinnovare, nessun acquisto di dominio aggiuntivo, nessuna scadenza da tenere d'occhio.</p>",
+      questionsNote: "<p>Domande? Rispondi pure a questa email o scrivici a support@invimbo.com.</p>",
+    },
+  },
 };

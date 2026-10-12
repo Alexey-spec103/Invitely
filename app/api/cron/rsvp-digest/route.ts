@@ -2,6 +2,13 @@ import { timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { sendEmail } from "@/lib/email";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { resolveEmailLocale } from "@/lib/i18n/locales";
+
+// Same hardcoded-production-origin convention as app/robots.ts/app/sitemap.ts
+// -- this route is server-to-server (Vercel Cron), there's no request origin
+// to read the way a real browser-originated action would have one.
+const SITE_URL = "https://www.invimbo.com";
 
 /** Constant-time string comparison -- a plain `!==` leaks the secret's
  * content (not just its length) through how many characters matched before
@@ -39,7 +46,7 @@ export async function GET(request: NextRequest) {
 
   const { data: events, error } = await supabase
     .from("events")
-    .select("id, title, owner_id, last_digest_sent_at")
+    .select("id, title, owner_id, last_digest_sent_at, default_locale")
     .eq("rsvp_digest_email", true)
     .eq("status", "published");
 
@@ -86,20 +93,27 @@ export async function GET(request: NextRequest) {
       continue;
     }
 
+    // Host's own event-setup language -- same reasoning as the other host-
+    // facing emails (guests/actions.ts, e/[slug]/actions.ts).
+    const t = getDictionary(resolveEmailLocale(event.default_locale)).email;
+
     const rows = newResponses
-      .map((response) => `<li>${response.guest_name || "A guest"} — ${response.attending ? "yes" : "no"}</li>`)
+      .map((response) =>
+        response.attending ? t.hostDigest.guestYes(response.guest_name || "—") : t.hostDigest.guestNo(response.guest_name || "—")
+      )
       .join("");
 
     const html = [
-      `<p>${newResponses.length} new response${newResponses.length === 1 ? "" : "s"} for <strong>${event.title}</strong> since your last update:</p>`,
+      t.hostDigest.intro(newResponses.length, event.title),
       `<ul>${rows}</ul>`,
-      `<p style="color:#6b7280;font-size:13px;">Running total: ${totalResponded} responded, ${totalYes} yes, ${totalNo} no.</p>`,
+      t.hostDigest.runningTotal(totalResponded, totalYes, totalNo),
+      t.hostDigest.manageNote(`${SITE_URL}/dashboard/${event.id}/guests`),
     ].join("");
 
     try {
       await sendEmail({
         to: ownerEmail,
-        subject: `RSVP summary: ${newResponses.length} new response${newResponses.length === 1 ? "" : "s"} for ${event.title}`,
+        subject: t.hostDigest.subject(newResponses.length, event.title),
         html,
       });
       // Only advanced on a successful send -- a failed email leaves

@@ -31,6 +31,26 @@ export function isSupportedLocale(value: string): value is Locale {
   return (SUPPORTED_LOCALES as readonly string[]).includes(value);
 }
 
+/** email-audit (2026-10-10): the locale for every transactional email --
+ * guest-facing and host-facing alike -- is the sending event's own
+ * `events.default_locale`, the language the host set the event up in.
+ * Unlike resolveGuestLocale() (cookie/geo-IP, meaningful only for a live
+ * page request from a specific visitor), an email send has no "current
+ * visitor" to read a cookie from, and there's no per-guest or per-account
+ * locale stored anywhere in the schema -- `default_locale` is the only real
+ * signal available at send time. Validates against the real supported set
+ * rather than trusting the column blindly (a column read from a possibly-
+ * stale `EVENT_COLUMNS` select, or a row from before this column existed,
+ * could hold anything) -- falls back to English rather than ever throwing,
+ * since a wrong/missing locale must never be the reason an email fails to
+ * send. */
+export function resolveEmailLocale(defaultLocale: string | null | undefined): Locale {
+  if (defaultLocale && isSupportedLocale(defaultLocale)) {
+    return defaultLocale;
+  }
+  return DEFAULT_LOCALE;
+}
+
 /** BCP-47 tag for `Intl`/`toLocaleDateString` calls, keyed by our own
  * `Locale` type -- LetterSection's RSVP-deadline date (e.g. "December 31,
  * 2026") was hardcoded to "en-US" regardless of the guest's actual language

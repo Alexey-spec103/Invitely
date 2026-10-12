@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { parseGuestLines } from "./parseGuestLines";
 import { sendEmail } from "@/lib/email";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { resolveEmailLocale } from "@/lib/i18n/locales";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+\-()\s]{6,20}$/;
@@ -181,7 +183,7 @@ export async function sendGuestInvitationEmail(
 
   const { data: event, error: eventError } = await supabase
     .from("events")
-    .select("title")
+    .select("title, default_locale")
     .eq("id", guest.event_id)
     .single();
 
@@ -189,10 +191,11 @@ export async function sendGuestInvitationEmail(
     return { ok: false, message: eventError?.message ?? "Event not found" };
   }
 
+  const t = getDictionary(resolveEmailLocale(event.default_locale)).email;
   await sendEmail({
     to: guest.email,
-    subject: `You're invited to ${event.title}`,
-    html: `<p>Hi ${guest.full_name},</p><p>You're invited to <strong>${event.title}</strong>.</p><p><a href="${rsvpUrl}">RSVP here</a></p>`,
+    subject: t.guestInvitation.subject(event.title),
+    html: `<p>${t.common.greeting(guest.full_name)}</p><p>${t.guestInvitation.invitedTo(event.title)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
   });
 
   await recordInvitationSent(guestId, "email");
@@ -233,7 +236,7 @@ export async function sendGuestReminderEmail(
 
   const { data: event, error: eventError } = await supabase
     .from("events")
-    .select("title")
+    .select("title, default_locale")
     .eq("id", guest.event_id)
     .single();
 
@@ -241,10 +244,11 @@ export async function sendGuestReminderEmail(
     return { ok: false, message: eventError?.message ?? "Event not found" };
   }
 
+  const t = getDictionary(resolveEmailLocale(event.default_locale)).email;
   await sendEmail({
     to: guest.email,
-    subject: `Don't forget to RSVP for ${event.title}`,
-    html: `<p>Hi ${guest.full_name},</p><p>Just a friendly reminder -- we haven't heard back from you yet for <strong>${event.title}</strong>.</p><p><a href="${rsvpUrl}">RSVP here</a></p>`,
+    subject: t.guestReminder.subject(event.title),
+    html: `<p>${t.common.greeting(guest.full_name)}</p><p>${t.guestReminder.reminderText(event.title)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
   });
 
   return { ok: true };

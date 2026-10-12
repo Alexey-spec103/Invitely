@@ -288,6 +288,64 @@ export interface Dictionary {
    * type in any locale a compile error, same guarantee as every other key
    * in this file. */
   eventTypes: Record<EventTypeId, { label: string; namePrompts: string[]; dateLabel: string; heroEyebrow: string }>;
+  /** email-audit (2026-10-10): this product's 6 transactional emails
+   * (lib/email.ts's sendEmail() callers) were hardcoded English regardless
+   * of the recipient's real language, the one surface this app's otherwise-
+   * complete 8-locale coverage never reached. Locale for every email is the
+   * sending event's own `default_locale` (guest-facing and host-facing
+   * alike) -- there's no per-guest or per-account locale preference stored
+   * anywhere in the schema, and `default_locale` is the language the host
+   * themselves set the event up in, the same reasoning this app already
+   * uses for host-facing UI. Grouped by the 6 real email types that
+   * actually get sent, not by raw string key -- `common` holds the two
+   * fragments genuinely shared across more than one email (so a
+   * translation only needs updating in one place), everything else stays
+   * local to its own email so each translator can read one email's copy
+   * as a coherent whole instead of a scattered flat list. */
+  email: {
+    common: {
+      greeting: (guestName: string) => string;
+      rsvpLinkLabel: string;
+    };
+    guestInvitation: {
+      subject: (eventTitle: string) => string;
+      invitedTo: (eventTitle: string) => string;
+    };
+    guestReminder: {
+      subject: (eventTitle: string) => string;
+      reminderText: (eventTitle: string) => string;
+    };
+    guestConfirmation: {
+      acceptedSubject: (eventTitle: string) => string;
+      declinedSubject: (eventTitle: string) => string;
+      acceptedBody: (guestName: string, eventTitle: string) => string;
+      declinedBody: (guestName: string, eventTitle: string) => string;
+    };
+    hostNewRsvp: {
+      acceptedSubject: (guestName: string) => string;
+      declinedSubject: (guestName: string) => string;
+      headline: (guestName: string, eventTitle: string, attending: boolean) => string;
+      responseSummary: (total: number, yes: number, no: number) => string;
+      partySize: (size: number) => string;
+      namesLabel: (names: string) => string;
+      allergiesLabel: (text: string) => string;
+      messageLabel: (text: string) => string;
+    };
+    hostDigest: {
+      subject: (count: number, eventTitle: string) => string;
+      intro: (count: number, eventTitle: string) => string;
+      guestYes: (guestName: string) => string;
+      guestNo: (guestName: string) => string;
+      runningTotal: (total: number, yes: number, no: number) => string;
+      manageNote: (guestsUrl: string) => string;
+    };
+    domainLive: {
+      subject: (hostname: string) => string;
+      liveAt: (hostname: string) => string;
+      includedNote: string;
+      questionsNote: string;
+    };
+  };
 }
 
 export const en: Dictionary = {
@@ -719,6 +777,59 @@ export const en: Dictionary = {
       namePrompts: ["What's the event called?"],
       dateLabel: "When's the event?",
       heroEyebrow: "You're invited",
+    },
+  },
+  email: {
+    common: {
+      greeting: (guestName) => `Hi ${guestName},`,
+      rsvpLinkLabel: "RSVP here",
+    },
+    guestInvitation: {
+      subject: (eventTitle) => `You're invited to ${eventTitle}`,
+      invitedTo: (eventTitle) => `You're invited to <strong>${eventTitle}</strong>.`,
+    },
+    guestReminder: {
+      subject: (eventTitle) => `Don't forget to RSVP for ${eventTitle}`,
+      reminderText: (eventTitle) =>
+        `Just a friendly reminder — we haven't heard back from you yet for <strong>${eventTitle}</strong>.`,
+    },
+    guestConfirmation: {
+      acceptedSubject: (eventTitle) => `You're confirmed for ${eventTitle}`,
+      declinedSubject: (eventTitle) => `RSVP received for ${eventTitle}`,
+      acceptedBody: (guestName, eventTitle) =>
+        `<p>Hi ${guestName},</p><p>Thank you, we'll see you there! Your RSVP for <strong>${eventTitle}</strong> is confirmed.</p>`,
+      declinedBody: (guestName, eventTitle) =>
+        `<p>Hi ${guestName},</p><p>Thanks for letting us know you won't be able to make it to <strong>${eventTitle}</strong>. We'll miss you!</p>`,
+    },
+    hostNewRsvp: {
+      acceptedSubject: (guestName) => `New RSVP: ${guestName} is coming`,
+      declinedSubject: (guestName) => `New RSVP: ${guestName} can't make it`,
+      headline: (guestName, eventTitle, attending) =>
+        `<p><strong>${guestName}</strong> ${attending ? "is coming" : "can't make it"} to ${eventTitle}.</p>`,
+      responseSummary: (total, yes, no) =>
+        `<p style="color:#6b7280;font-size:13px;">${total} response${total === 1 ? "" : "s"} so far: ${yes} yes, ${no} no.</p>`,
+      partySize: (size) => `<p>Party size: ${size}</p>`,
+      namesLabel: (names) => `<p>Names: ${names}</p>`,
+      allergiesLabel: (text) => `<p>Allergies / dietary needs: ${text}</p>`,
+      messageLabel: (text) => `<p>Message: ${text}</p>`,
+    },
+    hostDigest: {
+      subject: (count, eventTitle) => `RSVP summary: ${count} new response${count === 1 ? "" : "s"} for ${eventTitle}`,
+      intro: (count, eventTitle) =>
+        `<p>${count} new response${count === 1 ? "" : "s"} for <strong>${eventTitle}</strong> since your last update:</p>`,
+      guestYes: (guestName) => `<li>${guestName} — yes</li>`,
+      guestNo: (guestName) => `<li>${guestName} — no</li>`,
+      runningTotal: (total, yes, no) =>
+        `<p style="color:#6b7280;font-size:13px;">Running total: ${total} responded, ${yes} yes, ${no} no.</p>`,
+      manageNote: (guestsUrl) =>
+        `<p style="color:#9ca3af;font-size:12px;">Get this every day? <a href="${guestsUrl}" style="color:#9ca3af;">Turn it off anytime</a> from your event's Guests tab.</p>`,
+    },
+    domainLive: {
+      subject: (hostname) => `Your invimbo.com address is live: ${hostname}`,
+      liveAt: (hostname) => `<p>Your event site is now reachable at <strong>https://${hostname}</strong>, alongside your original link.</p>`,
+      includedNote:
+        "<p>This address is included with your plan for as long as it's active — nothing to renew, no extra domain purchase, no expiry date to track.</p>",
+      questionsNote: "<p>Questions? Just reply to this email or reach us at support@invimbo.com.</p>",
     },
   },
 };

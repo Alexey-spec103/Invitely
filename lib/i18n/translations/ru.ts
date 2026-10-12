@@ -11,6 +11,16 @@ function guestWordRu(count: number): string {
   return "гостей";
 }
 
+/** Same reasoning as guestWordRu above, for "ответ" (response) -- used by
+ * the email dictionary's RSVP-count copy (1 ответ, 2-4 ответа, 5+ ответов). */
+function responseWordRu(count: number): string {
+  const lastDigit = count % 10;
+  const lastTwo = count % 100;
+  if (lastDigit === 1 && lastTwo !== 11) return "ответ";
+  if (lastDigit >= 2 && lastDigit <= 4 && !(lastTwo >= 12 && lastTwo <= 14)) return "ответа";
+  return "ответов";
+}
+
 export const ru: Dictionary = {
   siteHeader: {
     menu: "Меню",
@@ -438,6 +448,59 @@ export const ru: Dictionary = {
       namePrompts: ["Как называется мероприятие?"],
       dateLabel: "Когда мероприятие?",
       heroEyebrow: "Вас приглашают",
+    },
+  },
+  email: {
+    common: {
+      greeting: (guestName) => `Привет, ${guestName}!`,
+      rsvpLinkLabel: "Ответить здесь",
+    },
+    guestInvitation: {
+      subject: (eventTitle) => `Вас приглашают на ${eventTitle}`,
+      invitedTo: (eventTitle) => `Вас приглашают на <strong>${eventTitle}</strong>.`,
+    },
+    guestReminder: {
+      subject: (eventTitle) => `Не забудьте подтвердить участие в ${eventTitle}`,
+      reminderText: (eventTitle) =>
+        `Просто дружеское напоминание — мы пока не получили от вас ответ насчёт <strong>${eventTitle}</strong>.`,
+    },
+    guestConfirmation: {
+      acceptedSubject: (eventTitle) => `Ваше участие в ${eventTitle} подтверждено`,
+      declinedSubject: (eventTitle) => `Ответ получен для ${eventTitle}`,
+      acceptedBody: (guestName, eventTitle) =>
+        `<p>Привет, ${guestName}!</p><p>Спасибо, увидимся там! Ваше участие в <strong>${eventTitle}</strong> подтверждено.</p>`,
+      declinedBody: (guestName, eventTitle) =>
+        `<p>Привет, ${guestName}!</p><p>Спасибо, что сообщили — жаль, что вы не сможете быть на <strong>${eventTitle}</strong>. Будем скучать!</p>`,
+    },
+    hostNewRsvp: {
+      acceptedSubject: (guestName) => `Новый ответ: ${guestName} придёт`,
+      declinedSubject: (guestName) => `Новый ответ: ${guestName} не сможет прийти`,
+      headline: (guestName, eventTitle, attending) =>
+        `<p><strong>${guestName}</strong> ${attending ? "придёт" : "не сможет прийти"} на ${eventTitle}.</p>`,
+      responseSummary: (total, yes, no) =>
+        `<p style="color:#6b7280;font-size:13px;">${total} ${responseWordRu(total)} на данный момент: ${yes} да, ${no} нет.</p>`,
+      partySize: (size) => `<p>Количество человек: ${size}</p>`,
+      namesLabel: (names) => `<p>Имена: ${names}</p>`,
+      allergiesLabel: (text) => `<p>Аллергии / особенности питания: ${text}</p>`,
+      messageLabel: (text) => `<p>Сообщение: ${text}</p>`,
+    },
+    hostDigest: {
+      subject: (count, eventTitle) => `Сводка RSVP: ${count} нов${count === 1 ? "ый" : "ых"} ${responseWordRu(count)} для ${eventTitle}`,
+      intro: (count, eventTitle) =>
+        `<p>${count} нов${count === 1 ? "ый" : "ых"} ${responseWordRu(count)} для <strong>${eventTitle}</strong> с последнего обновления:</p>`,
+      guestYes: (guestName) => `<li>${guestName} — да</li>`,
+      guestNo: (guestName) => `<li>${guestName} — нет</li>`,
+      runningTotal: (total, yes, no) =>
+        `<p style="color:#6b7280;font-size:13px;">Всего: ${total} ответили, ${yes} да, ${no} нет.</p>`,
+      manageNote: (guestsUrl) =>
+        `<p style="color:#9ca3af;font-size:12px;">Получаете это каждый день? <a href="${guestsUrl}" style="color:#9ca3af;">Можно отключить в любой момент</a> на вкладке «Гости» вашего мероприятия.</p>`,
+    },
+    domainLive: {
+      subject: (hostname) => `Ваш адрес invimbo.com уже работает: ${hostname}`,
+      liveAt: (hostname) => `<p>Сайт вашего мероприятия теперь доступен по адресу <strong>https://${hostname}</strong>, в дополнение к исходной ссылке.</p>`,
+      includedNote:
+        "<p>Этот адрес включён в ваш тариф, пока он активен — ничего продлевать не нужно, никакой дополнительной покупки домена, никакой даты истечения, за которой нужно следить.</p>",
+      questionsNote: "<p>Вопросы? Просто ответьте на это письмо или напишите нам на support@invimbo.com.</p>",
     },
   },
 };
