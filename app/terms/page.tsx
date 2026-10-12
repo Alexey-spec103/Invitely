@@ -72,7 +72,9 @@ export default function TermsPage() {
               charges tied to it. Payments are processed securely by Stripe; we never see or store
               your card details. Prices are shown in EUR at checkout and may change for new
               purchases, but a plan you&apos;ve already bought for an event keeps its features.
-              [Refund policy to be completed by the operating entity.]
+              All purchases are final — we don&apos;t offer refunds, except where required by
+              law or where a charge was made in error on our end. If you believe you were charged
+              incorrectly, contact us and we&apos;ll look into it.
             </p>
           </section>
 
@@ -130,7 +132,13 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-base font-semibold text-stone-900">10. Governing law</h2>
-            <p className="mt-2">[To be completed once the operating entity and its jurisdiction are finalized.]</p>
+            <p className="mt-2">
+              These terms are governed by the laws of Latvia, without regard to conflict-of-law
+              principles. Any dispute arising from these terms or your use of Invimbo falls under
+              the exclusive jurisdiction of the courts of Riga, Latvia, except where mandatory
+              consumer-protection law gives you the right to bring a claim in your own country of
+              residence instead.
+            </p>
           </section>
 
           <section>
