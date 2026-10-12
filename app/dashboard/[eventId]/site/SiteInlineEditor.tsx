@@ -3173,7 +3173,13 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
               return (
                 <li
                   key={block.key}
-                  className="mt-3 flex items-center gap-2 border-b border-[var(--dash-border)] px-2 pb-1 text-xs font-bold uppercase tracking-wide text-[var(--dash-accent)] first:mt-0"
+                  // Previously border-[var(--dash-border)] -- the same soft
+                  // cream tone as the panel's own background, which made the
+                  // line between modules (Timeline -> Map, etc.) nearly
+                  // invisible at a glance (user report, 2026-10-12). A dark,
+                  // explicit color reads as a real divider regardless of
+                  // which theme vars this panel is running under.
+                  className="mt-3 flex items-center gap-2 border-b-2 border-[#2b241d] px-2 pb-1 text-xs font-bold uppercase tracking-wide text-[var(--dash-accent)] first:mt-0"
                 >
                   {block.icon && (
                     <span aria-hidden="true" className="text-sm leading-none">
