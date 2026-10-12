@@ -71,8 +71,8 @@ export default function PrivacyPage() {
                 choose to send them, guest invitation emails.
               </li>
               <li>
-                If you use a paid plan once payments launch, a payment processor will handle your
-                card details directly — we never see or store full card numbers ourselves.
+                If you use a paid plan, Stripe handles your card details directly — we never see
+                or store full card numbers ourselves.
               </li>
             </ul>
             <p className="mt-2">We don&apos;t sell your data, or your guests&apos; data, to anyone.</p>
@@ -81,8 +81,9 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-base font-semibold text-stone-900">4. Your rights</h2>
             <p className="mt-2">
-              You can access, correct, export, or delete your account data at any time from your
-              dashboard, or by contacting us. If you&apos;re in the EU/EEA, UK, or another
+              You can delete your account and all its data at any time from your dashboard. To
+              access, correct, or export your data, contact us and we&apos;ll handle it directly.
+              If you&apos;re in the EU/EEA, UK, or another
               jurisdiction with similar protections, this includes the rights guaranteed under
               the GDPR (or that jurisdiction&apos;s equivalent) — including the right to lodge a
               complaint with your local data protection authority.
@@ -141,9 +142,9 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-base font-semibold text-stone-900">10. Changes to this policy</h2>
             <p className="mt-2">
-              We may update this policy as the product changes (for example, once payments
-              launch). Material changes will be reflected here with an updated date; continuing
-              to use Invimbo after a change means you accept the update.
+              We may update this policy as the product changes. Material changes will be
+              reflected here with an updated date; continuing to use Invimbo after a change means
+              you accept the update.
             </p>
           </section>
 
