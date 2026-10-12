@@ -4,8 +4,18 @@ import { Children, useEffect, useRef, useState, type ReactNode, type RefObject }
 import { motion, type Target } from "framer-motion";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
-const HIDDEN: Target = { opacity: 0, y: 8, filter: "blur(4px)" };
-const VISIBLE: Target = { opacity: 1, y: 0, filter: "blur(0px)" };
+// performance-audit (2026-10-12): previously also animated filter:blur() for
+// a soft-focus-in touch -- opacity/transform are compositor-only (the
+// browser can animate them on the GPU without repainting), but filter is
+// not, so a blurred region repaints every frame instead. This component
+// mounts per-word/per-line across ~14 Hero variants plus every Letter
+// section, all reveal-on-scroll -- on the lower-end mobile devices this
+// product's actual guest audience (not just hosts) is likely to carry,
+// several of these animating in close together during a fast scroll was a
+// plausible jank source. Dropped the filter, kept the rest -- still reads
+// as a real reveal, just compositor-cheap everywhere it's used.
+const HIDDEN: Target = { opacity: 0, y: 8 };
+const VISIBLE: Target = { opacity: 1, y: 0 };
 // Spring, not a bare ease -- same enter recipe RevealOnScroll uses, `bounce: 0`
 // keeps it production-subtle rather than reading as playful overshoot.
 const ITEM_TRANSITION = { type: "spring" as const, duration: 0.5, bounce: 0 };

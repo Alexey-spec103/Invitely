@@ -322,7 +322,12 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
         className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
         noValidate
       >
-        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+        {/* accessibility-audit (2026-10-12): a sighted user sees this counter
+            update on every step change; a screen-reader user previously got
+            no signal at all that the step/page had changed beyond whatever
+            content happened to differ. aria-live="polite" announces it
+            without interrupting whatever the user was already doing. */}
+        <p className="text-xs font-medium uppercase tracking-wide text-gray-500" aria-live="polite">
           {t.stepOf(step + 1, STEPS.length)}
         </p>
 
@@ -357,6 +362,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                           key={type.id}
                           type="button"
                           onClick={() => setValue("eventType", type.id, { shouldValidate: true })}
+                          aria-pressed={isSelected}
                           className={
                             isSelected
                               ? "flex items-center gap-2 rounded-lg border-2 border-rose-600 p-3 text-left transition"
