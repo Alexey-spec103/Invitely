@@ -20,6 +20,33 @@ function appDomain(): string {
   return process.env.NEXT_PUBLIC_APP_DOMAIN ?? "invimbo.com";
 }
 
+/** Thin wrappers around the two locked-column RPCs (see
+ * 20261012120000_lock_custom_domain_verified_at.sql), used by every
+ * function below that touches custom_domain_verified_at. Centralizing
+ * the error-handling here isn't just DRY -- it's what makes the
+ * fail-closed call ordering below safe to reason about: every call site
+ * raises the same way, so "RPC first, plain update second" behaves
+ * identically everywhere it's used. */
+async function markCustomDomainVerified(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  eventId: string
+): Promise<void> {
+  const { error } = await supabase.rpc("mark_custom_domain_verified", { p_event_id: eventId });
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function clearCustomDomainVerification(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  eventId: string
+): Promise<void> {
+  const { error } = await supabase.rpc("clear_custom_domain_verification", { p_event_id: eventId });
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
 interface ClaimInvimboSubdomainInput {
   eventId: string;
   subdomain: string;
@@ -79,6 +106,19 @@ export async function claimInvimboSubdomain(input: ClaimInvimboSubdomainInput): 
     throw new Error("That address is already taken — try another.");
   }
 
+  // code-review (2026-10-12): custom_domain/custom_domain_verified_at used
+  // to be one atomic .update() -- splitting the verified-at write into its
+  // own locked-column RPC (above) turned this into multiple network calls,
+  // which opens a partial-failure window if the call order isn't
+  // deliberate. Clearing verified_at FIRST, before touching custom_domain
+  // at all, means every possible failure point leaves this row
+  // fail-closed (unverified) rather than fail-open (a stale verified_at
+  // surviving onto a hostname it was never actually checked against):
+  // fails here -> nothing changed yet; fails on the update below -> old
+  // hostname, already unverified; fails on the final mark-verified call ->
+  // new hostname, correctly unverified and safe to retry.
+  await clearCustomDomainVerification(supabase, input.eventId);
+
   const { error } = await supabase
     .from("events")
     .update({
@@ -98,12 +138,7 @@ export async function claimInvimboSubdomain(input: ClaimInvimboSubdomainInput): 
   // can only be set through this ownership-checked RPC. Legitimate here with
   // no DNS proof needed: this is a free invimbo.com subdomain, which we
   // already own outright.
-  const { error: verifyError } = await supabase.rpc("mark_custom_domain_verified", {
-    p_event_id: input.eventId,
-  });
-  if (verifyError) {
-    throw new Error(verifyError.message);
-  }
+  await markCustomDomainVerified(supabase, input.eventId);
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
 
@@ -149,6 +184,16 @@ export async function requestDomainVerification(input: RequestDomainVerification
     throw new Error("Not authenticated");
   }
 
+  // code-review (2026-10-12): cleared BEFORE the domain itself changes, not
+  // after -- a fresh domain has no proof behind it yet regardless of
+  // whether the previous one did, and clearing first means a failure on
+  // the update below just leaves the OLD domain unverified (safe,
+  // retryable) instead of leaving the NEW domain carrying a stale
+  // verified_at it was never actually checked against (see
+  // claimInvimboSubdomain for the full reasoning -- same fail-closed
+  // ordering, applied here too).
+  await clearCustomDomainVerification(supabase, input.eventId);
+
   const { error } = await supabase
     .from("events")
     .update({
@@ -159,17 +204,6 @@ export async function requestDomainVerification(input: RequestDomainVerification
 
   if (error) {
     throw new Error(error.message);
-  }
-
-  // Resets verified_at for the new domain via the same locked-column RPC
-  // used everywhere else this column changes (see claimInvimboSubdomain) --
-  // a fresh domain has no proof behind it yet, regardless of whether the
-  // previous one did.
-  const { error: clearError } = await supabase.rpc("clear_custom_domain_verification", {
-    p_event_id: input.eventId,
-  });
-  if (clearError) {
-    throw new Error(clearError.message);
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
@@ -228,14 +262,10 @@ export async function checkDomainVerification(input: CheckDomainVerificationInpu
   // trusted server code can perform -- this RPC just records that it
   // succeeded. It can't be skipped to fake a verification: the column
   // itself is locked against direct writes from this client (see
-  // claimInvimboSubdomain for the full reasoning).
-  const { error: updateError } = await supabase.rpc("mark_custom_domain_verified", {
-    p_event_id: input.eventId,
-  });
-
-  if (updateError) {
-    throw new Error(updateError.message);
-  }
+  // claimInvimboSubdomain for the full reasoning). Single call, no
+  // custom_domain write alongside it in this function -- no ordering
+  // concern here the way the other three functions have.
+  await markCustomDomainVerified(supabase, input.eventId);
 
   revalidatePath(`/dashboard/${input.eventId}/site`);
 }
@@ -255,6 +285,10 @@ export async function clearDomainVerification(input: ClearDomainVerificationInpu
     throw new Error("Not authenticated");
   }
 
+  // Cleared first -- same fail-closed ordering as the other three
+  // functions above (see claimInvimboSubdomain for the full reasoning).
+  await clearCustomDomainVerification(supabase, input.eventId);
+
   const { error } = await supabase
     .from("events")
     .update({
@@ -265,13 +299,6 @@ export async function clearDomainVerification(input: ClearDomainVerificationInpu
 
   if (error) {
     throw new Error(error.message);
-  }
-
-  const { error: clearError } = await supabase.rpc("clear_custom_domain_verification", {
-    p_event_id: input.eventId,
-  });
-  if (clearError) {
-    throw new Error(clearError.message);
   }
 
   revalidatePath(`/dashboard/${input.eventId}/site`);

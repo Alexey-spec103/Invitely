@@ -39,25 +39,37 @@ export async function submitRsvp(
   // sails through both uncontested -- this closes that gap (form-strategy
   // audit, 2026-10-12). x-forwarded-for's first entry is the original
   // client IP (Vercel appends proxy hops after it); falls back to
-  // x-real-ip, then a constant so a request with neither header -- e.g.
-  // local dev without a proxy in front -- still gets rate-limited as "one
-  // shared IP" rather than skipping the check entirely.
+  // x-real-ip.
   const headerList = await headers();
   const forwardedFor = headerList.get("x-forwarded-for");
-  const ipAddress = forwardedFor?.split(",")[0]?.trim() || headerList.get("x-real-ip") || "unknown";
-  const { data: withinLimit, error: rateLimitError } = await supabase.rpc("check_and_log_rsvp_submission", {
-    p_event_id: eventId,
-    p_ip_address: ipAddress,
-  });
-  if (rateLimitError) {
-    // Fails open, not closed -- a logging/RPC outage shouldn't block every
-    // real guest's RSVP; it only means this one submission went unlogged
-    // for rate-limiting purposes.
-    console.error("submitRsvp rate-limit check failed", rateLimitError);
-  } else if (withinLimit === false) {
-    // Same silent-success pattern as the honeypot/timing checks above: a
-    // bot gets no signal it was specifically rate-limited.
-    return { ok: true };
+  const ipAddress = forwardedFor?.split(",")[0]?.trim() || headerList.get("x-real-ip");
+  if (!ipAddress) {
+    // code-review (2026-10-12): a shared "unknown" bucket would rate-limit
+    // every visitor to this event together once any 5 of them (real or
+    // not) had submitted within the window -- a real guest could get
+    // silently dropped by other real guests' traffic, not just by a bot's.
+    // Neither header is expected to be missing in production behind
+    // Vercel; logging makes a misconfigured proxy visible instead of
+    // silently degrading every event's RSVP form to "5 total submissions
+    // per 10 minutes." Same fails-open philosophy as the RPC-error branch
+    // below -- skipping the check here only means this one request went
+    // unrated, not that real guests get blocked.
+    console.warn("submitRsvp: no client IP header present, skipping rate limit for this request");
+  } else {
+    const { data: withinLimit, error: rateLimitError } = await supabase.rpc("check_and_log_rsvp_submission", {
+      p_event_id: eventId,
+      p_ip_address: ipAddress,
+    });
+    if (rateLimitError) {
+      // Fails open, not closed -- a logging/RPC outage shouldn't block
+      // every real guest's RSVP; it only means this one submission went
+      // unlogged for rate-limiting purposes.
+      console.error("submitRsvp rate-limit check failed", rateLimitError);
+    } else if (withinLimit === false) {
+      // Same silent-success pattern as the honeypot/timing checks above: a
+      // bot gets no signal it was specifically rate-limited.
+      return { ok: true };
+    }
   }
 
   // A guest arriving via the site's general share link (no personal invite
