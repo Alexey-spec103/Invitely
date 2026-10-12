@@ -46,6 +46,14 @@
 }
 
 .divider {
+  /* cross-theme QA (2026-10-12): a bare <span> defaults to display:inline,
+     which makes the browser ignore width/height entirely on a
+     non-replaced inline element -- this collapsed to an invisible point
+     instead of the intended divider line, reading as a missing separator
+     between the two names ("Zara    Leo" with just a wide gap, confirmed
+     live on modern-cobalt). inline-block is enough to make width/height
+     apply without disturbing the surrounding inline-flow layout. */
+  display: inline-block;
   width: 2rem;
   height: 1px;
   background: var(--theme-accent);
