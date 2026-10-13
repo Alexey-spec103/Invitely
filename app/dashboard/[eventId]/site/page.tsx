@@ -826,13 +826,17 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           </div>
         ))}
 
-      {/* post-payment-guidance audit (2026-10-12): the celebratory card
-          above only ever shows once, on the `checkout=success` redirect --
-          every later visit, a paid host has nowhere to re-find "how does
-          sending actually work." This is that permanent equivalent. */}
-      {hasBasicAccess && checkout !== "success" && (
+      {/* post-payment-guidance audit (2026-10-12) + direct feedback
+          (2026-10-13): the celebratory card above only ever shows once, on
+          the `checkout=success` redirect -- every later visit, a host had
+          nowhere to re-find "where's my actual link." This is that
+          permanent equivalent, on every plan (not just hasBasicAccess) --
+          a Free host's link is just as real, only badged. */}
+      {checkout !== "success" && (
         <SendingGuideCard
           eventId={event.id}
+          slug={event.slug}
+          appDomain={process.env.NEXT_PUBLIC_APP_DOMAIN ?? "invimbo.com"}
           hasPremiumAccess={hasPremiumAccess}
           rsvpEmailNotifications={rsvpEmailNotifications}
         />

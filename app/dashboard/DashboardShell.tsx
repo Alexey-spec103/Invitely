@@ -100,22 +100,29 @@ function CopyLinkButton({ slug, customDomain }: { slug: string; customDomain?: s
     }
   };
 
+  // Direct feedback (2026-10-13): this used to match every other plain
+  // outline pill in the header (same border/surface as "See what guests
+  // see") -- next to PlanBadge and PublishToggle's own solid accent fills,
+  // it read as just another secondary link, not the one thing a host
+  // should always be able to find at a glance. Solid accent fill now,
+  // matching the weight those two already carry -- all three genuinely are
+  // primary actions here, not one standout among secondary ones.
   return (
     <button
       type="button"
       onClick={handleCopy}
       title={customDomain ? `https://${customDomain}` : `/e/${slug}`}
-      className="flex h-9 items-center gap-1.5 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 text-xs font-semibold text-[var(--dash-text)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+      className="flex h-9 items-center gap-1.5 rounded-full bg-[var(--dash-accent)] px-3 text-xs font-bold text-[var(--dash-accent-contrast)] shadow-[0_4px_12px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)]"
     >
       {copied ? (
         <>
-          <Check className="h-[16px] w-[16px] shrink-0 text-emerald-600" />
+          <Check className="h-[16px] w-[16px] shrink-0" />
           <span>Copied!</span>
         </>
       ) : (
         <>
           <Copy className="h-[16px] w-[16px] shrink-0" />
-          <span className="hidden sm:inline">Copy your link</span>
+          <span className="hidden sm:inline">Copy your invitation link</span>
           <span className="sm:hidden">Copy link</span>
         </>
       )}
