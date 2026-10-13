@@ -702,6 +702,23 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             before this fix. */}
         <div className="mx-auto w-full">
             <SiteInlineEditor
+              // changeEventType (EventTypeSwitcher) writes a fresh event_type/
+              // subtitle_names to the DB and calls router.refresh(), but this
+              // is a client component already mounted -- its own `useState`
+              // drafts (weddingDataDraft and friends) only ever read their
+              // initial prop value once, at mount, and React keeps the same
+              // instance across a refresh (no remount) since neither eventId
+              // nor this component's position in the tree changed. Confirmed
+              // live: switching Wedding -> Birthday correctly updated the
+              // "Birthday data" form (Emma), but the Hero preview kept
+              // rendering "Emma & James" -- weddingDataDraft.name2 was still
+              // the stale pre-switch "James", so heroNames' `name2 ? [a,b] :
+              // [a]` check below stayed true. Keying on event_type forces a
+              // clean remount (fresh weddingDataDraft, heroHidden, etc.) on
+              // exactly the one action that actually invalidates that drafted
+              // state, instead of only patching the one field that happened
+              // to get noticed first.
+              key={event.event_type}
               eventId={event.id}
               hasBasicAccess={hasBasicAccess}
               theme={theme}
