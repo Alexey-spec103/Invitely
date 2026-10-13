@@ -15,6 +15,28 @@
   text-align: center;
 }
 
+/* theme-photo-fallback QA report (2026-10-13): optional square photo,
+   only rendered when a host has a photo set (see ArtDecoCrest.tsx). An
+   octagonal stepped-corner clip-path (the classic deco frame cut) instead
+   of a round ring, to match the zigzag bands' own geometric register. */
+.photoFrame {
+  display: block;
+  width: 5.5rem;
+  height: 5.5rem;
+  margin: 0 auto 1rem;
+  padding: 0.25rem;
+  background-color: var(--theme-accent);
+  clip-path: polygon(12% 0%, 88% 0%, 100% 12%, 100% 88%, 88% 100%, 12% 100%, 0% 88%, 0% 12%);
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  clip-path: polygon(12% 0%, 88% 0%, 100% 12%, 100% 88%, 88% 100%, 12% 100%, 0% 88%, 0% 12%);
+}
+
 /* A small circular emblem crowning the plate -- the "crest" the layout
    name promises, in the same abstract-geometric register as the zigzag
    bands (concentric contour lines, not an organic wreath). */
@@ -77,6 +99,11 @@
   .date {
     font-size: 0.85rem;
     margin-bottom: 2.5rem;
+  }
+
+  .photoFrame {
+    width: 6.5rem;
+    height: 6.5rem;
   }
 }
 

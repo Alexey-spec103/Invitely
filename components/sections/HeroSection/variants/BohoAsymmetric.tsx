@@ -2,6 +2,7 @@
 
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import StaggerReveal from "@/components/StaggerReveal";
 import { BOHO_ASYMMETRIC_VINE_DECOR, BOHO_ASYMMETRIC_CORNER_DECOR } from "@/lib/themes/decorMotifs";
@@ -33,8 +34,13 @@ import styles from "./BohoAsymmetric.module.css";
  * original two-corner layout instead of boho's full-edge vine. This
  * variant is bottom-anchored for the theme gallery crop (unlike
  * Watercolor*'s centered variants), so hard corner offsets are safe here --
- * confirmed by the existing masked fallback already using them. */
-export default function BohoAsymmetric({ names, eventDate, styleOverrides, themeCategory }: HeroSectionVariantProps) {
+ * confirmed by the existing masked fallback already using them.
+ *
+ * theme-photo-fallback QA report (2026-10-13): optional round medallion
+ * above the names, when a host has a photo -- same double-ring technique as
+ * BotanicalFrame's, just left-aligned (no auto margin) to match this
+ * variant's own bottom-left anchoring instead of centered. */
+export default function BohoAsymmetric({ names, eventDate, photoUrl, styleOverrides, themeCategory }: HeroSectionVariantProps) {
   const { editable } = useEditableField();
   const vineAsset = themeCategory ? BOHO_ASYMMETRIC_VINE_DECOR[themeCategory] : undefined;
   const cornerAssets = themeCategory ? BOHO_ASYMMETRIC_CORNER_DECOR[themeCategory] : undefined;
@@ -54,6 +60,11 @@ export default function BohoAsymmetric({ names, eventDate, styleOverrides, theme
         </>
       )}
       <div className={styles.content}>
+        {photoUrl && (
+          <span className={styles.medallion}>
+            <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
+          </span>
+        )}
         {editable ? (
           <p className={styles.names}>
             <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />

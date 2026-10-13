@@ -2,6 +2,7 @@
 
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import StaggerReveal from "@/components/StaggerReveal";
 import styles from "./EditorialMinimal.module.css";
@@ -15,13 +16,23 @@ import styles from "./EditorialMinimal.module.css";
  * either way, no per-theme branching). Safe to hard-pin to the corner:
  * this variant is bottom-anchored for the theme gallery's crop (unlike
  * MinimalText/WatercolorBloom's centered variants), matching the existing
- * .rule element's own already-fine positioning. */
-export default function EditorialMinimal({ names, eventDate, styleOverrides, eyebrow }: HeroSectionVariantProps) {
+ * .rule element's own already-fine positioning.
+ *
+ * theme-photo-fallback QA report (2026-10-13): optional small inset photo
+ * above the eyebrow, when a host has a photo -- a plain thin border, no
+ * ring ornament, matching this variant's own hairline-rule restraint
+ * rather than introducing a different decorative language. */
+export default function EditorialMinimal({ names, eventDate, photoUrl, styleOverrides, eyebrow }: HeroSectionVariantProps) {
   const { editable } = useEditableField();
   return (
     <section className={styles.section}>
       <span className={styles.wave} aria-hidden="true" />
       <div className={styles.block}>
+        {photoUrl && (
+          <span className={styles.photoFrame}>
+            <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
+          </span>
+        )}
         <span className={styles.eyebrow}>
           <EditableText field="eyebrow" value={eyebrow || "Save the date"} style={styleOverrides?.["eyebrow"]} />
         </span>

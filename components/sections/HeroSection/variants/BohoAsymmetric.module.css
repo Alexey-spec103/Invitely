@@ -98,6 +98,38 @@
   text-align: left;
 }
 
+/* theme-photo-fallback QA report (2026-10-13): optional round medallion,
+   only rendered when a host has a photo set (see BohoAsymmetric.tsx). Same
+   double thin-ring technique as BotanicalFrame's medallion, left-aligned
+   (no auto margin) to match this variant's own left-anchored content. */
+.medallion {
+  display: block;
+  position: relative;
+  width: 6rem;
+  height: 6rem;
+  margin: 0 0 1rem;
+  border-radius: 50%;
+  padding: 0.3rem;
+  border: 1px solid var(--theme-accent);
+}
+
+.medallion::before {
+  content: "";
+  position: absolute;
+  inset: -0.3rem;
+  border-radius: 50%;
+  border: 1px solid var(--theme-accent);
+  opacity: 0.5;
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 /* Decorative tier -- was backwards before (plain heading font here, script
    on the date below); the reference's one script moment belongs on the
    names, not a functional label. */
@@ -145,6 +177,11 @@
 
   .date {
     font-size: 0.9rem;
+  }
+
+  .medallion {
+    width: 7.5rem;
+    height: 7.5rem;
   }
 }
 

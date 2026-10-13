@@ -2,6 +2,7 @@
 
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import StaggerReveal from "@/components/StaggerReveal";
 import styles from "./MonogramCenter.module.css";
@@ -16,6 +17,7 @@ function getInitials(names: string[]): string {
 export default function MonogramCenter({
   names,
   eventDate,
+  photoUrl,
   monogramInitials,
   styleOverrides,
 }: HeroSectionVariantProps) {
@@ -24,6 +26,17 @@ export default function MonogramCenter({
 
   return (
     <section className={styles.section}>
+      {/* theme-photo-fallback QA report (2026-10-13): optional small round
+          medallion above the monogram, when a host has a photo -- a single
+          hairline ring, separate from the monogram itself (not wrapped
+          around it) so the monogram keeps its own "no border chrome"
+          editorial-typography look documented below. Omitted when no photo
+          is set. */}
+      {photoUrl && (
+        <span className={styles.medallion}>
+          <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
+        </span>
+      )}
       {/* Auto-derived from names (or an explicit override) -- not itself an
           editable field; editing "names" below updates this for free. */}
       <div className={styles.monogram} aria-hidden="true">

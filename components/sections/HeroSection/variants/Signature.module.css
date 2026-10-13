@@ -16,6 +16,28 @@
   background: var(--theme-accent);
 }
 
+/* theme-photo-fallback QA report (2026-10-13): optional round medallion,
+   only rendered when a host has a photo set (see Signature.tsx). A single
+   thin ring (not BotanicalFrame's double ring) -- this composition already
+   has the sprig and two rules framing the names, so a second, quieter ring
+   crowning the whole thing keeps it from feeling over-decorated. */
+.medallion {
+  display: block;
+  width: 5.5rem;
+  height: 5.5rem;
+  padding: 0.3rem;
+  border-radius: 50%;
+  border: 1px solid var(--theme-accent);
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 /* A single eucalyptus sprig above the top rule -- a quiet botanical
    accent crowning the composition, not a full frame. */
 .sprig {
@@ -83,6 +105,11 @@
   }
 
   .sprigColor {
+    width: 6.5rem;
+    height: 6.5rem;
+  }
+
+  .medallion {
     width: 6.5rem;
     height: 6.5rem;
   }

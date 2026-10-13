@@ -2,6 +2,7 @@
 
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import StaggerReveal from "@/components/StaggerReveal";
 import styles from "./ArtDecoCrest.module.css";
@@ -9,12 +10,24 @@ import styles from "./ArtDecoCrest.module.css";
 /** Art Deco: symmetric geometric zigzag bands (pure CSS, not an image)
  * top and bottom of a framed plate, wide-tracked caps -- the geometric
  * repetition is the whole point, distinct from every organic/botanical
- * variant elsewhere in the catalog. */
-export default function ArtDecoCrest({ names, eventDate, styleOverrides }: HeroSectionVariantProps) {
+ * variant elsewhere in the catalog.
+ *
+ * theme-photo-fallback QA report (2026-10-13): optional square photo
+ * crowning the plate, when a host has a photo -- stepped corner ticks
+ * (clip-path, same geometric register as the zigzag bands) instead of a
+ * round frame, so the photo reads as part of this variant's deco language
+ * rather than a generic medallion dropped in. Sits above the existing
+ * .crest, which stays as-is either way. */
+export default function ArtDecoCrest({ names, eventDate, photoUrl, styleOverrides }: HeroSectionVariantProps) {
   const { editable } = useEditableField();
   return (
     <section className={styles.section}>
       <div className={styles.plate}>
+        {photoUrl && (
+          <span className={styles.photoFrame}>
+            <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
+          </span>
+        )}
         <span className={styles.crest} aria-hidden="true" />
         <span className={styles.zigzag} aria-hidden="true" />
         {editable ? (

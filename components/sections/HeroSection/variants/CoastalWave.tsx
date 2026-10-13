@@ -2,6 +2,7 @@
 
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import StaggerReveal from "@/components/StaggerReveal";
 import { CAP_DECOR } from "@/lib/themes/decorMotifs";
@@ -9,13 +10,23 @@ import styles from "./CoastalWave.module.css";
 
 /** Coastal/Mediterranean: content sits in a wide, airy upper zone; a
  * horizon-line wave band anchors the bottom of the viewport -- the only
- * variant with a distinct horizontal "sky over sea" zoning. */
-export default function CoastalWave({ names, eventDate, styleOverrides, themeCategory }: HeroSectionVariantProps) {
+ * variant with a distinct horizontal "sky over sea" zoning.
+ *
+ * theme-photo-fallback QA report (2026-10-13): when a host has a photo, a
+ * small round medallion (same double-ring technique as BotanicalFrame)
+ * crowns the composition above the shell accent -- like a porthole, which
+ * reads as coastal rather than generic. Omitted when no photo is set. */
+export default function CoastalWave({ names, eventDate, photoUrl, styleOverrides, themeCategory }: HeroSectionVariantProps) {
   const { editable } = useEditableField();
   const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
   return (
     <section className={styles.section}>
       <div className={styles.content}>
+        {photoUrl && (
+          <span className={styles.medallion}>
+            <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
+          </span>
+        )}
         {capAsset ? (
           <img className={styles.shellColor} src={capAsset} alt="" aria-hidden="true" />
         ) : (

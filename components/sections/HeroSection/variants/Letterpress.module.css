@@ -25,6 +25,37 @@
   pointer-events: none;
 }
 
+/* theme-photo-fallback QA report (2026-10-13): optional square photo,
+   only rendered when a host has a photo set (see Letterpress.tsx). A
+   double-ruled border (echoing .plate::before's own inset-rule technique)
+   around a desaturated photo, so it reads as an engraved plate insert. */
+.photoFrame {
+  display: block;
+  position: relative;
+  width: 5.5rem;
+  height: 5.5rem;
+  margin: 0 auto 1rem;
+  padding: 0.25rem;
+  border: 1px solid var(--theme-text);
+}
+
+.photoFrame::before {
+  content: "";
+  position: absolute;
+  inset: 0.2rem;
+  border: 1px solid var(--theme-text);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.85) contrast(1.05);
+}
+
 /* A small ribbon stamp above the eyebrow, in the same monochrome ink
    color as the rest of the plate -- reads as a letterpress impression,
    not a colorful modern accent. */
@@ -99,6 +130,11 @@
 
   .date {
     font-size: 0.85rem;
+  }
+
+  .photoFrame {
+    width: 6.5rem;
+    height: 6.5rem;
   }
 }
 

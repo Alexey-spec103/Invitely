@@ -50,6 +50,28 @@
   max-width: 22rem;
 }
 
+/* theme-photo-fallback QA report (2026-10-13): optional round medallion,
+   only rendered when a host has a photo set (see BareBranch.tsx). A single
+   hairline ring, kept small to match this variant's restrained mood. */
+.medallion {
+  display: block;
+  width: 5rem;
+  height: 5rem;
+  margin: 0 0 0.85rem;
+  padding: 0.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--theme-accent);
+  opacity: 0.9;
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .names {
   font-family: var(--theme-font-heading);
   font-weight: 300;
@@ -78,6 +100,11 @@
 
   .date {
     font-size: 0.9rem;
+  }
+
+  .medallion {
+    width: 6rem;
+    height: 6rem;
   }
 }
 

@@ -123,17 +123,39 @@ export const PHOTO_PROMINENT_HERO_VARIANTS = new Set<string>([
 /** QA report (2026-10-13): a host uploaded a photo via the dashboard's
  * shared Hero Photo panel (SiteInlineEditor.tsx -- rendered the same way
  * regardless of which Hero variant is active), saw it save successfully,
- * and it never appeared anywhere -- most Hero variants never read
- * `photoUrl` at all (confirmed: 16 of 25 still don't, as of this
- * writing). This is the allow-list the editor checks before showing that
- * panel at all, so an unsupported variant gets an honest explanation
- * instead of a silent no-op. Superset of PHOTO_PROMINENT_HERO_VARIANTS
- * above (that one is specifically for "built around a photo" catalog
- * messaging; this one is "accepts a photo at all, even as a small
- * accent" -- e.g. botanical-frame's quiet medallion). Grows every time a
- * variant gains photo support; nothing else needs to change when it
- * does, since the editor reads this list rather than hardcoding a count. */
+ * and it never appeared anywhere -- most Hero variants didn't read
+ * `photoUrl` at all at the time (16 of 25). This is the allow-list the
+ * editor checks before showing that panel, so an unsupported variant
+ * would get an honest explanation instead of a silent no-op. Superset of
+ * PHOTO_PROMINENT_HERO_VARIANTS above (that one is specifically for
+ * "built around a photo" catalog messaging; this one is "accepts a photo
+ * at all, even as a small accent" -- e.g. botanical-frame's quiet
+ * medallion, or left-aligned's portrait side panel).
+ *
+ * As of 2026-10-13 every one of the 25 Hero variants has real photo
+ * support -- each in its own fitting treatment (circular medallion,
+ * gold ring, stepped art-deco frame, desaturated letterpress plate,
+ * grid-cell photo, portrait side panel), not one generic shape pasted
+ * everywhere. This list is kept (rather than deleted) so the editor's
+ * defensive check stays correct automatically if a future variant ships
+ * without photo support, instead of silently reopening this exact bug. */
 export const PHOTO_CAPABLE_HERO_VARIANTS = new Set<string>([
   ...PHOTO_PROMINENT_HERO_VARIANTS,
   "botanical-frame",
+  "alcohol-ink-gold",
+  "art-deco-crest",
+  "bare-branch",
+  "boho-asymmetric",
+  "coastal-wave",
+  "editorial-minimal",
+  "folk-ornament",
+  "left-aligned",
+  "letterpress",
+  "minimal-text",
+  "monogram-center",
+  "monogram-crest",
+  "signature",
+  "stacked-grid",
+  "watercolor-bloom",
+  "watercolor-botanical",
 ]);

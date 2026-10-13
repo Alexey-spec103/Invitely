@@ -2,6 +2,7 @@
 
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import StaggerReveal from "@/components/StaggerReveal";
 import styles from "./MonogramCrest.module.css";
@@ -15,10 +16,16 @@ function getInitials(names: string[]): string {
 
 /** Monogram crest: a solid shield/seal shape (CSS clip-path), not an
  * outlined circle -- the initials read as a wax-seal emblem and are the
- * dominant visual element, names/date reduced to a caption underneath. */
+ * dominant visual element, names/date reduced to a caption underneath.
+ *
+ * theme-photo-fallback QA report (2026-10-13): optional small round
+ * medallion crowning the seal, when a host has a photo -- kept separate
+ * from the seal itself (not inside it) so the wax-seal emblem stays the
+ * dominant element this variant is built around. */
 export default function MonogramCrest({
   names,
   eventDate,
+  photoUrl,
   monogramInitials,
   styleOverrides,
 }: HeroSectionVariantProps) {
@@ -27,6 +34,11 @@ export default function MonogramCrest({
 
   return (
     <section className={styles.section}>
+      {photoUrl && (
+        <span className={styles.medallion}>
+          <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
+        </span>
+      )}
       <div className={styles.seal} aria-hidden="true">
         <span className={styles.initials}>{initials}</span>
       </div>

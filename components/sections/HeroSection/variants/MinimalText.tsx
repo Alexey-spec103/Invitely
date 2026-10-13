@@ -2,6 +2,7 @@
 
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import StaggerReveal from "@/components/StaggerReveal";
 import styles from "./MinimalText.module.css";
@@ -20,6 +21,7 @@ function getInitials(names: string[]): string {
 export default function MinimalText({
   names,
   eventDate,
+  photoUrl,
   styleOverrides,
 }: HeroSectionVariantProps) {
   const initials = getInitials(names);
@@ -35,6 +37,15 @@ export default function MinimalText({
       {initials && (
         <span className={styles.monogram} aria-hidden="true">
           {initials}
+        </span>
+      )}
+      {/* theme-photo-fallback QA report (2026-10-13): optional small round
+          medallion above the names, when a host has a photo -- a single
+          hairline ring, quiet enough to sit in front of the oversized ghost
+          monogram without competing with it. Omitted when no photo is set. */}
+      {photoUrl && (
+        <span className={styles.medallion}>
+          <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
         </span>
       )}
       {editable ? (

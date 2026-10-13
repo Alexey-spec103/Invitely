@@ -2,6 +2,7 @@
 
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import StaggerReveal from "@/components/StaggerReveal";
 import { CAP_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
@@ -11,8 +12,13 @@ import styles from "./Signature.module.css";
  * CircularRings and DressCode's ColorPalette already use CAP_DECOR for, just
  * in-flow here (a flex column) instead of absolutely positioned over a
  * wrapper, so it composes its own sizing rather than decorAnchors' capAbove
- * anchor (that anchor assumes position:absolute). */
-export default function Signature({ names, eventDate, styleOverrides, themeCategory }: HeroSectionVariantProps) {
+ * anchor (that anchor assumes position:absolute).
+ *
+ * theme-photo-fallback QA report (2026-10-13): optional small round
+ * medallion crowning the whole composition, above the sprig, when a host
+ * has a photo -- a single thin ring (not BotanicalFrame's double ring) to
+ * stay quiet next to the sprig + double rule already framing the names. */
+export default function Signature({ names, eventDate, photoUrl, styleOverrides, themeCategory }: HeroSectionVariantProps) {
   const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
   const maskAccent = !capAsset && themeCategory ? CATEGORY_MASK_ACCENT[themeCategory] : undefined;
   // Word-by-word stagger only on the public site -- in the dashboard editor
@@ -35,6 +41,11 @@ export default function Signature({ names, eventDate, styleOverrides, themeCateg
   );
   return (
     <section className={styles.section}>
+      {photoUrl && (
+        <span className={styles.medallion}>
+          <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
+        </span>
+      )}
       {capAsset ? (
         <img className={styles.sprigColor} src={capAsset} alt="" aria-hidden="true" />
       ) : (

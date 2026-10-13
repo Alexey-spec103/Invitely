@@ -2,6 +2,7 @@
 
 import type { HeroSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import EditablePhoto from "../EditablePhoto";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import StaggerReveal from "@/components/StaggerReveal";
 import { WATERCOLOR_BLOOM_DECOR, WATERCOLOR_BLOOM_RING } from "@/lib/themes/decorMotifs";
@@ -28,8 +29,14 @@ import styles from "./WatercolorBloom.module.css";
  * asset is a solid spray/branch/scroll cluster with no open middle, and
  * gets `.blobColorCorner`'s off-center placement instead. Confirmed live,
  * twice, that centering a solid-cluster asset the same way as the wreath
- * runs the artwork directly through the names. */
-export default function WatercolorBloom({ names, eventDate, styleOverrides, themeCategory }: HeroSectionVariantProps) {
+ * runs the artwork directly through the names.
+ *
+ * theme-photo-fallback QA report (2026-10-13): optional round medallion
+ * above the names, when a host has a photo (same double-ring technique as
+ * BotanicalFrame). Rendered the same way regardless of ring/corner category
+ * -- it sits inside `.content` with the text, not inside the blob itself,
+ * so it doesn't need to know which decor layout is active. */
+export default function WatercolorBloom({ names, eventDate, photoUrl, styleOverrides, themeCategory }: HeroSectionVariantProps) {
   const { editable } = useEditableField();
   const decor = themeCategory ? WATERCOLOR_BLOOM_DECOR[themeCategory] : undefined;
   const isRing = themeCategory ? !!WATERCOLOR_BLOOM_RING[themeCategory] : false;
@@ -57,6 +64,11 @@ export default function WatercolorBloom({ names, eventDate, styleOverrides, them
         </>
       )}
       <div className={styles.content}>
+        {photoUrl && (
+          <span className={styles.medallion}>
+            <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
+          </span>
+        )}
         {editable ? (
           <p className={styles.names}>
             <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />

@@ -10,6 +10,27 @@
   color: var(--theme-text);
 }
 
+/* theme-photo-fallback QA report (2026-10-13): optional round medallion,
+   only rendered when a host has a photo set (see MonogramCenter.tsx). A
+   single hairline ring, kept separate from .monogram below -- see that
+   rule's own comment on why the monogram itself stays frame-free. */
+.medallion {
+  display: block;
+  width: 5.5rem;
+  height: 5.5rem;
+  padding: 0.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--theme-accent);
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 /* The decorative tier: genuine script/cursive, sized as the section's one
    dominant display moment -- no circular badge/border chrome around it,
    just the letters on the flat background (weddingpost's own monogram
@@ -73,6 +94,11 @@
 
   .monogram {
     font-size: 5.5rem;
+  }
+
+  .medallion {
+    width: 6.5rem;
+    height: 6.5rem;
   }
 
   .names {

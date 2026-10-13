@@ -34,6 +34,26 @@
   text-align: left;
 }
 
+/* theme-photo-fallback QA report (2026-10-13): optional inset photo, only
+   rendered when a host has a photo set (see EditorialMinimal.tsx). A plain
+   thin border -- no ring ornament, matching the hairline-rule language
+   .rule below already uses. */
+.photoFrame {
+  display: block;
+  width: 5.5rem;
+  height: 5.5rem;
+  margin: 0 0 1rem;
+  border: 1px solid var(--theme-text);
+  padding: 0.2rem;
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .eyebrow {
   display: block;
   font-family: var(--theme-font-body);
@@ -92,6 +112,11 @@
 
   .date {
     font-size: 0.85rem;
+  }
+
+  .photoFrame {
+    width: 6.5rem;
+    height: 6.5rem;
   }
 }
 
