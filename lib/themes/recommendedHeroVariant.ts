@@ -119,3 +119,21 @@ export const PHOTO_PROMINENT_HERO_VARIANTS = new Set<string>([
   "postage-stamp",
   "victorian-cameo",
 ]);
+
+/** QA report (2026-10-13): a host uploaded a photo via the dashboard's
+ * shared Hero Photo panel (SiteInlineEditor.tsx -- rendered the same way
+ * regardless of which Hero variant is active), saw it save successfully,
+ * and it never appeared anywhere -- most Hero variants never read
+ * `photoUrl` at all (confirmed: 16 of 25 still don't, as of this
+ * writing). This is the allow-list the editor checks before showing that
+ * panel at all, so an unsupported variant gets an honest explanation
+ * instead of a silent no-op. Superset of PHOTO_PROMINENT_HERO_VARIANTS
+ * above (that one is specifically for "built around a photo" catalog
+ * messaging; this one is "accepts a photo at all, even as a small
+ * accent" -- e.g. botanical-frame's quiet medallion). Grows every time a
+ * variant gains photo support; nothing else needs to change when it
+ * does, since the editor reads this list rather than hardcoding a count. */
+export const PHOTO_CAPABLE_HERO_VARIANTS = new Set<string>([
+  ...PHOTO_PROMINENT_HERO_VARIANTS,
+  "botanical-frame",
+]);

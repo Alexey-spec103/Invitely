@@ -43,6 +43,7 @@ import { TravelSection } from "@/components/sections/TravelSection";
 import type { TravelItem } from "@/components/sections/TravelSection";
 import type { Tables } from "@/lib/supabase/database.types";
 import PhotoDropzone from "@/components/ui/PhotoDropzone";
+import { PHOTO_CAPABLE_HERO_VARIANTS } from "@/lib/themes/recommendedHeroVariant";
 import {
   EditableFieldProvider,
   type EditableFieldContextValue,
@@ -2127,7 +2128,19 @@ export default function SiteInlineEditor({
           }
         />
         <div id="hero-photo-controls" className="px-4 pb-4 scroll-mt-24" onClick={(event) => event.stopPropagation()}>
-          <PhotoDropzone value={heroPhoto || undefined} onChange={(url) => setHeroPhoto(url ?? "")} label="📷 Photo" />
+          {PHOTO_CAPABLE_HERO_VARIANTS.has(heroVariant) ? (
+            <PhotoDropzone value={heroPhoto || undefined} onChange={(url) => setHeroPhoto(url ?? "")} label="📷 Photo" />
+          ) : (
+            // theme-photo-fallback QA report (2026-10-13): this Hero layout doesn't
+            // render a photo at all -- showing the upload control here used to let a
+            // host upload one, see it save, and never find out it had gone nowhere.
+            // Switch to "Photo Invitation" / another PHOTO_CAPABLE_HERO_VARIANTS layout
+            // (Layout filter in the theme gallery) to use a photo in the Hero section.
+            <p className="rounded-xl border border-dashed border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2.5 text-xs text-[var(--dash-text-muted)]">
+              This layout doesn&apos;t display a photo in the Hero section. Pick a &ldquo;Photo
+              Invitation&rdquo; style from the theme gallery if you&apos;d like your photo front and center.
+            </p>
+          )}
         </div>
 
         <SectionHeader
