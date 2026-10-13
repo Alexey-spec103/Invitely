@@ -483,13 +483,17 @@ export const pl: Dictionary = {
     hostDigest: {
       subject: (count, eventTitle) => `Podsumowanie RSVP: ${count} nowych odpowiedzi dla ${eventTitle}`,
       intro: (count, eventTitle) =>
-        `<p>${count} nowych odpowiedzi dla <strong>${eventTitle}</strong> od ostatniej aktualizacji:</p>`,
-      guestYes: (guestName) => `<li>${guestName} — tak</li>`,
-      guestNo: (guestName) => `<li>${guestName} — nie</li>`,
+        `<p style="margin:0 0 4px;">${count} nowych odpowiedzi dla <strong>${eventTitle}</strong> od ostatniej aktualizacji:</p>`,
+      guestYes: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#1f8a4c;white-space:nowrap;">Tak</td></tr>`,
+      guestNo: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#9a3b32;white-space:nowrap;">Nie</td></tr>`,
+      previousHeading: (count) =>
+        `<p style="margin:20px 0 4px;font-size:12px;font-weight:700;color:#9a9282;text-transform:uppercase;letter-spacing:0.04em;">Odpowiedzieli wcześniej (${count})</p>`,
       runningTotal: (total, yes, no) =>
-        `<p style="color:#6b7280;font-size:13px;">Razem: ${total} odpowiedziało, ${yes} tak, ${no} nie.</p>`,
+        `<p style="color:#6b7280;font-size:13px;margin:18px 0 0;">Razem: ${total} odpowiedziało, ${yes} tak, ${no} nie.</p>`,
       manageNote: (guestsUrl) =>
-        `<p style="color:#9ca3af;font-size:12px;">Dostajesz to codziennie? <a href="${guestsUrl}" style="color:#9ca3af;">Wyłącz w dowolnym momencie</a> w zakładce Goście swojego wydarzenia.</p>`,
+        `<p style="color:#9ca3af;font-size:12px;margin:10px 0 0;">Dostajesz to codziennie? <a href="${guestsUrl}" style="color:#9ca3af;">Wyłącz w dowolnym momencie</a> w zakładce Goście swojego wydarzenia.</p>`,
     },
     domainLive: {
       subject: (hostname) => `Twój adres invimbo.com jest już aktywny: ${hostname}`,

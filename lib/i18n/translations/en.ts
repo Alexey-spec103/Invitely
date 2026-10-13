@@ -336,6 +336,7 @@ export interface Dictionary {
       intro: (count: number, eventTitle: string) => string;
       guestYes: (guestName: string) => string;
       guestNo: (guestName: string) => string;
+      previousHeading: (count: number) => string;
       runningTotal: (total: number, yes: number, no: number) => string;
       manageNote: (guestsUrl: string) => string;
     };
@@ -821,13 +822,17 @@ export const en: Dictionary = {
     hostDigest: {
       subject: (count, eventTitle) => `RSVP summary: ${count} new response${count === 1 ? "" : "s"} for ${eventTitle}`,
       intro: (count, eventTitle) =>
-        `<p>${count} new response${count === 1 ? "" : "s"} for <strong>${eventTitle}</strong> since your last update:</p>`,
-      guestYes: (guestName) => `<li>${guestName} — yes</li>`,
-      guestNo: (guestName) => `<li>${guestName} — no</li>`,
+        `<p style="margin:0 0 4px;">${count} new response${count === 1 ? "" : "s"} for <strong>${eventTitle}</strong> since your last update:</p>`,
+      guestYes: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#1f8a4c;white-space:nowrap;">Yes</td></tr>`,
+      guestNo: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#9a3b32;white-space:nowrap;">No</td></tr>`,
+      previousHeading: (count) =>
+        `<p style="margin:20px 0 4px;font-size:12px;font-weight:700;color:#9a9282;text-transform:uppercase;letter-spacing:0.04em;">Responded earlier (${count})</p>`,
       runningTotal: (total, yes, no) =>
-        `<p style="color:#6b7280;font-size:13px;">Running total: ${total} responded, ${yes} yes, ${no} no.</p>`,
+        `<p style="color:#6b7280;font-size:13px;margin:18px 0 0;">Running total: ${total} responded, ${yes} yes, ${no} no.</p>`,
       manageNote: (guestsUrl) =>
-        `<p style="color:#9ca3af;font-size:12px;">Get this every day? <a href="${guestsUrl}" style="color:#9ca3af;">Turn it off anytime</a> from your event's Guests tab.</p>`,
+        `<p style="color:#9ca3af;font-size:12px;margin:10px 0 0;">Get this every day? <a href="${guestsUrl}" style="color:#9ca3af;">Turn it off anytime</a> from your event's Guests tab.</p>`,
     },
     domainLive: {
       subject: (hostname) => `Your invimbo.com address is live: ${hostname}`,

@@ -473,13 +473,17 @@ export const it: Dictionary = {
     hostDigest: {
       subject: (count, eventTitle) => `Riepilogo RSVP: ${count} nuova${count === 1 ? "" : "e"} risposta${count === 1 ? "" : "e"} per ${eventTitle}`,
       intro: (count, eventTitle) =>
-        `<p>${count} nuova${count === 1 ? "" : "e"} risposta${count === 1 ? "" : "e"} per <strong>${eventTitle}</strong> dal tuo ultimo aggiornamento:</p>`,
-      guestYes: (guestName) => `<li>${guestName} — sì</li>`,
-      guestNo: (guestName) => `<li>${guestName} — no</li>`,
+        `<p style="margin:0 0 4px;">${count} nuova${count === 1 ? "" : "e"} risposta${count === 1 ? "" : "e"} per <strong>${eventTitle}</strong> dal tuo ultimo aggiornamento:</p>`,
+      guestYes: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#1f8a4c;white-space:nowrap;">Sì</td></tr>`,
+      guestNo: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#9a3b32;white-space:nowrap;">No</td></tr>`,
+      previousHeading: (count) =>
+        `<p style="margin:20px 0 4px;font-size:12px;font-weight:700;color:#9a9282;text-transform:uppercase;letter-spacing:0.04em;">Hanno già risposto (${count})</p>`,
       runningTotal: (total, yes, no) =>
-        `<p style="color:#6b7280;font-size:13px;">Totale: ${total} hanno risposto, ${yes} sì, ${no} no.</p>`,
+        `<p style="color:#6b7280;font-size:13px;margin:18px 0 0;">Totale: ${total} hanno risposto, ${yes} sì, ${no} no.</p>`,
       manageNote: (guestsUrl) =>
-        `<p style="color:#9ca3af;font-size:12px;">Ricevi questo ogni giorno? <a href="${guestsUrl}" style="color:#9ca3af;">Disattivalo quando vuoi</a> dalla scheda Ospiti del tuo evento.</p>`,
+        `<p style="color:#9ca3af;font-size:12px;margin:10px 0 0;">Ricevi questo ogni giorno? <a href="${guestsUrl}" style="color:#9ca3af;">Disattivalo quando vuoi</a> dalla scheda Ospiti del tuo evento.</p>`,
     },
     domainLive: {
       subject: (hostname) => `Il tuo indirizzo invimbo.com è attivo: ${hostname}`,

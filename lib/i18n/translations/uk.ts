@@ -492,13 +492,17 @@ export const uk: Dictionary = {
     hostDigest: {
       subject: (count, eventTitle) => `Підсумок RSVP: ${count} нов${count === 1 ? "а" : "их"} ${responseWordUk(count)} для ${eventTitle}`,
       intro: (count, eventTitle) =>
-        `<p>${count} нов${count === 1 ? "а" : "их"} ${responseWordUk(count)} для <strong>${eventTitle}</strong> з часу останнього оновлення:</p>`,
-      guestYes: (guestName) => `<li>${guestName} — так</li>`,
-      guestNo: (guestName) => `<li>${guestName} — ні</li>`,
+        `<p style="margin:0 0 4px;">${count} нов${count === 1 ? "а" : "их"} ${responseWordUk(count)} для <strong>${eventTitle}</strong> з часу останнього оновлення:</p>`,
+      guestYes: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#1f8a4c;white-space:nowrap;">Так</td></tr>`,
+      guestNo: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#9a3b32;white-space:nowrap;">Ні</td></tr>`,
+      previousHeading: (count) =>
+        `<p style="margin:20px 0 4px;font-size:12px;font-weight:700;color:#9a9282;text-transform:uppercase;letter-spacing:0.04em;">Відповіли раніше (${count})</p>`,
       runningTotal: (total, yes, no) =>
-        `<p style="color:#6b7280;font-size:13px;">Разом: ${total} відповіли, ${yes} так, ${no} ні.</p>`,
+        `<p style="color:#6b7280;font-size:13px;margin:18px 0 0;">Разом: ${total} відповіли, ${yes} так, ${no} ні.</p>`,
       manageNote: (guestsUrl) =>
-        `<p style="color:#9ca3af;font-size:12px;">Отримуєте це щодня? <a href="${guestsUrl}" style="color:#9ca3af;">Можна вимкнути будь-коли</a> на вкладці «Гості» вашої події.</p>`,
+        `<p style="color:#9ca3af;font-size:12px;margin:10px 0 0;">Отримуєте це щодня? <a href="${guestsUrl}" style="color:#9ca3af;">Можна вимкнути будь-коли</a> на вкладці «Гості» вашої події.</p>`,
     },
     domainLive: {
       subject: (hostname) => `Вашу адресу invimbo.com активовано: ${hostname}`,

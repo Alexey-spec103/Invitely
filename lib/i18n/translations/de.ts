@@ -473,13 +473,17 @@ export const de: Dictionary = {
     hostDigest: {
       subject: (count, eventTitle) => `RSVP-Übersicht: ${count} neue Antwort${count === 1 ? "" : "en"} für ${eventTitle}`,
       intro: (count, eventTitle) =>
-        `<p>${count} neue Antwort${count === 1 ? "" : "en"} für <strong>${eventTitle}</strong> seit deinem letzten Update:</p>`,
-      guestYes: (guestName) => `<li>${guestName} — ja</li>`,
-      guestNo: (guestName) => `<li>${guestName} — nein</li>`,
+        `<p style="margin:0 0 4px;">${count} neue Antwort${count === 1 ? "" : "en"} für <strong>${eventTitle}</strong> seit deinem letzten Update:</p>`,
+      guestYes: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#1f8a4c;white-space:nowrap;">Ja</td></tr>`,
+      guestNo: (guestName) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #eee5d8;font-weight:600;color:#2b2621;">${guestName}</td><td style="padding:8px 0;border-bottom:1px solid #eee5d8;text-align:right;font-weight:700;color:#9a3b32;white-space:nowrap;">Nein</td></tr>`,
+      previousHeading: (count) =>
+        `<p style="margin:20px 0 4px;font-size:12px;font-weight:700;color:#9a9282;text-transform:uppercase;letter-spacing:0.04em;">Bereits geantwortet (${count})</p>`,
       runningTotal: (total, yes, no) =>
-        `<p style="color:#6b7280;font-size:13px;">Gesamt: ${total} geantwortet, ${yes} ja, ${no} nein.</p>`,
+        `<p style="color:#6b7280;font-size:13px;margin:18px 0 0;">Gesamt: ${total} geantwortet, ${yes} ja, ${no} nein.</p>`,
       manageNote: (guestsUrl) =>
-        `<p style="color:#9ca3af;font-size:12px;">Bekommst du das täglich? <a href="${guestsUrl}" style="color:#9ca3af;">Jederzeit abschalten</a> im Gäste-Tab deiner Veranstaltung.</p>`,
+        `<p style="color:#9ca3af;font-size:12px;margin:10px 0 0;">Bekommst du das täglich? <a href="${guestsUrl}" style="color:#9ca3af;">Jederzeit abschalten</a> im Gäste-Tab deiner Veranstaltung.</p>`,
     },
     domainLive: {
       subject: (hostname) => `Deine invimbo.com-Adresse ist live: ${hostname}`,

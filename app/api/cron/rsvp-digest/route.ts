@@ -86,6 +86,23 @@ export async function GET(request: NextRequest) {
     const totalYes = allResponses?.filter((response) => response.attending).length ?? 0;
     const totalNo = totalResponded - totalYes;
 
+    // Direct feedback (2026-10-13): the digest only ever listed what's new
+    // *this* round -- a host opening day 3's email had no way to see who'd
+    // already said yes on days 1-2 without leaving the email. `since` is
+    // the epoch floor on an event's very first digest, so there's nothing
+    // "earlier" to show yet; on every later digest it's the real previous
+    // send, and anyone who answered at or before it goes in this second,
+    // visually-separated list -- shown underneath the new names, never
+    // dropped, exactly mirroring what "Running total" already counts.
+    const { data: previousResponses } = since === "1970-01-01T00:00:00Z"
+      ? { data: [] as { guest_name: string | null; attending: boolean }[] }
+      : await supabase
+          .from("rsvp_responses")
+          .select("guest_name, attending")
+          .eq("event_id", event.id)
+          .lte("submitted_at", since)
+          .order("submitted_at", { ascending: true });
+
     const { data: userResult, error: userError } = await supabase.auth.admin.getUserById(event.owner_id);
     const ownerEmail = userResult?.user?.email;
     if (userError || !ownerEmail) {
@@ -102,16 +119,20 @@ export async function GET(request: NextRequest) {
     // before it lands in the host's inbox. event.title is host-controlled
     // but escaped too for consistency.
     const safeEventTitle = escapeHtml(event.title);
-    const rows = newResponses
-      .map((response) => {
-        const safeGuestName = escapeHtml(response.guest_name || "—");
-        return response.attending ? t.hostDigest.guestYes(safeGuestName) : t.hostDigest.guestNo(safeGuestName);
-      })
-      .join("");
+    const guestRow = (response: { guest_name: string | null; attending: boolean }) => {
+      const safeGuestName = escapeHtml(response.guest_name || "—");
+      return response.attending ? t.hostDigest.guestYes(safeGuestName) : t.hostDigest.guestNo(safeGuestName);
+    };
+    const newRows = newResponses.map(guestRow).join("");
+    const previousRows = (previousResponses ?? []).map(guestRow).join("");
 
     const html = [
       t.hostDigest.intro(newResponses.length, safeEventTitle),
-      `<ul>${rows}</ul>`,
+      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${newRows}</table>`,
+      previousRows
+        ? t.hostDigest.previousHeading(previousResponses?.length ?? 0) +
+          `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${previousRows}</table>`
+        : "",
       t.hostDigest.runningTotal(totalResponded, totalYes, totalNo),
       t.hostDigest.manageNote(`${SITE_URL}/dashboard/${event.id}/guests`),
     ].join("");
