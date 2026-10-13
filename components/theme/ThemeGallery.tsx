@@ -4,9 +4,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEve
 import { Sparkles, Heart } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import {
-  THEME_CATEGORIES,
   THEME_SEASONS,
-  THEME_LAYOUTS,
   layoutLabelFor,
   POPULAR_THEME_IDS,
   NEW_THEME_IDS,
@@ -202,9 +200,32 @@ export default function ThemeGallery({
     setVisibleCount(PAGE_SIZE);
   };
 
-  const categoryEntries = Object.entries(THEME_CATEGORIES) as [ThemeCategory, number][];
+  // dashboard-audit.md follow-up (2026-10-13): THEME_CATEGORIES/THEME_LAYOUTS
+  // are global counts across all 124 themes, but OCCASION_CATEGORIES narrows
+  // *which themes are reachable at all* once an occasion chip is active (e.g.
+  // "Wedding" excludes modern/minimal/coastal/dark/cosmic entirely) -- the
+  // sidebar badges didn't know that, so e.g. "Minimal 10" sat there under
+  // Wedding and clicking it always landed on "No styles match", a dead end
+  // with no indication why. Recomputed from the occasion-scoped theme set
+  // (same predicate `filtered` above already applies) instead of the global
+  // constants, so a bucket that would be empty under the current occasion is
+  // never offered in the first place -- no theme or category definition is
+  // touched, this only changes which sidebar chips are shown/counted.
+  const occasionThemes = occasion && OCCASION_CATEGORIES[occasion]
+    ? themes.filter((theme) => OCCASION_CATEGORIES[occasion]!.includes(theme.category))
+    : themes;
+  const categoryCounts = occasionThemes.reduce((counts, theme) => {
+    counts[theme.category] = (counts[theme.category] ?? 0) + 1;
+    return counts;
+  }, {} as Record<ThemeCategory, number>);
+  const layoutCounts = occasionThemes.reduce((counts, theme) => {
+    const label = layoutLabelFor(theme.id, theme.category);
+    counts[label] = (counts[label] ?? 0) + 1;
+    return counts;
+  }, {} as Record<string, number>);
+  const categoryEntries = Object.entries(categoryCounts) as [ThemeCategory, number][];
   const seasonEntries = Object.entries(THEME_SEASONS) as [ThemeSeason, number][];
-  const layoutEntries = Object.entries(THEME_LAYOUTS).sort((a, b) => b[1] - a[1]);
+  const layoutEntries = Object.entries(layoutCounts).sort((a, b) => b[1] - a[1]);
   // Below this, a layout bucket (e.g. "Alcohol Ink" at 1 theme, "Gothic
   // Frame" at 2) reads as a near-empty dead end in the sidebar rather than a
   // useful way to browse -- confirmed live, 11 of 34 combined buckets had
@@ -213,7 +234,9 @@ export default function ThemeGallery({
   // keeps the filter list itself from padding out with sparse entries.
   const MIN_STYLE_BUCKET_SIZE = 4;
   const combinedStyleEntries: StyleEntry[] = [
-    ...categoryEntries.map(([cat, count]) => ({ kind: "category" as const, id: cat, label: CATEGORY_LABELS[cat], count })),
+    ...categoryEntries
+      .filter(([, count]) => count > 0)
+      .map(([cat, count]) => ({ kind: "category" as const, id: cat, label: CATEGORY_LABELS[cat], count })),
     ...layoutEntries
       .filter(([, count]) => count >= MIN_STYLE_BUCKET_SIZE)
       .map(([label, count]) => ({ kind: "layout" as const, id: label, label, count })),
