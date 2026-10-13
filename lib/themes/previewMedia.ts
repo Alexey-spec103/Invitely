@@ -141,6 +141,37 @@ const THEME_PREVIEW_PHOTOS: Record<string, string> = {
   "minimal-taupe": "https://images.unsplash.com/photo-1616980540857-80cd9b1276c8",
   "modern-mono": "https://images.unsplash.com/photo-1575255597430-eba71bc85bc9",
   "nordic-minimal": "https://images.unsplash.com/photo-1520420253244-9ff6536abf60",
+
+  // Marble, Cosmic, Peony, Provence -- added 2026-10-13. These 24 themes
+  // previously had no entry here and fell back to CATEGORY_PREVIEW_PHOTOS_FALLBACK's
+  // shared 2-photo-per-category pool, so ~3 themes per category showed the
+  // identical gallery-card photo -- a host reported this directly (screenshot
+  // showed 3 visually-identical "Photo Invitation" cards). Each theme below
+  // now has its own distinct, verified-real Unsplash photo instead.
+  "marble-champagne-teal": "https://images.unsplash.com/photo-1690049089775-b915262c89d0",
+  "marble-noir-rust": "https://images.unsplash.com/photo-1786673211400-90f79d15b1ff",
+  "marble-onyx-sage": "https://images.unsplash.com/photo-1532644440111-bc94f97955c1",
+  "marble-ivory-charcoal": "https://images.unsplash.com/photo-1784937276061-8e7672ce9a71",
+  "marble-sage-gold": "https://images.unsplash.com/photo-1756362845834-07eb8e3bc8c7",
+  "marble-teal-gold": "https://images.unsplash.com/photo-1554296048-b59c9fca4857",
+  "cosmic-indigo-bronze": "https://images.unsplash.com/photo-1534222190540-49b9de934701",
+  "cosmic-midnight-gold": "https://images.unsplash.com/photo-1497295741369-9f9260c9a8d9",
+  "cosmic-obsidian-starlight": "https://images.unsplash.com/photo-1766995596065-590702fcce47",
+  "cosmic-navy-copper": "https://images.unsplash.com/photo-1741936428950-3f66f0a69320",
+  "cosmic-plum-gold": "https://images.unsplash.com/photo-1631563638829-bfc400ccb7eb",
+  "cosmic-violet-silver": "https://images.unsplash.com/photo-1612694537513-b772cb21f725",
+  "peony-blush-burgundy": "https://images.unsplash.com/photo-1558021843-f9ab317ed0eb",
+  "peony-dusty-mauve": "https://images.unsplash.com/photo-1782231472585-43845cd1ba8c",
+  "peony-champagne-terracotta": "https://images.unsplash.com/photo-1778683979087-67c1dc6af974",
+  "peony-sage-clay": "https://images.unsplash.com/photo-1655033986159-4b96497c5ed2",
+  "peony-terracotta-cream": "https://images.unsplash.com/photo-1780580826043-b58d42386891",
+  "peony-wine-ivory": "https://images.unsplash.com/photo-1754634673956-0b9d924a2213",
+  "provence-coral-sage": "https://images.unsplash.com/photo-1579506769687-a19460c0b470",
+  "provence-dusty-lilac": "https://images.unsplash.com/photo-1662486717731-293f2b6ebfa2",
+  "provence-sage-terracotta": "https://images.unsplash.com/photo-1761932365108-013d069a71d0",
+  "provence-periwinkle-rose": "https://images.unsplash.com/photo-1757023528311-b6f58e7b1f20",
+  "provence-lavender-sage": "https://images.unsplash.com/photo-1600759487717-62bbb608106e",
+  "provence-stone-lavender": "https://images.unsplash.com/photo-1746924935921-37de64c0af94",
 };
 
 /** Fallback only, for a theme id not (yet) listed in `THEME_PREVIEW_PHOTOS`
