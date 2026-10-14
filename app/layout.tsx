@@ -22,6 +22,7 @@ import {
   Source_Serif_4,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
 import "./globals.css";
 
@@ -217,6 +218,14 @@ const sourceSerif4 = Source_Serif_4({
 // OG/Twitter image path on every page that doesn't set its own.
 const SITE_URL = "https://www.invimbo.com";
 
+// Free, cookie-light alternative to Vercel's own (paid-tiered) analytics --
+// requested so site activity/click data doesn't depend on Vercel at all.
+// Public client-side project id (not a secret -- it's embedded straight into
+// the page source either way), so unlike the Supabase/Stripe keys elsewhere
+// in this app it's fine to set directly. Unset locally is a safe no-op, same
+// shape as the Sentry/Vercel Analytics configs already in this file.
+const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
+
 const siteTitle = "Invimbo - event websites, live in minutes";
 const siteDescription =
   "Design a beautiful event website, matching paper invitations, and guest seating - one style, everywhere your guests see it.";
@@ -302,6 +311,15 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             finds an endpoint to report to, same "safe to leave in" shape
             as the Sentry configs above. */}
         <Analytics />
+        {CLARITY_PROJECT_ID && (
+          <Script id="clarity-analytics" strategy="afterInteractive">
+            {`(function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "${CLARITY_PROJECT_ID}");`}
+          </Script>
+        )}
       </body>
     </html>
   );
