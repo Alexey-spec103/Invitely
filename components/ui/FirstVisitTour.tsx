@@ -132,6 +132,14 @@ export default function FirstVisitTour({ tourId, steps }: FirstVisitTourProps) {
 
   const isLast = step === steps.length - 1;
 
+  // Usability check (2026-10-14): CARD_WIDTH (320px) plus 16px margin on
+  // each side needs a 352px-wide viewport to fit without clipping -- fine on
+  // any phone from an iPhone SE 2nd-gen (375px) up, but the original
+  // 320px-wide iPhone SE (still a real, if old, device) would have had this
+  // card's left edge pushed off-screen. Capping to the actual viewport width
+  // (minus margins) keeps it on-screen on anything that narrow instead.
+  const effectiveCardWidth = Math.min(CARD_WIDTH, window.innerWidth - 32);
+
   // Anchored placement: park the card just below the target, clamped to
   // stay on-screen horizontally -- a fixed bottom-right card next to a
   // target near the top of a long page would put real visual distance
@@ -142,9 +150,9 @@ export default function FirstVisitTour({ tourId, steps }: FirstVisitTourProps) {
         top: Math.min(targetRect.bottom + CARD_GAP, window.innerHeight - 220),
         left: Math.min(
           Math.max(targetRect.left, 16),
-          window.innerWidth - CARD_WIDTH - 16
+          window.innerWidth - effectiveCardWidth - 16
         ),
-        width: CARD_WIDTH,
+        width: effectiveCardWidth,
       }
     : undefined;
 
@@ -180,19 +188,33 @@ export default function FirstVisitTour({ tourId, steps }: FirstVisitTourProps) {
         className={
           targetRect
             ? "z-50 w-80 rounded-xl border border-gray-200 bg-white p-4 shadow-lg"
-            : "fixed bottom-6 right-6 z-50 w-80 rounded-xl border border-gray-200 bg-white p-4 shadow-lg"
+            : // Same narrow-viewport fix as the anchored branch above (see
+              // effectiveCardWidth's comment) -- this one has no JS-computed
+              // width to override w-80, so the cap is a pure-CSS max-width
+              // instead: viewport width minus the 24px right gutter and a
+              // matching 24px left margin.
+              "fixed bottom-6 right-6 z-50 w-80 max-w-[calc(100vw-3rem)] rounded-xl border border-gray-200 bg-white p-4 shadow-lg"
         }
         style={anchoredStyle}
       >
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm font-semibold text-gray-900">{current.title}</p>
+          {/* Usability check (2026-10-14): this used to be a bare "×" glyph
+              with no padding -- its real tappable area was just the
+              character's own bounding box, well under the ~40px touch-target
+              floor, and "×" alone doesn't actually say what it does (does it
+              skip the whole tour, or just hide this one card until next
+              visit?). It fully dismisses for good (see `dismiss` -- sets the
+              localStorage flag immediately), so it should say so: explicit
+              "Skip" text, plus enough padding around it to make a real
+              mobile tap target. */}
           <button
             type="button"
             onClick={dismiss}
-            className="shrink-0 text-gray-400 hover:text-gray-600"
-            aria-label="Close tour"
+            className="-m-2 shrink-0 rounded px-2 py-2 text-xs font-medium text-gray-400 hover:text-gray-600"
+            aria-label="Skip tour"
           >
-            ×
+            Skip
           </button>
         </div>
         <p className="mt-1.5 text-sm text-gray-600">{current.body}</p>
