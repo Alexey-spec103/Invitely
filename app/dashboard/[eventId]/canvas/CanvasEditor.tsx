@@ -175,7 +175,7 @@ export default function CanvasEditor({ eventId, initialFrames, hasBasicAccess }:
           <>
           {!hasBasicAccess && (
             <div className="flex flex-none items-center gap-2 border-b border-[var(--dash-border)] bg-[color-mix(in_srgb,var(--dash-accent)_14%,transparent)] px-4 py-1.5 text-xs text-[var(--dash-accent)]">
-              🔒 Saves normally — your public site only shows this design once you&apos;re on the
+              🔒 Saves normally - your public site only shows this design once you&apos;re on the
               Basic plan or above.
               <Link href={`/dashboard/${eventId}/plan`} className="font-medium underline">
                 Upgrade

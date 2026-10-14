@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<"/preview/[themeId]
     return { title: "Style not found" };
   }
   return {
-    title: `${theme.name} — live preview`,
+    title: `${theme.name} - live preview`,
     // Synthetic demo content repeated once per theme (~100 near-identical
     // pages) -- not worth indexing, and duplicate-content-shaped besides.
     robots: { index: false, follow: false },
@@ -58,7 +58,7 @@ export default async function ThemePreviewPage({ params }: PageProps<"/preview/[
           {/* Hidden below sm, not just truncated -- at 375px the theme name
               alone already competes with Login + the CTA for room; this
               suffix is the one part safe to drop first. */}
-          <span className="hidden sm:inline"> — live demo preview</span>
+          <span className="hidden sm:inline"> - live demo preview</span>
         </p>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {/* 2026-10-09 usability audit: this page had no way back to the

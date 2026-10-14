@@ -66,7 +66,7 @@ export default function AnonymousAccountBanner({ isAnonymous }: AnonymousAccount
   if (pendingConfirmation) {
     return (
       <div className="border-b border-[var(--dash-border)] bg-[var(--dash-accent)]/10 px-4 py-3 text-sm text-[var(--dash-text)] sm:px-6">
-        📬 Check your email to confirm — everything you&apos;ve made is already saved, keep working while you wait.
+        📬 Check your email to confirm - everything you&apos;ve made is already saved, keep working while you wait.
       </div>
     );
   }
@@ -76,7 +76,7 @@ export default function AnonymousAccountBanner({ isAnonymous }: AnonymousAccount
       {!showForm ? (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm font-medium text-[var(--dash-text)]">
-            💾 Save your progress — create a free account
+            💾 Save your progress - create a free account
           </p>
           <div className="flex items-center gap-4">
             <button

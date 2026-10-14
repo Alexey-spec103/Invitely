@@ -44,7 +44,7 @@ export default function DeleteEventSection({ eventId, eventTitle, seatingLabel }
           onClick={() => setExpanded(true)}
           className="text-sm font-medium text-gray-400 underline decoration-dotted hover:text-red-700"
         >
-          Danger zone — delete this event
+          Danger zone - delete this event
         </button>
       </div>
     );

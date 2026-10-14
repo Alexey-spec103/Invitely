@@ -54,12 +54,12 @@ export default async function CanvasPage({ params }: PageProps<"/dashboard/[even
           </Link>
           <h1 className="dash-h1 mt-3 text-[var(--dash-text)]">Canvas editor</h1>
           <p className="mt-2 text-sm text-[var(--dash-text-muted)]">
-            Design your site freely — drag text and photos anywhere, pick any font and color.
+            Design your site freely - drag text and photos anywhere, pick any font and color.
             This replaces the structured section editor for this event once enabled.
           </p>
           {!planMeets(event.plan_id, "basic") && (
             <p className="mt-3 rounded-md bg-[color-mix(in_srgb,var(--dash-accent)_14%,transparent)] px-3 py-2 text-sm text-[var(--dash-accent)]">
-              🔒 Free to design and save — your public site only shows this canvas design once
+              🔒 Free to design and save - your public site only shows this canvas design once
               you&apos;re on the Basic plan or above.{" "}
               <Link href={`/dashboard/${event.id}/plan`} className="font-medium underline">
                 Upgrade

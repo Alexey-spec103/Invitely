@@ -23,7 +23,7 @@ export async function uploadGuestPhoto(
     return { ok: false, message: "Please choose an image file" };
   }
   if (file.size > MAX_UPLOAD_SIZE) {
-    return { ok: false, message: "That photo is a bit large — try one under 8MB" };
+    return { ok: false, message: "That photo is a bit large - try one under 8MB" };
   }
   if (!uploaderToken.trim()) {
     return { ok: false, message: "Missing uploader token" };

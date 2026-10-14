@@ -9,5 +9,5 @@ export function formatEventDate(isoDate: string): string {
 }
 
 export function getInviteDescription(eventDate: string): string {
-  return `You're invited — ${formatEventDate(eventDate)}. See the details and RSVP.`;
+  return `You're invited - ${formatEventDate(eventDate)}. See the details and RSVP.`;
 }

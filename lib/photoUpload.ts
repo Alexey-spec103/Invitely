@@ -44,7 +44,7 @@ function assertImageFile(file: File) {
     throw new Error("Please choose an image file");
   }
   if (file.size > 15 * 1024 * 1024) {
-    throw new Error("That photo is a bit large — try one under 15MB");
+    throw new Error("That photo is a bit large - try one under 15MB");
   }
 }
 

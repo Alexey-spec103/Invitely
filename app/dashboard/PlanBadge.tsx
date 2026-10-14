@@ -87,8 +87,8 @@ export default function PlanBadge({ planId, eventId }: PlanBadgeProps) {
                 inside its fixed h-9 height once the header row's squeezed
                 for space on a narrow screen, clipping "Upgrade" off the top
                 (confirmed via a real mobile-width check). */}
-            <span className="sm:hidden">Remove badge — €{basicPrice}</span>
-            <span className="hidden sm:inline">Remove the badge — €{basicPrice}</span>
+            <span className="sm:hidden">Remove badge - €{basicPrice}</span>
+            <span className="hidden sm:inline">Remove the badge - €{basicPrice}</span>
           </>
         ) : (
           `${plan.name} plan`

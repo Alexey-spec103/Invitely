@@ -40,7 +40,7 @@ export default function SupportWidget() {
         <div className="absolute bottom-full left-0 mb-3 w-64 rounded-xl border border-gray-200 bg-white p-4 shadow-lg">
           <p className="text-sm font-semibold text-gray-900">Need a hand?</p>
           <p className="mt-1.5 text-sm text-gray-600">
-            We don&apos;t run a live chat yet — email us and a real person will get back to you.
+            We don&apos;t run a live chat yet - email us and a real person will get back to you.
           </p>
           <a
             href="mailto:support@invimbo.com"

@@ -244,7 +244,7 @@ export default function SectionModulesPanel({
     <div id="site-modules-panel" className="mb-8 rounded-[10px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
       <h2 className="dash-h2 text-sm text-[var(--dash-accent)]">Modules</h2>
       <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
-        Guests won&apos;t see a module until it&apos;s turned on here — drag to change the order they appear in on your public site.
+        Guests won&apos;t see a module until it&apos;s turned on here - drag to change the order they appear in on your public site.
       </p>
       {toggleError && <p className="mt-1 text-sm text-red-400">{toggleError}</p>}
       <ul className="mt-3 space-y-1">
@@ -315,7 +315,7 @@ export default function SectionModulesPanel({
               <p className="border-t border-[var(--dash-border)] px-3 py-2 text-xs text-[var(--dash-text-muted)]">
                 {enabled[type]
                   ? "Visible to you here, but it won't show on your published site until you're on the Basic plan or above."
-                  : "Turn this on and preview it freely — it only shows on your published site once you're on the Basic plan or above."}
+                  : "Turn this on and preview it freely - it only shows on your published site once you're on the Basic plan or above."}
               </p>
             )}
             {/* Direct feedback: turning this on doesn't do anything by

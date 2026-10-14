@@ -103,7 +103,7 @@ export async function claimInvimboSubdomain(input: ClaimInvimboSubdomainInput): 
     .maybeSingle();
 
   if (taken) {
-    throw new Error("That address is already taken — try another.");
+    throw new Error("That address is already taken - try another.");
   }
 
   // code-review (2026-10-12): custom_domain/custom_domain_verified_at used

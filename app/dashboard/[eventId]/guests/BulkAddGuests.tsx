@@ -62,7 +62,7 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
       const raw = await file.text();
       const guestRows = mapCsvRowsToGuests(parseCsvText(raw));
       if (guestRows.length === 0) {
-        setError("Couldn't find any names in that file — make sure one column has each guest's name.");
+        setError("Couldn't find any names in that file - make sure one column has each guest's name.");
         return;
       }
       // Replaces rather than appends: mixing a CSV upload with separately
@@ -74,9 +74,9 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
       setText(preview);
       setCsvRows(guestRows);
       setCsvPreviewText(preview);
-      setCsvNotice(`Read ${guestRows.length} guest${guestRows.length === 1 ? "" : "s"} from "${file.name}" — review below, then add.`);
+      setCsvNotice(`Read ${guestRows.length} guest${guestRows.length === 1 ? "" : "s"} from "${file.name}" - review below, then add.`);
     } catch {
-      setError("Couldn't read that file — make sure it's a .csv file exported from a spreadsheet.");
+      setError("Couldn't read that file - make sure it's a .csv file exported from a spreadsheet.");
     }
   };
 
@@ -130,7 +130,7 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
       {open && (
         <div className="mt-3">
           <p className="text-xs text-gray-500">
-            Paste one guest per line — from a spreadsheet or typed by hand. Optionally add group,
+            Paste one guest per line - from a spreadsheet or typed by hand. Optionally add group,
             email, and phone after a comma or tab: <code>Maria Test, Family, maria@example.com</code>
           </p>
 

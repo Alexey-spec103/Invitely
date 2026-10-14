@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
     // but escaped too for consistency.
     const safeEventTitle = escapeHtml(event.title);
     const guestRow = (response: { guest_name: string | null; attending: boolean }) => {
-      const safeGuestName = escapeHtml(response.guest_name || "—");
+      const safeGuestName = escapeHtml(response.guest_name || "-");
       return response.attending ? t.hostDigest.guestYes(safeGuestName) : t.hostDigest.guestNo(safeGuestName);
     };
     const newRows = newResponses.map(guestRow).join("");

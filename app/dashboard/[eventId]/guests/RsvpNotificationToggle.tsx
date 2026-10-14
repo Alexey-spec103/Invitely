@@ -92,7 +92,7 @@ export default function RsvpNotificationToggle({ eventId, enabled, digestEnabled
           <p className="text-sm font-semibold text-gray-900">🗞️ Daily summary instead</p>
           <p className="mt-0.5 text-xs text-gray-500">
             One email a day with everything new since the last one, instead of (or alongside) an email per response
-            — easier to skim if you have a lot of guests.
+            - easier to skim if you have a lot of guests.
           </p>
           {digestError && <p className="mt-1 text-xs text-red-600">{digestError}</p>}
         </div>

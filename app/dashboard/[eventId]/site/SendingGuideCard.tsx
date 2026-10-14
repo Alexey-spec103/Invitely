@@ -78,10 +78,10 @@ export default function SendingGuideCard({
       </div>
 
       <p className="mt-2 text-xs text-[var(--dash-text-muted)]">
-        Send it however you like (text, email, WhatsApp) — guests open it, RSVP, and{" "}
+        Send it however you like (text, email, WhatsApp) - guests open it, RSVP, and{" "}
         {rsvpEmailNotifications
           ? "a reply lands in your inbox the moment they answer (you can also check the Guests tab anytime)."
-          : "you can check their answer anytime in the Guests tab (email alerts are off — turn them back on there)."}
+          : "you can check their answer anytime in the Guests tab (email alerts are off - turn them back on there)."}
       </p>
 
       {hasPremiumAccess && (

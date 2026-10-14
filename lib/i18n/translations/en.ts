@@ -369,7 +369,7 @@ export const en: Dictionary = {
     shareText: (eventTitle) => (eventTitle ? `You're invited: ${eventTitle}` : "You're invited!"),
   },
   unpublishedPreview: {
-    message: "👀 You're previewing this site — it isn't published yet, so RSVPs submitted here are just a test and won't be saved.",
+    message: "👀 You're previewing this site - it isn't published yet, so RSVPs submitted here are just a test and won't be saved.",
   },
   envelopeReveal: {
     tapToOpen: "Tap to open",
@@ -394,7 +394,7 @@ export const en: Dictionary = {
     missingFieldsError: "Please fill in your name and let us know if you can make it.",
     genericError: "Something went wrong",
     successAttending: "You're on the list! We can't wait to celebrate with you. \u{1F389}",
-    successDeclining: "Thanks for letting us know — you'll be missed!",
+    successDeclining: "Thanks for letting us know - you'll be missed!",
     notPublishedError: "This site isn't published yet, so RSVPs can't be submitted. Ask your host to publish it.",
     submitFailedError: "We couldn't submit your RSVP. Please try again in a moment.",
     oneTapGreeting: (name) => `Will you be there, ${name}?`,
@@ -443,7 +443,7 @@ export const en: Dictionary = {
   },
   guestPhotos: {
     heading: "Add your photos",
-    subtitle: (eventTitle) => `Share your photos from ${eventTitle} — no account needed.`,
+    subtitle: (eventTitle) => `Share your photos from ${eventTitle} - no account needed.`,
     addPhotosButton: "Add photos",
     uploading: "Uploading...",
     uploaded: "Added! Thank you.",
@@ -459,14 +459,14 @@ export const en: Dictionary = {
     seatedAt: (tableName) => `You're seated at ${tableName}`,
     resultSeatedAt: (guestName, tableName) => `${guestName} is seated at ${tableName}`,
     resultNotFound: (guestName) =>
-      `We couldn't find "${guestName}" on the guest list — double-check the spelling, or ask the host.`,
-    resultNotSeatedYet: (guestName) => `Hi ${guestName} — you're on the list! Seating is still being finalized, check back soon.`,
+      `We couldn't find "${guestName}" on the guest list - double-check the spelling, or ask the host.`,
+    resultNotSeatedYet: (guestName) => `Hi ${guestName} - you're on the list! Seating is still being finalized, check back soon.`,
     resultNotAttending: (guestName) =>
-      `Looks like ${guestName} is marked as not attending — reach out to the host if that's not right.`,
+      `Looks like ${guestName} is marked as not attending - reach out to the host if that's not right.`,
   },
   landing: {
     skipToContent: "Skip to content",
-    topBar: "Visa / Mastercard accepted · Instant delivery — send your invite link anywhere in the world",
+    topBar: "Visa / Mastercard accepted · Instant delivery - send your invite link anywhere in the world",
     nav: { constructor: "Constructor", themes: "Themes", whatsIncluded: "What's included", pricing: "Pricing", login: "Login" },
     mobileNav: { openMenu: "Open menu", closeMenu: "Close menu" },
     cta: {
@@ -481,9 +481,9 @@ export const en: Dictionary = {
       headline: "Your event, styled exactly how you imagined it",
       accent: "down to the last place card",
       subtext:
-        "A beautiful event website, matching paper invitations, and guest seating — one style, everywhere your guests see it. Start from a designer theme, or drag your own together from a blank canvas.",
-      checklistFree: "Free to design — pay only if you want this exact link live",
-      checklistThemes: (themeCount) => `${themeCount} designer themes — or build your own from a blank canvas`,
+        "A beautiful event website, matching paper invitations, and guest seating - one style, everywhere your guests see it. Start from a designer theme, or drag your own together from a blank canvas.",
+      checklistFree: "Free to design - pay only if you want this exact link live",
+      checklistThemes: (themeCount) => `${themeCount} designer themes - or build your own from a blank canvas`,
       checklistFonts: (fontCount) => `Drag anything, ${fontCount}+ fonts, any color you like`,
       checklistRsvp: "RSVP tracking with your own custom questions",
       checklistPaper: "Personalized paper invitations with QR codes",
@@ -496,13 +496,13 @@ export const en: Dictionary = {
     statBar: { themes: "designer themes", fonts: "fonts in the constructor", modules: "site modules", oneLink: "link for everything" },
     platformFan: {
       heading: "A wedding platform, not just an invitation",
-      subtext: "From your invitation website and guest messaging to a fully styled banquet — seating cards included.",
+      subtext: "From your invitation website and guest messaging to a fully styled banquet - seating cards included.",
     },
     eventTypes: {
       eyebrow: "Not just weddings",
       heading: "Every celebration gets its own site",
       subtext:
-        "Pick your event type first, and everything after — the wording, the fields, even what the seating tool is called — is built around it.",
+        "Pick your event type first, and everything after - the wording, the fields, even what the seating tool is called - is built around it.",
       cta: "Pick your event type",
       items: [
         { label: "Wedding", blurb: "The one this whole platform is built around." },
@@ -523,9 +523,9 @@ export const en: Dictionary = {
       eyebrow: "Designer themes",
       heading: "Every theme is complete, out of the box",
       subtext: (fontCount) =>
-        `Pick a designer theme and it's already done — matching fonts, colors, and layout, ready to publish. Still want to change something? Any text, any color, any photo is yours to edit, from ${fontCount}+ fonts to your own palette. The exact design you choose carries over to your printed invitations too.`,
+        `Pick a designer theme and it's already done - matching fonts, colors, and layout, ready to publish. Still want to change something? Any text, any color, any photo is yours to edit, from ${fontCount}+ fonts to your own palette. The exact design you choose carries over to your printed invitations too.`,
       features: [
-        { title: "Curated fonts", description: "Script, serif, bold, or thin — swap the whole look with one click." },
+        { title: "Curated fonts", description: "Script, serif, bold, or thin - swap the whole look with one click." },
         { title: "Any color you like", description: "Build your own palette to match your exact wedding colors." },
         { title: "Designer-curated variations", description: "Or start from color and pattern combinations, hand-picked by our designers." },
         { title: "Flexible text, anywhere", description: "Edit, resize, add, and move any text on your chosen design." },
@@ -535,20 +535,20 @@ export const en: Dictionary = {
     },
     howItWorksSection: {
       heading: "How the constructor works",
-      subtext: "Everything below happens live, right in your browser — no downloads, nothing to learn.",
+      subtext: "Everything below happens live, right in your browser - no downloads, nothing to learn.",
       steps: [
         {
           title: "Choose your style",
           bullets: [
             "Pick from 100 designer themes, or start from a blank canvas",
             "Every theme comes fully color-coordinated, ready to use",
-            "Switch styles any time — your content carries over",
+            "Switch styles any time - your content carries over",
           ],
         },
         {
           title: "Enter your event details",
           bullets: [
-            "Names, date, venue — fill it in once",
+            "Names, date, venue - fill it in once",
             "It carries through your site, invitations, and banquet cards",
             "Edit any of it any time before or after you publish",
           ],
@@ -564,9 +564,9 @@ export const en: Dictionary = {
         {
           title: "Get your link and PDF papers",
           bullets: [
-            "One link, live instantly — share it however guests actually check messages",
+            "One link, live instantly - share it however guests actually check messages",
             "Print-ready PDF invitations, envelopes, and banquet cards",
-            "Update anything later — everyone sees the latest version",
+            "Update anything later - everyone sees the latest version",
           ],
         },
       ],
@@ -575,18 +575,18 @@ export const en: Dictionary = {
       eyebrow: "Beyond the invitation",
       heading: "Send it anywhere, track every reply",
       subtext:
-        "Share your one link over WhatsApp, SMS, email, or however your guests actually check messages. Every RSVP flows straight back into your guest list — who's coming, who hasn't answered yet, and who you still need to invite. They don't need an account or an app to respond — just the link.",
+        "Share your one link over WhatsApp, SMS, email, or however your guests actually check messages. Every RSVP flows straight back into your guest list - who's coming, who hasn't answered yet, and who you still need to invite. They don't need an account or an app to respond - just the link.",
     },
     siteOrPaper: {
       heading: "A website invitation, and/or paper",
-      subtext: "Not an either-or — most couples use both.",
+      subtext: "Not an either-or - most couples use both.",
       orBadge: "AND/OR",
       website: {
         title: "Website invitation",
-        subtext: "Simple and fast — invite every guest, wherever they live.",
+        subtext: "Simple and fast - invite every guest, wherever they live.",
         bullets: [
           "One link works on any phone, tablet, or laptop",
-          "Update anything — everyone sees the latest version instantly",
+          "Update anything - everyone sees the latest version instantly",
         ],
       },
       paper: {
@@ -594,38 +594,38 @@ export const en: Dictionary = {
         subtext: "A keepsake for your closest family and friends.",
         bullets: [
           "Print-ready PDF invitations, envelopes, and program cards",
-          "Each guest gets a personal QR code — their RSVP auto-matches",
+          "Each guest gets a personal QR code - their RSVP auto-matches",
         ],
       },
     },
     themesSection: {
       heading: "Choose your style",
       subtext:
-        "The same theme carries through your site, paper invitations, and banquet cards — or skip it entirely and design from scratch in the constructor.",
+        "The same theme carries through your site, paper invitations, and banquet cards - or skip it entirely and design from scratch in the constructor.",
     },
     whatsIncluded: {
       heading: "What's included",
-      subtext: "Every site comes with these building blocks — mix and match to tell your story.",
+      subtext: "Every site comes with these building blocks - mix and match to tell your story.",
       modules: [
         { title: "Drag-and-drop constructor", description: "Move any text or photo, pick any font or color, and undo/redo as you go." },
-        { title: "Hero intro", description: "Your names, event date, and photo — several layouts to choose from." },
+        { title: "Hero intro", description: "Your names, event date, and photo - several layouts to choose from." },
         { title: "Letter to your guests", description: "A personal note, gift wishes, and RSVP deadline in one card." },
-        { title: "Event schedule", description: "Lay out the day, minute by minute — from the first toast to the last dance." },
+        { title: "Event schedule", description: "Lay out the day, minute by minute - from the first toast to the last dance." },
         { title: "Venue & map", description: "Show guests exactly where to go, with an interactive map." },
-        { title: "RSVP with custom questions", description: "Ask about meals, drinks, or transport — guests confirm online, straight to your list." },
+        { title: "RSVP with custom questions", description: "Ask about meals, drinks, or transport - guests confirm online, straight to your list." },
         { title: "Countdown timer", description: "Build anticipation with a live countdown to the big day." },
         { title: "Guestbook wall", description: "Well-wishes guests leave at RSVP, shown as a public wall on your site." },
-        { title: "Video", description: "Embed a YouTube or Vimeo video — your proposal, your story, your choice." },
+        { title: "Video", description: "Embed a YouTube or Vimeo video - your proposal, your story, your choice." },
         { title: "Paper invitations", description: "Print-ready PDF invites, envelopes, and program cards, personalized per guest with a QR code." },
-        { title: "Banquet seating", description: "Assign tables — by name, not just headcount — and generate table & place cards to print." },
+        { title: "Banquet seating", description: "Assign tables - by name, not just headcount - and generate table & place cards to print." },
         { title: "Custom domain", description: "Point your own domain at your site, or keep the readable link we give you free." },
-        { title: "FAQ for your guests", description: "Answer the questions you'll get asked over and over — parking, plus-ones, timing — right on your site." },
+        { title: "FAQ for your guests", description: "Answer the questions you'll get asked over and over - parking, plus-ones, timing - right on your site." },
         { title: "Travel & accommodations", description: "Recommend hotels with promo codes and booking links, so out-of-town guests know where to stay." },
       ],
     },
     pricing: {
       heading: "The constructor is always free",
-      subtext: "Design your site, invite guests, and track RSVPs at no cost — publish it live whenever you're ready. Pay when you want your own address with no Invimbo badge, or watermark-free paper invitations.",
+      subtext: "Design your site, invite guests, and track RSVPs at no cost - publish it live whenever you're ready. Pay when you want your own address with no Invimbo badge, or watermark-free paper invitations.",
       free: "Free",
       whatYouGet: "What you get",
       whatThisAdds: "What this adds",
@@ -633,7 +633,7 @@ export const en: Dictionary = {
       badgePremium: "Removes the watermark",
       freeCaveat: "Shows a small \"Made with Invimbo\" badge on your live site, and a watermark on printed paper.",
       oneTime: "One-time, not a subscription",
-      exampleCaption: "A real Invimbo design — yours can look like this.",
+      exampleCaption: "A real Invimbo design - yours can look like this.",
       valueAnchor: "Printed, mailed invitations usually cost more than this per guest. One flat fee here covers your whole guest list, however many people you're inviting.",
     },
     faq: {
@@ -642,31 +642,31 @@ export const en: Dictionary = {
         {
           question: "Do I need to know how to design or code?",
           answer:
-            "No. Pick a designer theme and everything — fonts, colors, layout — is already done. Click any text on the live page to edit it; nothing to learn, nothing to install.",
+            "No. Pick a designer theme and everything - fonts, colors, layout - is already done. Click any text on the live page to edit it; nothing to learn, nothing to install.",
         },
         {
           question: "Is it really free, or is there a catch?",
           answer:
-            "The constructor itself is free with no time limit — design your whole site, invite guests, and track RSVPs at no cost. The only trade-off on Free is a small \"Made with Invimbo\" badge on your live site and a watermark on printed paper, both shown to you up front, not after you've built something.",
+            "The constructor itself is free with no time limit - design your whole site, invite guests, and track RSVPs at no cost. The only trade-off on Free is a small \"Made with Invimbo\" badge on your live site and a watermark on printed paper, both shown to you up front, not after you've built something.",
         },
         {
           question: "Is this a subscription?",
-          answer: "No. Every paid plan is one flat, one-time fee — not a recurring charge.",
+          answer: "No. Every paid plan is one flat, one-time fee - not a recurring charge.",
         },
         {
           question: "Do my guests need an account or an app?",
           answer:
-            "No. They open your link, see your site, and RSVP — nothing to download, nothing to sign up for.",
+            "No. They open your link, see your site, and RSVP - nothing to download, nothing to sign up for.",
         },
         {
           question: "Will it actually look like MY event, not a generic template?",
           answer:
-            "Every theme is a real starting point, not a locked layout — swap colors, fonts, and photos, drag elements anywhere, or start from a blank canvas. Browse the full gallery above before you decide.",
+            "Every theme is a real starting point, not a locked layout - swap colors, fonts, and photos, drag elements anywhere, or start from a blank canvas. Browse the full gallery above before you decide.",
         },
         {
           question: "How is this different from other wedding site builders?",
           answer:
-            "Most charge a recurring subscription just for a website. Here it's one flat fee, once — and that same theme carries through to your printed invitations and banquet cards too, not just the site. No app for guests, no subscription for you.",
+            "Most charge a recurring subscription just for a website. Here it's one flat fee, once - and that same theme carries through to your printed invitations and banquet cards too, not just the site. No app for guests, no subscription for you.",
         },
       ],
     },
@@ -698,7 +698,7 @@ export const en: Dictionary = {
     styleStep: { heading: "\u{1F3A8} Pick your style", subtext: "You can always change this or design your own later." },
     photo: {
       label: "\u{1F4F7} Add a photo (optional)",
-      help: "Shows up on your site's photo layouts — you can always add or change it later.",
+      help: "Shows up on your site's photo layouts - you can always add or change it later.",
       dropHint: "Drag a photo here, or click to browse",
       busyHint: "Adding your photo...",
       changeLabel: "Change photo",
@@ -716,7 +716,7 @@ export const en: Dictionary = {
       show: "Show",
       hide: "Hide",
       steps: [
-        { title: "Pick a style", text: "Browse styles until one feels right — swap it any time." },
+        { title: "Pick a style", text: "Browse styles until one feels right - swap it any time." },
         { title: "Add your details", text: "Names, date, a photo if you want one. That's it." },
         { title: "Share your site", text: "Get a live link guests can open on their phone." },
       ],
@@ -808,7 +808,7 @@ export const en: Dictionary = {
     guestReminder: {
       subject: (eventTitle) => `Don't forget to RSVP for ${eventTitle}`,
       reminderText: (eventTitle) =>
-        `Just a friendly reminder — we haven't heard back from you yet for <strong>${eventTitle}</strong>.`,
+        `Just a friendly reminder - we haven't heard back from you yet for <strong>${eventTitle}</strong>.`,
     },
     guestConfirmation: {
       acceptedSubject: (eventTitle) => `You're confirmed for ${eventTitle}`,
@@ -849,7 +849,7 @@ export const en: Dictionary = {
       subject: (hostname) => `Your invimbo.com address is live: ${hostname}`,
       liveAt: (hostname) => `<p>Your event site is now reachable at <strong>https://${hostname}</strong>, alongside your original link.</p>`,
       includedNote:
-        "<p>This address is included with your plan for as long as it's active — nothing to renew, no extra domain purchase, no expiry date to track.</p>",
+        "<p>This address is included with your plan for as long as it's active - nothing to renew, no extra domain purchase, no expiry date to track.</p>",
       questionsNote: "<p>Questions? Just reply to this email or reach us at support@invimbo.com.</p>",
     },
   },

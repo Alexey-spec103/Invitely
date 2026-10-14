@@ -217,9 +217,9 @@ const sourceSerif4 = Source_Serif_4({
 // OG/Twitter image path on every page that doesn't set its own.
 const SITE_URL = "https://www.invimbo.com";
 
-const siteTitle = "Invimbo — event websites, live in minutes";
+const siteTitle = "Invimbo - event websites, live in minutes";
 const siteDescription =
-  "Design a beautiful event website, matching paper invitations, and guest seating — one style, everywhere your guests see it.";
+  "Design a beautiful event website, matching paper invitations, and guest seating - one style, everywhere your guests see it.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -12,7 +12,7 @@ export const es: Dictionary = {
     shareText: (eventTitle) => (eventTitle ? `Estás invitado/a: ${eventTitle}` : "¡Estás invitado/a!"),
   },
   unpublishedPreview: {
-    message: "👀 Estás previsualizando este sitio — todavía no está publicado, así que las confirmaciones enviadas aquí son solo una prueba y no se guardarán.",
+    message: "👀 Estás previsualizando este sitio - todavía no está publicado, así que las confirmaciones enviadas aquí son solo una prueba y no se guardarán.",
   },
   envelopeReveal: {
     tapToOpen: "Toca para abrir",
@@ -37,7 +37,7 @@ export const es: Dictionary = {
     missingFieldsError: "Por favor, indica tu nombre y confírmanos si podrás venir.",
     genericError: "Algo salió mal",
     successAttending: "¡Ya estás en la lista! No podemos esperar a celebrar contigo. \u{1F389}",
-    successDeclining: "Gracias por avisarnos — ¡te vamos a extrañar!",
+    successDeclining: "Gracias por avisarnos - ¡te vamos a extrañar!",
     notPublishedError: "Este sitio aún no está publicado, así que no se pueden enviar confirmaciones. Pídele a tu anfitrión que lo publique.",
     submitFailedError: "No pudimos enviar tu confirmación. Por favor, inténtalo de nuevo en un momento.",
     oneTapGreeting: (name) => `¿Estarás ahí, ${name}?`,
@@ -86,7 +86,7 @@ export const es: Dictionary = {
   },
   guestPhotos: {
     heading: "Añade tus fotos",
-    subtitle: (eventTitle) => `Comparte tus fotos de ${eventTitle} — no necesitas cuenta.`,
+    subtitle: (eventTitle) => `Comparte tus fotos de ${eventTitle} - no necesitas cuenta.`,
     addPhotosButton: "Añadir fotos",
     uploading: "Subiendo...",
     uploaded: "¡Añadida! Gracias.",
@@ -102,15 +102,15 @@ export const es: Dictionary = {
     seatedAt: (tableName) => `Estás sentado en ${tableName}`,
     resultSeatedAt: (guestName, tableName) => `${guestName} está sentado en ${tableName}`,
     resultNotFound: (guestName) =>
-      `No encontramos a "${guestName}" en la lista de invitados — revisa la ortografía o pregunta al anfitrión.`,
+      `No encontramos a "${guestName}" en la lista de invitados - revisa la ortografía o pregunta al anfitrión.`,
     resultNotSeatedYet: (guestName) =>
-      `Hola ${guestName} — ¡estás en la lista! La distribución de mesas aún se está definiendo, vuelve a consultar pronto.`,
+      `Hola ${guestName} - ¡estás en la lista! La distribución de mesas aún se está definiendo, vuelve a consultar pronto.`,
     resultNotAttending: (guestName) =>
-      `Parece que ${guestName} indicó que no asistirá — si esto es un error, contacta al anfitrión.`,
+      `Parece que ${guestName} indicó que no asistirá - si esto es un error, contacta al anfitrión.`,
   },
   landing: {
     skipToContent: "Saltar al contenido",
-    topBar: "Visa / Mastercard aceptados · Entrega instantánea — envía tu enlace de invitación a cualquier parte del mundo",
+    topBar: "Visa / Mastercard aceptados · Entrega instantánea - envía tu enlace de invitación a cualquier parte del mundo",
     nav: { constructor: "Constructor", themes: "Temas", whatsIncluded: "Qué incluye", pricing: "Precios", login: "Iniciar sesión" },
     mobileNav: { openMenu: "Abrir menú", closeMenu: "Cerrar menú" },
     cta: {
@@ -125,9 +125,9 @@ export const es: Dictionary = {
       headline: "Tu evento, con el estilo exacto que imaginaste",
       accent: "hasta la última tarjeta de mesa",
       subtext:
-        "Un hermoso sitio web de evento, invitaciones de papel a juego y organización de invitados — un solo estilo, en todas partes donde tus invitados lo vean. Empieza con un tema de diseñador, o crea el tuyo desde un lienzo en blanco.",
-      checklistFree: "Diseñar es gratis — paga solo si quieres este enlace exacto en vivo",
-      checklistThemes: (themeCount) => `${themeCount} temas de diseñador — o crea el tuyo desde un lienzo en blanco`,
+        "Un hermoso sitio web de evento, invitaciones de papel a juego y organización de invitados - un solo estilo, en todas partes donde tus invitados lo vean. Empieza con un tema de diseñador, o crea el tuyo desde un lienzo en blanco.",
+      checklistFree: "Diseñar es gratis - paga solo si quieres este enlace exacto en vivo",
+      checklistThemes: (themeCount) => `${themeCount} temas de diseñador - o crea el tuyo desde un lienzo en blanco`,
       checklistFonts: (fontCount) => `Mueve lo que quieras, ${fontCount}+ fuentes, cualquier color que te guste`,
       checklistRsvp: "Seguimiento de confirmaciones con tus propias preguntas",
       checklistPaper: "Invitaciones de papel personalizadas con códigos QR",
@@ -140,13 +140,13 @@ export const es: Dictionary = {
     statBar: { themes: "temas de diseñador", fonts: "fuentes en el constructor", modules: "módulos del sitio", oneLink: "enlace para todo" },
     platformFan: {
       heading: "Una plataforma de boda, no solo una invitación",
-      subtext: "Desde el sitio de invitación y la comunicación con tus invitados hasta un banquete totalmente diseñado — tarjetas de mesa incluidas.",
+      subtext: "Desde el sitio de invitación y la comunicación con tus invitados hasta un banquete totalmente diseñado - tarjetas de mesa incluidas.",
     },
     eventTypes: {
       eyebrow: "No solo bodas",
       heading: "Cada celebración tiene su propio sitio",
       subtext:
-        "Elige primero tu tipo de evento, y todo lo demás — el texto, los campos, hasta cómo se llama la herramienta de asientos — se adapta a partir de ahí.",
+        "Elige primero tu tipo de evento, y todo lo demás - el texto, los campos, hasta cómo se llama la herramienta de asientos - se adapta a partir de ahí.",
       cta: "Elegir tipo de evento",
       items: [
         { label: "Boda", blurb: "La razón por la que existe toda esta plataforma." },
@@ -165,11 +165,11 @@ export const es: Dictionary = {
     },
     constructorSection: {
       eyebrow: "El constructor de verdad",
-      heading: "No solo un selector de temas — un lienzo",
+      heading: "No solo un selector de temas - un lienzo",
       subtext: (fontCount) =>
         `Elige un tema de diseñador para empezar rápido, y luego mueve lo que quieras: arrastra texto y fotos a cualquier parte de la página, elige entre ${fontCount}+ fuentes, escoge cualquier color, superpón elementos, y deshaz los cambios si cambias de opinión. El diseño exacto que creas también se traslada a tus invitaciones impresas.`,
       features: [
-        { title: "Fuentes seleccionadas", description: "Manuscrita, serif, gruesa o fina — cambia todo el aspecto con un clic." },
+        { title: "Fuentes seleccionadas", description: "Manuscrita, serif, gruesa o fina - cambia todo el aspecto con un clic." },
         { title: "Cualquier color que te guste", description: "Crea tu propia paleta para que coincida exactamente con los colores de tu boda." },
         { title: "Variaciones seleccionadas por diseñadores", description: "O empieza con combinaciones de color y patrón, elegidas a mano por nuestros diseñadores." },
         { title: "Texto flexible, en cualquier lugar", description: "Edita, redimensiona, añade y mueve cualquier texto en tu diseño." },
@@ -179,14 +179,14 @@ export const es: Dictionary = {
     },
     howItWorksSection: {
       heading: "Cómo funciona el constructor",
-      subtext: "Todo lo de abajo ocurre en vivo, directamente en tu navegador — sin descargas, nada que aprender.",
+      subtext: "Todo lo de abajo ocurre en vivo, directamente en tu navegador - sin descargas, nada que aprender.",
       steps: [
         {
           title: "Personaliza tu diseño",
           bullets: [
             "Elige entre 100 temas de diseñador, o empieza desde un lienzo en blanco",
             "Cada tema viene totalmente coordinado en color, listo para usar",
-            "Cambia de estilo cuando quieras — tu contenido se mantiene",
+            "Cambia de estilo cuando quieras - tu contenido se mantiene",
           ],
         },
         {
@@ -219,18 +219,18 @@ export const es: Dictionary = {
       eyebrow: "Más allá de la invitación",
       heading: "Envíala a cualquier parte, sigue cada respuesta",
       subtext:
-        "Comparte tu único enlace por WhatsApp, SMS, correo electrónico, o como tus invitados realmente revisen sus mensajes. Cada confirmación va directamente a tu lista de invitados — quién viene, quién no ha respondido aún, y a quién te falta invitar. No necesitan cuenta ni aplicación para responder — solo el enlace.",
+        "Comparte tu único enlace por WhatsApp, SMS, correo electrónico, o como tus invitados realmente revisen sus mensajes. Cada confirmación va directamente a tu lista de invitados - quién viene, quién no ha respondido aún, y a quién te falta invitar. No necesitan cuenta ni aplicación para responder - solo el enlace.",
     },
     siteOrPaper: {
       heading: "Una invitación web, y/o de papel",
-      subtext: "No es uno u otro — la mayoría de las parejas usan ambos.",
+      subtext: "No es uno u otro - la mayoría de las parejas usan ambos.",
       orBadge: "Y/O",
       website: {
         title: "Invitación web",
-        subtext: "Simple y rápido — invita a cada persona, viva donde viva.",
+        subtext: "Simple y rápido - invita a cada persona, viva donde viva.",
         bullets: [
           "Un solo enlace funciona en cualquier móvil, tablet o portátil",
-          "Actualiza lo que quieras — todos ven la última versión al instante",
+          "Actualiza lo que quieras - todos ven la última versión al instante",
         ],
       },
       paper: {
@@ -238,38 +238,38 @@ export const es: Dictionary = {
         subtext: "Un recuerdo para tu familia y amigos más cercanos.",
         bullets: [
           "Invitaciones, sobres y tarjetas de programa en PDF listos para imprimir",
-          "Cada invitado recibe un código QR personal — su confirmación se vincula automáticamente",
+          "Cada invitado recibe un código QR personal - su confirmación se vincula automáticamente",
         ],
       },
     },
     themesSection: {
       heading: "Elige tu estilo",
       subtext:
-        "El mismo tema se traslada a tu sitio, invitaciones de papel y tarjetas de banquete — o sáltatelo por completo y diseña desde cero en el constructor.",
+        "El mismo tema se traslada a tu sitio, invitaciones de papel y tarjetas de banquete - o sáltatelo por completo y diseña desde cero en el constructor.",
     },
     whatsIncluded: {
       heading: "Qué incluye",
-      subtext: "Cada sitio viene con estos bloques — combínalos para contar tu historia.",
+      subtext: "Cada sitio viene con estos bloques - combínalos para contar tu historia.",
       modules: [
         { title: "Constructor de arrastrar y soltar", description: "Mueve cualquier texto o foto, elige cualquier fuente o color, y deshaz/rehaz sobre la marcha." },
-        { title: "Introducción principal", description: "Vuestros nombres, la fecha del evento y una foto — varios diseños para elegir." },
+        { title: "Introducción principal", description: "Vuestros nombres, la fecha del evento y una foto - varios diseños para elegir." },
         { title: "Carta a tus invitados", description: "Una nota personal, deseos de regalo y fecha límite de confirmación en una sola tarjeta." },
-        { title: "Programa del evento", description: "Organiza el día, minuto a minuto — desde el primer brindis hasta el último baile." },
+        { title: "Programa del evento", description: "Organiza el día, minuto a minuto - desde el primer brindis hasta el último baile." },
         { title: "Lugar y mapa", description: "Muestra a los invitados exactamente adónde ir, con un mapa interactivo." },
-        { title: "Confirmación con preguntas personalizadas", description: "Pregunta sobre comidas, bebidas o transporte — los invitados confirman online, directo a tu lista." },
+        { title: "Confirmación con preguntas personalizadas", description: "Pregunta sobre comidas, bebidas o transporte - los invitados confirman online, directo a tu lista." },
         { title: "Cuenta atrás", description: "Genera expectación con una cuenta atrás en vivo hasta el gran día." },
         { title: "Muro de libro de visitas", description: "Los buenos deseos que dejan los invitados al confirmar, mostrados como un muro público en tu sitio." },
-        { title: "Vídeo", description: "Incrusta un vídeo de YouTube o Vimeo — vuestra propuesta, vuestra historia, vuestra elección." },
+        { title: "Vídeo", description: "Incrusta un vídeo de YouTube o Vimeo - vuestra propuesta, vuestra historia, vuestra elección." },
         { title: "Invitaciones de papel", description: "Invitaciones, sobres y tarjetas de programa en PDF listos para imprimir, personalizados por invitado con un código QR." },
-        { title: "Organización del banquete", description: "Asigna mesas — por nombre, no solo por número — y genera tarjetas de mesa y de sitio para imprimir." },
+        { title: "Organización del banquete", description: "Asigna mesas - por nombre, no solo por número - y genera tarjetas de mesa y de sitio para imprimir." },
         { title: "Dominio personalizado", description: "Apunta tu propio dominio a tu sitio, o conserva el enlace legible que te damos gratis." },
-        { title: "Preguntas frecuentes", description: "Responde las preguntas que te harán una y otra vez — aparcamiento, acompañantes, horarios — directamente en tu sitio." },
+        { title: "Preguntas frecuentes", description: "Responde las preguntas que te harán una y otra vez - aparcamiento, acompañantes, horarios - directamente en tu sitio." },
         { title: "Viaje y alojamiento", description: "Recomienda hoteles con códigos promocionales y enlaces de reserva, para que los invitados de fuera sepan dónde alojarse." },
       ],
     },
     pricing: {
       heading: "El constructor siempre es gratis",
-      subtext: "Diseña tu sitio, invita a tus invitados y sigue las confirmaciones sin coste — publícalo en directo cuando quieras. Paga si quieres tu propia dirección sin el distintivo de Invimbo, o invitaciones de papel sin marca de agua.",
+      subtext: "Diseña tu sitio, invita a tus invitados y sigue las confirmaciones sin coste - publícalo en directo cuando quieras. Paga si quieres tu propia dirección sin el distintivo de Invimbo, o invitaciones de papel sin marca de agua.",
       free: "Gratis",
       whatYouGet: "Lo que obtienes",
       whatThisAdds: "Lo que añade",
@@ -277,7 +277,7 @@ export const es: Dictionary = {
       badgePremium: "Elimina la marca de agua",
       freeCaveat: "Muestra un pequeño distintivo \"Hecho con Invimbo\" en tu sitio en directo, y una marca de agua en el papel impreso.",
       oneTime: "Pago único, no es una suscripción",
-      exampleCaption: "Un diseño real de Invimbo — el tuyo puede verse así.",
+      exampleCaption: "Un diseño real de Invimbo - el tuyo puede verse así.",
       valueAnchor: "Las invitaciones impresas y enviadas por correo suelen costar más por invitado. Aquí, una tarifa única cubre a toda tu lista de invitados, sean cuantos sean.",
     },
     faq: {
@@ -286,7 +286,7 @@ export const es: Dictionary = {
         {
           question: "¿Necesito saber diseñar o programar?",
           answer:
-            "No. Elige un tema de diseñador y todo —tipografías, colores, maquetación— ya está hecho. Haz clic en cualquier texto de la página en vivo para editarlo; no hay nada que aprender ni instalar.",
+            "No. Elige un tema de diseñador y todo -tipografías, colores, maquetación- ya está hecho. Haz clic en cualquier texto de la página en vivo para editarlo; no hay nada que aprender ni instalar.",
         },
         {
           question: "¿Es realmente gratis, o hay truco?",
@@ -299,7 +299,7 @@ export const es: Dictionary = {
         },
         {
           question: "¿Mis invitados necesitan una cuenta o una app?",
-          answer: "No. Abren tu enlace, ven tu sitio y confirman asistencia — nada que descargar, nada que registrar.",
+          answer: "No. Abren tu enlace, ven tu sitio y confirman asistencia - nada que descargar, nada que registrar.",
         },
         {
           question: "¿Se verá como MI evento, no como una plantilla genérica?",
@@ -309,7 +309,7 @@ export const es: Dictionary = {
         {
           question: "¿En qué se diferencia esto de otros creadores de webs de boda?",
           answer:
-            "La mayoría cobra una suscripción solo por la web. Aquí pagas una tarifa única, una sola vez — y ese mismo tema se traslada también a tus invitaciones impresas y tarjetas de mesa, no solo al sitio. Sin app para los invitados, sin suscripción para ti.",
+            "La mayoría cobra una suscripción solo por la web. Aquí pagas una tarifa única, una sola vez - y ese mismo tema se traslada también a tus invitaciones impresas y tarjetas de mesa, no solo al sitio. Sin app para los invitados, sin suscripción para ti.",
         },
       ],
     },
@@ -341,7 +341,7 @@ export const es: Dictionary = {
     styleStep: { heading: "\u{1F3A8} Elige tu estilo", subtext: "Siempre puedes cambiarlo o diseñar el tuyo propio más tarde." },
     photo: {
       label: "\u{1F4F7} Añadir una foto (opcional)",
-      help: "Aparece en los diseños de foto de tu sitio — siempre puedes añadirla o cambiarla más tarde.",
+      help: "Aparece en los diseños de foto de tu sitio - siempre puedes añadirla o cambiarla más tarde.",
       dropHint: "Arrastra una foto aquí, o haz clic para buscarla",
       busyHint: "Añadiendo tu foto...",
       changeLabel: "Cambiar foto",
@@ -359,7 +359,7 @@ export const es: Dictionary = {
       show: "Mostrar",
       hide: "Ocultar",
       steps: [
-        { title: "Elige un estilo", text: "Explora estilos hasta que uno te convenza — cámbialo cuando quieras." },
+        { title: "Elige un estilo", text: "Explora estilos hasta que uno te convenza - cámbialo cuando quieras." },
         { title: "Añade tus datos", text: "Nombres, fecha, una foto si quieres. Eso es todo." },
         { title: "Comparte tu sitio", text: "Obtén un enlace en vivo que los invitados pueden abrir en su móvil." },
       ],
@@ -451,7 +451,7 @@ export const es: Dictionary = {
     guestReminder: {
       subject: (eventTitle) => `No olvides confirmar tu asistencia a ${eventTitle}`,
       reminderText: (eventTitle) =>
-        `Un recordatorio amistoso — aún no hemos sabido de ti para <strong>${eventTitle}</strong>.`,
+        `Un recordatorio amistoso - aún no hemos sabido de ti para <strong>${eventTitle}</strong>.`,
     },
     guestConfirmation: {
       acceptedSubject: (eventTitle) => `Tu asistencia a ${eventTitle} está confirmada`,
@@ -492,7 +492,7 @@ export const es: Dictionary = {
       subject: (hostname) => `Tu dirección invimbo.com ya está activa: ${hostname}`,
       liveAt: (hostname) => `<p>Tu sitio del evento ahora está disponible en <strong>https://${hostname}</strong>, además de tu enlace original.</p>`,
       includedNote:
-        "<p>Esta dirección está incluida en tu plan mientras esté activo — nada que renovar, ninguna compra adicional de dominio, sin fecha de vencimiento.</p>",
+        "<p>Esta dirección está incluida en tu plan mientras esté activo - nada que renovar, ninguna compra adicional de dominio, sin fecha de vencimiento.</p>",
       questionsNote: "<p>¿Preguntas? Responde este correo o escríbenos a support@invimbo.com.</p>",
     },
   },

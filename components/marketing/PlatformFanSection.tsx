@@ -94,7 +94,7 @@ export default function PlatformFanSection({ locale }: { locale: Locale }) {
           <DressCodeCardPreview
             theme={theme}
             title="Dress Code"
-            description="Garden formal — soft, romantic tones"
+            description="Garden formal - soft, romantic tones"
             colors={DRESS_CODE_COLORS}
           />
         </div>

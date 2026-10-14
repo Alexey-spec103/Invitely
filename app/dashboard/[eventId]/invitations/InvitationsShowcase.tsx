@@ -156,7 +156,7 @@ export default function InvitationsShowcase({
         <div>
           <h2 className="dash-h2 text-lg text-gray-900">Your complete kit</h2>
           <p className="mt-1 text-sm text-gray-500">
-            One design, every piece — download any of these as a print-ready PDF below.
+            One design, every piece - download any of these as a print-ready PDF below.
           </p>
           <div className="mt-6 flex flex-wrap items-end gap-4">
             {materials.map((material, index) => (

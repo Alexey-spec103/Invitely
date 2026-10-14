@@ -95,7 +95,7 @@ export default function LayersPanel({
               <button
                 type="button"
                 onClick={() => onToggleDesktopOnly(element.id)}
-                title={element.desktopOnly ? "Shown on desktop only — click to show everywhere" : "Show on desktop only"}
+                title={element.desktopOnly ? "Shown on desktop only - click to show everywhere" : "Show on desktop only"}
                 className={
                   "shrink-0 rounded px-1 text-[10px] font-semibold uppercase transition-opacity " +
                   (element.desktopOnly ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)] opacity-100" : `text-[var(--dash-text-muted)] hover:text-[var(--dash-text)] ${revealClass}`)
@@ -106,7 +106,7 @@ export default function LayersPanel({
               <button
                 type="button"
                 onClick={() => onToggleHidden(element.id)}
-                title={element.hidden ? "Hidden from your site — click to show" : "Hide from your site"}
+                title={element.hidden ? "Hidden from your site - click to show" : "Hide from your site"}
                 className={
                   "shrink-0 text-[var(--dash-text-muted)] hover:text-[var(--dash-text)] transition-opacity " +
                   (element.hidden ? "opacity-100" : revealClass)

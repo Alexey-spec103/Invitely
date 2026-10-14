@@ -13,7 +13,7 @@ import Link from "next/link";
 // that jurisdiction must still review this before the product takes real
 // payments or handles real guests' data.
 export const metadata = {
-  title: "Terms of Service — Invimbo",
+  title: "Terms of Service - Invimbo",
 };
 
 export default function TermsPage() {
@@ -67,12 +67,12 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-stone-900">4. Plans and payment</h2>
             <p className="mt-2">
               Free features remain free for as long as your account is active. Paid plans (Basic
-              and Premium) are a single one-time payment per event, not a recurring subscription —
+              and Premium) are a single one-time payment per event, not a recurring subscription -
               you pay once to unlock a plan&apos;s features for that event, with no further
               charges tied to it. Payments are processed securely by Stripe; we never see or store
               your card details. Prices are shown in EUR at checkout and may change for new
               purchases, but a plan you&apos;ve already bought for an event keeps its features.
-              All purchases are final — we don&apos;t offer refunds, except where required by
+              All purchases are final - we don&apos;t offer refunds, except where required by
               law or where a charge was made in error on our end. If you believe you were charged
               incorrectly, contact us and we&apos;ll look into it.
             </p>
@@ -103,7 +103,7 @@ export default function TermsPage() {
             <p className="mt-2">
               The Invimbo name, logo, and the site templates, themes, and software we built are
               our property (or licensed to us). These terms don&apos;t grant you any rights to
-              them beyond using the service as intended — they don&apos;t transfer to you along
+              them beyond using the service as intended - they don&apos;t transfer to you along
               with the event site you create.
             </p>
           </section>
@@ -113,7 +113,7 @@ export default function TermsPage() {
             <p className="mt-2">
               Invimbo is provided &quot;as is,&quot; without warranties of any kind. We don&apos;t
               guarantee the service will be uninterrupted, error-free, or that every email or RSVP
-              will be delivered — for an event-critical use case like a wedding, keep a backup plan
+              will be delivered - for an event-critical use case like a wedding, keep a backup plan
               (e.g. your own guest list) rather than relying on any single tool exclusively. To the
               extent permitted by law, our liability for any claim relating to the service is limited
               to the amount you paid us in the 12 months before the claim arose, if any.

@@ -16,18 +16,18 @@ export default function SupportCard() {
         <p className="text-sm font-semibold text-gray-900">✨ A few things worth knowing</p>
         <ul className="mt-3 space-y-2 text-sm text-gray-600">
           <li>
-            Everything here downloads as an <span className="font-medium text-gray-900">unlimited PDF</span> — nothing
+            Everything here downloads as an <span className="font-medium text-gray-900">unlimited PDF</span> - nothing
             is locked behind a paywall while you&apos;re still deciding.
           </li>
           <li>
-            Guests just open your link and answer —{" "}
+            Guests just open your link and answer -{" "}
             <span className="font-medium text-gray-900">no account, no app, nothing to install</span> on their end.
           </li>
           <li>
-            Your site and RSVPs update the moment you hit save —{" "}
+            Your site and RSVPs update the moment you hit save -{" "}
             <span className="font-medium text-gray-900">no waiting</span> on anyone to approve or process anything.
           </li>
-          <li>Found a bug, or just have a question? Reach out — a real person reads every message.</li>
+          <li>Found a bug, or just have a question? Reach out - a real person reads every message.</li>
         </ul>
       </div>
 

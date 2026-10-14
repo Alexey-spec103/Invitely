@@ -116,7 +116,7 @@ export default function DomainEditForm({
           <p className="text-sm font-medium text-emerald-900">Your address is live</p>
           <p className="mt-1 font-mono text-sm text-emerald-800">{defaultValues.customDomain}</p>
           <p className="mt-2 text-xs text-emerald-700">
-            Included with your plan for as long as it&apos;s active — nothing to renew, no expiry date.
+            Included with your plan for as long as it&apos;s active - nothing to renew, no expiry date.
           </p>
         </div>
         <button
@@ -136,7 +136,7 @@ export default function DomainEditForm({
       <div>
         <p className="text-sm font-medium text-gray-900">Get a free {appDomain} address</p>
         <p className="mt-1 text-sm text-gray-500">
-          A nicer link than the default, included with your plan — no domain to buy, nothing to renew.
+          A nicer link than the default, included with your plan - no domain to buy, nothing to renew.
         </p>
         <div className="mt-2 flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus-within:border-gray-500 focus-within:ring-1 focus-within:ring-gray-500">
           <input
@@ -155,7 +155,7 @@ export default function DomainEditForm({
             <Link href={`/dashboard/${eventId}/plan`} className="font-medium underline">
               Upgrade
             </Link>{" "}
-            to claim it — free to preview the address here first.
+            to claim it - free to preview the address here first.
           </p>
         )}
         <button
@@ -252,7 +252,7 @@ function ByodDomainForm({
     <div className="space-y-4 rounded-md border border-gray-200 bg-gray-50 p-4">
       <p className="text-sm text-[var(--dash-text-muted)]">
         Point your own domain at this site. You&apos;ll still need to configure DNS with
-        whichever host you deploy to — this only verifies ownership and routes matching
+        whichever host you deploy to - this only verifies ownership and routes matching
         requests once your domain is live.
       </p>
 

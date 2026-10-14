@@ -23,7 +23,7 @@ export const pl: Dictionary = {
     shareText: (eventTitle) => (eventTitle ? `Jesteś zaproszony/a: ${eventTitle}` : "Jesteś zaproszony/a!"),
   },
   unpublishedPreview: {
-    message: "👀 Przeglądasz podgląd tej strony — nie jest jeszcze opublikowana, więc potwierdzenia wysłane tutaj są tylko testem i nie zostaną zapisane.",
+    message: "👀 Przeglądasz podgląd tej strony - nie jest jeszcze opublikowana, więc potwierdzenia wysłane tutaj są tylko testem i nie zostaną zapisane.",
   },
   envelopeReveal: {
     tapToOpen: "Dotknij, aby otworzyć",
@@ -48,7 +48,7 @@ export const pl: Dictionary = {
     missingFieldsError: "Podaj swoje imię i daj nam znać, czy będziesz mógł/mogła przyjść.",
     genericError: "Coś poszło nie tak",
     successAttending: "Jesteś na liście! Nie możemy się doczekać wspólnego świętowania. \u{1F389}",
-    successDeclining: "Dziękujemy za odpowiedź — będzie nam Cię brakować!",
+    successDeclining: "Dziękujemy za odpowiedź - będzie nam Cię brakować!",
     notPublishedError: "Ta strona nie została jeszcze opublikowana, więc potwierdzenia nie mogą być wysyłane. Poproś gospodarza o jej publikację.",
     submitFailedError: "Nie udało się wysłać Twojego potwierdzenia. Spróbuj ponownie za chwilę.",
     oneTapGreeting: (name) => `Będziesz z nami, ${name}?`,
@@ -97,7 +97,7 @@ export const pl: Dictionary = {
   },
   guestPhotos: {
     heading: "Dodaj swoje zdjęcia",
-    subtitle: (eventTitle) => `Podziel się zdjęciami z ${eventTitle} — konto nie jest potrzebne.`,
+    subtitle: (eventTitle) => `Podziel się zdjęciami z ${eventTitle} - konto nie jest potrzebne.`,
     addPhotosButton: "Dodaj zdjęcia",
     uploading: "Przesyłanie...",
     uploaded: "Dodano! Dziękujemy.",
@@ -112,15 +112,15 @@ export const pl: Dictionary = {
     lookupFailedError: "Coś poszło nie tak. Spróbuj ponownie za chwilę.",
     seatedAt: (tableName) => `Twoje miejsce jest przy stoliku ${tableName}`,
     resultSeatedAt: (guestName, tableName) => `${guestName} siedzi przy stoliku ${tableName}`,
-    resultNotFound: (guestName) => `Nie znaleźliśmy „${guestName}" na liście gości — sprawdź pisownię lub zapytaj organizatora.`,
+    resultNotFound: (guestName) => `Nie znaleźliśmy „${guestName}" na liście gości - sprawdź pisownię lub zapytaj organizatora.`,
     resultNotSeatedYet: (guestName) =>
-      `Cześć ${guestName} — jesteś na liście! Rozsadzenie gości jest jeszcze ustalane, sprawdź ponownie wkrótce.`,
+      `Cześć ${guestName} - jesteś na liście! Rozsadzenie gości jest jeszcze ustalane, sprawdź ponownie wkrótce.`,
     resultNotAttending: (guestName) =>
-      `Wygląda na to, że ${guestName} zaznaczył(a) brak obecności — jeśli to pomyłka, skontaktuj się z organizatorem.`,
+      `Wygląda na to, że ${guestName} zaznaczył(a) brak obecności - jeśli to pomyłka, skontaktuj się z organizatorem.`,
   },
   landing: {
     skipToContent: "Przejdź do treści",
-    topBar: "Akceptujemy Visa / Mastercard · Natychmiastowa dostawa — wyślij link z zaproszeniem w dowolne miejsce na świecie",
+    topBar: "Akceptujemy Visa / Mastercard · Natychmiastowa dostawa - wyślij link z zaproszeniem w dowolne miejsce na świecie",
     nav: { constructor: "Kreator", themes: "Motywy", whatsIncluded: "Co zawiera", pricing: "Cennik", login: "Zaloguj się" },
     mobileNav: { openMenu: "Otwórz menu", closeMenu: "Zamknij menu" },
     cta: {
@@ -135,9 +135,9 @@ export const pl: Dictionary = {
       headline: "Twoje wydarzenie, dokładnie takie, jak sobie wymarzyłeś",
       accent: "aż po ostatnią winietkę",
       subtext:
-        "Piękna strona wydarzenia, pasujące zaproszenia papierowe i rozmieszczenie gości — jeden styl, wszędzie tam, gdzie widzą go twoi goście. Zacznij od motywu zaprojektowanego przez naszych grafików albo stwórz własny od pustej kartki.",
-      checklistFree: "Projektowanie jest darmowe — płacisz tylko, jeśli chcesz tę publikację na żywo",
-      checklistThemes: (themeCount) => `${themeCount} motywów od projektantów — lub stwórz własny od pustej kartki`,
+        "Piękna strona wydarzenia, pasujące zaproszenia papierowe i rozmieszczenie gości - jeden styl, wszędzie tam, gdzie widzą go twoi goście. Zacznij od motywu zaprojektowanego przez naszych grafików albo stwórz własny od pustej kartki.",
+      checklistFree: "Projektowanie jest darmowe - płacisz tylko, jeśli chcesz tę publikację na żywo",
+      checklistThemes: (themeCount) => `${themeCount} motywów od projektantów - lub stwórz własny od pustej kartki`,
       checklistFonts: (fontCount) => `Przesuwaj wszystko, ${fontCount}+ czcionek, dowolny kolor, jaki lubisz`,
       checklistRsvp: "Śledzenie potwierdzeń z własnymi pytaniami",
       checklistPaper: "Spersonalizowane zaproszenia papierowe z kodami QR",
@@ -150,13 +150,13 @@ export const pl: Dictionary = {
     statBar: { themes: "motywów od projektantów", fonts: "czcionek w kreatorze", modules: "modułów strony", oneLink: "link do wszystkiego" },
     platformFan: {
       heading: "Platforma ślubna, nie tylko zaproszenie",
-      subtext: "Od strony z zaproszeniem i komunikacji z gośćmi po w pełni zaprojektowane wesele — z kartami na stół włącznie.",
+      subtext: "Od strony z zaproszeniem i komunikacji z gośćmi po w pełni zaprojektowane wesele - z kartami na stół włącznie.",
     },
     eventTypes: {
       eyebrow: "Nie tylko wesela",
       heading: "Każda uroczystość ma swoją własną stronę",
       subtext:
-        "Najpierw wybierz typ wydarzenia, a wszystko inne — treści, pola, nawet nazwa narzędzia do rozmieszczenia gości — dopasowuje się do niego.",
+        "Najpierw wybierz typ wydarzenia, a wszystko inne - treści, pola, nawet nazwa narzędzia do rozmieszczenia gości - dopasowuje się do niego.",
       cta: "Wybierz typ wydarzenia",
       items: [
         { label: "Wesele", blurb: "Wydarzenie, wokół którego powstała cała ta platforma." },
@@ -175,11 +175,11 @@ export const pl: Dictionary = {
     },
     constructorSection: {
       eyebrow: "Prawdziwy kreator",
-      heading: "Nie tylko wybór motywu — cała kartka",
+      heading: "Nie tylko wybór motywu - cała kartka",
       subtext: (fontCount) =>
         `Wybierz motyw od projektanta, by szybko zacząć, a potem przesuwaj wszystko: przeciągaj tekst i zdjęcia w dowolne miejsce na stronie, wybierz spośród ${fontCount}+ czcionek, dowolny kolor, układaj elementy warstwami i cofaj zmiany, jeśli zmienisz zdanie. Dokładnie ten sam projekt przenosi się też na drukowane zaproszenia.`,
       features: [
-        { title: "Wyselekcjonowane czcionki", description: "Skrypt, szeryfowa, gruba lub cienka — zmień cały wygląd jednym kliknięciem." },
+        { title: "Wyselekcjonowane czcionki", description: "Skrypt, szeryfowa, gruba lub cienka - zmień cały wygląd jednym kliknięciem." },
         { title: "Dowolny kolor, jaki lubisz", description: "Stwórz własną paletę dopasowaną dokładnie do kolorów twojego wesela." },
         { title: "Warianty wybrane przez projektantów", description: "Albo zacznij od kombinacji kolorów i wzorów, wybranych ręcznie przez naszych projektantów." },
         { title: "Elastyczny tekst, wszędzie", description: "Edytuj, zmieniaj rozmiar, dodawaj i przesuwaj dowolny tekst w wybranym projekcie." },
@@ -189,14 +189,14 @@ export const pl: Dictionary = {
     },
     howItWorksSection: {
       heading: "Jak działa kreator",
-      subtext: "Wszystko poniżej dzieje się na żywo, prosto w twojej przeglądarce — bez pobierania, bez uczenia się czegokolwiek.",
+      subtext: "Wszystko poniżej dzieje się na żywo, prosto w twojej przeglądarce - bez pobierania, bez uczenia się czegokolwiek.",
       steps: [
         {
           title: "Dostosuj swój projekt",
           bullets: [
             "Wybierz spośród 100 motywów od projektantów lub zacznij od pustej kartki",
             "Każdy motyw jest już w pełni dopasowany kolorystycznie, gotowy do użycia",
-            "Zmieniaj styl w dowolnym momencie — twoja treść zostaje zachowana",
+            "Zmieniaj styl w dowolnym momencie - twoja treść zostaje zachowana",
           ],
         },
         {
@@ -229,18 +229,18 @@ export const pl: Dictionary = {
       eyebrow: "Więcej niż zaproszenie",
       heading: "Wyślij gdziekolwiek, śledź każdą odpowiedź",
       subtext:
-        "Udostępnij swój jeden link przez WhatsApp, SMS, e-mail lub tam, gdzie twoi goście naprawdę sprawdzają wiadomości. Każde potwierdzenie trafia prosto do twojej listy gości — kto przyjdzie, kto jeszcze nie odpowiedział i kogo wciąż musisz zaprosić. Żeby odpowiedzieć, goście nie potrzebują konta ani aplikacji — wystarczy link.",
+        "Udostępnij swój jeden link przez WhatsApp, SMS, e-mail lub tam, gdzie twoi goście naprawdę sprawdzają wiadomości. Każde potwierdzenie trafia prosto do twojej listy gości - kto przyjdzie, kto jeszcze nie odpowiedział i kogo wciąż musisz zaprosić. Żeby odpowiedzieć, goście nie potrzebują konta ani aplikacji - wystarczy link.",
     },
     siteOrPaper: {
       heading: "Zaproszenie na stronie i/lub papierowe",
-      subtext: "To nie jest wybór jednego albo drugiego — większość par korzysta z obu.",
+      subtext: "To nie jest wybór jednego albo drugiego - większość par korzysta z obu.",
       orBadge: "I/LUB",
       website: {
         title: "Zaproszenie na stronie",
-        subtext: "Proste i szybkie — zaproś każdego gościa, gdziekolwiek mieszka.",
+        subtext: "Proste i szybkie - zaproś każdego gościa, gdziekolwiek mieszka.",
         bullets: [
           "Jeden link działa na dowolnym telefonie, tablecie czy laptopie",
-          "Aktualizuj cokolwiek — wszyscy od razu widzą najnowszą wersję",
+          "Aktualizuj cokolwiek - wszyscy od razu widzą najnowszą wersję",
         ],
       },
       paper: {
@@ -248,46 +248,46 @@ export const pl: Dictionary = {
         subtext: "Pamiątka dla najbliższej rodziny i przyjaciół.",
         bullets: [
           "Gotowe do druku zaproszenia PDF, koperty i karty programu",
-          "Każdy gość dostaje osobisty kod QR — jego potwierdzenie dopasowuje się automatycznie",
+          "Każdy gość dostaje osobisty kod QR - jego potwierdzenie dopasowuje się automatycznie",
         ],
       },
     },
     themesSection: {
       heading: "Wybierz swój styl",
       subtext:
-        "Ten sam motyw przenosi się na twoją stronę, zaproszenia papierowe i karty bankietowe — albo pomiń to całkowicie i projektuj od zera w kreatorze.",
+        "Ten sam motyw przenosi się na twoją stronę, zaproszenia papierowe i karty bankietowe - albo pomiń to całkowicie i projektuj od zera w kreatorze.",
     },
     whatsIncluded: {
       heading: "Co jest w zestawie",
-      subtext: "Każda strona zawiera te elementy — łącz je, by opowiedzieć swoją historię.",
+      subtext: "Każda strona zawiera te elementy - łącz je, by opowiedzieć swoją historię.",
       modules: [
         { title: "Kreator przeciągnij i upuść", description: "Przesuwaj dowolny tekst lub zdjęcie, wybierz czcionkę lub kolor, i cofaj/przywracaj zmiany na bieżąco." },
-        { title: "Sekcja główna", description: "Wasze imiona, data wydarzenia i zdjęcie — kilka układów do wyboru." },
+        { title: "Sekcja główna", description: "Wasze imiona, data wydarzenia i zdjęcie - kilka układów do wyboru." },
         { title: "List do gości", description: "Osobista wiadomość, życzenia prezentowe i termin potwierdzenia w jednej karcie." },
-        { title: "Harmonogram wydarzenia", description: "Rozpisz dzień minuta po minucie — od pierwszego toastu po ostatni taniec." },
+        { title: "Harmonogram wydarzenia", description: "Rozpisz dzień minuta po minucie - od pierwszego toastu po ostatni taniec." },
         { title: "Miejsce i mapa", description: "Pokaż gościom dokładnie, dokąd iść, dzięki interaktywnej mapie." },
-        { title: "RSVP z własnymi pytaniami", description: "Zapytaj o posiłki, napoje lub transport — goście potwierdzają online, prosto na twoją listę." },
+        { title: "RSVP z własnymi pytaniami", description: "Zapytaj o posiłki, napoje lub transport - goście potwierdzają online, prosto na twoją listę." },
         { title: "Odliczanie czasu", description: "Buduj emocje dzięki odliczaniu na żywo do wielkiego dnia." },
         { title: "Ściana księgi gości", description: "Życzenia zostawione przez gości przy potwierdzeniu, pokazane jako publiczna ściana na twojej stronie." },
-        { title: "Wideo", description: "Osadź film z YouTube lub Vimeo — wasze oświadczyny, waszą historię, wasz wybór." },
+        { title: "Wideo", description: "Osadź film z YouTube lub Vimeo - wasze oświadczyny, waszą historię, wasz wybór." },
         { title: "Zaproszenia papierowe", description: "Gotowe do druku zaproszenia PDF, koperty i karty programu, spersonalizowane dla każdego gościa z kodem QR." },
-        { title: "Rozmieszczenie na bankiecie", description: "Przydzielaj stoliki — po imieniu i nazwisku, nie tylko liczbowo — i generuj karty stolika i miejsca do druku." },
+        { title: "Rozmieszczenie na bankiecie", description: "Przydzielaj stoliki - po imieniu i nazwisku, nie tylko liczbowo - i generuj karty stolika i miejsca do druku." },
         { title: "Własna domena", description: "Skieruj swoją domenę na stronę albo zachowaj czytelny link, który dajemy za darmo." },
-        { title: "FAQ dla gości", description: "Odpowiedz na pytania, które pojawiają się wciąż od nowa — parking, osoby towarzyszące, godziny — prosto na swojej stronie." },
+        { title: "FAQ dla gości", description: "Odpowiedz na pytania, które pojawiają się wciąż od nowa - parking, osoby towarzyszące, godziny - prosto na swojej stronie." },
         { title: "Podróż i nocleg", description: "Poleć hotele z kodami rabatowymi i linkami do rezerwacji, żeby goście z daleka wiedzieli, gdzie się zatrzymać." },
       ],
     },
     pricing: {
       heading: "Kreator jest zawsze darmowy",
-      subtext: "Projektuj stronę, zapraszaj gości i śledź potwierdzenia bez opłat — opublikuj ją na żywo, kiedy będziesz gotowy. Płacisz, gdy chcesz własny adres bez odznaki Invimbo, albo zaproszenia papierowe bez znaku wodnego.",
+      subtext: "Projektuj stronę, zapraszaj gości i śledź potwierdzenia bez opłat - opublikuj ją na żywo, kiedy będziesz gotowy. Płacisz, gdy chcesz własny adres bez odznaki Invimbo, albo zaproszenia papierowe bez znaku wodnego.",
       free: "Za darmo",
       whatYouGet: "Co otrzymujesz",
       whatThisAdds: "Co to dodaje",
       badgeFree: "Zawsze za darmo",
       badgePremium: "Usuwa znak wodny",
-      freeCaveat: "Na Twojej stronie na żywo pojawia się mała odznaka „Made with Invimbo”, a na wydrukach — znak wodny.",
+      freeCaveat: "Na Twojej stronie na żywo pojawia się mała odznaka „Made with Invimbo”, a na wydrukach - znak wodny.",
       oneTime: "Płatność jednorazowa, nie subskrypcja",
-      exampleCaption: "Prawdziwy projekt Invimbo — Twój może wyglądać podobnie.",
+      exampleCaption: "Prawdziwy projekt Invimbo - Twój może wyglądać podobnie.",
       valueAnchor: "Drukowane, wysyłane pocztą zaproszenia zwykle kosztują więcej za gościa. Tu jedna stała opłata obejmuje całą Twoją listę gości, niezależnie od liczby osób.",
     },
     faq: {
@@ -296,12 +296,12 @@ export const pl: Dictionary = {
         {
           question: "Czy muszę umieć projektować albo programować?",
           answer:
-            "Nie. Wybierz motyw od projektanta — czcionki, kolory, układ są już gotowe. Kliknij dowolny tekst na żywej stronie, by go edytować; nic do nauki, nic do instalacji.",
+            "Nie. Wybierz motyw od projektanta - czcionki, kolory, układ są już gotowe. Kliknij dowolny tekst na żywej stronie, by go edytować; nic do nauki, nic do instalacji.",
         },
         {
           question: "Czy to naprawdę darmowe, czy jest haczyk?",
           answer:
-            "Sam konstruktor jest darmowy bez limitu czasu — projektuj całą stronę, zapraszaj gości i śledź RSVP bez opłat. Jedyny kompromis w planie darmowym to mały znaczek \"Made with Invimbo\" na żywej stronie i znak wodny na drukowanym papierze — pokazane od razu, nie po tym, jak coś już zbudujesz.",
+            "Sam konstruktor jest darmowy bez limitu czasu - projektuj całą stronę, zapraszaj gości i śledź RSVP bez opłat. Jedyny kompromis w planie darmowym to mały znaczek \"Made with Invimbo\" na żywej stronie i znak wodny na drukowanym papierze - pokazane od razu, nie po tym, jak coś już zbudujesz.",
         },
         {
           question: "Czy to subskrypcja?",
@@ -309,17 +309,17 @@ export const pl: Dictionary = {
         },
         {
           question: "Czy moi goście potrzebują konta albo aplikacji?",
-          answer: "Nie. Otwierają Twój link, widzą stronę i potwierdzają obecność — nic do pobrania, nic do rejestracji.",
+          answer: "Nie. Otwierają Twój link, widzą stronę i potwierdzają obecność - nic do pobrania, nic do rejestracji.",
         },
         {
           question: "Czy to naprawdę będzie wyglądać jak MOJE wydarzenie, a nie generyczny szablon?",
           answer:
-            "Każdy motyw to prawdziwy punkt startowy, nie zablokowany układ — zmień kolory, czcionki, zdjęcia, przeciągaj elementy gdziekolwiek, albo zacznij od pustego płótna. Przejrzyj całą galerię powyżej, zanim zdecydujesz.",
+            "Każdy motyw to prawdziwy punkt startowy, nie zablokowany układ - zmień kolory, czcionki, zdjęcia, przeciągaj elementy gdziekolwiek, albo zacznij od pustego płótna. Przejrzyj całą galerię powyżej, zanim zdecydujesz.",
         },
         {
           question: "Czym to się różni od innych kreatorów stron ślubnych?",
           answer:
-            "Większość pobiera abonament tylko za stronę. Tu płacisz jedną stałą opłatę, raz — i ten sam motyw przechodzi też na drukowane zaproszenia i winietki, nie tylko na stronę. Żadnej aplikacji dla gości, żadnej subskrypcji dla Ciebie.",
+            "Większość pobiera abonament tylko za stronę. Tu płacisz jedną stałą opłatę, raz - i ten sam motyw przechodzi też na drukowane zaproszenia i winietki, nie tylko na stronę. Żadnej aplikacji dla gości, żadnej subskrypcji dla Ciebie.",
         },
       ],
     },
@@ -351,7 +351,7 @@ export const pl: Dictionary = {
     styleStep: { heading: "\u{1F3A8} Wybierz swój styl", subtext: "Zawsze możesz to zmienić lub zaprojektować własny styl później." },
     photo: {
       label: "\u{1F4F7} Dodaj zdjęcie (opcjonalnie)",
-      help: "Pojawia się w układach zdjęć na twojej stronie — zawsze możesz je dodać lub zmienić później.",
+      help: "Pojawia się w układach zdjęć na twojej stronie - zawsze możesz je dodać lub zmienić później.",
       dropHint: "Przeciągnij zdjęcie tutaj lub kliknij, aby je wybrać",
       busyHint: "Dodawanie zdjęcia...",
       changeLabel: "Zmień zdjęcie",
@@ -369,7 +369,7 @@ export const pl: Dictionary = {
       show: "Pokaż",
       hide: "Ukryj",
       steps: [
-        { title: "Wybierz styl", text: "Przeglądaj style, aż jeden ci się spodoba — zmieniaj w dowolnym momencie." },
+        { title: "Wybierz styl", text: "Przeglądaj style, aż jeden ci się spodoba - zmieniaj w dowolnym momencie." },
         { title: "Dodaj szczegóły", text: "Imiona, data, zdjęcie, jeśli chcesz. To wszystko." },
         { title: "Udostępnij swoją stronę", text: "Otrzymaj link na żywo, który goście otworzą na telefonie." },
       ],
@@ -461,7 +461,7 @@ export const pl: Dictionary = {
     guestReminder: {
       subject: (eventTitle) => `Nie zapomnij potwierdzić udziału w ${eventTitle}`,
       reminderText: (eventTitle) =>
-        `Tylko przyjazne przypomnienie — nadal nie mamy od Ciebie odpowiedzi w sprawie <strong>${eventTitle}</strong>.`,
+        `Tylko przyjazne przypomnienie - nadal nie mamy od Ciebie odpowiedzi w sprawie <strong>${eventTitle}</strong>.`,
     },
     guestConfirmation: {
       acceptedSubject: (eventTitle) => `Twój udział w ${eventTitle} jest potwierdzony`,
@@ -502,7 +502,7 @@ export const pl: Dictionary = {
       subject: (hostname) => `Twój adres invimbo.com jest już aktywny: ${hostname}`,
       liveAt: (hostname) => `<p>Strona Twojego wydarzenia jest teraz dostępna pod adresem <strong>https://${hostname}</strong>, oprócz oryginalnego linku.</p>`,
       includedNote:
-        "<p>Ten adres jest wliczony w Twój plan, dopóki jest on aktywny — nic do przedłużania, bez dodatkowego zakupu domeny, bez daty wygaśnięcia do pilnowania.</p>",
+        "<p>Ten adres jest wliczony w Twój plan, dopóki jest on aktywny - nic do przedłużania, bez dodatkowego zakupu domeny, bez daty wygaśnięcia do pilnowania.</p>",
       questionsNote: "<p>Masz pytania? Po prostu odpowiedz na tego e-maila lub napisz do nas na support@invimbo.com.</p>",
     },
   },

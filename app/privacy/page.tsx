@@ -13,7 +13,7 @@ import Link from "next/link";
 // accurate about the *product*, cannot itself constitute legal compliance
 // advice.
 export const metadata = {
-  title: "Privacy Policy — Invimbo",
+  title: "Privacy Policy - Invimbo",
 };
 
 export default function PrivacyPage() {
@@ -61,17 +61,17 @@ export default function PrivacyPage() {
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-5">
               <li>
-                <span className="font-medium text-stone-900">Supabase</span> — our database,
+                <span className="font-medium text-stone-900">Supabase</span> - our database,
                 authentication, and photo-storage provider. Your account, your site&apos;s
                 content, and any photos you upload are stored here.
               </li>
               <li>
-                <span className="font-medium text-stone-900">Resend</span> — our transactional
+                <span className="font-medium text-stone-900">Resend</span> - our transactional
                 email provider, used to send account emails (e.g. password resets) and, if you
                 choose to send them, guest invitation emails.
               </li>
               <li>
-                If you use a paid plan, Stripe handles your card details directly — we never see
+                If you use a paid plan, Stripe handles your card details directly - we never see
                 or store full card numbers ourselves.
               </li>
             </ul>
@@ -85,7 +85,7 @@ export default function PrivacyPage() {
               access, correct, or export your data, contact us and we&apos;ll handle it directly.
               If you&apos;re in the EU/EEA, UK, or another
               jurisdiction with similar protections, this includes the rights guaranteed under
-              the GDPR (or that jurisdiction&apos;s equivalent) — including the right to lodge a
+              the GDPR (or that jurisdiction&apos;s equivalent) - including the right to lodge a
               complaint with your local data protection authority.
             </p>
           </section>
@@ -111,7 +111,7 @@ export default function PrivacyPage() {
             <h2 className="text-base font-semibold text-stone-900">7. Security</h2>
             <p className="mt-2">
               We rely on our subprocessors&apos; security controls (encryption in transit and at
-              rest, access controls) and apply our own access restrictions on top — for example,
+              rest, access controls) and apply our own access restrictions on top - for example,
               guest RSVP lookups only ever return the one guest&apos;s own name, table, and RSVP
               status, never a full guest list, and a site&apos;s content is not publicly readable
               until its host explicitly publishes it. No method of transmission or storage is

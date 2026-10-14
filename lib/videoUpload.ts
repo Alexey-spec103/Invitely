@@ -9,7 +9,7 @@ function assertVideoFile(file: File) {
     throw new Error("Please choose a video file");
   }
   if (file.size > MAX_SIZE) {
-    throw new Error("That video is a bit large — try a clip under 50MB");
+    throw new Error("That video is a bit large - try a clip under 50MB");
   }
 }
 

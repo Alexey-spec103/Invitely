@@ -546,14 +546,14 @@ const sectionLabels: Record<SectionKey, string> = {
  * purposes only. Rejecting (rather than a blocking `alert`) surfaces the
  * message through `SimpleForm`'s own existing error paragraph for free. */
 async function previewOnlySubmit(): Promise<{ ok: false; message: string }> {
-  return { ok: false, message: "This is a preview — guests submit RSVPs from your live site, not from here." };
+  return { ok: false, message: "This is a preview - guests submit RSVPs from your live site, not from here." };
 }
 
 /** Same reasoning as `previewOnlySubmit` above -- the dashboard's live
  * render of the seating lookup form must not run a real guest-table search
  * against this event's actual seating data. */
 async function previewOnlyLookup(): Promise<never> {
-  throw new Error("This is a preview — guests look up their table from your live site, not from here.");
+  throw new Error("This is a preview - guests look up their table from your live site, not from here.");
 }
 
 export default function SiteInlineEditor({
@@ -3083,7 +3083,7 @@ function SectionHeader({
         <span className="text-sm font-bold uppercase tracking-wide text-[var(--dash-text)]">{label}</span>
         {enabled === false && (
           <span className="rounded-full bg-[var(--dash-border)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
-            Off — guests won&apos;t see this
+            Off - guests won&apos;t see this
           </span>
         )}
       </div>
@@ -3114,7 +3114,7 @@ function CollapsedSectionNote({ label }: { label: string }) {
       className="px-4 py-5 text-center text-xs text-[var(--dash-text-muted)]"
       onClick={(event) => event.stopPropagation()}
     >
-      {label} is off, so guests won&apos;t see it — nothing you&apos;ve written here is lost. Flip the switch above to
+      {label} is off, so guests won&apos;t see it - nothing you&apos;ve written here is lost. Flip the switch above to
       bring it back.
     </div>
   );
@@ -3187,7 +3187,7 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
       {open && (
         <>
           <p className="mt-1.5 text-xs text-[var(--dash-text-muted)]">
-            Every text and photo from the site above, in one list — click a row to jump straight to it, or 👁 to
+            Every text and photo from the site above, in one list - click a row to jump straight to it, or 👁 to
             hide/show it without deleting what you typed.
           </p>
           <ul className="mt-3 max-h-80 space-y-1 overflow-y-auto">

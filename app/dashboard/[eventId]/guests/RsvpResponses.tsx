@@ -202,7 +202,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
                 disabled={pendingId === response.id}
                 className="mt-1 text-xs font-medium text-gray-500 underline hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {response.guestbook_hidden ? "Hidden from guestbook — show" : "Visible in guestbook — hide"}
+                {response.guestbook_hidden ? "Hidden from guestbook - show" : "Visible in guestbook - hide"}
               </button>
             )}
 
@@ -217,7 +217,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
                 onChange={(event) => handleLink(response.id, event.target.value)}
                 className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <option value="">— unmatched —</option>
+                <option value="">- unmatched -</option>
                 {guests.map((guest) => (
                   <option key={guest.id} value={guest.id}>
                     {guest.full_name}

@@ -72,7 +72,7 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
     <div className="max-w-3xl">
       <h1 className="dash-h1 text-gray-900">Paper</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Design, personalize, and download every printable piece — invitation, envelope, seating cards, and more.
+        Design, personalize, and download every printable piece - invitation, envelope, seating cards, and more.
       </p>
 
       {/* Direct feedback: "за 35 евро сразу предупреждать" -- everything on
@@ -92,7 +92,7 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
         steps={[
           {
             title: "👋 Welcome to your paper set",
-            body: "The list on the left is every printable piece — invitation, envelope, program, and more, grouped by kind.",
+            body: "The list on the left is every printable piece - invitation, envelope, program, and more, grouped by kind.",
           },
           {
             title: "🔍 Zoom and flip",
@@ -100,15 +100,15 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
           },
           {
             title: "🖊️ Design the back",
-            body: "The back of your invitation is its own small canvas — add text, a photo, or a QR code. It saves itself as you go.",
+            body: "The back of your invitation is its own small canvas - add text, a photo, or a QR code. It saves itself as you go.",
           },
           {
             title: "💍 Where the data comes from",
-            body: "Names, date, venue, timeline and dress code are edited in the Site tab — update them there and these cards follow automatically.",
+            body: "Names, date, venue, timeline and dress code are edited in the Site tab - update them there and these cards follow automatically.",
           },
           {
             title: "🍽️ Banquet materials",
-            body: "Seating charts, place cards and table numbers preview one card at a time — use the arrows to flip through the rest.",
+            body: "Seating charts, place cards and table numbers preview one card at a time - use the arrows to flip through the rest.",
           },
           {
             title: "⬇️ Download when ready",

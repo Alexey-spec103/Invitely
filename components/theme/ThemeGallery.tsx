@@ -387,7 +387,7 @@ export default function ThemeGallery({
           ))}
         </div>
         {filtered.length === 0 && (
-          <p className={styles.empty}>No styles match — try clearing a filter or search.</p>
+          <p className={styles.empty}>No styles match - try clearing a filter or search.</p>
         )}
         {visibleCount < filtered.length && (
           <button
@@ -637,7 +637,7 @@ export function ThemeGalleryCard({
       )}
 
       {PHOTO_PROMINENT_HERO_VARIANTS.has(heroVariant) && (
-        <p className={styles.customizeCaption}>📷 This style is built around a photo — add yours for the full look</p>
+        <p className={styles.customizeCaption}>📷 This style is built around a photo - add yours for the full look</p>
       )}
       <p className={styles.customizeCaption}>Everything can be customized further in the constructor</p>
 

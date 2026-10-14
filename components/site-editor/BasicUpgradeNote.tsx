@@ -23,7 +23,7 @@ export default function BasicUpgradeNote({ eventId }: BasicUpgradeNoteProps) {
         🔒
       </span>
       <p className="text-sm font-bold text-amber-900">
-        This is a paid feature — guests won&rsquo;t see this section until you&rsquo;re on Basic.{" "}
+        This is a paid feature - guests won&rsquo;t see this section until you&rsquo;re on Basic.{" "}
         <Link
           href={`/dashboard/${eventId}/plan`}
           className="underline decoration-2 underline-offset-2 hover:text-amber-700"

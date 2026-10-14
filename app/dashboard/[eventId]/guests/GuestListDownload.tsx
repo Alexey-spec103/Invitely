@@ -79,7 +79,7 @@ export default function GuestListDownload({ theme, eventTitle, rows }: GuestList
         </button>
       </div>
       <p className="mt-1 text-xs text-gray-500">
-        A flat name/group/RSVP/table sheet — handy for door staff, a caterer, or day-of reference.
+        A flat name/group/RSVP/table sheet - handy for door staff, a caterer, or day-of reference.
         The CSV opens in Excel, Google Sheets, or Numbers.
       </p>
       {error && (

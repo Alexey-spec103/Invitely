@@ -85,7 +85,7 @@ export default function OrnateBorder({
           field="closingLine"
           value={closingLine ?? ""}
           style={styleOverrides?.["closingLine"]}
-          placeholder="Sign off — e.g. “With love, the two of us”…"
+          placeholder="Sign off - e.g. “With love, the two of us”…"
         />
       </p>
     ),

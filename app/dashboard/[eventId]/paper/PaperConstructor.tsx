@@ -403,7 +403,7 @@ function createProgramCanvasSeed(args: { theme: Theme; title?: string; events: P
       height: 36,
       rotation: 0,
       zIndex: zIndex++,
-      text: [event.time, event.title].filter(Boolean).join("  —  "),
+      text: [event.time, event.title].filter(Boolean).join("  -  "),
       fontFamily: "Inter",
       fontSize: 22,
       fontWeight: 500,

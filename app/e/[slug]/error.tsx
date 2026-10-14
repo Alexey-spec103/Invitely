@@ -19,7 +19,7 @@ export default function EventError({
       <p className="text-5xl">🫠</p>
       <h1 className="text-2xl font-semibold text-stone-900">Well, that didn&apos;t go as planned</h1>
       <p className="max-w-sm text-sm text-stone-500">
-        This invitation hit a snag loading — not you, us. Give it another try, or check back with
+        This invitation hit a snag loading - not you, us. Give it another try, or check back with
         the host if it keeps happening.
       </p>
       <div className="mt-2 flex gap-3">

@@ -525,11 +525,11 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
         steps={[
           {
             title: "👋 Welcome to your site editor",
-            body: "Everything here saves itself as you type — there's no Save button to remember.",
+            body: "Everything here saves itself as you type - there's no Save button to remember.",
           },
           {
             title: "✏️ Click any text to edit it",
-            body: "No separate editor-vs-preview split — click straight on a name, date, or line of copy on the live page below and start typing.",
+            body: "No separate editor-vs-preview split - click straight on a name, date, or line of copy on the live page below and start typing.",
           },
           {
             title: "📷 Add your photos",
@@ -542,7 +542,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             // ModuleCard scheme this panel replaced -- every toggle already
             // lives right here, so this step now rings-highlights the panel
             // itself instead of describing a layout that no longer exists.
-            body: "Countdown, RSVP, gift wishes, dress code and more — each has its own on/off switch right here.",
+            body: "Countdown, RSVP, gift wishes, dress code and more - each has its own on/off switch right here.",
             targetSelector: "#site-modules-panel",
           },
           {
@@ -601,7 +601,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           emphasized
         >
           <p className="mb-3 text-xs text-[var(--dash-text-muted)]">
-            Names, date & venue — used across your site and paper set.
+            Names, date & venue - used across your site and paper set.
           </p>
           <WeddingDataForm eventId={event.id} eventType={event.event_type} defaultValues={weddingDataDefaultValues} locale={locale} />
         </ModuleCard>
@@ -691,7 +691,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           top of the preview's own top edge instead of above it. */}
       <div id="site-editor-preview" className="mt-6 flex scroll-mt-6 flex-col items-center lg:sticky lg:top-[97px] lg:mt-0">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
-          Site editor — click any text to edit it in place
+          Site editor - click any text to edit it in place
         </p>
         {/* No max-width here -- SiteInlineEditor's own device frame (phone/
             tablet/desktop) is what caps and centers itself now, via its own
@@ -837,7 +837,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           <div className="mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5">
             <p className="text-base font-bold text-amber-900">⏳ Confirming your payment…</p>
             <p className="mt-1 text-sm text-amber-800">
-              Stripe is finishing up — this page will unlock automatically in a few seconds. If it doesn&apos;t,
+              Stripe is finishing up - this page will unlock automatically in a few seconds. If it doesn&apos;t,
               refresh, or contact support if your card was charged and this still doesn&apos;t update.
             </p>
           </div>
@@ -892,7 +892,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             href={`/dashboard/${event.id}/plan`}
             className="mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-[var(--dash-accent)] px-4 py-2.5 text-sm font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)]"
           >
-            Happy with it? Remove the badge — €{plans.basic.priceEur}
+            Happy with it? Remove the badge - €{plans.basic.priceEur}
           </Link>
         </div>
       )}

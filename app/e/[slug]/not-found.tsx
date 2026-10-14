@@ -7,7 +7,7 @@ export default function EventNotFound() {
       <h1 className="text-2xl font-semibold text-stone-900">We couldn&apos;t find this invitation</h1>
       <p className="max-w-sm text-sm text-stone-500">
         The link might be mistyped, or the host hasn&apos;t published their site yet. Worth a
-        quick text to double-check the link — in the meantime, feel free to look around.
+        quick text to double-check the link - in the meantime, feel free to look around.
       </p>
       <Link
         href="/"

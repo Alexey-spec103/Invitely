@@ -9,7 +9,7 @@ function assertAudioFile(file: File) {
     throw new Error("Please choose an audio file");
   }
   if (file.size > MAX_BYTES) {
-    throw new Error("That track is a bit large — try one under 15MB");
+    throw new Error("That track is a bit large - try one under 15MB");
   }
 }
 

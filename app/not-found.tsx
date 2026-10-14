@@ -6,7 +6,7 @@ export default function RootNotFound() {
       <p className="text-5xl">💐</p>
       <h1 className="text-2xl font-semibold text-stone-900">This page wandered off somewhere</h1>
       <p className="max-w-sm text-sm text-stone-500">
-        We couldn&apos;t find what you&apos;re looking for — but that&apos;s no reason to call off
+        We couldn&apos;t find what you&apos;re looking for - but that&apos;s no reason to call off
         the celebration. Let&apos;s get you back on track.
       </p>
       <div className="mt-2 flex gap-3">

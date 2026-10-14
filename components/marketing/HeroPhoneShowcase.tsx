@@ -34,7 +34,7 @@ const HERO_SHOWCASE_PHOTO = "https://images.unsplash.com/photo-1624228652954-9e3
 // of which theme/section that frame happens to show.
 const LETTER_CONTENT = {
   title: "A Letter to Our Guests",
-  body: "From our very first date to this moment, every step led us here — and we can't wait to celebrate with the people who mean the most to us.",
+  body: "From our very first date to this moment, every step led us here - and we can't wait to celebrate with the people who mean the most to us.",
   quote:
     "Love is not about how many days, months, or years you've been together. It's about how much you love each other every single day.",
   note: "With so much love,",

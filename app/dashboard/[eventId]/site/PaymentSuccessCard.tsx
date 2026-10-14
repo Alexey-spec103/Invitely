@@ -48,7 +48,7 @@ export default function PaymentSuccessCard({
 
   return (
     <div className="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5">
-      <p className="text-base font-bold text-emerald-900">🎉 Payment received — your link is ready to send.</p>
+      <p className="text-base font-bold text-emerald-900">🎉 Payment received - your link is ready to send.</p>
 
       <div className="mt-3 flex flex-col gap-2 rounded-xl border border-emerald-200 bg-white p-3 sm:flex-row sm:items-center">
         <span className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-sm font-semibold text-emerald-900 sm:text-base">
@@ -87,7 +87,7 @@ export default function PaymentSuccessCard({
             href={`/dashboard/${eventId}/paper`}
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-800 underline decoration-emerald-300 underline-offset-2 hover:text-emerald-900"
           >
-            <FileDown className="h-[15px] w-[15px]" /> Download your paper PDFs — watermark-free now
+            <FileDown className="h-[15px] w-[15px]" /> Download your paper PDFs - watermark-free now
           </Link>
         )}
         <a href="#custom-domain-card" className="text-sm font-semibold text-emerald-800 underline">
@@ -97,8 +97,8 @@ export default function PaymentSuccessCard({
 
       <p className="mt-3 text-xs text-emerald-700">
         {rsvpEmailNotifications
-          ? "Every RSVP reply lands in your inbox the moment a guest responds — you can also check them anytime in the Guests tab."
-          : "Email alerts for new RSVPs are off — check every response anytime in the Guests tab, or turn alerts back on there."}
+          ? "Every RSVP reply lands in your inbox the moment a guest responds - you can also check them anytime in the Guests tab."
+          : "Email alerts for new RSVPs are off - check every response anytime in the Guests tab, or turn alerts back on there."}
       </p>
     </div>
   );

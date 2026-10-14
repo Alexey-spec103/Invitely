@@ -122,7 +122,7 @@ export default function MaterialsPreviewModal({
         </ThemeProvider>
 
         <p className={styles.footerNote}>
-          One style, applied everywhere your guests see it — change it once here and it carries
+          One style, applied everywhere your guests see it - change it once here and it carries
           through the site, invitations, and banquet cards.
         </p>
       </div>

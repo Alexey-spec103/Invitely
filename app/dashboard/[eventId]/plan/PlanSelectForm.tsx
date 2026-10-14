@@ -136,7 +136,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
     <div>
       <h1 className="dash-h1 text-gray-900">Get your link</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Your site is designed — this is the last step before it&rsquo;s really yours.
+        Your site is designed - this is the last step before it&rsquo;s really yours.
       </p>
       {/* Competitor research (weddingpost.ru): "the constructor itself is
           always free" works best as its own standalone reassurance line
@@ -145,17 +145,17 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
           have to infer that design itself was never what they're paying
           for. */}
       <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-800">
-        ✓ Designing your site is free, always — you only pay if you want this exact link live.
+        ✓ Designing your site is free, always - you only pay if you want this exact link live.
       </p>
 
       {checkoutStatus === "success" && (
         <p className="mt-4 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Payment received — your plan will update in a moment.
+          Payment received - your plan will update in a moment.
         </p>
       )}
       {checkoutStatus === "cancelled" && (
         <p className="mt-4 rounded-md bg-gray-50 px-3 py-2 text-sm text-gray-600">
-          Checkout cancelled — nothing was charged.
+          Checkout cancelled - nothing was charged.
         </p>
       )}
 
@@ -169,7 +169,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
       {isBasicOrHigher ? (
         <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
           <p className="text-sm font-semibold text-emerald-900">
-            ✓ You&rsquo;re on {selected === "premium" ? "Premium" : "Basic"} — your link is ready.
+            ✓ You&rsquo;re on {selected === "premium" ? "Premium" : "Basic"} - your link is ready.
           </p>
           <p className="mt-1 text-sm text-emerald-800">
             No badge, no locked modules. Hit <span className="font-semibold">Publish site</span> at the top of any
@@ -178,7 +178,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
         </div>
       ) : (
         <div className="mt-5 rounded-2xl border-2 border-[var(--dash-accent)] bg-white p-6 shadow-sm">
-          <p className="text-sm font-semibold text-[var(--dash-accent-text)]">{basic.name} — the finished result</p>
+          <p className="text-sm font-semibold text-[var(--dash-accent-text)]">{basic.name} - the finished result</p>
           <p className="mt-1 text-3xl font-bold text-gray-900">€{basic.priceEur}</p>
           <p className="text-xs text-gray-500">one-time, not a subscription</p>
           <ul className="mt-4 space-y-1.5 text-sm text-gray-700">
@@ -195,7 +195,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
             onClick={() => handleSelect(basic.id)}
             className="dash-btn dash-btn-primary mt-5 w-full text-base"
           >
-            {isPending ? "Redirecting…" : `Get your link — €${basic.priceEur}`}
+            {isPending ? "Redirecting…" : `Get your link - €${basic.priceEur}`}
           </button>
           <span className="mt-3 inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] font-medium text-gray-600">
             🔒 Processed securely by Stripe
@@ -233,7 +233,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                 </span>
               </div>
               <p className="mt-2 text-xs font-medium text-amber-800">
-                That badge sits on every page, for every guest, permanently — it isn&rsquo;t removable on Free.
+                That badge sits on every page, for every guest, permanently - it isn&rsquo;t removable on Free.
               </p>
 
               <ul className="mt-3 space-y-1 text-xs text-amber-800">
@@ -263,7 +263,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
       <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-gray-900">Printing invitations or table cards?</p>
         <p className="mt-1 text-sm text-gray-500">
-          {premium.name} (€{premium.priceEur}) removes the watermark from your paper set — doesn&rsquo;t change the
+          {premium.name} (€{premium.priceEur}) removes the watermark from your paper set - doesn&rsquo;t change the
           link itself.
         </p>
         <button
@@ -272,7 +272,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
           onClick={() => handleSelect(premium.id)}
           className="dash-btn dash-btn-secondary mt-3 text-sm"
         >
-          {selected === "premium" ? "You're on Premium" : `Upgrade — €${premium.priceEur}`}
+          {selected === "premium" ? "You're on Premium" : `Upgrade - €${premium.priceEur}`}
         </button>
       </div>
 
@@ -291,7 +291,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                 <p className="text-lg font-bold text-gray-900">📬 Check your email</p>
                 <p className="mt-2 text-sm text-gray-600">
                   Confirm your address, then come back and click{" "}
-                  <span className="font-semibold">Get your link — €{plans[pendingPlanId]?.priceEur}</span> again —
+                  <span className="font-semibold">Get your link - €{plans[pendingPlanId]?.priceEur}</span> again -
                   everything you&rsquo;ve designed is already saved.
                 </p>
                 <button
@@ -304,7 +304,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
               </>
             ) : (
               <>
-                <p className="text-lg font-bold text-gray-900">One last step — save your work</p>
+                <p className="text-lg font-bold text-gray-900">One last step - save your work</p>
                 <p className="mt-1.5 text-sm text-gray-600">
                   You designed this without an account. Create a free one now so your purchase (and everything
                   you&rsquo;ve made) is tied to you, not a browser session that can disappear.

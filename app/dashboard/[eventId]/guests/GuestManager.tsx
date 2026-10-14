@@ -102,11 +102,11 @@ function ShareLinkBanner({ eventSlug, eventTitle }: { eventSlug: string; eventTi
         ✨ Short on time to add every guest by hand?
       </p>
       <p className="mt-1 text-xs text-gray-600">
-        Share your site&apos;s one link with everyone — anyone who RSVPs from it is added to your
+        Share your site&apos;s one link with everyone - anyone who RSVPs from it is added to your
         guest list automatically, no invite codes needed.
       </p>
       <p className="mt-1 text-xs text-gray-600">
-        Add guests individually below instead if you&apos;d rather track who&apos;s RSVP&apos;d by name — each one gets
+        Add guests individually below instead if you&apos;d rather track who&apos;s RSVP&apos;d by name - each one gets
         their own personal link, separate from this shared one.
       </p>
       <div className="mt-2 flex items-center gap-2">
@@ -384,7 +384,7 @@ function InvitationSentBadge({
       title={
         sent
           ? knownChannels.length > 0
-            ? `Sent via ${knownChannels.map((channel) => CHANNEL_LABELS[channel]).join(", ")} — click to mark as not sent`
+            ? `Sent via ${knownChannels.map((channel) => CHANNEL_LABELS[channel]).join(", ")} - click to mark as not sent`
             : "Click to mark as not sent"
           : "Click to mark as sent"
       }
@@ -1015,7 +1015,7 @@ export default function GuestManager({
       const parts = [`Sent to ${result.sent} guest${result.sent === 1 ? "" : "s"}`];
       if (result.skipped > 0) parts.push(`${result.skipped} skipped (no email on file or already sent)`);
       if (result.failed.length > 0) parts.push(`${result.failed.length} failed`);
-      setBulkResult(parts.join(" — "));
+      setBulkResult(parts.join(" - "));
       router.refresh();
     } catch (err) {
       setBulkResult(err instanceof Error ? err.message : "Failed to send");
@@ -1033,7 +1033,7 @@ export default function GuestManager({
       const parts = [`Reminded ${result.sent} guest${result.sent === 1 ? "" : "s"}`];
       if (result.skipped > 0) parts.push(`${result.skipped} skipped (no email on file or already responded)`);
       if (result.failed.length > 0) parts.push(`${result.failed.length} failed`);
-      setReminderResult(parts.join(" — "));
+      setReminderResult(parts.join(" - "));
     } catch (err) {
       setReminderResult(err instanceof Error ? err.message : "Failed to send");
     } finally {

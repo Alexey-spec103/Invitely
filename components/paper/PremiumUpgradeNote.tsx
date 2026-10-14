@@ -26,7 +26,7 @@ export default function PremiumUpgradeNote({ eventId }: PremiumUpgradeNoteProps)
         🔒
       </span>
       <p className="text-sm font-bold text-amber-900">
-        This is a paid feature — downloads with a watermark on Free and Basic.{" "}
+        This is a paid feature - downloads with a watermark on Free and Basic.{" "}
         <Link
           href={`/dashboard/${eventId}/plan`}
           className="underline decoration-2 underline-offset-2 hover:text-amber-700"

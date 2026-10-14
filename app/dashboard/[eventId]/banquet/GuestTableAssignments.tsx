@@ -238,7 +238,7 @@ export default function GuestTableAssignments({
               onChange={(event) => handleAssign(guest.id, event.target.value)}
               className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <option value="">— unassigned —</option>
+              <option value="">- unassigned -</option>
               {tables.map((table) => (
                 <option key={table.id} value={table.id}>
                   {table.name}

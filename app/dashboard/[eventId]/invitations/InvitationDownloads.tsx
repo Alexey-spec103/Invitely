@@ -394,7 +394,7 @@ export default function InvitationDownloads({
           Each includes a QR code that links straight to your site with the guest already
           identified, so their RSVP is automatically matched.
           {hasCanvasDesign &&
-            " These use your theme's default layout rather than your custom canvas design — per-guest personalization for canvas designs isn't available yet."}
+            " These use your theme's default layout rather than your custom canvas design - per-guest personalization for canvas designs isn't available yet."}
         </p>
         {/* dashboard-audit.md B21: personalized invitations are a
             Premium-tier material in lib/plans.ts -- watermarked (not

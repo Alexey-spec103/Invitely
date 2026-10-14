@@ -19,7 +19,7 @@ export default function DashboardError({
       <p className="text-5xl">🌱</p>
       <h1 className="text-2xl font-semibold text-stone-900">Something went sideways</h1>
       <p className="max-w-sm text-sm text-stone-500">
-        We hit an unexpected error loading your dashboard. Nothing you&apos;ve saved is lost —
+        We hit an unexpected error loading your dashboard. Nothing you&apos;ve saved is lost -
         try again, or head back and pick up where you left off.
       </p>
       <div className="mt-2 flex gap-3">

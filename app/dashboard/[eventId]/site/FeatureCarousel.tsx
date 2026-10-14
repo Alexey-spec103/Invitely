@@ -28,28 +28,28 @@ const FEATURES: FeatureCard[] = [
   {
     icon: MousePointerClick,
     title: "Edit your site by clicking on it",
-    body: "No separate editor-vs-preview split — click any text on the live page, type, and it autosaves.",
+    body: "No separate editor-vs-preview split - click any text on the live page, type, and it autosaves.",
   },
   {
     icon: QrCode,
     title: "A QR code on every invitation",
-    body: "Guests scan and land straight on their own RSVP page, name already filled in — nothing to type, nowhere to get lost.",
+    body: "Guests scan and land straight on their own RSVP page, name already filled in - nothing to type, nowhere to get lost.",
   },
   {
     icon: PenTool,
     title: "A blank canvas, when you want one",
-    body: "Drop in text, photos, video and QR codes anywhere — a second, freeform way to design, alongside the guided one.",
+    body: "Drop in text, photos, video and QR codes anywhere - a second, freeform way to design, alongside the guided one.",
   },
   {
     icon: Send,
     title: "Send invites your way",
-    body: "WhatsApp, SMS, email or a plain link — one click opens it pre-filled, and we keep track of who's been sent what.",
+    body: "WhatsApp, SMS, email or a plain link - one click opens it pre-filled, and we keep track of who's been sent what.",
     isNew: true,
   },
   {
     icon: Download,
     title: "Nothing's ever locked while you decide",
-    body: "Every PDF downloads on every plan — Premium only removes the watermark, it doesn't unlock a download you couldn't get before.",
+    body: "Every PDF downloads on every plan - Premium only removes the watermark, it doesn't unlock a download you couldn't get before.",
   },
   {
     icon: Globe,

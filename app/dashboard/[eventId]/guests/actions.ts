@@ -316,7 +316,7 @@ export async function addGuestsBulk(
 ): Promise<{ ok: true; count: number } | { ok: false; message: string }> {
   const rows = parseGuestLines(rawText);
   if (rows.length === 0) {
-    return { ok: false, message: "No guest names found — paste one name per line." };
+    return { ok: false, message: "No guest names found - paste one name per line." };
   }
   return insertGuestRows(eventId, rows);
 }

@@ -51,7 +51,7 @@ export default function GuestPhotoGallery({ eventId, eventSlug }: GuestPhotoGall
     <div className="mt-10 border-t border-gray-200 pt-8">
       <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Guest photos</h2>
       <p className="mt-1 text-sm text-gray-500">
-        Guests scan this code to add their own photos — no account needed. You can delete any of them below.
+        Guests scan this code to add their own photos - no account needed. You can delete any of them below.
       </p>
 
       <div className="mt-4 flex items-center gap-4 rounded-md border border-gray-200 bg-gray-50 p-4">

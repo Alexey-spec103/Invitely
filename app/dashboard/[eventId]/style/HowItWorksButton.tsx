@@ -51,7 +51,7 @@ export default function HowItWorksButton() {
           <p className="text-sm font-semibold text-gray-900">Pick a look, not a final answer</p>
           <ol className="mt-2 space-y-1.5 text-sm text-gray-600">
             <li>1. Browse styles below with your own names and date already filled in.</li>
-            <li>2. Pick whichever feels closest — nothing is locked in.</li>
+            <li>2. Pick whichever feels closest - nothing is locked in.</li>
             <li>3. Fine-tune colors, photos, and every section afterwards in the constructor.</li>
           </ol>
           <button

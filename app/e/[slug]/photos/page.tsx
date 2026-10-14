@@ -9,7 +9,7 @@ export async function generateMetadata({
   params,
 }: PageProps<"/e/[slug]/photos">): Promise<Metadata> {
   const { slug } = await params;
-  return { title: `Add your photos — ${slug}`, robots: { index: false, follow: false } };
+  return { title: `Add your photos - ${slug}`, robots: { index: false, follow: false } };
 }
 
 /** The shared guest photo album's upload page -- what a guest lands on after

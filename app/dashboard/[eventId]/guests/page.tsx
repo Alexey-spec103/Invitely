@@ -206,15 +206,15 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
         steps={[
           {
             title: "👋 Add your guests",
-            body: "Add people one at a time below, or paste a whole list in at once — each gets their own RSVP link.",
+            body: "Add people one at a time below, or paste a whole list in at once - each gets their own RSVP link.",
           },
           {
             title: "📤 Send invites your way",
-            body: "Copy your one shared link, or send each guest their own personal link by WhatsApp, SMS, or email — we track who's been sent what.",
+            body: "Copy your one shared link, or send each guest their own personal link by WhatsApp, SMS, or email - we track who's been sent what.",
           },
           {
             title: "✅ See who's answered",
-            body: "Responses show up live below as guests RSVP — turn on email notifications so you don't have to keep checking back.",
+            body: "Responses show up live below as guests RSVP - turn on email notifications so you don't have to keep checking back.",
           },
         ]}
       />
@@ -256,8 +256,8 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
         <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Seating</h2>
         <p className="mt-1 text-sm text-gray-500">
           {banquetNavigatorEnabled
-            ? "Optional — who sits where. This is what powers the “Find My Table” search on your site."
-            : "Optional — plan who sits where whenever you like. Turn on “Find My Table” in your Site’s Modules list to let guests look it up themselves."}
+            ? "Optional - who sits where. This is what powers the “Find My Table” search on your site."
+            : "Optional - plan who sits where whenever you like. Turn on “Find My Table” in your Site’s Modules list to let guests look it up themselves."}
         </p>
         <div className="mt-4">
           <BanquetTablesManager eventId={event.id} tables={banquetTables ?? []} guests={allGuests} attendees={attendees ?? []} />

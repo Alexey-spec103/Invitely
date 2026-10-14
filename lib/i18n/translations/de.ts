@@ -12,7 +12,7 @@ export const de: Dictionary = {
     shareText: (eventTitle) => (eventTitle ? `Du bist eingeladen: ${eventTitle}` : "Du bist eingeladen!"),
   },
   unpublishedPreview: {
-    message: "👀 Du siehst dir eine Vorschau dieser Seite an — sie ist noch nicht veröffentlicht, daher sind hier gesendete Zusagen nur ein Test und werden nicht gespeichert.",
+    message: "👀 Du siehst dir eine Vorschau dieser Seite an - sie ist noch nicht veröffentlicht, daher sind hier gesendete Zusagen nur ein Test und werden nicht gespeichert.",
   },
   envelopeReveal: {
     tapToOpen: "Zum Öffnen tippen",
@@ -37,7 +37,7 @@ export const de: Dictionary = {
     missingFieldsError: "Bitte gib deinen Namen ein und lass uns wissen, ob du kommen kannst.",
     genericError: "Etwas ist schiefgelaufen",
     successAttending: "Du stehst auf der Liste! Wir können es kaum erwarten, mit dir zu feiern. \u{1F389}",
-    successDeclining: "Danke für die Rückmeldung — du wirst uns fehlen!",
+    successDeclining: "Danke für die Rückmeldung - du wirst uns fehlen!",
     notPublishedError: "Diese Seite ist noch nicht veröffentlicht, daher können keine Zusagen gesendet werden. Bitte den Gastgeber, sie zu veröffentlichen.",
     submitFailedError: "Deine Zusage konnte nicht gesendet werden. Bitte versuche es in einem Moment erneut.",
     oneTapGreeting: (name) => `Bist du dabei, ${name}?`,
@@ -86,7 +86,7 @@ export const de: Dictionary = {
   },
   guestPhotos: {
     heading: "Füge deine Fotos hinzu",
-    subtitle: (eventTitle) => `Teile deine Fotos von ${eventTitle} — kein Konto nötig.`,
+    subtitle: (eventTitle) => `Teile deine Fotos von ${eventTitle} - kein Konto nötig.`,
     addPhotosButton: "Fotos hinzufügen",
     uploading: "Wird hochgeladen...",
     uploaded: "Hinzugefügt! Danke.",
@@ -102,15 +102,15 @@ export const de: Dictionary = {
     seatedAt: (tableName) => `Du sitzt an ${tableName}`,
     resultSeatedAt: (guestName, tableName) => `${guestName} sitzt an ${tableName}`,
     resultNotFound: (guestName) =>
-      `Wir konnten „${guestName}" nicht auf der Gästeliste finden — prüf die Schreibweise oder frag die Gastgeber.`,
+      `Wir konnten „${guestName}" nicht auf der Gästeliste finden - prüf die Schreibweise oder frag die Gastgeber.`,
     resultNotSeatedYet: (guestName) =>
-      `Hallo ${guestName} — du stehst auf der Liste! Die Sitzordnung wird noch festgelegt, schau bald wieder vorbei.`,
+      `Hallo ${guestName} - du stehst auf der Liste! Die Sitzordnung wird noch festgelegt, schau bald wieder vorbei.`,
     resultNotAttending: (guestName) =>
-      `${guestName} scheint als „nicht teilnehmend" markiert zu sein — falls das ein Fehler ist, wende dich an die Gastgeber.`,
+      `${guestName} scheint als „nicht teilnehmend" markiert zu sein - falls das ein Fehler ist, wende dich an die Gastgeber.`,
   },
   landing: {
     skipToContent: "Zum Inhalt springen",
-    topBar: "Visa / Mastercard werden akzeptiert · Sofortige Zustellung — versende deinen Einladungslink überallhin",
+    topBar: "Visa / Mastercard werden akzeptiert · Sofortige Zustellung - versende deinen Einladungslink überallhin",
     nav: { constructor: "Baukasten", themes: "Designs", whatsIncluded: "Leistungen", pricing: "Preise", login: "Anmelden" },
     mobileNav: { openMenu: "Menü öffnen", closeMenu: "Menü schließen" },
     cta: {
@@ -125,9 +125,9 @@ export const de: Dictionary = {
       headline: "Dein Event, gestaltet genau so, wie du es dir vorgestellt hast",
       accent: "bis zur letzten Tischkarte",
       subtext:
-        "Eine wunderschöne Event-Website, dazu passende Papiereinladungen und Sitzordnung — ein Stil, überall wo deine Gäste ihn sehen. Starte mit einem Designer-Theme oder gestalte alles frei auf einer leeren Fläche.",
-      checklistFree: "Kostenlos gestalten — zahle nur, wenn dieser Link live gehen soll",
-      checklistThemes: (themeCount) => `${themeCount} Designer-Themes — oder gestalte dein eigenes auf einer leeren Fläche`,
+        "Eine wunderschöne Event-Website, dazu passende Papiereinladungen und Sitzordnung - ein Stil, überall wo deine Gäste ihn sehen. Starte mit einem Designer-Theme oder gestalte alles frei auf einer leeren Fläche.",
+      checklistFree: "Kostenlos gestalten - zahle nur, wenn dieser Link live gehen soll",
+      checklistThemes: (themeCount) => `${themeCount} Designer-Themes - oder gestalte dein eigenes auf einer leeren Fläche`,
       checklistFonts: (fontCount) => `Alles frei verschiebbar, ${fontCount}+ Schriftarten, jede Farbe, die du möchtest`,
       checklistRsvp: "Zusagen-Tracking mit eigenen Fragen",
       checklistPaper: "Personalisierte Papiereinladungen mit QR-Codes",
@@ -140,36 +140,36 @@ export const de: Dictionary = {
     statBar: { themes: "Designer-Themes", fonts: "Schriftarten im Baukasten", modules: "Website-Module", oneLink: "Link für alles" },
     platformFan: {
       heading: "Eine Hochzeitsplattform, nicht nur eine Einladung",
-      subtext: "Von der Einladungs-Website und Gästekommunikation bis zum durchgestylten Bankett — Sitzkarten inklusive.",
+      subtext: "Von der Einladungs-Website und Gästekommunikation bis zum durchgestylten Bankett - Sitzkarten inklusive.",
     },
     eventTypes: {
       eyebrow: "Nicht nur Hochzeiten",
       heading: "Jede Feier bekommt ihre eigene Website",
       subtext:
-        "Wähle zuerst deinen Event-Typ, und alles Weitere — die Texte, die Felder, sogar wie das Sitzplan-Tool heißt — richtet sich danach.",
+        "Wähle zuerst deinen Event-Typ, und alles Weitere - die Texte, die Felder, sogar wie das Sitzplan-Tool heißt - richtet sich danach.",
       cta: "Event-Typ wählen",
       items: [
         { label: "Hochzeit", blurb: "Der Anlass, um den sich diese ganze Plattform dreht." },
         { label: "Geburtstag", blurb: "Countdown, Fotos und eine Geschenkliste ohne Peinlichkeiten." },
         { label: "Firmenevent", blurb: "Agenda teilen, echte Teilnehmerzahl fürs Catering." },
         { label: "Abschlussfeier", blurb: "Zeremonie und Feier, ein Link." },
-        { label: "Jubiläum", blurb: "Egal wie viele Jahre — eine richtige Website ist es wert." },
+        { label: "Jubiläum", blurb: "Egal wie viele Jahre - eine richtige Website ist es wert." },
         { label: "Babyparty", blurb: "Wunschlisten-Links und ein Gästebuch voller Glückwünsche." },
         { label: "Quinceañera", blurb: "Ehrenhof, Dresscode und Tanzprogramm." },
         { label: "Ruhestand", blurb: "Auf eine Karriere anstoßen, nicht nur Kuchen verteilen." },
         { label: "Kinderparty", blurb: "Verspielte Designs, Zusagen, die Eltern wirklich ausfüllen." },
         { label: "Feiertagsparty", blurb: "Details zur Büroparty, Dresscode inklusive." },
         { label: "Verlobung", blurb: "Die Neuigkeit teilen, die Hochzeitswebsite für später aufheben." },
-        { label: "Etwas anderes", blurb: "Was auch immer es ist — es fängt immer gleich an: ein Design wählen." },
+        { label: "Etwas anderes", blurb: "Was auch immer es ist - es fängt immer gleich an: ein Design wählen." },
       ],
     },
     constructorSection: {
       eyebrow: "Der echte Baukasten",
-      heading: "Nicht nur ein Theme-Picker — eine ganze Leinwand",
+      heading: "Nicht nur ein Theme-Picker - eine ganze Leinwand",
       subtext: (fontCount) =>
         `Wähle ein Designer-Theme für einen schnellen Start, dann verschiebe alles frei: Text und Fotos überall auf der Seite platzieren, aus ${fontCount}+ Schriftarten wählen, jede Farbe nutzen, Elemente stapeln und bei Bedarf rückgängig machen. Das genaue Design überträgt sich auch auf deine gedruckten Einladungen.`,
       features: [
-        { title: "Kuratierte Schriftarten", description: "Skript, Serif, fett oder dünn — der ganze Look ändert sich mit einem Klick." },
+        { title: "Kuratierte Schriftarten", description: "Skript, Serif, fett oder dünn - der ganze Look ändert sich mit einem Klick." },
         { title: "Jede Farbe, die du möchtest", description: "Baue deine eigene Palette, passend zu deinen Hochzeitsfarben." },
         { title: "Designer-kuratierte Varianten", description: "Oder starte mit Farb- und Musterkombinationen, handverlesen von unseren Designern." },
         { title: "Flexibler Text, überall", description: "Bearbeite, skaliere, füge hinzu und verschiebe jeden Text im gewählten Design." },
@@ -179,14 +179,14 @@ export const de: Dictionary = {
     },
     howItWorksSection: {
       heading: "So funktioniert der Baukasten",
-      subtext: "Alles unten passiert live, direkt in deinem Browser — kein Download, nichts zu lernen.",
+      subtext: "Alles unten passiert live, direkt in deinem Browser - kein Download, nichts zu lernen.",
       steps: [
         {
           title: "Gestalte dein Design",
           bullets: [
             "Wähle aus 100 Designer-Themes oder starte mit einer leeren Fläche",
             "Jedes Theme ist bereits vollständig farblich abgestimmt, sofort einsatzbereit",
-            "Wechsle jederzeit den Stil — dein Inhalt bleibt erhalten",
+            "Wechsle jederzeit den Stil - dein Inhalt bleibt erhalten",
           ],
         },
         {
@@ -219,18 +219,18 @@ export const de: Dictionary = {
       eyebrow: "Mehr als nur die Einladung",
       heading: "Überall versenden, jede Antwort verfolgen",
       subtext:
-        "Teile deinen einen Link über WhatsApp, SMS, E-Mail — wie auch immer deine Gäste Nachrichten wirklich lesen. Jede Zusage fließt direkt in deine Gästeliste zurück — wer kommt, wer noch nicht geantwortet hat, und wen du noch einladen musst. Für eine Antwort brauchen sie kein Konto und keine App — nur den Link.",
+        "Teile deinen einen Link über WhatsApp, SMS, E-Mail - wie auch immer deine Gäste Nachrichten wirklich lesen. Jede Zusage fließt direkt in deine Gästeliste zurück - wer kommt, wer noch nicht geantwortet hat, und wen du noch einladen musst. Für eine Antwort brauchen sie kein Konto und keine App - nur den Link.",
     },
     siteOrPaper: {
       heading: "Website-Einladung und/oder Papier",
-      subtext: "Kein Entweder-Oder — die meisten Paare nutzen beides.",
+      subtext: "Kein Entweder-Oder - die meisten Paare nutzen beides.",
       orBadge: "UND/ODER",
       website: {
         title: "Website-Einladung",
-        subtext: "Einfach und schnell — lade jeden Gast ein, egal wo er lebt.",
+        subtext: "Einfach und schnell - lade jeden Gast ein, egal wo er lebt.",
         bullets: [
           "Ein Link funktioniert auf jedem Handy, Tablet oder Laptop",
-          "Alles aktualisieren — jeder sieht sofort die neueste Version",
+          "Alles aktualisieren - jeder sieht sofort die neueste Version",
         ],
       },
       paper: {
@@ -238,38 +238,38 @@ export const de: Dictionary = {
         subtext: "Ein Andenken für eure engste Familie und Freunde.",
         bullets: [
           "Druckfertige PDF-Einladungen, Umschläge und Programmkarten",
-          "Jeder Gast erhält einen persönlichen QR-Code — die Zusage wird automatisch zugeordnet",
+          "Jeder Gast erhält einen persönlichen QR-Code - die Zusage wird automatisch zugeordnet",
         ],
       },
     },
     themesSection: {
       heading: "Wähle deinen Stil",
       subtext:
-        "Das gleiche Theme zieht sich durch deine Website, Papiereinladungen und Bankett-Karten — oder überspringe es ganz und gestalte von Grund auf im Baukasten.",
+        "Das gleiche Theme zieht sich durch deine Website, Papiereinladungen und Bankett-Karten - oder überspringe es ganz und gestalte von Grund auf im Baukasten.",
     },
     whatsIncluded: {
       heading: "Das ist alles enthalten",
-      subtext: "Jede Website kommt mit diesen Bausteinen — kombiniere sie, um deine Geschichte zu erzählen.",
+      subtext: "Jede Website kommt mit diesen Bausteinen - kombiniere sie, um deine Geschichte zu erzählen.",
       modules: [
         { title: "Drag-and-Drop-Baukasten", description: "Verschiebe jeden Text oder jedes Foto, wähle Schrift oder Farbe, und mach alles rückgängig." },
-        { title: "Hero-Intro", description: "Eure Namen, das Datum und ein Foto — mehrere Layouts zur Auswahl." },
+        { title: "Hero-Intro", description: "Eure Namen, das Datum und ein Foto - mehrere Layouts zur Auswahl." },
         { title: "Brief an eure Gäste", description: "Eine persönliche Nachricht, Geschenkwünsche und Zusagefrist auf einer Karte." },
-        { title: "Ablaufplan", description: "Der Tag, Minute für Minute — vom ersten Toast bis zum letzten Tanz." },
+        { title: "Ablaufplan", description: "Der Tag, Minute für Minute - vom ersten Toast bis zum letzten Tanz." },
         { title: "Location & Karte", description: "Zeige Gästen genau, wohin sie müssen, mit einer interaktiven Karte." },
-        { title: "Zusagen mit eigenen Fragen", description: "Frage nach Essen, Getränken oder Transport — Gäste bestätigen online, direkt in deine Liste." },
+        { title: "Zusagen mit eigenen Fragen", description: "Frage nach Essen, Getränken oder Transport - Gäste bestätigen online, direkt in deine Liste." },
         { title: "Countdown-Timer", description: "Baue Vorfreude auf mit einem Live-Countdown bis zum großen Tag." },
         { title: "Gästebuch-Wand", description: "Glückwünsche, die Gäste bei der Zusage hinterlassen, als öffentliche Wand auf deiner Website." },
-        { title: "Video", description: "Binde ein YouTube- oder Vimeo-Video ein — euer Antrag, eure Geschichte, eure Wahl." },
+        { title: "Video", description: "Binde ein YouTube- oder Vimeo-Video ein - euer Antrag, eure Geschichte, eure Wahl." },
         { title: "Papiereinladungen", description: "Druckfertige PDF-Einladungen, Umschläge und Programmkarten, personalisiert pro Gast mit QR-Code." },
-        { title: "Bankett-Sitzordnung", description: "Weise Tische zu — nach Namen, nicht nur nach Kopfzahl — und erstelle Tisch- und Platzkarten zum Drucken." },
+        { title: "Bankett-Sitzordnung", description: "Weise Tische zu - nach Namen, nicht nur nach Kopfzahl - und erstelle Tisch- und Platzkarten zum Drucken." },
         { title: "Eigene Domain", description: "Verweise deine eigene Domain auf deine Website, oder behalte den lesbaren Link, den wir dir kostenlos geben." },
-        { title: "FAQ für deine Gäste", description: "Beantworte die Fragen, die immer wieder kommen — Parken, Begleitpersonen, Zeitplan — direkt auf deiner Website." },
+        { title: "FAQ für deine Gäste", description: "Beantworte die Fragen, die immer wieder kommen - Parken, Begleitpersonen, Zeitplan - direkt auf deiner Website." },
         { title: "Reise & Unterkunft", description: "Empfiehl Hotels mit Rabattcodes und Buchungslinks, damit auswärtige Gäste wissen, wo sie übernachten." },
       ],
     },
     pricing: {
       heading: "Der Baukasten ist immer kostenlos",
-      subtext: "Gestalte deine Website, lade Gäste ein und verfolge Zusagen kostenlos — veröffentliche sie, sobald du bereit bist. Du zahlst für eine eigene Adresse ohne Invimbo-Badge, oder für Papiereinladungen ohne Wasserzeichen.",
+      subtext: "Gestalte deine Website, lade Gäste ein und verfolge Zusagen kostenlos - veröffentliche sie, sobald du bereit bist. Du zahlst für eine eigene Adresse ohne Invimbo-Badge, oder für Papiereinladungen ohne Wasserzeichen.",
       free: "Kostenlos",
       whatYouGet: "Was du bekommst",
       whatThisAdds: "Was das hinzufügt",
@@ -277,7 +277,7 @@ export const de: Dictionary = {
       badgePremium: "Entfernt das Wasserzeichen",
       freeCaveat: "Zeigt ein kleines „Made with Invimbo“-Badge auf deiner veröffentlichten Website, und ein Wasserzeichen auf gedrucktem Papier.",
       oneTime: "Einmalzahlung, kein Abo",
-      exampleCaption: "Ein echtes Invimbo-Design — deins kann so aussehen.",
+      exampleCaption: "Ein echtes Invimbo-Design - deins kann so aussehen.",
       valueAnchor: "Gedruckte, verschickte Einladungen kosten pro Gast meist mehr. Hier deckt eine einmalige Pauschale deine gesamte Gästeliste ab, egal wie viele Personen das sind.",
     },
     faq: {
@@ -286,12 +286,12 @@ export const de: Dictionary = {
         {
           question: "Muss ich designen oder programmieren können?",
           answer:
-            "Nein. Wähle ein Designer-Theme — Schriften, Farben, Layout sind bereits fertig. Klicke auf jeden Text der Live-Seite, um ihn zu bearbeiten; nichts zu lernen, nichts zu installieren.",
+            "Nein. Wähle ein Designer-Theme - Schriften, Farben, Layout sind bereits fertig. Klicke auf jeden Text der Live-Seite, um ihn zu bearbeiten; nichts zu lernen, nichts zu installieren.",
         },
         {
           question: "Ist es wirklich kostenlos, oder gibt es einen Haken?",
           answer:
-            "Der Konstruktor selbst ist kostenlos und ohne Zeitlimit — gestalte deine ganze Seite, lade Gäste ein und verfolge RSVPs ohne Kosten. Der einzige Kompromiss im kostenlosen Plan ist ein kleines \"Made with Invimbo\"-Badge auf deiner Live-Seite und ein Wasserzeichen auf gedrucktem Papier — von Anfang an sichtbar, nicht erst, nachdem du etwas gebaut hast.",
+            "Der Konstruktor selbst ist kostenlos und ohne Zeitlimit - gestalte deine ganze Seite, lade Gäste ein und verfolge RSVPs ohne Kosten. Der einzige Kompromiss im kostenlosen Plan ist ein kleines \"Made with Invimbo\"-Badge auf deiner Live-Seite und ein Wasserzeichen auf gedrucktem Papier - von Anfang an sichtbar, nicht erst, nachdem du etwas gebaut hast.",
         },
         {
           question: "Ist das ein Abo?",
@@ -299,17 +299,17 @@ export const de: Dictionary = {
         },
         {
           question: "Brauchen meine Gäste ein Konto oder eine App?",
-          answer: "Nein. Sie öffnen deinen Link, sehen deine Seite und sagen zu — nichts herunterladen, nichts registrieren.",
+          answer: "Nein. Sie öffnen deinen Link, sehen deine Seite und sagen zu - nichts herunterladen, nichts registrieren.",
         },
         {
           question: "Sieht es wirklich nach MEINEM Event aus, nicht nach einer generischen Vorlage?",
           answer:
-            "Jedes Theme ist ein echter Ausgangspunkt, kein festes Layout — Farben, Schriften und Fotos tauschen, Elemente frei verschieben, oder mit einer leeren Leinwand starten. Durchstöbere die ganze Galerie oben, bevor du dich entscheidest.",
+            "Jedes Theme ist ein echter Ausgangspunkt, kein festes Layout - Farben, Schriften und Fotos tauschen, Elemente frei verschieben, oder mit einer leeren Leinwand starten. Durchstöbere die ganze Galerie oben, bevor du dich entscheidest.",
         },
         {
           question: "Was unterscheidet das von anderen Hochzeitsseiten-Baukästen?",
           answer:
-            "Die meisten verlangen ein Abo nur für eine Website. Hier zahlst du einmal, pauschal — und dasselbe Theme setzt sich auch auf deinen gedruckten Einladungen und Tischkarten fort, nicht nur auf der Seite. Keine App für Gäste, kein Abo für dich.",
+            "Die meisten verlangen ein Abo nur für eine Website. Hier zahlst du einmal, pauschal - und dasselbe Theme setzt sich auch auf deinen gedruckten Einladungen und Tischkarten fort, nicht nur auf der Seite. Keine App für Gäste, kein Abo für dich.",
         },
       ],
     },
@@ -341,7 +341,7 @@ export const de: Dictionary = {
     styleStep: { heading: "\u{1F3A8} Wähle deinen Stil", subtext: "Du kannst das jederzeit ändern oder später dein eigenes gestalten." },
     photo: {
       label: "\u{1F4F7} Foto hinzufügen (optional)",
-      help: "Erscheint in den Foto-Layouts deiner Website — du kannst es jederzeit hinzufügen oder ändern.",
+      help: "Erscheint in den Foto-Layouts deiner Website - du kannst es jederzeit hinzufügen oder ändern.",
       dropHint: "Foto hierher ziehen oder klicken, um eins auszuwählen",
       busyHint: "Foto wird hinzugefügt...",
       changeLabel: "Foto ändern",
@@ -359,7 +359,7 @@ export const de: Dictionary = {
       show: "Zeigen",
       hide: "Ausblenden",
       steps: [
-        { title: "Stil wählen", text: "Stöbere durch die Stile, bis einer passt — jederzeit wechselbar." },
+        { title: "Stil wählen", text: "Stöbere durch die Stile, bis einer passt - jederzeit wechselbar." },
         { title: "Details hinzufügen", text: "Namen, Datum, ein Foto, wenn du willst. Das war's." },
         { title: "Website teilen", text: "Erhalte einen Live-Link, den Gäste auf dem Handy öffnen können." },
       ],
@@ -451,7 +451,7 @@ export const de: Dictionary = {
     guestReminder: {
       subject: (eventTitle) => `Nicht vergessen: Zusage für ${eventTitle}`,
       reminderText: (eventTitle) =>
-        `Nur eine freundliche Erinnerung — wir haben noch nichts von dir gehört für <strong>${eventTitle}</strong>.`,
+        `Nur eine freundliche Erinnerung - wir haben noch nichts von dir gehört für <strong>${eventTitle}</strong>.`,
     },
     guestConfirmation: {
       acceptedSubject: (eventTitle) => `Du bist bestätigt für ${eventTitle}`,
@@ -492,7 +492,7 @@ export const de: Dictionary = {
       subject: (hostname) => `Deine invimbo.com-Adresse ist live: ${hostname}`,
       liveAt: (hostname) => `<p>Deine Veranstaltungsseite ist jetzt erreichbar unter <strong>https://${hostname}</strong>, zusätzlich zu deinem ursprünglichen Link.</p>`,
       includedNote:
-        "<p>Diese Adresse ist in deinem Plan enthalten, solange er aktiv ist — nichts zu verlängern, kein zusätzlicher Domain-Kauf, kein Ablaufdatum.</p>",
+        "<p>Diese Adresse ist in deinem Plan enthalten, solange er aktiv ist - nichts zu verlängern, kein zusätzlicher Domain-Kauf, kein Ablaufdatum.</p>",
       questionsNote: "<p>Fragen? Antworte einfach auf diese E-Mail oder schreib uns an support@invimbo.com.</p>",
     },
   },
