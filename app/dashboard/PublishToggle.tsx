@@ -34,10 +34,15 @@ export default function PublishToggle({ eventId, status }: PublishToggleProps) {
         type="button"
         onClick={handleClick}
         disabled={isPending}
+        // Contrast audit (2026-10-14): white text directly on --dash-accent
+        // measures 2.82:1, failing AA -- same bug fixed for
+        // .dash-btn-primary/.landing-cta (see globals.css). Resting state
+        // now uses --dash-accent-text (5.57:1), brightens to --dash-accent
+        // on hover.
         className={
           isPublished
             ? "rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-4 py-2.5 text-sm font-bold text-[var(--dash-text)] transition hover:border-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
-            : "rounded-full bg-[var(--dash-accent)] px-4 py-2.5 text-sm font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+            : "rounded-full bg-[var(--dash-accent-text)] px-4 py-2.5 text-sm font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
         }
       >
         {isPending ? "Saving..." : isPublished ? "Unpublish" : "Publish site"}

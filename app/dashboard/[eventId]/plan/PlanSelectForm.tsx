@@ -184,7 +184,10 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
           <ul className="mt-4 space-y-1.5 text-sm text-gray-700">
             {basic.features.map((feature) => (
               <li key={feature} className="flex items-start gap-2">
-                <span className="mt-0.5 text-[var(--dash-accent)]">✓</span>
+                {/* Contrast audit (2026-10-14): --dash-accent on white is
+                    2.82:1, under the 3:1 UI-icon threshold -- --dash-accent-text
+                    is the same token already used for this elsewhere. */}
+                <span className="mt-0.5 text-[var(--dash-accent-text)]">✓</span>
                 {feature}
               </li>
             ))}

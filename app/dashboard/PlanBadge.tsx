@@ -73,9 +73,14 @@ export default function PlanBadge({ planId, eventId }: PlanBadgeProps) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
+        // Contrast audit (2026-10-14): white text directly on --dash-accent
+        // measures 2.82:1, failing AA -- same bug fixed for
+        // .dash-btn-primary/.landing-cta (see globals.css). Resting state
+        // now uses --dash-accent-text (5.57:1), brightens to --dash-accent
+        // on hover.
         className={
           isFree
-            ? "flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-[var(--dash-accent)] px-3.5 text-xs font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)]"
+            ? "flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-[var(--dash-accent-text)] px-3.5 text-xs font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent)]"
             : "flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full border border-[var(--dash-border)] px-3 text-xs font-semibold text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-text)]"
         }
       >

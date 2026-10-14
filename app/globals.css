@@ -260,16 +260,29 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* Same bug as .landing-cta below (see its comment for the full writeup):
+   white text directly on --dash-accent (#ff6b45) measures 2.82:1, failing
+   WCAG AA's 4.5:1 -- this class is every primary dashboard button (Create
+   account, Get your link, Publish site, Remove badge, etc. across 17+
+   files), so it's the dashboard-surface equivalent of that marketing fix,
+   just missed in that pass since it only covered the marketing shell.
+   Mirrors the same resolution: resting state uses --dash-accent-text
+   (#c2410c, already documented elsewhere in this file as "readable on
+   white") for 5.57:1, hover brightens up to the original --dash-accent. */
 .dashboard-shell .dash-btn-primary {
-  background: var(--dash-accent);
+  background: var(--dash-accent-text);
   color: #fff;
 }
 .dashboard-shell .dash-btn-primary:hover:not(:disabled) {
-  background: var(--dash-accent-hover);
+  background: var(--dash-accent);
 }
+/* Contrast audit (2026-10-14): --dash-accent text on this 12%-tint
+   background composites to roughly 2.5:1 -- the tint is light enough that
+   it reads almost as pure white, so the same fix as the solid buttons
+   above applies: --dash-accent-text instead, ~5.5:1. */
 .dashboard-shell .dash-btn-secondary {
   background: rgba(255, 107, 69, 0.12);
-  color: var(--dash-accent);
+  color: var(--dash-accent-text);
 }
 .dashboard-shell .dash-btn-secondary:hover:not(:disabled) {
   background: rgba(255, 107, 69, 0.2);

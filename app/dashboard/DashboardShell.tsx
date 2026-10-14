@@ -112,7 +112,13 @@ function CopyLinkButton({ slug, customDomain }: { slug: string; customDomain?: s
       type="button"
       onClick={handleCopy}
       title={customDomain ? `https://${customDomain}` : `/e/${slug}`}
-      className="flex h-9 items-center gap-1.5 rounded-full bg-[var(--dash-accent)] px-3 text-xs font-bold text-[var(--dash-accent-contrast)] shadow-[0_4px_12px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)]"
+      // Contrast audit (2026-10-14): white text directly on --dash-accent
+      // measures 2.82:1, failing AA -- same bug already fixed for
+      // .dash-btn-primary/.landing-cta (see globals.css), just missed here
+      // since this button is hand-styled rather than using that shared
+      // class. Same resolution: --dash-accent-text at rest (5.57:1),
+      // brightens to the original --dash-accent on hover.
+      className="flex h-9 items-center gap-1.5 rounded-full bg-[var(--dash-accent-text)] px-3 text-xs font-bold text-[var(--dash-accent-contrast)] shadow-[0_4px_12px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent)]"
     >
       {copied ? (
         <>

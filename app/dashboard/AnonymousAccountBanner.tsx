@@ -63,9 +63,21 @@ export default function AnonymousAccountBanner({ isAnonymous }: AnonymousAccount
     }
   };
 
+  // Contrast audit (2026-10-14): this banner always sits directly on
+  // .dashboard-shell's own light root background (bg-[var(--dash-light-bg)])
+  // -- confirmed live, including on the dark constructor pages (Site/Paper/
+  // Canvas), since those pages only darken their own <main> content, not
+  // the shell chrome around it. But the text was using --dash-text/
+  // --dash-text-muted, tokens meant for THAT dark <main> surface
+  // (globals.css: "light pages need gray-900"), which made the message
+  // 2.55:1 and "Not now" measured 1.02:1 -- essentially invisible, not just
+  // low-contrast. Swapped to the plain gray-900/gray-500 pair already used
+  // for light-surface text elsewhere in the cabinet. The buttons'
+  // white-on-accent fix (bg-[var(--dash-accent-text)]) is the same one
+  // already applied to .dash-btn-primary in globals.css.
   if (pendingConfirmation) {
     return (
-      <div className="border-b border-[var(--dash-border)] bg-[var(--dash-accent)]/10 px-4 py-3 text-sm text-[var(--dash-text)] sm:px-6">
+      <div className="border-b border-[var(--dash-border)] bg-[var(--dash-accent)]/10 px-4 py-3 text-sm text-gray-900 sm:px-6">
         📬 Check your email to confirm - everything you&apos;ve made is already saved, keep working while you wait.
       </div>
     );
@@ -75,22 +87,18 @@ export default function AnonymousAccountBanner({ isAnonymous }: AnonymousAccount
     <div className="border-b border-[var(--dash-border)] bg-[var(--dash-accent)]/10 px-4 py-3 sm:px-6">
       {!showForm ? (
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-medium text-[var(--dash-text)]">
+          <p className="text-sm font-medium text-gray-900">
             💾 Save your progress - create a free account
           </p>
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={() => setShowForm(true)}
-              className="rounded-full bg-[var(--dash-accent)] px-4 py-1.5 text-sm font-semibold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
+              className="rounded-full bg-[var(--dash-accent-text)] px-4 py-1.5 text-sm font-semibold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent)]"
             >
               Create account
             </button>
-            <button
-              type="button"
-              onClick={handleDismiss}
-              className="text-sm font-medium text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
-            >
+            <button type="button" onClick={handleDismiss} className="text-sm font-medium text-gray-500 hover:text-gray-900">
               Not now
             </button>
           </div>
@@ -119,15 +127,11 @@ export default function AnonymousAccountBanner({ isAnonymous }: AnonymousAccount
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-full bg-[var(--dash-accent)] px-4 py-1.5 text-sm font-semibold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-full bg-[var(--dash-accent-text)] px-4 py-1.5 text-sm font-semibold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? "Creating…" : "Create account"}
           </button>
-          <button
-            type="button"
-            onClick={() => setShowForm(false)}
-            className="text-sm font-medium text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
-          >
+          <button type="button" onClick={() => setShowForm(false)} className="text-sm font-medium text-gray-500 hover:text-gray-900">
             Cancel
           </button>
           {error && <p className="w-full text-sm text-red-500">{error}</p>}
