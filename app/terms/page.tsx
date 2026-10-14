@@ -32,7 +32,9 @@ export default function TermsPage() {
 
       <main className="mx-auto max-w-3xl px-6 py-16">
         <h1 className="text-3xl font-semibold tracking-tight text-stone-900">Terms of Service</h1>
-        <p className="mt-2 text-sm text-stone-400">Last updated: September 2026</p>
+        {/* Same stone-400-on-white contrast gap as the Privacy Policy page
+            (~2.6:1) -- stone-500 fixes it (~5:1). */}
+        <p className="mt-2 text-sm text-stone-500">Last updated: September 2026</p>
 
         <div className="mt-10 space-y-8 text-sm leading-relaxed text-stone-600">
           <section>

@@ -32,7 +32,10 @@ export default function PrivacyPage() {
 
       <main className="mx-auto max-w-3xl px-6 py-16">
         <h1 className="text-3xl font-semibold tracking-tight text-stone-900">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-stone-400">Last updated: September 2026</p>
+        {/* stone-400 on this white page measured ~2.6:1, well under AA --
+            same gray-token-reused-across-light/dark-contexts bug found on
+            the marketing page's pricing section; stone-500 (~5:1) fixes it. */}
+        <p className="mt-2 text-sm text-stone-500">Last updated: September 2026</p>
 
         <div className="mt-10 space-y-8 text-sm leading-relaxed text-stone-600">
           <section>

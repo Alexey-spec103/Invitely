@@ -50,7 +50,12 @@ export default function HowItWorksSection({ ctaHref, ctaLabel, locale }: HowItWo
                 style={{ "--stagger-i": index } as CSSProperties}
               >
                 <div className="flex sm:flex-col sm:items-center">
-                  <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[var(--dash-accent)] text-sm font-semibold text-white">
+                  {/* --dash-accent (#ff6b45) is tuned to read against the dark
+                      section behind it, not as a fill under white text on top
+                      of it -- white-on-#ff6b45 measured ~2.8:1, well under
+                      AA's 4.5:1. --dash-accent-text (#c2410c) is dark enough
+                      for white text (~5.2:1) while staying the same brand hue. */}
+                  <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[var(--dash-accent-text)] text-sm font-semibold text-white">
                     {meta.number}
                   </span>
                   <span

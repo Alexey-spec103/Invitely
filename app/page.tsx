@@ -474,7 +474,10 @@ export default async function Home() {
                     style={{ "--stagger-i": i } as CSSProperties}
                   >
                     {planBadges[plan.id] && (
-                      <span className="absolute -top-3 left-6 rounded-full bg-[var(--dash-accent)] px-3 py-1 text-[11px] font-semibold text-white">
+                      // Same --dash-accent-vs-white-text contrast gap as the
+                      // step-number circles above (~2.8:1) -- --dash-accent-text
+                      // is the dark-enough-for-white-text variant.
+                      <span className="absolute -top-3 left-6 rounded-full bg-[var(--dash-accent-text)] px-3 py-1 text-[11px] font-semibold text-white">
                         {planBadges[plan.id]}
                       </span>
                     )}
@@ -487,8 +490,12 @@ export default async function Home() {
                         single charge), never mode: "subscription" -- matches
                         the identical claim already made on the dashboard's
                         own Plan page (PlanSelectForm.tsx). */}
-                    {plan.priceEur > 0 && <p className="mt-0.5 text-xs text-stone-400">{t.pricing.oneTime}</p>}
-                    <p className="mt-2 text-xs uppercase tracking-wide text-stone-400">
+                    {/* stone-400 (not stone-500, used elsewhere on this white
+                        card) measured ~2.6:1 here -- stone-400 is only
+                        readable against the dark sections elsewhere on this
+                        page, not white. */}
+                    {plan.priceEur > 0 && <p className="mt-0.5 text-xs text-stone-500">{t.pricing.oneTime}</p>}
+                    <p className="mt-2 text-xs uppercase tracking-wide text-stone-500">
                       {plan.id === "free" ? t.pricing.whatYouGet : t.pricing.whatThisAdds}
                     </p>
                     <ul className="mt-3 space-y-2 text-sm text-stone-600">
@@ -541,7 +548,9 @@ export default async function Home() {
               <details key={index} className="group py-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-medium text-stone-900 marker:content-none">
                   {item.question}
-                  <span className="flex-none text-xl font-light text-stone-400 transition-transform group-open:rotate-45">+</span>
+                  {/* Same stone-400-on-white contrast gap as the pricing card
+                      labels above (~2.6:1 measured) -- stone-500 fixes it. */}
+                  <span className="flex-none text-xl font-light text-stone-500 transition-transform group-open:rotate-45">+</span>
                 </summary>
                 <p className="mt-3 text-sm leading-relaxed text-stone-600">{item.answer}</p>
               </details>
@@ -661,7 +670,12 @@ export default async function Home() {
               </ul>
             </div>
           </div>
-          <div className="mt-12 flex flex-col gap-2 border-t border-stone-800 pt-6 text-sm text-stone-500 sm:flex-row sm:items-center sm:justify-between">
+          {/* stone-500 reads fine on the white pricing cards above, but on
+              this dark footer it measured ~3.65:1 -- under AA's 4.5:1.
+              stone-400 is this file's own established "light text on the
+              dark sections" choice (used throughout the rest of this
+              footer), so it's consistent as well as correct here. */}
+          <div className="mt-12 flex flex-col gap-2 border-t border-stone-800 pt-6 text-sm text-stone-400 sm:flex-row sm:items-center sm:justify-between">
             <p>{t.footer.rightsReserved}</p>
             <a href="mailto:support@invimbo.com" className="transition-colors hover:text-stone-300">
               support@invimbo.com
