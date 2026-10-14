@@ -4,6 +4,12 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { plans, DEFAULT_PLAN_ID } from "@/lib/plans";
 import { updatePlan, createCheckoutSession } from "./actions";
+import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
+
+// Exact string createCheckoutSession/updatePlan throw via requireRealUser()
+// (lib/session.ts) for an anonymous-trial session -- matched here so the
+// modal below opens only for this specific case, not any other failure.
+const ANONYMOUS_ERROR = "Create a free account to continue";
 
 interface PlanSelectFormProps {
   eventId: string;
@@ -24,6 +30,23 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
   // demoted to a small opt-out link so a host lands on "here's your result"
   // by default rather than "here are three prices, good luck."
   const [showFree, setShowFree] = useState(currentPlanId === DEFAULT_PLAN_ID);
+
+  // Direct feedback (2026-10-14): an anonymous-trial host clicking "Get your
+  // link" got redirected straight into createCheckoutSession, which throws
+  // ANONYMOUS_ERROR (requireRealUser, lib/session.ts) -- the *only* place
+  // that ever surfaced was a plain red line at the very bottom of the page
+  // (the `error` state below), easy to miss entirely under a big primary
+  // button a host had just clicked expecting Stripe. This modal opens
+  // immediately on that specific failure instead, blocking the page until
+  // the host either creates an account or backs out -- then retries the
+  // exact checkout they asked for, so "create an account" reads as step one
+  // of buying, not a dead end.
+  const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
+  const [accountEmail, setAccountEmail] = useState("");
+  const [accountPassword, setAccountPassword] = useState("");
+  const [accountError, setAccountError] = useState<string | null>(null);
+  const [accountSubmitting, setAccountSubmitting] = useState(false);
+  const [accountPendingConfirmation, setAccountPendingConfirmation] = useState(false);
 
   // Stripe redirects back here with ?checkout=success once payment
   // completes -- the actual plan_id write happens separately, in the
@@ -61,10 +84,47 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
       const result = await createCheckoutSession({ eventId, planId });
       if (result.ok) {
         window.location.href = result.url;
+      } else if (result.message === ANONYMOUS_ERROR) {
+        setPendingPlanId(planId);
       } else {
         setError(result.message);
       }
     });
+  };
+
+  const handleAccountSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setAccountError(null);
+    setAccountSubmitting(true);
+    try {
+      const result = await upgradeAnonymousAccount(accountEmail, accountPassword);
+      if (result.pendingConfirmation) {
+        // This project's auth requires a confirmed email before the session
+        // stops being anonymous -- retrying checkout now would just hit the
+        // exact same wall again, so this waits for the host to actually
+        // confirm rather than looping them back into the same error.
+        setAccountPendingConfirmation(true);
+      } else if (pendingPlanId) {
+        const checkout = await createCheckoutSession({ eventId, planId: pendingPlanId });
+        if (checkout.ok) {
+          window.location.href = checkout.url;
+        } else {
+          setAccountError(checkout.message);
+        }
+      }
+    } catch (err) {
+      setAccountError(err instanceof Error ? err.message : "Failed to create account");
+    } finally {
+      setAccountSubmitting(false);
+    }
+  };
+
+  const closeAccountModal = () => {
+    setPendingPlanId(null);
+    setAccountEmail("");
+    setAccountPassword("");
+    setAccountError(null);
+    setAccountPendingConfirmation(false);
   };
 
   const basic = plans.basic;
@@ -217,6 +277,81 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
       </div>
 
       {error && <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+
+      {pendingPlanId && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !accountSubmitting) closeAccountModal();
+          }}
+        >
+          <div className="w-full max-w-md rounded-2xl border-2 border-[var(--dash-accent)] bg-white p-6 shadow-2xl">
+            {accountPendingConfirmation ? (
+              <>
+                <p className="text-lg font-bold text-gray-900">📬 Check your email</p>
+                <p className="mt-2 text-sm text-gray-600">
+                  Confirm your address, then come back and click{" "}
+                  <span className="font-semibold">Get your link — €{plans[pendingPlanId]?.priceEur}</span> again —
+                  everything you&rsquo;ve designed is already saved.
+                </p>
+                <button
+                  type="button"
+                  onClick={closeAccountModal}
+                  className="dash-btn dash-btn-primary mt-4 w-full"
+                >
+                  Got it
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-lg font-bold text-gray-900">One last step — save your work</p>
+                <p className="mt-1.5 text-sm text-gray-600">
+                  You designed this without an account. Create a free one now so your purchase (and everything
+                  you&rsquo;ve made) is tied to you, not a browser session that can disappear.
+                </p>
+                <form onSubmit={handleAccountSubmit} className="mt-4 space-y-3">
+                  <input
+                    type="email"
+                    value={accountEmail}
+                    onChange={(event) => setAccountEmail(event.target.value)}
+                    placeholder="Email"
+                    required
+                    autoFocus
+                    autoComplete="email"
+                    className="dash-input w-full"
+                  />
+                  <input
+                    type="password"
+                    value={accountPassword}
+                    onChange={(event) => setAccountPassword(event.target.value)}
+                    placeholder="Password (min 6 characters)"
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                    className="dash-input w-full"
+                  />
+                  {accountError && <p className="text-sm text-red-600">{accountError}</p>}
+                  <button
+                    type="submit"
+                    disabled={accountSubmitting}
+                    className="dash-btn dash-btn-primary w-full text-base disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {accountSubmitting ? "Creating account…" : "Create account & continue to payment"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeAccountModal}
+                    disabled={accountSubmitting}
+                    className="w-full text-center text-sm font-medium text-gray-500 hover:text-gray-700"
+                  >
+                    Not now
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,14 +4,16 @@ import type { DressCodeSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import { CAP_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./ColorPalette.module.css";
 
 // dashboard-audit.md follow-up: no name label under each chip -- same fix
 // as SwatchGrid's own (see that file's comment). The color is the point;
 // an unnamed swatch used to print the literal string "New color".
 
-export default function ColorPalette({ title, description, colors, styleOverrides, themeCategory }: DressCodeSectionVariantProps) {
+export default function ColorPalette({ title, description, colors, styleOverrides, themeCategory, locale }: DressCodeSectionVariantProps) {
   const { editable } = useEditableField();
+  const t = getDictionary(locale).dressCode;
   const capAsset = themeCategory ? CAP_DECOR[themeCategory] : undefined;
   // Categories with no full-color CAP_DECOR entry (currently modern/minimal
   // only) get their own hand-authored mask accent instead of the fully
@@ -19,6 +21,7 @@ export default function ColorPalette({ title, description, colors, styleOverride
   const maskAccent = !capAsset && themeCategory ? CATEGORY_MASK_ACCENT[themeCategory] : undefined;
   return (
     <section className={styles.section}>
+      <span className={styles.eyebrow}>{t.eyebrow}</span>
       <h2 className={styles.title}>
         <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
       </h2>

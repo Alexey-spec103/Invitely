@@ -92,6 +92,9 @@ export const ru: Dictionary = {
   guestbook: {
     empty: "Здесь появятся сообщения от гостей.",
   },
+  dressCode: {
+    eyebrow: "Дресс-код",
+  },
   video: {
     iframeTitleFallback: "Видео",
   },

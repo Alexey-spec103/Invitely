@@ -31,9 +31,19 @@ export interface MapSectionProps extends MapSectionVariantProps {
  * out view, which read as broken mid-setup rather than "not filled in yet."
  * `null` here means "don't render an iframe at all yet" -- every variant
  * shows a plain placeholder in its place instead. Gated on `address` alone:
- * a name with no address is still too vague for Maps to geocode usefully. */
+ * a name with no address is still too vague for Maps to geocode usefully.
+ *
+ * Direct feedback (2026-10-14): a *filled-in* address still geocoded to the
+ * same globe-wide fallback -- reproduced live with venue name "Doma" (a
+ * nickname, not a real place Google can look up) + a real address. The
+ * query used to be `${name}, ${address}`; a made-up or stylized venue name
+ * glued onto a real address is enough to confuse this endpoint's free-text
+ * geocoder into matching nothing. The venue name is already shown as its
+ * own line next to the map (see each variant's `.venueName`), so it was
+ * never needed in the query -- searching the address alone is both simpler
+ * and far more reliable. */
 export function mapEmbedSrc(venue: MapVenue): string | null {
   if (!venue.address.trim()) return null;
-  const query = encodeURIComponent(`${venue.name}, ${venue.address}`);
+  const query = encodeURIComponent(venue.address);
   return `https://www.google.com/maps?q=${query}&output=embed`;
 }

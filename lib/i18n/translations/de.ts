@@ -71,6 +71,9 @@ export const de: Dictionary = {
   guestbook: {
     empty: "Hier erscheinen die Glückwünsche eurer Gäste.",
   },
+  dressCode: {
+    eyebrow: "Dresscode",
+  },
   video: {
     iframeTitleFallback: "Video",
   },

@@ -104,6 +104,14 @@ export interface Dictionary {
   guestbook: {
     empty: string;
   };
+  /** Direct feedback (2026-10-14): the section's own `title` is fully
+   * host-editable text (seeded to "Dress Code" but freely rewritable) -- a
+   * guest had no fixed, guaranteed label telling them what this section
+   * actually was once a host customized it. Rendered as a small eyebrow
+   * alongside the editable title in every DressCodeSection variant. */
+  dressCode: {
+    eyebrow: string;
+  };
   video: {
     /** iframe `title` attribute fallback (accessibility only, not visible
      * text) when the host hasn't set a section title. */
@@ -419,6 +427,9 @@ export const en: Dictionary = {
   },
   guestbook: {
     empty: "Guests' RSVP comments will appear here.",
+  },
+  dressCode: {
+    eyebrow: "Dress Code",
   },
   video: {
     iframeTitleFallback: "Video",

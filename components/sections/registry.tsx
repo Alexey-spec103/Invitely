@@ -486,8 +486,9 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as DressCodeSectionProps["variant"]}
-          {...(data as Omit<DressCodeSectionProps, "variant">)}
+          {...(data as Omit<DressCodeSectionProps, "variant" | "locale">)}
           themeCategory={context.dressCode?.themeCategory}
+          locale={locale}
         />
       );
     }

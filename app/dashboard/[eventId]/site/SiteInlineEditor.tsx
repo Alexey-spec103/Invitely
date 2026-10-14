@@ -2478,6 +2478,7 @@ export default function SiteInlineEditor({
                       colors={dressCodeVisible.colors}
                       styleOverrides={dressCodeField.draft.styleOverrides}
                       themeCategory={decorCategory}
+                      locale={previewLocale}
                     />
                   </EditableFieldProvider>
                 </div>
@@ -2956,7 +2957,16 @@ function DressCodeColorsManager({
       </p>
       <div className="mt-3 space-y-2">
         {colors.map((color, index) => (
-          <div key={`${color.hex}-${index}`} className="flex flex-wrap items-center gap-2 text-xs">
+          // Keyed on index, not `${color.hex}-${index}` -- that derived key
+          // changed on every keystroke in the hex input below, so React tore
+          // down and remounted this row (a new DOM node, a new <input>) after
+          // every single character typed. Focus was lost the instant the key
+          // changed, which silently dropped every keystroke after the first
+          // -- confirmed live: typing a custom hex like "#8B5CF6" left only
+          // "#" in the field. Colors are only ever appended/removed here,
+          // never reordered, so a plain index key is stable and safe (same
+          // convention TimelineEventsManager's own repeatable rows use).
+          <div key={index} className="flex flex-wrap items-center gap-2 text-xs">
             <input
               type="color"
               value={/^#[0-9a-fA-F]{6}$/.test(color.hex) ? color.hex : "#000000"}

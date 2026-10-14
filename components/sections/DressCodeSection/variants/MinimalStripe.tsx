@@ -3,12 +3,15 @@
 import type { DressCodeSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./MinimalStripe.module.css";
 
-export default function MinimalStripe({ title, description, colors, styleOverrides }: DressCodeSectionVariantProps) {
+export default function MinimalStripe({ title, description, colors, styleOverrides, locale }: DressCodeSectionVariantProps) {
   const { editable } = useEditableField();
+  const t = getDictionary(locale).dressCode;
   return (
     <section className={styles.section}>
+      <span className={styles.eyebrow}>{t.eyebrow}</span>
       <h2 className={styles.title}>
         <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
       </h2>

@@ -71,6 +71,9 @@ export const es: Dictionary = {
   guestbook: {
     empty: "Los mensajes de tus invitados aparecerán aquí.",
   },
+  dressCode: {
+    eyebrow: "Código de vestimenta",
+  },
   video: {
     iframeTitleFallback: "Video",
   },
