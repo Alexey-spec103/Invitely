@@ -4,16 +4,19 @@
   text-align: center;
 }
 
+/* Direct feedback (2026-10-14): too small to actually read as a label next
+   to the title below it -- bumped size (and letter-spacing down slightly
+   so it doesn't look over-spaced at the larger size) at every breakpoint. */
 .eyebrow {
   display: block;
   font-family: var(--theme-font-body);
-  font-size: 0.7rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--theme-accent);
-  opacity: 0.85;
-  margin: 0 0 0.4rem;
+  opacity: 0.9;
+  margin: 0 0 0.5rem;
 }
 
 .title {
@@ -120,6 +123,10 @@
 }
 
 @media (min-width: 640px) {
+  .eyebrow {
+    font-size: 1.05rem;
+  }
+
   .title {
     font-size: 2.4rem;
   }

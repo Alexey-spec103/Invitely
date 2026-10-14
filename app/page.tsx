@@ -183,8 +183,8 @@ export default async function Home() {
                 wordmark gives no signal and doesn't stick in memory. Uses the
                 same "Toast i" mark as the dashboard header now, rather than
                 a second, different mark for the marketing site. */}
-            <Link href="/" className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-stone-900">
-              <InvitelyLogo className="h-5 w-5" />
+            <Link href="/" className="flex items-center gap-2 text-xl font-semibold tracking-tight text-stone-900">
+              <InvitelyLogo className="h-7 w-7" />
               Invimbo
             </Link>
             <nav className="hidden items-center gap-8 text-sm font-medium text-stone-600 md:flex">
@@ -599,8 +599,8 @@ export default async function Home() {
         <div className="mx-auto max-w-5xl px-6">
           <div className="grid gap-10 sm:grid-cols-3">
             <div>
-              <p className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-white">
-                <InvitelyLogo className="h-5 w-5" />
+              <p className="flex items-center gap-2 text-xl font-semibold tracking-tight text-white">
+                <InvitelyLogo className="h-7 w-7" />
                 Invimbo
               </p>
               <p className="mt-2 text-sm text-stone-400">{t.footer.tagline}</p>

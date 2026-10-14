@@ -165,9 +165,9 @@ export default function DashboardShell({
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 text-base font-semibold tracking-tight text-[var(--dash-text)]"
+            className="flex items-center gap-2 text-lg font-semibold tracking-tight text-[var(--dash-text)]"
           >
-            <InvitelyLogo />
+            <InvitelyLogo className="h-7 w-7" />
             Invimbo
           </Link>
           <span className="hidden h-4 w-px bg-[var(--dash-border)] sm:block" />

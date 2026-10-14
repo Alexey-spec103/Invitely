@@ -7,9 +7,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="w-full max-w-sm">
         <Link
           href="/"
-          className="mb-6 flex items-center justify-center gap-1.5 text-lg font-semibold tracking-tight text-stone-900"
+          className="mb-6 flex items-center justify-center gap-2 text-xl font-semibold tracking-tight text-stone-900"
         >
-          <InvitelyLogo className="h-5 w-5" />
+          <InvitelyLogo className="h-7 w-7" />
           Invimbo
         </Link>
         {children}
