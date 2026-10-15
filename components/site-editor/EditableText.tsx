@@ -134,22 +134,25 @@ export default function EditableText({ field, value, style, as = "span", classNa
     }
   };
 
-  const showPlaceholder = !isSelected && !value && !!placeholder;
-
   // A variable tag name in JSX forces TS to intersect every possible
   // intrinsic element's ref type, which doesn't typecheck -- one explicit
   // branch per tag (only 4 exist) sidesteps that without an `any` escape.
   const sharedProps = {
     "data-field": field,
-    className: `${className ?? ""} ${isSelected ? editableStyles.editableSelected : editableStyles.editableIdle} ${
-      showPlaceholder ? editableStyles.editablePlaceholder : ""
-    }`.trim(),
+    // Placeholder prop -> an attribute CSS can read via `:empty::before`
+    // (see EditableText.module.css) -- shows/hides itself purely from
+    // whether the field actually has text, not from `isSelected`, so it
+    // behaves like a native `<input placeholder>` instead of disappearing
+    // the instant the field is clicked, a render before any text exists to
+    // replace it (direct feedback, 2026-10-15).
+    ...(placeholder ? { "data-placeholder": placeholder } : {}),
+    className: `${className ?? ""} ${isSelected ? editableStyles.editableSelected : editableStyles.editableIdle}`.trim(),
     style: cssStyle,
     contentEditable: isSelected,
     suppressContentEditableWarning: true,
     onClick: handleClick,
     onBlur: handleBlur,
-    children: isSelected ? undefined : showPlaceholder ? placeholder : value,
+    children: isSelected ? undefined : value,
   };
 
   switch (as) {

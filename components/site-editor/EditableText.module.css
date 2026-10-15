@@ -29,22 +29,52 @@
   background-color: color-mix(in srgb, var(--theme-accent, #2563eb) 8%, transparent);
 }
 
-/* A field with nothing typed into it yet -- combined with .editableIdle
-   above, but stronger: a blank field has zero width/height and no visual
-   cue that it's there at all, worse than a filled one that's merely hard
-   to notice. A dashed, padded box with its own instruction text reads as
-   an obvious "click to write" target, the same role PhotoDropzone's own
-   empty-state box already plays for photo fields -- text fields had
-   nothing equivalent before this. */
-.editablePlaceholder {
+/* Direct feedback (2026-10-15): clicking a field used to make it vanish and
+   everything else on the page jump to fill the gap -- confirmed live and
+   root-caused. Selecting a field renders it with no React children at all
+   (so typing never fights a stale re-render -- see EditableText.tsx's own
+   comment), and the imperative effect that follows seeds real `value` text,
+   which for a still-blank field is itself an empty string. The box had
+   nothing reserving its size through that whole window: no text, and
+   (because the old .editablePlaceholder class was JS-gated to "not
+   selected") no placeholder either. `min-height` here means a field can
+   never collapse below one line regardless of what's actually in it, typed
+   or not. */
+.editableIdle,
+.editableSelected {
   display: inline-block;
+  min-height: 1.3em;
+}
+
+/* Placeholder is now purely a CSS fact about the DOM (`:empty`), not a
+   value gated on JS `isSelected` state -- it shows whenever a field with a
+   placeholder has no real content, selected or not, and disappears the
+   instant real text lands inside it (same moment a native `<input
+   placeholder>`'s does), rather than vanishing a render earlier, the
+   moment the field is merely clicked into. `[data-placeholder]` (only set
+   by EditableText when a `placeholder` prop was actually passed) keeps
+   this from drawing an empty dashed box on every other blank field in the
+   app that was never meant to show one. */
+[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
   font-style: italic;
   opacity: 0.55;
-  outline-style: dashed;
-  outline-color: color-mix(in srgb, currentColor 40%, transparent);
+  pointer-events: none;
+}
+
+/* Padding shared between idle and selected (not just idle) -- the goal is
+   nothing about this box's size changing at the moment of the click itself,
+   only its outline/background swapping to the selected treatment above. */
+.editableIdle[data-placeholder]:empty,
+.editableSelected[data-placeholder]:empty {
   padding: 0.15em 0.5em;
 }
 
-.editablePlaceholder:hover {
+.editableIdle[data-placeholder]:empty {
+  outline-style: dashed;
+  outline-color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.editableIdle[data-placeholder]:empty:hover::before {
   opacity: 0.8;
 }
