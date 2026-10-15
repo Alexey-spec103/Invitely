@@ -1129,7 +1129,15 @@ export default function SiteInlineEditor({
     const toolbarHeight = toolbarEl?.offsetHeight ?? 0;
     const gap = 8;
     const top = rect.top - toolbarHeight - gap >= 0 ? rect.top - toolbarHeight - gap : rect.bottom + gap;
-    const left = rect.left;
+    // Mobile usability fix (2026-10-15): this was just `rect.left`, with
+    // nothing keeping it on-screen -- the toolbar's own width is never
+    // small (font-size input + color swatch + up to 6 icon buttons), so a
+    // field anywhere but the far left edge pushed it off the right side of
+    // a phone-width viewport entirely. Clamps using the same already-
+    // measured `toolbarEl` this function reads for height, with an 8px
+    // margin on each side.
+    const toolbarWidth = toolbarEl?.offsetWidth ?? 0;
+    const left = Math.min(Math.max(rect.left, 8), window.innerWidth - toolbarWidth - 8);
     setToolbarPos({ top, left });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection?.section, selection?.field, toolbarEl]);
