@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { plans, DEFAULT_PLAN_ID } from "@/lib/plans";
 import { updatePlan, createCheckoutSession } from "./actions";
@@ -47,6 +47,40 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
   const [accountError, setAccountError] = useState<string | null>(null);
   const [accountSubmitting, setAccountSubmitting] = useState(false);
   const [accountPendingConfirmation, setAccountPendingConfirmation] = useState(false);
+  const accountModalRef = useRef<HTMLDivElement>(null);
+
+  // Accessibility fix (2026-10-15): this blocking modal had no role="dialog"/
+  // aria-modal (so a screen reader never announces it as a dialog at all),
+  // no Escape-to-close, and no focus trap -- Tab from its last button ("Not
+  // now") walked a keyboard user straight into the rest of the page behind
+  // the backdrop, still visually hidden. autoFocus on the email input
+  // already moved focus in on open; this adds the other half.
+  useEffect(() => {
+    if (!pendingPlanId) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !accountSubmitting) {
+        closeAccountModal();
+        return;
+      }
+      if (event.key !== "Tab" || !accountModalRef.current) return;
+      const focusable = accountModalRef.current.querySelectorAll<HTMLElement>(
+        'button, input, [href], [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingPlanId, accountSubmitting]);
 
   // Stripe redirects back here with ?checkout=success once payment
   // completes -- the actual plan_id write happens separately, in the
@@ -288,10 +322,16 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
             if (event.target === event.currentTarget && !accountSubmitting) closeAccountModal();
           }}
         >
-          <div className="w-full max-w-md rounded-2xl border-2 border-[var(--dash-accent)] bg-white p-6 shadow-2xl">
+          <div
+            ref={accountModalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="plan-account-modal-title"
+            className="w-full max-w-md rounded-2xl border-2 border-[var(--dash-accent)] bg-white p-6 shadow-2xl"
+          >
             {accountPendingConfirmation ? (
               <>
-                <p className="text-lg font-bold text-gray-900">📬 Check your email</p>
+                <p id="plan-account-modal-title" className="text-lg font-bold text-gray-900">📬 Check your email</p>
                 <p className="mt-2 text-sm text-gray-600">
                   Confirm your address, then come back and click{" "}
                   <span className="font-semibold">Get your link - €{plans[pendingPlanId]?.priceEur}</span> again -
@@ -307,7 +347,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
               </>
             ) : (
               <>
-                <p className="text-lg font-bold text-gray-900">One last step - save your work</p>
+                <p id="plan-account-modal-title" className="text-lg font-bold text-gray-900">One last step - save your work</p>
                 <p className="mt-1.5 text-sm text-gray-600">
                   You designed this without an account. Create a free one now so your purchase (and everything
                   you&rsquo;ve made) is tied to you, not a browser session that can disappear.
