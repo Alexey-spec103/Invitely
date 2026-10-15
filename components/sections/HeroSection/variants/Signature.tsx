@@ -57,9 +57,9 @@ export default function Signature({ names, eventDate, photoUrl, styleOverrides, 
       )}
       <span className={styles.rule} aria-hidden="true" />
       {editable ? (
-        <p className={styles.names}>{namesLine}</p>
+        <h1 className={styles.names}>{namesLine}</h1>
       ) : (
-        <StaggerReveal as="p" itemAs="span" className={styles.names} staggerDelay={0.12}>
+        <StaggerReveal as="h1" itemAs="span" className={styles.names} staggerDelay={0.12}>
           <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
           {names[1] && <span>{" & "}</span>}
           {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}

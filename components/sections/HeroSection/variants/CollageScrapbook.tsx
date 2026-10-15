@@ -34,7 +34,7 @@ export default function CollageScrapbook({
         </div>
       )}
       {editable ? (
-        <p className={styles.note}>
+        <h1 className={styles.note}>
           <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
           {names[1] && (
             <>
@@ -42,9 +42,9 @@ export default function CollageScrapbook({
               <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
             </>
           )}
-        </p>
+        </h1>
       ) : (
-        <StaggerReveal as="p" itemAs="span" className={styles.note} staggerDelay={0.12}>
+        <StaggerReveal as="h1" itemAs="span" className={styles.note} staggerDelay={0.12}>
           <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
           {names[1] && <span>{" & "}</span>}
           {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}

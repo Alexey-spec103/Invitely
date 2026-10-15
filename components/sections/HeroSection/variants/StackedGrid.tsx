@@ -30,15 +30,27 @@ export default function StackedGrid({ names, eventDate, photoUrl, styleOverrides
         <span className={styles.cornerTopRight} aria-hidden="true" />
       )}
       <span className={styles.cornerBottomLeft} aria-hidden="true" />
-      <span className={styles.name1}>
-        <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
-      </span>
-      <span className={styles.date}>{eventDate}</span>
-      {names[1] && (
-        <span className={styles.name2}>
-          <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
+      {/* Accessibility fix (2026-10-15): the couple's names are the page's
+          de facto title, but name1/name2 are two independently-positioned
+          grid items (explicit grid-column/row below, not DOM-order
+          auto-placement), not a single element an <h1> could wrap in place.
+          `display: contents` makes the h1 itself layout-transparent -- its
+          two span children keep behaving as direct grid items, placed
+          exactly as before -- while still giving the page one real <h1> in
+          the accessibility tree. Reordered next to each other in the DOM
+          (date moved after) since grid position is driven entirely by their
+          own explicit grid-column/grid-row, not DOM order, so this is safe. */}
+      <h1 style={{ display: "contents" }}>
+        <span className={styles.name1}>
+          <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
         </span>
-      )}
+        {names[1] && (
+          <span className={styles.name2}>
+            <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
+          </span>
+        )}
+      </h1>
+      <span className={styles.date}>{eventDate}</span>
     </section>
   );
 }

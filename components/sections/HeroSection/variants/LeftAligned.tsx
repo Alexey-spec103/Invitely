@@ -34,7 +34,7 @@ export default function LeftAligned({ names, eventDate, photoUrl, styleOverrides
       <span className={styles.corner} aria-hidden="true" />
       <div className={styles.content}>
         {editable ? (
-          <p className={styles.names}>
+          <h1 className={styles.names}>
             <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
             {names[1] && (
               <>
@@ -42,9 +42,9 @@ export default function LeftAligned({ names, eventDate, photoUrl, styleOverrides
                 <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
               </>
             )}
-          </p>
+          </h1>
         ) : (
-          <StaggerReveal as="p" itemAs="span" className={styles.names} staggerDelay={0.12}>
+          <StaggerReveal as="h1" itemAs="span" className={styles.names} staggerDelay={0.12}>
             <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
             {names[1] && <span className={styles.ampersand}>&amp;</span>}
             {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}

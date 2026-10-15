@@ -33,8 +33,12 @@ interface StaggerRevealProps {
   staggerDelay?: number;
   /** Outer wrapper tag. "p" for an inline run of words that must wrap like
    * normal text (e.g. two names + a separator); "div" for a stack of
-   * block-level fields. */
-  as?: "p" | "div";
+   * block-level fields; "h1" for the couple's names specifically -- the
+   * page's de facto title (accessibility audit, 2026-10-15: the guest site
+   * had zero real `<h1>` anywhere, every Hero variant rendered the names as
+   * a plain `<p>` -- a screen-reader user navigating by heading got a flat
+   * list of section titles with nothing marking the page's own title). */
+  as?: "p" | "div" | "h1";
   /** Per-child wrapper tag. "span" for inline text fragments (paired with
    * `as="p"`); "div" for already block-level children (e.g. an `<h2>` or
    * `<p>` field) -- a `<span>` can't legally contain block content. */
@@ -117,5 +121,6 @@ export default function StaggerReveal({
   };
 
   if (as === "p") return <motion.p {...sharedProps}>{items}</motion.p>;
+  if (as === "h1") return <motion.h1 {...sharedProps}>{items}</motion.h1>;
   return <motion.div {...sharedProps}>{items}</motion.div>;
 }

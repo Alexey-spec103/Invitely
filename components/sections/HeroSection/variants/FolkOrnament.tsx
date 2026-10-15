@@ -27,7 +27,7 @@ export default function FolkOrnament({ names, eventDate, photoUrl, styleOverride
           </span>
         )}
         {editable ? (
-          <p className={styles.names}>
+          <h1 className={styles.names}>
             <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
             {names[1] && (
               <>
@@ -35,9 +35,9 @@ export default function FolkOrnament({ names, eventDate, photoUrl, styleOverride
                 <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />
               </>
             )}
-          </p>
+          </h1>
         ) : (
-          <StaggerReveal as="p" itemAs="span" className={styles.names} staggerDelay={0.12}>
+          <StaggerReveal as="h1" itemAs="span" className={styles.names} staggerDelay={0.12}>
             <EditableText field="names.0" value={names[0] ?? ""} style={styleOverrides?.["names.0"]} />
             {names[1] && <span>{" & "}</span>}
             {names[1] && <EditableText field="names.1" value={names[1]} style={styleOverrides?.["names.1"]} />}
