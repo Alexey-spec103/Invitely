@@ -181,6 +181,30 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
     invitedGuest = guest;
   }
 
+  // A guest arriving via their own personal invite link is always
+  // identifiable server-side, regardless of device/browser -- so unlike the
+  // self-service path (no guest_id until a name is typed, handled client-side
+  // via localStorage, see SimpleForm.tsx), this lookup can run right here and
+  // give RsvpSection an authoritative "here's what you already told us"
+  // instead of a blank form on every repeat visit.
+  let existingRsvpResponse:
+    | { attending: boolean; partySize: number; allergies: string | null; comment: string | null; answers: Record<string, string> | null }
+    | undefined;
+  if (invitedGuest?.id) {
+    const { data: priorResponse } = await supabase
+      .rpc("get_existing_rsvp_response", { p_event_id: event.id, p_guest_id: invitedGuest.id })
+      .maybeSingle();
+    if (priorResponse) {
+      existingRsvpResponse = {
+        attending: priorResponse.attending,
+        partySize: priorResponse.party_size,
+        allergies: priorResponse.allergies,
+        comment: priorResponse.comment,
+        answers: (priorResponse.meal_preferences as Record<string, string> | null) ?? null,
+      };
+    }
+  }
+
   const boundSubmitRsvp = submitRsvp.bind(
     null,
     event.id,
@@ -330,7 +354,12 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           const element = renderSection(section, content, {
             hero: { themeCategory: decorCategory, eyebrow: customEyebrow ?? getLocalizedEventType(event.event_type, locale).heroEyebrow },
             letter: { themeCategory: decorCategory },
-            rsvp: { onSubmit: boundSubmitRsvp, defaultGuestName: invitedGuest?.full_name, maxPartySize },
+            rsvp: {
+              onSubmit: boundSubmitRsvp,
+              defaultGuestName: invitedGuest?.full_name,
+              maxPartySize,
+              existingResponse: existingRsvpResponse,
+            },
             countdown: { eventDateTime, themeCategory: decorCategory },
             gift: { preferences: giftItems, themeCategory: decorCategory },
             dressCode: { themeCategory: decorCategory },

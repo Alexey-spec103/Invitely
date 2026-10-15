@@ -65,6 +65,10 @@ export const uk: Dictionary = {
     oneTapAccept: "Буду",
     oneTapDecline: "Не зможу прийти",
     oneTapMoreDetails: "Додати деталі (страва, гості, повідомлення)",
+    alreadyRespondedAttending: (partySize) =>
+      `Ви вже підтвердили участь - ${partySize} ${guestWordUk(partySize)}.`,
+    alreadyRespondedDeclining: "Ви вже повідомили, що не зможете прийти.",
+    editResponseButton: "Змінити відповідь",
   },
   languageSwitcher: {
     label: "Мова",

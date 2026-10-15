@@ -55,6 +55,10 @@ export const pl: Dictionary = {
     oneTapAccept: "Będę tam",
     oneTapDecline: "Nie dam rady",
     oneTapMoreDetails: "Dodaj szczegóły (posiłek, goście, wiadomość)",
+    alreadyRespondedAttending: (partySize) =>
+      `Już potwierdziłeś/aś udział - ${partySize} ${guestWordPl(partySize)}.`,
+    alreadyRespondedDeclining: "Już dałeś/aś nam znać, że nie możesz przyjść.",
+    editResponseButton: "Edytuj swoją odpowiedź",
   },
   languageSwitcher: {
     label: "Język",

@@ -65,6 +65,10 @@ export const ru: Dictionary = {
     oneTapAccept: "Приду",
     oneTapDecline: "Не смогу прийти",
     oneTapMoreDetails: "Добавить детали (блюдо, гости, сообщение)",
+    alreadyRespondedAttending: (partySize) =>
+      `Вы уже подтвердили участие - ${partySize} ${guestWordRu(partySize)}.`,
+    alreadyRespondedDeclining: "Вы уже сообщили, что не сможете прийти.",
+    editResponseButton: "Изменить ответ",
   },
   languageSwitcher: {
     label: "Язык",

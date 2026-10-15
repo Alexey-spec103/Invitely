@@ -8,12 +8,32 @@ import { useEditableField } from "@/components/site-editor/EditableFieldContext"
 import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./SimpleForm.module.css";
 
+/** Shape persisted to localStorage for a self-service guest's own recall --
+ * same fields as `RsvpSectionVariantProps["existingResponse"]` plus the few
+ * extra bits (guestName, attendeeNames) the server-side lookup doesn't need
+ * to round-trip since a personalized guest's name is already known from
+ * `defaultGuestName`, but a self-service recall has nowhere else to get it. */
+interface StoredRsvpResponse {
+  guestName: string;
+  attending: boolean;
+  partySize: number;
+  attendeeNames: string[];
+  allergies: string;
+  comment: string;
+  answers: Record<string, string>;
+}
+
+function storageKey(): string {
+  return `invimbo:rsvp:${window.location.pathname}`;
+}
+
 export default function SimpleForm({
   title,
   description,
   defaultGuestName,
   maxPartySize,
   questions,
+  existingResponse,
   onSubmit,
   styleOverrides,
   locale,
@@ -46,6 +66,67 @@ export default function SimpleForm({
   const isPersonalized = Boolean(defaultGuestName && defaultGuestName.trim());
   const [showFullForm, setShowFullForm] = useState(false);
 
+  // Usability fix (2026-10-14): a guest revisiting their own link after
+  // already RSVP'ing saw a blank form every time -- no memory of what they'd
+  // already said, so fixing a typo or adding a dietary note meant retyping
+  // the whole thing. `existingResponse` (server-looked-up, only ever set for
+  // a personalized guest -- see app/e/[slug]/page.tsx) is authoritative and
+  // wins when present. A self-service guest has no guest_id to look up
+  // before they've typed a name once, so there's nothing to look up
+  // server-side on first paint -- `storedResponse` below is this component's
+  // own best-effort recall from localStorage instead, same browser only.
+  const [storedResponse, setStoredResponse] = useState<StoredRsvpResponse | null>(null);
+  useEffect(() => {
+    if (existingResponse) return;
+    try {
+      const raw = localStorage.getItem(storageKey());
+      if (raw) setStoredResponse(JSON.parse(raw) as StoredRsvpResponse);
+    } catch {
+      // Private-browsing/storage-restricted contexts, or a malformed stored
+      // value -- either way, just fall through to the normal blank form.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const priorResponse = existingResponse ?? storedResponse;
+  const [editingPrior, setEditingPrior] = useState(false);
+
+  const startEditingPrior = () => {
+    if (!priorResponse) return;
+    // Branching on which source supplied it, not an `in` check on
+    // `priorResponse` itself -- the two shapes only differ by a couple of
+    // extra fields (guestName/attendeeNames) that the server-side lookup
+    // never needs to send (defaultGuestName already covers it for that
+    // case), not a real discriminated union TS can narrow cleanly.
+    if (!existingResponse && storedResponse) {
+      setGuestName(storedResponse.guestName);
+      setAttendeeNames(storedResponse.attendeeNames);
+    } else {
+      setGuestName(defaultGuestName ?? "");
+      setAttendeeNames([]);
+    }
+    setAttending(priorResponse.attending);
+    setPartySize(String(priorResponse.partySize));
+    setAllergies(priorResponse.allergies ?? "");
+    setComment(priorResponse.comment ?? "");
+    setAnswers(priorResponse.answers ?? {});
+    setShowFullForm(true);
+    setEditingPrior(true);
+  };
+
+  // Persists a self-service guest's own answer for next visit's recall --
+  // a personalized guest doesn't need this (page.tsx's server-side lookup
+  // already covers them, on any device), but writing it unconditionally is
+  // harmless and keeps this one code path simple rather than branching on
+  // `isPersonalized` for a write that's a no-op either way next time.
+  const persistForRecall = (input: StoredRsvpResponse) => {
+    try {
+      localStorage.setItem(storageKey(), JSON.stringify(input));
+    } catch {
+      // Non-fatal -- worst case, no local recall next visit.
+    }
+  };
+
   const handleQuickRsvp = async (attendingValue: boolean) => {
     setError(null);
     setPending(true);
@@ -60,6 +141,15 @@ export default function SimpleForm({
       if (!result.ok) throw new Error(result.message);
       setAttending(attendingValue);
       setSubmitted(true);
+      persistForRecall({
+        guestName: (defaultGuestName ?? "").trim(),
+        attending: attendingValue,
+        partySize: 1,
+        attendeeNames: [],
+        allergies: "",
+        comment: "",
+        answers: {},
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : t.genericError);
     } finally {
@@ -107,6 +197,15 @@ export default function SimpleForm({
       });
       if (!result.ok) throw new Error(result.message);
       setSubmitted(true);
+      persistForRecall({
+        guestName: guestName.trim(),
+        attending,
+        partySize: clampedPartySize,
+        attendeeNames: trimmedAttendeeNames,
+        allergies: allergies.trim(),
+        comment: comment.trim(),
+        answers,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : t.genericError);
     } finally {
@@ -123,6 +222,33 @@ export default function SimpleForm({
           <p className={styles.successMessage}>
             {attending ? t.successAttending : t.successDeclining}
           </p>
+        </div>
+      </section>
+    );
+  }
+
+  // Usability fix (2026-10-14): a returning guest with a prior answer on
+  // file sees this instead of a blank form -- `priorResponse` is either the
+  // server's authoritative lookup or this browser's own localStorage recall
+  // (see the comment where it's defined above). Clicking "edit" pre-fills
+  // and falls through to the normal full-form branch below.
+  if (priorResponse && !editingPrior) {
+    return (
+      <section className={styles.section}>
+        <div className={styles.card}>
+          <span className={styles.flourishTopLeft} aria-hidden="true" />
+          <span className={styles.flourishBottomRight} aria-hidden="true" />
+          <h2 className={styles.title}>
+            <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+          </h2>
+          <p className={styles.quickGreeting}>
+            {priorResponse.attending
+              ? t.alreadyRespondedAttending(priorResponse.partySize)
+              : t.alreadyRespondedDeclining}
+          </p>
+          <button type="button" className={styles.quickMoreDetails} onClick={startEditingPrior}>
+            {t.editResponseButton}
+          </button>
         </div>
       </section>
     );

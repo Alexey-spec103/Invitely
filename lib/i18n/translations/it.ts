@@ -44,6 +44,10 @@ export const it: Dictionary = {
     oneTapAccept: "Ci sarò",
     oneTapDecline: "Non posso venire",
     oneTapMoreDetails: "Aggiungi dettagli (pasto, ospiti, messaggio)",
+    alreadyRespondedAttending: (partySize) =>
+      `Hai già confermato - ${partySize} ${partySize === 1 ? "ospite" : "ospiti"}.`,
+    alreadyRespondedDeclining: "Ci hai già fatto sapere che non potrai essere presente.",
+    editResponseButton: "Modifica la tua risposta",
   },
   languageSwitcher: {
     label: "Lingua",

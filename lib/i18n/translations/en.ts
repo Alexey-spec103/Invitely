@@ -69,6 +69,15 @@ export interface Dictionary {
     oneTapAccept: string;
     oneTapDecline: string;
     oneTapMoreDetails: string;
+    /** Shown instead of a blank form when a guest who already RSVP'd comes
+     * back to the same link -- a personalized guest via a fresh server-side
+     * lookup (always accurate, any device), a self-service guest via a
+     * localStorage recall (best-effort, same browser only). See
+     * SimpleForm.tsx's own comment on why self-service can't be looked up
+     * server-side before the guest has typed their name. */
+    alreadyRespondedAttending: (partySize: number) => string;
+    alreadyRespondedDeclining: string;
+    editResponseButton: string;
   };
   languageSwitcher: {
     label: string;
@@ -401,6 +410,10 @@ export const en: Dictionary = {
     oneTapAccept: "I'll be there",
     oneTapDecline: "Can't make it",
     oneTapMoreDetails: "Add details (meal, guests, a message)",
+    alreadyRespondedAttending: (partySize) =>
+      `You already said yes - ${partySize} ${partySize === 1 ? "guest" : "guests"}.`,
+    alreadyRespondedDeclining: "You already let us know you can't make it.",
+    editResponseButton: "Edit your response",
   },
   languageSwitcher: {
     label: "Language",

@@ -38,6 +38,19 @@ export interface RsvpSectionVariantProps {
    * for a guest resolved via their invite link. Undefined when there's no cap to enforce. */
   maxPartySize?: number;
   questions?: RsvpQuestion[];
+  /** The guest's own prior submission, looked up server-side -- only ever
+   * set for a guest resolved via their personal invite link (see
+   * app/e/[slug]/page.tsx), since that's the only case with a known guest_id
+   * before they've interacted with the form at all. A self-service guest's
+   * recall instead happens client-side from localStorage -- see
+   * SimpleForm.tsx's own comment on why that split exists. */
+  existingResponse?: {
+    attending: boolean;
+    partySize: number;
+    allergies: string | null;
+    comment: string | null;
+    answers: Record<string, string> | null;
+  };
   onSubmit: (input: RsvpFormInput) => Promise<{ ok: true } | { ok: false; message: string }>;
   styleOverrides?: Record<string, TextStyleOverride>;
   /** Resolves the guest-facing UI chrome locale (labels, buttons, built-in

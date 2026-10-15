@@ -496,6 +496,33 @@ export type Database = {
         }
         Returns: string | null
       }
+      get_existing_rsvp_response: {
+        Args: {
+          p_event_id: string
+          p_guest_id: string
+        }
+        Returns: {
+          attending: boolean
+          party_size: number
+          allergies: string | null
+          comment: string | null
+          meal_preferences: Json | null
+        }[]
+      }
+      submit_rsvp_response: {
+        Args: {
+          p_event_id: string
+          p_guest_id: string | null
+          p_guest_name: string
+          p_attending: boolean
+          p_party_size: number
+          p_allergies: string | null
+          p_comment: string | null
+          p_meal_preferences: Json | null
+          p_attendee_names: string[] | null
+        }
+        Returns: undefined
+      }
       get_event_owner_email_for_rsvp_notification: {
         Args: {
           p_event_id: string

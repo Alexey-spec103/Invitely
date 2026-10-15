@@ -256,6 +256,13 @@ export interface RenderSectionContext {
     onSubmit: (input: RsvpFormInput) => Promise<{ ok: true } | { ok: false; message: string }>;
     defaultGuestName?: string;
     maxPartySize?: number;
+    existingResponse?: {
+      attending: boolean;
+      partySize: number;
+      allergies: string | null;
+      comment: string | null;
+      answers: Record<string, string> | null;
+    };
   };
   countdown: { eventDateTime: string; themeCategory?: ThemeCategory };
   gift: { preferences: GiftPreferenceItem[]; themeCategory?: ThemeCategory };
@@ -446,10 +453,11 @@ export function renderSection(
         <Component
           key={section.type}
           variant={section.variant as RsvpSectionProps["variant"]}
-          {...(data as Omit<RsvpSectionProps, "variant" | "onSubmit" | "defaultGuestName" | "maxPartySize" | "locale">)}
+          {...(data as Omit<RsvpSectionProps, "variant" | "onSubmit" | "defaultGuestName" | "maxPartySize" | "existingResponse" | "locale">)}
           onSubmit={context.rsvp.onSubmit}
           defaultGuestName={context.rsvp.defaultGuestName}
           maxPartySize={context.rsvp.maxPartySize}
+          existingResponse={context.rsvp.existingResponse}
           locale={locale}
         />
       );

@@ -102,67 +102,43 @@ export async function submitRsvp(
       ? Math.min(input.partySize, maxPlusOnes + 1)
       : input.partySize;
 
-  const row = {
-    event_id: eventId,
-    guest_id: resolvedGuestId,
-    guest_name: input.guestName,
-    attending: input.attending,
-    party_size: input.attending ? partySize : 0,
-    allergies: input.allergies || null,
-    comment: input.comment || null,
+  // URGENT fix (2026-10-14): this used to be a direct `.from("rsvp_responses")
+  // .insert()/.upsert()` -- confirmed live that real guests could not submit
+  // RSVPs at all, Supabase's own API Gateway logs showed every POST/PATCH
+  // straight to a table's REST endpoint being rejected (401) for the anon
+  // role before ever reaching PostgREST or Postgres (0 logs on either), a
+  // platform-side issue outside this app's control. RPC calls through the
+  // same gateway keep working fine for anon (confirmed: find_or_create_self_
+  // service_guest, lookup_guest_by_invite_code, check_and_log_rsvp_submission
+  // above all still succeed) -- routing the actual write through a security-
+  // definer RPC instead routes around the broken path entirely. See
+  // submit_rsvp_response's own migration comment for the full diagnosis.
+  // Also absorbs the guest_attendees sync, previously two more direct-table
+  // calls (delete-then-insert) right below this, equally broken -- the RPC
+  // does both in one transaction now.
+  const { error } = await supabase.rpc("submit_rsvp_response", {
+    p_event_id: eventId,
+    p_guest_id: resolvedGuestId,
+    p_guest_name: input.guestName,
+    p_attending: input.attending,
+    p_party_size: input.attending ? partySize : 0,
+    p_allergies: input.allergies || null,
+    p_comment: input.comment || null,
     // Reused rather than adding a new column — this held a fixed
     // "meal preferences" concept that was never wired up anywhere in the
     // app; a generic questionId -> answer map covers meal prefs and any
     // other custom RSVP question the host defines (drinks, transfer,
     // lodging, etc.) without a migration.
-    meal_preferences: input.answers ? (input.answers as unknown as Json) : null,
-  };
-
-  // A guest resolved to a real `guests` row -- via their invite link, or now
-  // via the self-service find-or-create above -- can resubmit to change
-  // their answer -- upsert on the same (event_id, guest_id) row rather than
-  // accumulating duplicates. Only a guest whose name was blank (so no row
-  // could be resolved) falls back to a plain insert.
-  const { error } = resolvedGuestId
-    ? await supabase.from("rsvp_responses").upsert(row, { onConflict: "event_id,guest_id" })
-    : await supabase.from("rsvp_responses").insert(row);
+    p_meal_preferences: input.answers ? (input.answers as unknown as Json) : null,
+    p_attendee_names: input.attendeeNames && input.attendeeNames.length > 0 ? input.attendeeNames : null,
+  });
 
   if (error) {
     console.error("submitRsvp failed", error);
-    // Postgres RLS violations always carry this code -- the only way this
-    // insert/upsert can hit it is the "published events only" policy on
-    // rsvp_responses, so it's safe to name the real cause instead of the
-    // generic message below.
-    if (error.code === "42501") {
+    if (error.message?.includes("EVENT_NOT_PUBLISHED")) {
       return { ok: false, message: t.notPublishedError };
     }
     return { ok: false, message: t.submitFailedError };
-  }
-
-  // Sync guest_attendees to the party's real names, but only when the guest
-  // resolved to a real `guests` row -- there's no row to attach attendees to
-  // otherwise. Delete-then-insert on every (re)submission (including a
-  // decline, which clears the party to zero named attendees) rather than
-  // diffing, matching this table's small expected size and keeping the sync
-  // trivially idempotent.
-  if (resolvedGuestId) {
-    const { error: clearError } = await supabase
-      .from("guest_attendees")
-      .delete()
-      .eq("guest_id", resolvedGuestId);
-    if (clearError) {
-      console.error("submitRsvp attendee sync (clear) failed", clearError);
-    } else if (input.attending && input.attendeeNames && input.attendeeNames.length > 0) {
-      const names = input.attendeeNames.filter((name) => name.trim().length > 0);
-      if (names.length > 0) {
-        const { error: attendeeError } = await supabase
-          .from("guest_attendees")
-          .insert(names.map((fullName) => ({ guest_id: resolvedGuestId, full_name: fullName })));
-        if (attendeeError) {
-          console.error("submitRsvp attendee sync (insert) failed", attendeeError);
-        }
-      }
-    }
   }
 
   // Best-effort confirmation email -- never blocks or fails the RSVP itself.
