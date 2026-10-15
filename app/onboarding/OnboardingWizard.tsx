@@ -6,7 +6,7 @@ import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { track } from "@vercel/analytics";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
 import { HeroSection, DEFAULT_HERO_VARIANT, HERO_VARIANTS } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
@@ -331,18 +331,27 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
           {t.stepOf(step + 1, STEPS.length)}
         </p>
 
-        <AnimatePresence mode="wait" initial={false}>
+        {/* URGENT fix (2026-10-15): this used to be an AnimatePresence
+            (mode="wait") wrapping this motion.div, animating both the
+            outgoing step's exit and the incoming step's enter. Confirmed
+            live, including on production, that the exit transition could
+            get stuck indefinitely: the outgoing panel stayed rendered at
+            its full resting style (opacity:1, no transform -- never even
+            reaching its own exit target, let alone completing it), and
+            since AnimatePresence in "wait" mode holds the next step back
+            until the exit it's tracking resolves, the real step 2/3 content
+            underneath simply never appeared -- a dead end blocking every
+            new visitor from finishing onboarding at all. Root cause wasn't
+            pinned down further (reproducible on a clean build, not a dev/
+            HMR artifact) -- correctness over polish: dropped AnimatePresence
+            entirely. The entering step still gets its own fade/slide-in via
+            a plain keyed motion.div (no `exit` prop, so React just unmounts
+            the previous one immediately on key change, no animated exit to
+            get stuck on). */}
         <motion.div
           key={stepKey}
-          // `initial={false}` under reduced motion (RevealOnScroll.tsx's own
-          // pattern) skips the enter transition entirely rather than running
-          // it at a near-zero duration. `exit={undefined}` does the
-          // equivalent for AnimatePresence's unmount animation -- with no
-          // exit variant, the outgoing step is removed instantly instead of
-          // sliding out (motion-audit, 2026-10-12).
           initial={reduceMotion ? false : { opacity: 0, x: 24 * direction }}
           animate={{ opacity: 1, x: 0 }}
-          exit={reduceMotion ? undefined : { opacity: 0, x: -24 * direction }}
           transition={{ duration: 0.2, ease: "easeOut" }}
         >
             {stepKey === "eventType" && (
@@ -507,7 +516,6 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
               </div>
             )}
         </motion.div>
-        </AnimatePresence>
 
         {formError && (
           <p role="alert" className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
