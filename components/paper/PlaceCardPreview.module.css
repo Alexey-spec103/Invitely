@@ -28,5 +28,8 @@
   font-weight: 600;
   font-size: clamp(0.8rem, 8cqw, 1.4rem);
   text-align: center;
-  color: var(--theme-accent);
+  /* Contrast audit (2026-10-15): bare --theme-accent measured 3.33:1 on the
+     one piece of text a guest actually needs to read on this card to find
+     their seat -- same fix as InvitationCardPreview's .ampersand. */
+  color: color-mix(in srgb, var(--theme-accent) 55%, var(--theme-text) 45%);
 }

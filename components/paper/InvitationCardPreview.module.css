@@ -33,7 +33,14 @@
   margin: 0.35em 0;
   font-family: var(--theme-font-heading);
   font-size: clamp(0.7rem, 4.5cqw, 1.1rem);
-  color: var(--theme-accent);
+  /* Contrast audit (2026-10-15): bare --theme-accent measured 3.33:1 on
+     this card's own cream background (Romantic Blush), under AA's 4.5:1 --
+     this is real text (the conjunction between the two names), not
+     decoration, so the normal-text threshold applies despite being small.
+     Blended toward --theme-text (the token .face itself already proves
+     reads fine here, 11.93:1) rather than a flat darken, so it keeps some
+     accent tint instead of just becoming the same color as the names. */
+  color: color-mix(in srgb, var(--theme-accent) 55%, var(--theme-text) 45%);
   text-align: center;
 }
 
@@ -57,7 +64,8 @@
   margin: 0 0 0.9em;
   font-family: var(--theme-font-heading);
   font-size: clamp(0.9rem, 5.5cqw, 1.3rem);
-  color: var(--theme-accent);
+  /* Same contrast fix as .ampersand above. */
+  color: color-mix(in srgb, var(--theme-accent) 55%, var(--theme-text) 45%);
   text-align: center;
 }
 

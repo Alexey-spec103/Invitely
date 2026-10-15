@@ -69,7 +69,10 @@
   font-family: var(--theme-font-body);
   font-size: clamp(0.45rem, 1.6cqw, 0.6rem);
   letter-spacing: 0.08em;
-  color: var(--theme-accent);
+  /* Contrast audit (2026-10-15): bare --theme-accent measured 3.33:1 on
+     this card's own background (Romantic Blush), under AA's 4.5:1 -- same
+     fix as InvitationCardPreview's .ampersand. */
+  color: color-mix(in srgb, var(--theme-accent) 55%, var(--theme-text) 45%);
 }
 
 .addressArea {
@@ -85,5 +88,6 @@
   font-size: clamp(0.45rem, 1.8cqw, 0.65rem);
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--theme-accent);
+  /* Same contrast fix as .returnDate above. */
+  color: color-mix(in srgb, var(--theme-accent) 55%, var(--theme-text) 45%);
 }
