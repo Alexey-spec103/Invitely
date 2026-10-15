@@ -1610,7 +1610,15 @@ export default function PaperConstructor({
                 <button
                   type="button"
                   onClick={() => handleDownloadClick("seatingChart")}
-                  disabled={pendingDownload !== null}
+                  // Functional-correctness audit (2026-10-15): this only
+                  // disabled while a download was already in flight -- with
+                  // no tables yet, the button stayed clickable and happily
+                  // generated a real, downloadable, completely empty PDF
+                  // (0 cards) with no warning beyond the much-easier-to-miss
+                  // hint text above it. Disabled outright until there's
+                  // something to download; the hint text above still
+                  // explains why.
+                  disabled={pendingDownload !== null || tableCardData.length === 0}
                   className="dash-btn dash-btn-primary"
                 >
                   {pendingDownload === "seatingChart" ? "Generating..." : `Download all (${tableCardData.length}) as PDF`}
@@ -1627,7 +1635,7 @@ export default function PaperConstructor({
                 <button
                   type="button"
                   onClick={() => handleDownloadClick("placeCards")}
-                  disabled={pendingDownload !== null}
+                  disabled={pendingDownload !== null || allGuestNames.length === 0}
                   className="dash-btn dash-btn-primary"
                 >
                   {pendingDownload === "placeCards" ? "Generating..." : `Download all (${allGuestNames.length}) as PDF`}
@@ -1647,7 +1655,7 @@ export default function PaperConstructor({
                 <button
                   type="button"
                   onClick={() => handleDownloadClick("tableNumbers")}
-                  disabled={pendingDownload !== null}
+                  disabled={pendingDownload !== null || tableNames.length === 0}
                   className="dash-btn dash-btn-primary"
                 >
                   {pendingDownload === "tableNumbers" ? "Generating..." : `Download all (${tableNames.length}) as PDF`}
