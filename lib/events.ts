@@ -234,6 +234,33 @@ export async function deleteEvent(eventId: string, userId: string) {
     throw new Error("Event not found");
   }
 
+  // Security/data-hygiene audit (2026-10-16): guest_photos rows cascade-
+  // delete automatically once `events` itself is deleted below (its own FK
+  // is `on delete cascade`) -- but that only removes the DB row, never the
+  // actual file sitting in the "guest-photos" Storage bucket. Worse than a
+  // plain leak: that bucket's own delete RLS policy
+  // (20261008140000_guest_photo_album.sql) requires a *matching, still-
+  // existing* events row with the caller's owner_id to allow the delete --
+  // once this function deletes the event, that policy can never be
+  // satisfied again for these files, by anyone, through the normal API.
+  // Confirmed live this session (security audit sweep) that nothing else in
+  // the codebase cleans this up either. Must list+remove from Storage
+  // *before* the event row (and its cascaded guest_photos rows) are gone,
+  // while the paths are still readable.
+  const { data: guestPhotos } = await supabase.from("guest_photos").select("storage_path").eq("event_id", eventId);
+  if (guestPhotos && guestPhotos.length > 0) {
+    const { error: storageError } = await supabase.storage
+      .from("guest-photos")
+      .remove(guestPhotos.map((photo) => photo.storage_path));
+    if (storageError) {
+      // Non-fatal: a storage cleanup failure shouldn't block a host from
+      // deleting their own event data. Logged so it's at least visible,
+      // same "best effort, never blocks" philosophy already used for this
+      // file's other side-effects (e.g. confirmation emails elsewhere).
+      console.error("deleteEvent: failed to remove guest-photos storage objects", storageError);
+    }
+  }
+
   await supabase.from("banquet_tables").delete().eq("event_id", eventId);
   await supabase.from("gift_preferences").delete().eq("event_id", eventId);
   await supabase.from("rsvp_responses").delete().eq("event_id", eventId);
