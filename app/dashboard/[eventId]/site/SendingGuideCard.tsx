@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Copy, Check, ExternalLink, FileDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Copy, Check, ExternalLink, FileDown, Download } from "lucide-react";
 
 interface SendingGuideCardProps {
   eventId: string;
@@ -30,6 +30,26 @@ export default function SendingGuideCard({
   rsvpEmailNotifications,
 }: SendingGuideCardProps) {
   const [copied, setCopied] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+
+  // 2026-10-16: a host had a QR code for every individual paper invitation
+  // (PaperConstructor's per-guest codes) and for the guest photo-upload link
+  // (GuestPhotoGallery), but nothing for the one link that matters most --
+  // their own site. No way to print it on a welcome sign, a table card, or
+  // a thank-you note without screenshotting a phone-generated QR from a
+  // third-party site. Same dynamic-import-of-`qrcode` + client-side-only
+  // generation pattern as GuestPhotoGallery.tsx (window.location.origin
+  // doesn't exist during SSR). Generated at 1024px -- GuestPhotoGallery's
+  // own 240px is fine for its fixed 96px on-screen size, but this PNG is
+  // meant to be downloaded and printed at sizes a 240px source would turn
+  // visibly blurry at; downscaling a larger raster for the on-screen
+  // thumbnail costs nothing, upscaling a smaller one for print would.
+  useEffect(() => {
+    const inviteUrl = `${window.location.origin}/e/${slug}`;
+    import("qrcode").then((QRCode) => {
+      QRCode.default.toDataURL(inviteUrl, { margin: 1, width: 1024 }).then(setQrDataUrl);
+    });
+  }, [slug]);
 
   const handleCopy = async () => {
     const href = `${window.location.origin}/e/${slug}`;
@@ -83,6 +103,35 @@ export default function SendingGuideCard({
           ? "a reply lands in your inbox the moment they answer (you can also check the Guests tab anytime)."
           : "you can check their answer anytime in the Guests tab (email alerts are off - turn them back on there)."}
       </p>
+
+      <div className="mt-3 flex items-center gap-3 border-t border-[var(--dash-border)] pt-3">
+        {qrDataUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={qrDataUrl}
+            alt={`QR code linking to your invitation at ${appDomain}/e/${slug}`}
+            className="h-16 w-16 flex-none rounded-md border border-[var(--dash-border)] bg-white p-1"
+          />
+        ) : (
+          <div className="h-16 w-16 flex-none animate-pulse rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface)]" />
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold text-[var(--dash-text)]">QR code for your link</p>
+          <p className="text-[11px] text-[var(--dash-text-muted)]">
+            Print it on a welcome sign, table cards, or a thank-you note.
+          </p>
+        </div>
+        <a
+          href={qrDataUrl ?? undefined}
+          download={`${slug}-qr-code.png`}
+          aria-disabled={!qrDataUrl}
+          className={`flex h-8 flex-none items-center gap-1.5 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 text-xs font-semibold text-[var(--dash-text)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] ${
+            qrDataUrl ? "" : "pointer-events-none opacity-50"
+          }`}
+        >
+          <Download className="h-[13px] w-[13px]" /> Download
+        </a>
+      </div>
 
       {hasPremiumAccess && (
         <Link
