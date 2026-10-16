@@ -536,6 +536,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_and_log_site_password_attempt: {
+        Args: {
+          p_event_id: string
+          p_ip_address: string
+        }
+        Returns: boolean
+      }
       mark_custom_domain_verified: {
         Args: {
           p_event_id: string

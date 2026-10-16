@@ -307,6 +307,29 @@ export async function unlockSitePassword(
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   const supabase = await createClient();
 
+  // Security audit (2026-10-16): this RPC is a password check callable
+  // directly by anyone, with nothing stopping a script from guessing
+  // repeatedly -- same rate-limit gap already closed for submitRsvp, same
+  // IP-header reasoning/fails-open philosophy (an RPC-error or missing-IP
+  // case only skips logging for this one attempt, never blocks a real
+  // guest's own retry).
+  const headerList = await headers();
+  const forwardedFor = headerList.get("x-forwarded-for");
+  const ipAddress = forwardedFor?.split(",")[0]?.trim() || headerList.get("x-real-ip");
+  if (ipAddress) {
+    const { data: withinLimit, error: rateLimitError } = await supabase.rpc(
+      "check_and_log_site_password_attempt",
+      { p_event_id: eventId, p_ip_address: ipAddress }
+    );
+    if (rateLimitError) {
+      console.error("unlockSitePassword rate-limit check failed", rateLimitError);
+    } else if (withinLimit === false) {
+      return { ok: false, message: "Too many attempts -- please try again later" };
+    }
+  } else {
+    console.warn("unlockSitePassword: no client IP header present, skipping rate limit for this request");
+  }
+
   const { data: token, error } = await supabase.rpc("verify_site_password", {
     p_event_id: eventId,
     p_password: password,
