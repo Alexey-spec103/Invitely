@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
-import { Undo2, Redo2, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Undo2, Redo2, Monitor, Smartphone, Tablet, type LucideIcon } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n/locales";
@@ -351,10 +351,10 @@ interface BlockRowData {
   onToggleHidden?: () => void;
   onDelete?: () => void;
   /** Only meaningful for "sectionHeader" rows -- the section's own
-   * MODULE_ICONS emoji, so this list reads as the same "section" concept
+   * MODULE_ICONS icon, so this list reads as the same "section" concept
    * as the live preview's own SectionHeader and the Modules panel, not a
    * third, disconnected labeling scheme. */
-  icon?: string;
+  icon?: LucideIcon;
 }
 
 /** One divider row marking where a section's fields start in the
@@ -363,7 +363,7 @@ interface BlockRowData {
  * within a section, e.g. "Event 2"), so "which rows are Timeline?" wasn't
  * answerable without reading every label. Non-interactive: `onSelect` is a
  * no-op, this row exists purely to be *read*, not clicked. */
-function sectionHeaderRow(key: string, label: string, icon: string | undefined): BlockRowData {
+function sectionHeaderRow(key: string, label: string, icon: LucideIcon | undefined): BlockRowData {
   return {
     key: `section-${key}`,
     type: "sectionHeader",
@@ -3062,7 +3062,7 @@ function SectionHeader({
   extra,
 }: {
   label: string;
-  icon?: string;
+  icon?: LucideIcon;
   enabled?: boolean;
   onToggle?: (next: boolean) => void;
   togglePending?: boolean;
@@ -3076,6 +3076,10 @@ function SectionHeader({
 }) {
   const effectiveState = toggleError ? "error" : state;
   const effectiveError = toggleError ?? error;
+  // Lowercase `icon` can't be used directly as a JSX tag (JSX treats a
+  // lowercase-leading tag name as a native HTML element, not a component
+  // reference) -- capitalized local alias required.
+  const Icon = icon;
   return (
     <div
       className={`flex flex-wrap items-center justify-between gap-3 border-t-4 px-4 py-3.5 transition-colors ${
@@ -3083,11 +3087,7 @@ function SectionHeader({
       }`}
     >
       <div className="flex items-center gap-2.5">
-        {icon && (
-          <span aria-hidden="true" className="text-lg leading-none">
-            {icon}
-          </span>
-        )}
+        {Icon && <Icon className="h-[18px] w-[18px] shrink-0 text-[var(--dash-text-muted)]" aria-hidden="true" />}
         <span className="text-sm font-bold uppercase tracking-wide text-[var(--dash-text)]">{label}</span>
         {enabled === false && (
           <span className="rounded-full bg-[var(--dash-border)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
@@ -3213,9 +3213,10 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
                   className="mt-3 flex items-center gap-2 border-b-2 border-[#2b241d] px-2 pb-1 text-xs font-bold uppercase tracking-wide text-[var(--dash-accent)] first:mt-0"
                 >
                   {block.icon && (
-                    <span aria-hidden="true" className="text-sm leading-none">
-                      {block.icon}
-                    </span>
+                    <block.icon
+                      className="h-[14px] w-[14px] shrink-0 text-[var(--dash-accent)]"
+                      aria-hidden="true"
+                    />
                   )}
                   {block.label}
                 </li>

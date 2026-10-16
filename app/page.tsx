@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import {
-  Sparkles,
+  Image as ImageIcon,
   Mail,
   Clock,
   MapPin,
@@ -60,8 +60,12 @@ const PRICING_EXAMPLE_THEME_ID = "peony-blush-burgundy";
 // module-level constants can hold.
 const HERO_CHECKLIST_ICONS = [BadgeCheck, Palette, Wand2, ClipboardCheck, Printer];
 const CONSTRUCTOR_FEATURE_ICONS = [Type, Palette, Wand2, Pencil, Printer, Sliders];
+// 2026-10-16 icon audit: index 1 ("Hero intro" -- "Your names, event date,
+// and photo") was Sparkles, a decorative/magic glyph that doesn't actually
+// represent "names + photo" -- the module's real deliverable is the photo,
+// so ImageIcon is the literal match instead.
 const MODULE_ICONS = [
-  Wand2, Sparkles, Mail, Clock, MapPin, ClipboardCheck, Timer, MessagesSquare, Video, Printer, Users2, Globe,
+  Wand2, ImageIcon, Mail, Clock, MapPin, ClipboardCheck, Timer, MessagesSquare, Video, Printer, Users2, Globe,
   HelpCircle, Hotel,
 ];
 

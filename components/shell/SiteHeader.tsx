@@ -1,54 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  Home,
-  Mail,
-  CalendarDays,
-  MapPin,
-  CheckCircle2,
-  Hourglass,
-  Gift,
-  Shirt,
-  BookOpen,
-  Video,
-  UtensilsCrossed,
-  StickyNote,
-  type LucideIcon,
-} from "lucide-react";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
 import LanguageSwitcher from "@/components/site/LanguageSwitcher";
-import type { SectionType } from "@/components/sections/registry";
+import { SECTION_ICONS, type SectionType } from "@/components/sections/registry";
 import styles from "./SiteHeader.module.css";
 
 // dashboard-audit critique 2026-10-04 (P2): raw platform emoji (🏠💌🗓️📍✅
 // etc.) sat directly against this page's hand-illustrated botanical art --
 // emoji render differently per OS and carry their own cartoon style, reading
-// like a to-do app next to custom artwork. Same line-icon choices already
-// used by the dashboard's own module list (app/dashboard/[eventId]/site/
-// SectionModulesPanel.tsx's MODULE_ICON_COMPONENTS, added for the identical
-// "emoji standing in for an icon system" reason) -- reusing them here keeps
+// like a to-do app next to custom artwork. Now uses the shared SECTION_ICONS
+// map (components/sections/registry.tsx) -- real Lucide icons as of
+// 2026-10-16, previously the reason this file kept its own local duplicate
+// (SECTION_ICONS was still plain emoji text then). One shared map now keeps
 // what a host toggles in the dashboard visually matching what guests see in
-// the live nav, rather than inventing a third icon choice. Kept as a local
-// map rather than widening the shared SECTION_ICONS emoji export, same
-// reasoning as that file's own comment: ~20 other call sites still depend on
-// SECTION_ICONS being plain emoji text, and this is a cosmetic change scoped
-// to just this one nav.
-const NAV_ICON_COMPONENTS: Partial<Record<SectionType, LucideIcon>> = {
-  hero: Home,
-  letter: Mail,
-  timeline: CalendarDays,
-  map: MapPin,
-  rsvp: CheckCircle2,
-  countdown: Hourglass,
-  gift: Gift,
-  dressCode: Shirt,
-  guestbook: BookOpen,
-  video: Video,
-  banquetNavigator: UtensilsCrossed,
-  guestNotes: StickyNote,
-};
+// the live nav.
 
 interface SiteHeaderProps {
   sections: { type: string; label: string }[];
@@ -239,7 +206,7 @@ export default function SiteHeader({
       {menuOpen && (
         <nav className={styles.menu}>
           {sections.map((section) => {
-            const Icon = NAV_ICON_COMPONENTS[section.type as SectionType];
+            const Icon = SECTION_ICONS[section.type as SectionType];
             return (
               <a
                 key={section.type}

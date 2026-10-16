@@ -30,6 +30,23 @@ import type { BanquetNavigatorSectionProps, BanquetTableLookupResult } from "./B
 import type { Json } from "@/lib/supabase/database.types";
 import type { ThemeCategory } from "@/lib/themes/types";
 import type { Locale } from "@/lib/i18n/locales";
+import {
+  Home,
+  Mail,
+  CalendarDays,
+  MapPin,
+  CheckCircle2,
+  Hourglass,
+  Gift,
+  Shirt,
+  BookOpen,
+  Video,
+  UtensilsCrossed,
+  StickyNote,
+  HelpCircle,
+  Luggage,
+  type LucideIcon,
+} from "lucide-react";
 
 export const componentRegistry = {
   hero: HeroSection,
@@ -78,29 +95,39 @@ export const SECTION_LABELS: Record<SectionType, string> = {
 
 /** Design-audit finding: weddingpost.ru's own hamburger menu pairs every
  * jump-link with a small icon (checked live); ours was plain text only,
- * reading noticeably barer for the same amount of information. Same emoji
- * set `app/dashboard/[eventId]/site/SectionModulesPanel.tsx`'s own
- * `MODULE_ICONS` already uses for the dashboard's Modules panel/section
- * headers -- centralized here (this file already owns `SECTION_LABELS`) so
- * the guest-facing nav (`components/shell/SiteHeader.tsx`) can share the
- * exact same icon per section type instead of a third, drifting copy of the
- * map. `hero` has no entry in the dashboard's own MODULE_ICONS (it's never
- * toggleable there) but does need one here for the nav's "Home" link. */
-export const SECTION_ICONS: Partial<Record<SectionType, string>> = {
-  hero: "🏠",
-  letter: "💌",
-  timeline: "🗓️",
-  map: "📍",
-  rsvp: "✅",
-  countdown: "⏳",
-  gift: "🎁",
-  dressCode: "👔",
-  guestbook: "📖",
-  video: "🎥",
-  banquetNavigator: "🍽️",
-  guestNotes: "📌",
-  faq: "❓",
-  travel: "🧳",
+ * reading noticeably barer for the same amount of information. Centralized
+ * here (this file already owns `SECTION_LABELS`) so the dashboard's Modules
+ * panel/section headers and the guest-facing nav
+ * (`components/shell/SiteHeader.tsx`) all share the exact same icon per
+ * section type instead of three drifting copies of the map. `hero` has no
+ * entry in the dashboard's own module list (it's never toggleable there)
+ * but does need one here for the nav's "Home" link.
+ *
+ * 2026-10-16: was raw platform emoji (🏠💌🗓️📍✅ etc.) -- flagged live as
+ * reading "AI-generated" ("Unicode glyphs or emoji standing in for an icon
+ * system"), and rendering differently per OS/browser on top of that. Both
+ * other consumers (SiteHeader.tsx's own NAV_ICON_COMPONENTS,
+ * SectionModulesPanel.tsx's own MODULE_ICON_COMPONENTS) had already worked
+ * around this with local Lucide-icon duplicates rather than widen this
+ * export's type, each citing "~20 other call sites still depend on
+ * SECTION_ICONS being plain emoji text" as the reason not to. Doing that
+ * wider fix now: real LucideIcon components, and both local duplicates
+ * removed in favor of this one shared map. */
+export const SECTION_ICONS: Partial<Record<SectionType, LucideIcon>> = {
+  hero: Home,
+  letter: Mail,
+  timeline: CalendarDays,
+  map: MapPin,
+  rsvp: CheckCircle2,
+  countdown: Hourglass,
+  gift: Gift,
+  dressCode: Shirt,
+  guestbook: BookOpen,
+  video: Video,
+  banquetNavigator: UtensilsCrossed,
+  guestNotes: StickyNote,
+  faq: HelpCircle,
+  travel: Luggage,
 };
 
 export interface SectionConfig {

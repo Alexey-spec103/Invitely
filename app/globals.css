@@ -146,27 +146,28 @@ body {
   --dash-text: #f4f4f6;
   --dash-text-muted: #9c9c9d;
 
-  /* Cabinet-only font pair, reusing fonts already loaded in app/layout.tsx
-     for the public site themes -- no new font added. Fraunces (a display
-     serif) for headings gives the cabinet the same "expressive pairing"
-     every reference competitor (Zola/WithJoy/Minted) uses on their own
-     marketing+product chrome; Inter replaces the previous plain Arial
-     fallback for body text/labels/buttons. Scoped to .dashboard-shell only
-     -- the public /e/[slug] site sets font-family explicitly per element
-     via each theme's own --theme-font-heading/--theme-font-body, so this
-     never reaches it. */
+  /* Cabinet-only font pair. Fraunces (a display serif) for headings gives
+     the cabinet the same "expressive pairing" every reference competitor
+     (Zola/WithJoy/Minted) uses on their own marketing+product chrome.
+     Body text was Inter until 2026-10-16 -- a deliberate Raycast
+     design-reference choice at the time, but direct product-owner
+     feedback is that Inter itself still reads as "developer tool" (it's
+     Linear/Figma/Notion's own body font), same complaint that drove
+     .marketing-shell's own Geist -> Outfit swap the same day. Reusing
+     that same `outfit` font here rather than adding a third typeface --
+     one warm-geometric body voice across both the landing page and the
+     cabinet instead of two different "fixes." Scoped to .dashboard-shell
+     only -- the public /e/[slug] site sets font-family explicitly per
+     element via each theme's own --theme-font-heading/--theme-font-body,
+     so this never reaches it. */
   --dash-font-heading: var(--font-fraunces), Georgia, serif;
-  --dash-font-body: var(--font-inter), Arial, Helvetica, sans-serif;
+  --dash-font-body: var(--font-outfit), ui-sans-serif, system-ui, Arial, sans-serif;
 
   font-family: var(--dash-font-body);
-  /* Raycast design-reference pass: Inter was already the cabinet's body
-     font (see comment above) but rendered with the default glyph set --
-     ss03 swaps in the alternate single-story "g", Raycast's signature
-     typographic detail, for free on a font already loaded. calt/kern/liga
-     are the browser's own defaults for a feature-settings list this size,
-     listed explicitly only because enabling ss03 means specifying the
-     whole set. Cabinet-only, same scoping as the font tokens above. */
-  font-feature-settings: "calt", "kern", "liga", "ss03";
+  /* ss03 (Inter's alternate single-story "g") dropped along with Inter --
+     it was an Inter-specific glyph variant with no equivalent meaning on
+     Outfit. calt/kern/liga are safe, widely-supported defaults kept as-is. */
+  font-feature-settings: "calt", "kern", "liga";
 }
 
 /* Page-level title -- one shared size/weight/serif treatment so every
@@ -430,6 +431,17 @@ body {
   .landing-cta:hover {
     background: var(--dash-accent);
   }
+}
+
+/* 2026-10-16 design pass: Outfit replaces Geist Sans for the landing
+   page's body/UI text -- see app/layout.tsx's own comment on the `outfit`
+   font for the competitor research behind this. Same scoping technique
+   .dashboard-shell already uses (plain font-family override, not a
+   Tailwind utility) so it wins over the page root's `font-sans` class
+   without touching the global --font-sans token that guest-facing themed
+   sites could fall back to. */
+.marketing-shell {
+  font-family: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Browser-drawn surfaces the design usually never reaches -- selection

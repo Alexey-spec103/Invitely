@@ -20,6 +20,7 @@ import {
   Sacramento,
   Gilda_Display,
   Source_Serif_4,
+  Outfit,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
@@ -242,6 +243,38 @@ const sourceSerif4 = Source_Serif_4({
   weight: ["300", "400", "500"],
 });
 
+// 2026-10-16 design pass: the landing page's BODY/UI text (nav, paragraphs,
+// feature copy, pricing cards, FAQ, footer) still fell through to Geist Sans
+// -- the Next.js starter-template default and one of the most recognizable
+// "developer tool" typefaces on the web (Linear, Vercel, Raycast all ship
+// it), which is almost certainly the real source of the product owner's
+// "looks AI-generated/techy" complaint, more than the already-fixed
+// headings. Checked real competitors rather than guessing: Greenvelope's
+// own body copy is "Brandon Grotesque" (a warm, rounded geometric sans,
+// paid/licensed, not on Google Fonts) and Zola's is "Circular" (same warm-
+// geometric family, also paid/licensed) -- neither is a neutral techy
+// grotesque like Inter/Geist/Helvetica. Outfit is the closest free
+// (Google Fonts) equivalent in that same warm-geometric register: rounded
+// terminals, less mechanical than Geist, still highly legible at small
+// sizes (nav links, card copy, buttons) unlike more stylized geometric
+// faces (Jost, Poppins at display weights) that start hurting paragraph
+// readability. Scoped to .marketing-shell only (see globals.css) --
+// mirrors the exact same scoping pattern already used for .dashboard-shell's
+// own font-family override, so this never reaches the guest-facing themed
+// sites (those set font-family per-theme) or the dashboard.
+// No "cyrillic" subset: Google Fonts doesn't ship one for Outfit (same
+// gap as Fraunces above). Modern browsers fall back per-glyph, not
+// per-element, so Latin text renders in Outfit and any Cyrillic
+// characters (ru/uk locales) fall through to the stack's ui-sans-serif/
+// system-ui -- a real system font, not a silent blank.
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  // 700 added for .dashboard-shell's own font-bold usage (19 call sites
+  // across app/dashboard/**) once this font took over Inter's role there.
+  weight: ["400", "500", "600", "700"],
+});
+
 // Same hardcoded production origin as app/robots.ts and app/sitemap.ts --
 // no env var for this exists anywhere in the codebase yet. Needed so
 // Next.js can resolve metadataBase for canonical URLs and any relative
@@ -321,7 +354,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} ${inter.variable} ${playfairDisplay.variable} ${fraunces.variable} ${alexBrush.variable} ${cinzel.variable} ${libreBaskerville.variable} ${spaceGrotesk.variable} ${caveat.variable} ${ebGaramond.variable} ${parisienne.variable} ${marcellus.variable} ${bodoniModa.variable} ${italiana.variable} ${cormorant.variable} ${sacramento.variable} ${gildaDisplay.variable} ${sourceSerif4.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} ${inter.variable} ${playfairDisplay.variable} ${fraunces.variable} ${alexBrush.variable} ${cinzel.variable} ${libreBaskerville.variable} ${spaceGrotesk.variable} ${caveat.variable} ${ebGaramond.variable} ${parisienne.variable} ${marcellus.variable} ${bodoniModa.variable} ${italiana.variable} ${cormorant.variable} ${sacramento.variable} ${gildaDisplay.variable} ${sourceSerif4.variable} ${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* eslint-disable-next-line react/no-danger -- static, codebase-

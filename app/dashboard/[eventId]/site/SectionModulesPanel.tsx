@@ -3,26 +3,7 @@
 import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  GripVertical,
-  Lock,
-  Mail,
-  MailOpen,
-  CalendarDays,
-  MapPin,
-  CheckCircle2,
-  Hourglass,
-  Gift,
-  Shirt,
-  BookOpen,
-  Video,
-  UtensilsCrossed,
-  StickyNote,
-  ArrowRight,
-  HelpCircle,
-  Luggage,
-  type LucideIcon,
-} from "lucide-react";
+import { GripVertical, Lock, MailOpen, ArrowRight } from "lucide-react";
 import { reorderSections, toggleSection, updateEnvelopeReveal } from "./actions";
 import {
   SECTION_LABELS,
@@ -34,29 +15,6 @@ import {
 import { BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 import SectionToggleSwitch from "./SectionToggleSwitch";
 import PremiumUpgradeModal from "@/components/ui/PremiumUpgradeModal";
-
-// Drawn icons for this list specifically -- flagged live as reading
-// "AI-generated" (craft-floor: "Unicode glyphs or emoji standing in for an
-// icon system"). MODULE_ICONS below stays the emoji map every other
-// consumer (SiteInlineEditor's sidebar rows and section headers) already
-// depends on -- widening that shared export's type would ripple through
-// ~20 call sites for a cosmetic change scoped to just this one list, so
-// this is a second, local-only map instead of touching the shared one.
-const MODULE_ICON_COMPONENTS: Partial<Record<SectionType, LucideIcon>> = {
-  letter: Mail,
-  timeline: CalendarDays,
-  map: MapPin,
-  rsvp: CheckCircle2,
-  countdown: Hourglass,
-  gift: Gift,
-  dressCode: Shirt,
-  guestbook: BookOpen,
-  video: Video,
-  banquetNavigator: UtensilsCrossed,
-  guestNotes: StickyNote,
-  faq: HelpCircle,
-  travel: Luggage,
-};
 
 // Every toggleable module, in the app's canonical order -- not derived from
 // the `sections` prop, because a module never toggled on yet for this event
@@ -250,7 +208,7 @@ export default function SectionModulesPanel({
       <ul className="mt-3 space-y-1">
         {order.map((type, index) => {
           const isGated = isGatedType(type);
-          const ModuleIcon = MODULE_ICON_COMPONENTS[type];
+          const ModuleIcon = SECTION_ICONS[type];
           const group = MODULE_GROUPS[type];
           const showGroupLabel = group && group !== MODULE_GROUPS[order[index - 1]];
           return (
