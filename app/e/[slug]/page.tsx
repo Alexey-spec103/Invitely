@@ -167,43 +167,71 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
     );
   const sections = isCanvasMode ? allSections.filter((section) => section.type !== "hero") : allSections;
   const content = parseContent(event.site_config.content);
+  const hasGiftSection = sections.some((section) => section.type === "gift");
+  const hasGuestbookSection = sections.some((section) => section.type === "guestbook");
 
-  let invitedGuest: {
-    id: string;
-    full_name: string;
-    max_plus_ones: number | null;
-    table_name: string | null;
-  } | null = null;
-  if (typeof invite === "string" && invite) {
-    const { data: guest } = await supabase
-      .rpc("lookup_guest_by_invite_code", { p_event_id: event.id, p_invite_code: invite })
-      .maybeSingle();
-    invitedGuest = guest;
-  }
+  // 2026-10-16 performance audit: these three used to run as four separate
+  // sequential `await`s (guest lookup -> existing RSVP -> gift_preferences
+  // -> guestbook messages), each one a full network round-trip to Supabase
+  // that blocked the next from even starting -- but gift_preferences and
+  // guestbook messages depend only on `event.id`/the section toggles above,
+  // never on the guest-lookup chain, so there was no real reason for them to
+  // wait their turn. This is the single biggest TTFB (and therefore LCP,
+  // since nothing below renders until this function returns) cost on the
+  // most-visited unauthenticated route in the app -- every real guest hits
+  // this page. Promise.all runs the independent chains concurrently instead;
+  // the one genuine dependency (existing RSVP needs the guest's id from the
+  // lookup first) stays sequential, just inside its own async closure below.
+  const [guestLookup, giftPreferencesResult, guestbookRowsResult] = await Promise.all([
+    (async () => {
+      let invitedGuest: {
+        id: string;
+        full_name: string;
+        max_plus_ones: number | null;
+        table_name: string | null;
+      } | null = null;
+      if (typeof invite === "string" && invite) {
+        const { data: guest } = await supabase
+          .rpc("lookup_guest_by_invite_code", { p_event_id: event.id, p_invite_code: invite })
+          .maybeSingle();
+        invitedGuest = guest;
+      }
 
-  // A guest arriving via their own personal invite link is always
-  // identifiable server-side, regardless of device/browser -- so unlike the
-  // self-service path (no guest_id until a name is typed, handled client-side
-  // via localStorage, see SimpleForm.tsx), this lookup can run right here and
-  // give RsvpSection an authoritative "here's what you already told us"
-  // instead of a blank form on every repeat visit.
-  let existingRsvpResponse:
-    | { attending: boolean; partySize: number; allergies: string | null; comment: string | null; answers: Record<string, string> | null }
-    | undefined;
-  if (invitedGuest?.id) {
-    const { data: priorResponse } = await supabase
-      .rpc("get_existing_rsvp_response", { p_event_id: event.id, p_guest_id: invitedGuest.id })
-      .maybeSingle();
-    if (priorResponse) {
-      existingRsvpResponse = {
-        attending: priorResponse.attending,
-        partySize: priorResponse.party_size,
-        allergies: priorResponse.allergies,
-        comment: priorResponse.comment,
-        answers: (priorResponse.meal_preferences as Record<string, string> | null) ?? null,
-      };
-    }
-  }
+      // A guest arriving via their own personal invite link is always
+      // identifiable server-side, regardless of device/browser -- so unlike
+      // the self-service path (no guest_id until a name is typed, handled
+      // client-side via localStorage, see SimpleForm.tsx), this lookup can
+      // run right here and give RsvpSection an authoritative "here's what
+      // you already told us" instead of a blank form on every repeat visit.
+      let existingRsvpResponse:
+        | { attending: boolean; partySize: number; allergies: string | null; comment: string | null; answers: Record<string, string> | null }
+        | undefined;
+      if (invitedGuest?.id) {
+        const { data: priorResponse } = await supabase
+          .rpc("get_existing_rsvp_response", { p_event_id: event.id, p_guest_id: invitedGuest.id })
+          .maybeSingle();
+        if (priorResponse) {
+          existingRsvpResponse = {
+            attending: priorResponse.attending,
+            partySize: priorResponse.party_size,
+            allergies: priorResponse.allergies,
+            comment: priorResponse.comment,
+            answers: (priorResponse.meal_preferences as Record<string, string> | null) ?? null,
+          };
+        }
+      }
+      return { invitedGuest, existingRsvpResponse };
+    })(),
+    hasGiftSection
+      ? supabase.from("gift_preferences").select("*").eq("event_id", event.id).order("order_index")
+      : Promise.resolve({ data: [] as never[] }),
+    hasGuestbookSection
+      ? supabase.rpc("get_guestbook_messages", { p_event_id: event.id })
+      : Promise.resolve({ data: [] as never[] }),
+  ]);
+  const { invitedGuest, existingRsvpResponse } = guestLookup;
+  const { data: giftPreferences } = giftPreferencesResult;
+  const { data: guestbookRows } = guestbookRowsResult;
 
   const boundSubmitRsvp = submitRsvp.bind(
     null,
@@ -237,14 +265,9 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
 
   const eventDateTime = `${event.event_date}T${event.event_time ?? "00:00:00"}`;
 
-  const hasGiftSection = sections.some((section) => section.type === "gift");
-  const { data: giftPreferences } = hasGiftSection
-    ? await supabase
-        .from("gift_preferences")
-        .select("*")
-        .eq("event_id", event.id)
-        .order("order_index")
-    : { data: [] as never[] };
+  // hasGiftSection/hasGuestbookSection computed earlier now (see the
+  // Promise.all above) -- giftPreferences/guestbookRows come from that same
+  // parallel fetch, just mapped into their render shape here.
   const giftItems = (giftPreferences ?? []).map((item) => ({
     id: item.id,
     title: item.title,
@@ -254,10 +277,6 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
     description: item.description,
   }));
 
-  const hasGuestbookSection = sections.some((section) => section.type === "guestbook");
-  const { data: guestbookRows } = hasGuestbookSection
-    ? await supabase.rpc("get_guestbook_messages", { p_event_id: event.id })
-    : { data: [] as never[] };
   const guestbookMessages = (guestbookRows ?? []).map((row) => ({
     guestName: row.guest_name,
     comment: row.comment,

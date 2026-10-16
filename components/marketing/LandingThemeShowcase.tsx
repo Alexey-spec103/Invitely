@@ -6,30 +6,22 @@ import { ThemeGalleryCard } from "@/components/theme/ThemeGallery";
 import type { Theme } from "@/lib/themes";
 import styles from "./LandingThemeShowcase.module.css";
 
-/** Hand-picked, not the first N in array order -- spread across the newest
- * four categories (marble/cosmic/peony/provence: matched textures, full
- * decorative-asset coverage -- see `lib/themes/index.ts`'s POPULAR_THEME_IDS
- * comment for why those lead over the original launch batch now) so this
- * first-impression teaser reads as "look how rich this is" with real color
- * and decorative variety, rather than accidentally clustering one mood.
- * 9 (not 6) fills the 3-column grid to a clean 3 rows -- `.grid`'s layout
- * is plain `repeat(3, ...)` with no assumption baked in about the count.
- * Opens on a warm, colorful boho pick rather than a dark/moody one (the
- * grid reads left-to-right, top-to-bottom, so the very first card sets the
- * tone before a visitor even reaches the marble/cosmic entries). */
-const SHOWCASE_THEME_IDS = [
-  "boho-marigold-festival",
-  "marble-noir-rust",
-  "peony-blush-burgundy",
-  "provence-lavender-sage",
-  "marble-champagne-teal",
-  "cosmic-plum-gold",
-  "peony-terracotta-cream",
-  "provence-coral-sage",
-  "marble-onyx-sage",
-] as const;
-
 interface LandingThemeShowcaseProps {
+  /** Already filtered to SHOWCASE_THEME_IDS (landingThemeShowcaseIds.ts) by
+   * the caller -- 2026-10-16 performance audit: the caller used to pass all
+   * ~124 themes (Object.values(themes)) as a prop to this "use client"
+   * component, which only ever rendered 9 of them -- every other theme's
+   * full data (colors, fonts, decor refs, every category's metadata) still
+   * had to serialize into the RSC payload and hydrate on the client for
+   * nothing. A large unused hydration payload is a textbook INP/TTI cost
+   * (Clarity RUM flagged landing-page INP as "needs improvement"), not just
+   * wasted bytes. SHOWCASE_THEME_IDS itself lives in a plain (non-"use
+   * client") sibling file so the Server Component caller can import the
+   * real array -- importing a non-component named export from a "use
+   * client" file into a Server Component resolves to a client-reference
+   * proxy, not the actual value (confirmed live: threw
+   * "SHOWCASE_THEME_IDS.map is not a function" at runtime despite
+   * type-checking cleanly). */
   themes: Theme[];
 }
 
@@ -38,12 +30,8 @@ interface LandingThemeShowcaseProps {
  * showcase too, the full filterable catalog only lives behind sign-up.
  * Reuses `ThemeGalleryCard` as-is (same phone mockup, same marketing
  * chrome) so this can never visually drift from the real gallery. */
-export default function LandingThemeShowcase({ themes }: LandingThemeShowcaseProps) {
+export default function LandingThemeShowcase({ themes: showcaseThemes }: LandingThemeShowcaseProps) {
   const router = useRouter();
-  const byId = new Map(themes.map((theme) => [theme.id, theme]));
-  const showcaseThemes = SHOWCASE_THEME_IDS.map((id) => byId.get(id)).filter((theme): theme is Theme =>
-    Boolean(theme)
-  );
 
   return (
     <div className={styles.grid}>

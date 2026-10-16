@@ -28,6 +28,7 @@ import { themes } from "@/lib/themes";
 import { CANVAS_FONTS } from "@/lib/canvas/fonts";
 import { plans } from "@/lib/plans";
 import LandingThemeShowcase from "@/components/marketing/LandingThemeShowcase";
+import { SHOWCASE_THEME_IDS } from "@/components/marketing/landingThemeShowcaseIds";
 import InvitationCardPreview from "@/components/paper/InvitationCardPreview";
 import MobileNav from "@/components/marketing/MobileNav";
 import EventTypesSection from "@/components/marketing/EventTypesSection";
@@ -87,7 +88,11 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const showcaseThemes = Object.values(themes);
+  // 2026-10-16 performance audit: filtered here, before crossing the
+  // Server->Client prop boundary -- see LandingThemeShowcase's own note on
+  // SHOWCASE_THEME_IDS for why passing all ~124 themes to render 9 was an
+  // INP-relevant hydration-payload bug, not just wasted bytes.
+  const showcaseThemes = SHOWCASE_THEME_IDS.map((id) => themes[id]).filter(Boolean);
   const locale = await resolveGuestLocale();
   const dict = getDictionary(locale);
   const languageLabel = dict.languageSwitcher.label;

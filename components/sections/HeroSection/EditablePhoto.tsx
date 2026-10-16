@@ -76,15 +76,22 @@ export default function EditablePhoto({ src, className, alt = "" }: EditablePhot
   const { editable } = useEditableField();
   const responsive = buildResponsiveProps(src);
 
+  // 2026-10-16 performance audit: this is the LCP candidate on both the
+  // marketing landing page's HeroPhoneShowcase mockup and every published
+  // guest site's own Hero -- the single most-visited unauthenticated path
+  // in the app. No loading/fetchPriority hint meant it competed at default
+  // priority against the font-preload/video/JS already on the critical
+  // path (see app/layout.tsx's own 2026-10-16 note). `loading="eager"` is
+  // already the img default, so only fetchPriority is new here.
   if (!editable) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} className={className} {...responsive} />;
+    return <img src={src} alt={alt} className={className} fetchPriority="high" {...responsive} />;
   }
 
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} className={className} data-field="photoUrl" {...responsive} />
+      <img src={src} alt={alt} className={className} data-field="photoUrl" fetchPriority="high" {...responsive} />
       <button
         type="button"
         className={styles.editBadge}

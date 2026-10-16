@@ -36,15 +36,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin", "cyrillic"],
 });
 
+// 2026-10-16 performance audit: every font below this point is a per-theme
+// guest/dashboard font, never used on the marketing landing page itself
+// (that page's own type comes from geistSans/sourceSerif4/alexBrush above,
+// which keep next/font's default preload: true). Left at the default, all
+// 16 of these generated a <link rel="preload"> on EVERY page -- including
+// the landing page and every single event's guest site, each of which only
+// ever renders 1-2 of these 19 families -- competing for critical-path
+// bandwidth against the content those pages actually need first (confirmed
+// live via Clarity RUM: landing-page LCP measured "poor" at 3.2s).
+// `preload: false` doesn't stop a theme from using its font -- the
+// stylesheet's own @font-face still resolves it normally the moment themed
+// text actually needs it (same swap behavior already relied on for the
+// no-cyrillic-subset fallback case above) -- it only stops every OTHER
+// page from eagerly fetching files it was never going to render.
 const cormorantGaramond = Cormorant_Garamond({
   variable: "--font-cormorant-garamond",
   subsets: ["latin", "cyrillic"],
   weight: ["300", "400", "500", "600", "700"],
+  preload: false,
 });
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin", "cyrillic"],
+  preload: false,
 });
 
 const playfairDisplay = Playfair_Display({
@@ -52,6 +68,7 @@ const playfairDisplay = Playfair_Display({
   subsets: ["latin", "cyrillic"],
   style: ["normal", "italic"],
   weight: ["400", "500", "600"],
+  preload: false,
 });
 
 // `subsets` controls which glyphs next/font actually self-hosts -- "latin"
@@ -69,6 +86,7 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   style: ["normal", "italic"],
   weight: ["300", "400", "500", "600"],
+  preload: false,
 });
 
 // A genuine handwriting/script face — used for pull quotes and
@@ -89,6 +107,7 @@ const cinzel = Cinzel({
   variable: "--font-cinzel",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+  preload: false,
 });
 
 // A classic editorial serif with more texture/weight than the calligraphic
@@ -99,6 +118,7 @@ const libreBaskerville = Libre_Baskerville({
   subsets: ["latin"],
   style: ["normal", "italic"],
   weight: ["400", "700"],
+  preload: false,
 });
 
 // A geometric sans distinct from Inter's neutral grotesque -- gives modern/
@@ -108,6 +128,7 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  preload: false,
 });
 
 // A looser, bouncier handwriting face than Alex Brush's formal calligraphy --
@@ -116,6 +137,7 @@ const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600", "700"],
+  preload: false,
 });
 
 // An old-style classical serif, warmer and less sharp than Cormorant
@@ -125,6 +147,7 @@ const ebGaramond = EB_Garamond({
   subsets: ["latin", "cyrillic"],
   style: ["normal", "italic"],
   weight: ["400", "500", "600"],
+  preload: false,
 });
 
 // A thin, delicate monoline script -- distinct from Alex Brush's bold
@@ -135,6 +158,7 @@ const parisienne = Parisienne({
   variable: "--font-parisienne",
   subsets: ["latin"],
   weight: ["400"],
+  preload: false,
 });
 
 // A refined, understated display serif -- quieter and more "old money" than
@@ -144,6 +168,7 @@ const marcellus = Marcellus({
   variable: "--font-marcellus",
   subsets: ["latin"],
   weight: ["400"],
+  preload: false,
 });
 
 // A dramatic, high-contrast Didone -- thick/thin stroke variation reads as
@@ -155,6 +180,7 @@ const bodoniModa = Bodoni_Moda({
   subsets: ["latin"],
   style: ["normal", "italic"],
   weight: ["400", "500", "600"],
+  preload: false,
 });
 
 // An ultra-thin, wide-set display serif -- almost architectural, reads as
@@ -164,6 +190,7 @@ const italiana = Italiana({
   variable: "--font-italiana",
   subsets: ["latin"],
   weight: ["400"],
+  preload: false,
 });
 
 // The base Cormorant family (not Cormorant Garamond) -- taller, more
@@ -175,6 +202,7 @@ const cormorant = Cormorant({
   subsets: ["latin", "cyrillic"],
   style: ["normal", "italic"],
   weight: ["300", "400", "500", "600"],
+  preload: false,
 });
 
 // A thin monoline script -- calmer and more upright than Alex Brush's bold
@@ -184,6 +212,7 @@ const sacramento = Sacramento({
   variable: "--font-sacramento",
   subsets: ["latin"],
   weight: ["400"],
+  preload: false,
 });
 
 // A characterful, slightly quirky serif with warm, humanist curves --
@@ -193,6 +222,7 @@ const gildaDisplay = Gilda_Display({
   variable: "--font-gilda-display",
   subsets: ["latin"],
   weight: ["400"],
+  preload: false,
 });
 
 // The marketing LANDING page's own heading voice (app/page.tsx), distinct
