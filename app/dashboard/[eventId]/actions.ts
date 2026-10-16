@@ -406,12 +406,41 @@ export async function updateWeddingData(
         ? (existingContent.hero as Record<string, unknown>)
         : {};
 
+    // 2026-10-16 critical bug: this form's own City/Address fields never
+    // reached the Map section at all -- confirmed live, a host who filled
+    // in both still saw "Add an address to preview the map" because
+    // content.map.venues[0].address (what MapSection's embed-static variant
+    // actually reads, see mapEmbedSrc) is a fully independent field never
+    // seeded or synced from here, unlike content.hero above. Same mirror
+    // pattern as the Hero fix just above, scoped to venues[0] only (the
+    // "primary" venue this form represents) -- any additional venues a host
+    // added by hand for a second location (ceremony vs. reception) stay
+    // untouched. Geocoding needs a real address, not a venue name alone
+    // (mapEmbedSrc's own comment), so this combines street + city into one
+    // query string rather than leaving them separate.
+    const existingMap =
+      typeof existingContent.map === "object" && existingContent.map !== null
+        ? (existingContent.map as Record<string, unknown>)
+        : {};
+    const existingVenues = Array.isArray(existingMap.venues) ? existingMap.venues : [];
+    const existingPrimaryVenue =
+      typeof existingVenues[0] === "object" && existingVenues[0] !== null
+        ? (existingVenues[0] as Record<string, unknown>)
+        : {};
+    const combinedAddress = [input.venueAddress, input.venueCity].filter((part) => part?.trim()).join(", ");
+    const updatedPrimaryVenue = {
+      ...existingPrimaryVenue,
+      name: input.venueName || (existingPrimaryVenue.name as string | undefined) || "",
+      address: combinedAddress || (existingPrimaryVenue.address as string | undefined) || "",
+    };
+
     const { error: contentError } = await supabase
       .from("site_config")
       .update({
         content: {
           ...existingContent,
           hero: { ...existingHero, names, eventDate: input.eventDate },
+          map: { ...existingMap, venues: [updatedPrimaryVenue, ...existingVenues.slice(1)] },
         } as unknown as Json,
       })
       .eq("event_id", input.eventId);
