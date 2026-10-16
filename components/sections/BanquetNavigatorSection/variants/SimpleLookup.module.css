@@ -129,4 +129,10 @@
   .title {
     font-size: 1.85rem;
   }
+
+  /* 2026-10-16: desktop-text-size fix -- only .title was bumped here, so the
+     actual lookup instructions stayed stuck at their mobile size on desktop. */
+  .description {
+    font-size: 1rem;
+  }
 }

@@ -61,6 +61,12 @@
     --decor-size: 14rem;
     min-height: 28rem;
   }
+
+  /* 2026-10-16: desktop-text-size fix -- only .title was bumped here, so the
+     actual note body stayed stuck at its mobile size on desktop. */
+  .body {
+    font-size: 1rem;
+  }
 }
 
 @media (min-width: 1024px) {

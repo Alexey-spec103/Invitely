@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import type { BackgroundFill } from "@/lib/backgroundFills";
+import type { CSSProperties, ReactNode } from "react";
+import { fillContrastTextColor, type BackgroundFill } from "@/lib/backgroundFills";
 import BackgroundLayer from "./BackgroundLayer";
 
 interface SectionBackgroundProps {
@@ -28,9 +28,27 @@ interface SectionBackgroundProps {
  * `transform` computed style was a no-op) before landing on `isolation` as
  * the fix -- it creates a real stacking context with no other visual
  * side effect, unlike `transform` or `opacity < 1`. */
+/** 2026-10-16 critical contrast bug, reported live by a real customer:
+ * every section variant's CSS reads `color: var(--theme-text)` at its root
+ * (confirmed across all 55 section CSS modules) -- correct for a theme's
+ * own default background, but a host-picked custom `fill` (this component's
+ * whole job) gets layered on top with zero awareness of that text color.
+ * A dark theme's white --theme-text, rendered unchanged over a host-picked
+ * white/marble/cream fill, is white-on-white -- the exact "Gift section
+ * text invisible" report. fillContrastTextColor computes real contrast and
+ * overrides --theme-text locally in this subtree only when it actually
+ * needs correcting (returns null for a low-opacity tint or no fill at all,
+ * leaving the theme's own already-correct value alone). */
 export default function SectionBackground({ fill, children }: SectionBackgroundProps) {
+  const textOverride = fill ? fillContrastTextColor(fill) : null;
   return (
-    <div style={{ position: "relative", isolation: "isolate" }}>
+    <div
+      style={{
+        position: "relative",
+        isolation: "isolate",
+        ...(textOverride ? ({ "--theme-text": textOverride } as CSSProperties) : {}),
+      }}
+    >
       <BackgroundLayer fill={fill} />
       {children}
     </div>

@@ -99,3 +99,62 @@ function blendWithWhite(hex: string, opacityPercent: number): string {
   const blend = (channel: string) => Math.round(parseInt(channel, 16) * alpha + 255 * (1 - alpha));
   return `rgb(${blend(r)}, ${blend(g)}, ${blend(b)})`;
 }
+
+// 2026-10-16 critical contrast bug: every section variant's CSS reads
+// `color: var(--theme-text)` at its root (confirmed across all 55 section
+// CSS modules) -- correct for a theme's own default background, but this
+// per-section custom fill was layered OVER that background with zero
+// awareness of it. A dark theme's (correctly) white --theme-text rendered
+// unchanged over a host-picked white/marble/cream fill is white-on-white --
+// reported live: Gift section text "invisible" after picking a light
+// background on a dark theme. Same WCAG relative-luminance approach already
+// proven for --theme-accent-contrast (ThemeProvider.tsx's own
+// accentContrastColor) -- duplicated in miniature here rather than
+// importing from that "use client" file, since SectionBackground (the only
+// caller) is a plain Server-Component-safe wrapper and must stay one.
+function relativeLuminance(hex: string): number {
+  const match = /^#([0-9a-f]{6})$/i.exec(hex);
+  if (!match) return 1;
+  const channel = (c: number) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  const r = channel(parseInt(match[1].slice(0, 2), 16));
+  const g = channel(parseInt(match[1].slice(2, 4), 16));
+  const b = channel(parseInt(match[1].slice(4, 6), 16));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrastRatio(a: number, b: number): number {
+  const [lighter, darker] = a > b ? [a, b] : [b, a];
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/** Picks whichever of near-black/near-white actually passes better against
+ * a fill's own effective color -- not "is the theme dark or light," since
+ * a theme that's already internally consistent needs no help; only a
+ * section wearing a *custom* fill that clashes with its theme's text color
+ * does. Returns null (no override) below 50% opacity, where the theme's
+ * own background still visually dominates what a viewer perceives, so
+ * overriding its already-correct text color would do more harm than good.
+ * Gradients/textures pull every hex literal out of their CSS and average
+ * the luminance -- robust to the catalog changing without this needing a
+ * parallel hand-maintained "representative color" list. */
+export function fillContrastTextColor(fill: BackgroundFill): string | null {
+  const opacity = fill.opacity ?? 100;
+  if (opacity < 50) return null;
+
+  let hexColors: string[];
+  if (fill.kind === "color") {
+    hexColors = [fill.value];
+  } else {
+    const css = backgroundFillCss(fill);
+    hexColors = css ? css.match(/#[0-9a-fA-F]{6}/g) ?? [] : [];
+  }
+  if (hexColors.length === 0) return null;
+
+  const avgLuminance = hexColors.reduce((sum, hex) => sum + relativeLuminance(hex), 0) / hexColors.length;
+  const blackContrast = contrastRatio(avgLuminance, 0);
+  const whiteContrast = contrastRatio(avgLuminance, 1);
+  return whiteContrast >= blackContrast ? "#ffffff" : "#1a1a1a";
+}

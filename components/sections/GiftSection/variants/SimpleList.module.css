@@ -158,6 +158,16 @@
     --decor-size: 14rem;
     min-height: 40rem;
   }
+
+  /* 2026-10-16: desktop-text-size fix -- only .title was bumped here, so the
+     actual readable gift info stayed stuck at its mobile size on desktop. */
+  .description {
+    font-size: 1rem;
+  }
+
+  .cardDescription {
+    font-size: 0.95rem;
+  }
 }
 
 @media (min-width: 1024px) {

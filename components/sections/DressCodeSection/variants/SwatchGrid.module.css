@@ -119,6 +119,12 @@
     font-size: 2.4rem;
   }
 
+  /* 2026-10-16: desktop-text-size fix -- the eyebrow/title here were already
+     bumped, but the actual readable dress-code description was left behind. */
+  .description {
+    font-size: 1rem;
+  }
+
   .grid {
     grid-template-columns: repeat(auto-fit, 7rem);
     max-width: 40rem;

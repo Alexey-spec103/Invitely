@@ -81,4 +81,10 @@
   .card {
     flex-basis: 18rem;
   }
+
+  /* 2026-10-16: desktop-text-size fix -- only .title was bumped here, so a
+     guest's actual message stayed stuck at its mobile size on desktop. */
+  .comment {
+    font-size: 1rem;
+  }
 }
