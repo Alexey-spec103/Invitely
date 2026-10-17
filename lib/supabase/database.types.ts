@@ -67,6 +67,7 @@ export type Database = {
           site_password_unlock_token: string | null
           slug: string
           status: string | null
+          stripe_payment_intent_id: string | null
           subtitle_names: string[] | null
           supported_locales: string[] | null
           title: string
@@ -97,6 +98,7 @@ export type Database = {
           site_password_unlock_token?: string | null
           slug: string
           status?: string | null
+          stripe_payment_intent_id?: string | null
           subtitle_names?: string[] | null
           supported_locales?: string[] | null
           title: string
@@ -127,6 +129,7 @@ export type Database = {
           site_password_unlock_token?: string | null
           slug?: string
           status?: string | null
+          stripe_payment_intent_id?: string | null
           subtitle_names?: string[] | null
           supported_locales?: string[] | null
           title?: string

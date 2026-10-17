@@ -3,7 +3,69 @@ import Stripe from "stripe";
 import * as Sentry from "@sentry/nextjs";
 import { getStripeClient } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase/service";
-import { plans } from "@/lib/plans";
+import { plans, DEFAULT_PLAN_ID } from "@/lib/plans";
+
+type SupabaseServiceClient = ReturnType<typeof createServiceClient>;
+
+function paymentIntentIdOf(value: string | Stripe.PaymentIntent | null | undefined): string | null {
+  if (!value) return null;
+  return typeof value === "string" ? value : value.id;
+}
+
+/** The one place a refund or lost dispute reverses a paid upgrade --
+ * matches on stripe_payment_intent_id (set below, when checkout completes)
+ * rather than eventId, since neither the charge nor dispute payload carries
+ * our own metadata (that only lives on the Checkout Session). Downgrades to
+ * Free rather than deleting anything -- the event and its content stay
+ * intact, same as any other plan change, just gated back down. */
+async function downgradeEventByPaymentIntent(
+  supabase: SupabaseServiceClient,
+  paymentIntentId: string,
+  reason: string,
+  stripeEventId: string
+) {
+  const { data: event, error: lookupError } = await supabase
+    .from("events")
+    .select("id, plan_id")
+    .eq("stripe_payment_intent_id", paymentIntentId)
+    .maybeSingle();
+
+  if (lookupError) {
+    console.error("Stripe webhook: failed to look up event for refund/dispute", lookupError);
+    Sentry.captureException(lookupError, { extra: { paymentIntentId, reason, stripeEventId } });
+    return NextResponse.json({ error: "Lookup failed" }, { status: 500 });
+  }
+
+  // No match is expected, not an error: the same payment_intent_id gets
+  // cleared the first time this fires, so a duplicate webhook delivery (or
+  // a refund on a since-upgraded-again event) naturally no-ops here.
+  if (!event) {
+    return NextResponse.json({ received: true });
+  }
+
+  const { error: updateError } = await supabase
+    .from("events")
+    .update({ plan_id: DEFAULT_PLAN_ID, stripe_payment_intent_id: null })
+    .eq("id", event.id);
+
+  if (updateError) {
+    console.error("Stripe webhook: failed to downgrade plan after refund/dispute", updateError);
+    Sentry.captureException(updateError, {
+      extra: { eventId: event.id, paymentIntentId, reason, stripeEventId },
+    });
+    return NextResponse.json({ error: "Failed to downgrade plan" }, { status: 500 });
+  }
+
+  // Always worth knowing about, even though nothing failed -- money came
+  // back out after a plan was unlocked, which is exactly the kind of thing
+  // that should be visible somewhere other than Vercel's raw logs.
+  Sentry.captureMessage(`Stripe: downgraded event ${event.id} to Free (${reason})`, {
+    level: "info",
+    extra: { eventId: event.id, previousPlanId: event.plan_id, paymentIntentId, stripeEventId },
+  });
+
+  return NextResponse.json({ received: true });
+}
 
 /** Stripe calls this server-to-server with no cookies/session, so the
  * request body must be read raw (unparsed) for `stripe.webhooks.
@@ -54,7 +116,7 @@ export async function POST(request: NextRequest) {
       const supabase = createServiceClient();
       const { error } = await supabase
         .from("events")
-        .update({ plan_id: planId })
+        .update({ plan_id: planId, stripe_payment_intent_id: paymentIntentIdOf(session.payment_intent) })
         .eq("id", eventId);
 
       if (error) {
@@ -73,6 +135,50 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Failed to apply plan" }, { status: 500 });
       }
     }
+    return NextResponse.json({ received: true });
+  }
+
+  // Stripe sets Charge.refunded = true only once the charge is refunded in
+  // full (a partial refund -- e.g. a goodwill gesture -- leaves it false
+  // and shouldn't revoke anything the host already paid in full for).
+  if (event.type === "charge.refunded") {
+    const charge = event.data.object as Stripe.Charge;
+    if (!charge.refunded) {
+      return NextResponse.json({ received: true });
+    }
+    const paymentIntentId = paymentIntentIdOf(charge.payment_intent);
+    if (!paymentIntentId) {
+      return NextResponse.json({ received: true });
+    }
+    return downgradeEventByPaymentIntent(createServiceClient(), paymentIntentId, "full refund", event.id);
+  }
+
+  // A dispute being opened doesn't mean the merchant loses it -- downgrading
+  // immediately would punish a host mid-dispute over a charge that might
+  // still be ruled in our favor. This is a visibility alert only (so a
+  // human can see it and respond to Stripe), not an automatic downgrade.
+  if (event.type === "charge.dispute.created") {
+    const dispute = event.data.object as Stripe.Dispute;
+    Sentry.captureMessage(`Stripe: dispute opened on charge ${dispute.charge}`, {
+      level: "warning",
+      extra: { disputeId: dispute.id, paymentIntentId: paymentIntentIdOf(dispute.payment_intent), stripeEventId: event.id },
+    });
+    return NextResponse.json({ received: true });
+  }
+
+  // The definitive outcome: "lost" means Stripe has already debited the
+  // funds back to the cardholder's bank, same as a refund -- "won" (or any
+  // other closed status) means nothing changes, the charge stands.
+  if (event.type === "charge.dispute.closed") {
+    const dispute = event.data.object as Stripe.Dispute;
+    if (dispute.status !== "lost") {
+      return NextResponse.json({ received: true });
+    }
+    const paymentIntentId = paymentIntentIdOf(dispute.payment_intent);
+    if (!paymentIntentId) {
+      return NextResponse.json({ received: true });
+    }
+    return downgradeEventByPaymentIntent(createServiceClient(), paymentIntentId, "lost dispute", event.id);
   }
 
   return NextResponse.json({ received: true });
