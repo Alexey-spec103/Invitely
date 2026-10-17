@@ -610,6 +610,12 @@ export function ThemeGalleryCard({
             </div>
           )}
 
+          {PHOTO_PROMINENT_HERO_VARIANTS.has(heroVariant) && (
+            <span className={styles.photoBadge} title="This style is built around a photo - add yours for the full look">
+              📷 Built for a photo
+            </span>
+          )}
+
           <div className={styles.phoneMockup}>
             <span className={styles.phoneNotch} aria-hidden="true" />
             <div className={styles.phoneChrome} aria-hidden="true">
@@ -674,9 +680,6 @@ export function ThemeGalleryCard({
         </div>
       )}
 
-      {PHOTO_PROMINENT_HERO_VARIANTS.has(heroVariant) && (
-        <p className={styles.customizeCaption}>📷 This style is built around a photo - add yours for the full look</p>
-      )}
       <p className={styles.customizeCaption}>Everything can be customized further in the constructor</p>
 
       <div className={styles.cardFooter}>

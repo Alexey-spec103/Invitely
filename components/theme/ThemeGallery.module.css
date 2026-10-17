@@ -327,7 +327,20 @@
 }
 
 .card {
-  display: block;
+  /* flex column, not block (2026-10-17 fix): photo-prominent themes used to
+     add an extra caption line ("This style is built around a photo...")
+     between the tag row and the footer -- harmless on its own, but in a
+     grid row sitting next to a card without that line, it pushed this
+     card's own name/features down below where the neighboring card's same
+     text landed, reading as misaligned ("смещаются надписи", live
+     feedback). The caption moved to a badge on the mockup itself (see
+     .photoBadge below) so this no longer happens for that specific case,
+     but pinning the footer to the bottom here is the general fix -- any
+     future variable-height content above it (a longer tag row wrapping to
+     two lines, etc.) still can't knock the name/features out of alignment
+     across a row. */
+  display: flex;
+  flex-direction: column;
   width: 100%;
   overflow: hidden;
   border-radius: 12px;
@@ -769,6 +782,38 @@
   border: 1px solid color-mix(in srgb, var(--theme-text) 25%, transparent);
 }
 
+/* 2026-10-17 fix: was a plain low-opacity caption line below the mockup
+   ("This style is built around a photo..."), easy to miss and -- the real
+   bug -- a variable-height block that pushed this card's name/features
+   down relative to a neighboring card without it, misaligning the row
+   (see .card's own comment). A badge directly on the mockup instead: more
+   noticeable (live feedback asked for "ярче" -- brighter/clearer), and
+   since the mockup's own height is fixed (aspect-ratio, not content-
+   driven), it can never again shift anything below it. Bottom-left of the
+   whole duo mockup -- lands over the laptop panel, clear of
+   .favoriteHeart/.qrReveal (top corners) and .phoneTimer (scoped to the
+   phone panel alone). Solid accent fill, not the muted white/dark overlays
+   used for the hover-only badges, since this one is always visible and
+   needs to read clearly against every theme's own background color. */
+.photoBadge {
+  position: absolute;
+  left: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: var(--dash-accent-text, #c2410c);
+  color: #fff;
+  font-family: var(--dash-font-body, inherit);
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
 .customizeCaption {
   font-family: var(--theme-font-body);
   color: var(--theme-text);
@@ -780,6 +825,10 @@
 }
 
 .cardFooter {
+  /* Pins the name/features block to the card's bottom edge regardless of
+     how much variable-height content (tags, captions) sits above it in
+     this same flex column -- see .card's own comment. */
+  margin-top: auto;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   background: #fff;
   padding: 0.65rem 0.9rem;
