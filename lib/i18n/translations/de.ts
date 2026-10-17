@@ -186,7 +186,7 @@ export const de: Dictionary = {
       subtext: "Alles unten passiert live, direkt in deinem Browser - kein Download, nichts zu lernen.",
       steps: [
         {
-          title: "Gestalte dein Design",
+          title: "Wähle deinen Stil",
           bullets: [
             "Wähle aus 100 Designer-Themes oder starte mit einer leeren Fläche",
             "Jedes Theme ist bereits vollständig farblich abgestimmt, sofort einsatzbereit",
@@ -194,27 +194,27 @@ export const de: Dictionary = {
           ],
         },
         {
-          title: "Bearbeite jeden Text, wie du willst",
+          title: "Gib die Details deines Events ein",
           bullets: [
-            "Wähle aus 149+ Schriftarten, jede in ihrer eigenen Schrift vorschauend",
-            "Ändere Farbe, Größe, Abstand und Ausrichtung",
-            "Klicke auf beliebigen Text auf der Leinwand, um ihn sofort zu bearbeiten",
+            "Namen, Datum, Ort - einmal eingeben",
+            "Überträgt sich auf deine Website, Einladungen und Bankett-Karten",
+            "Jederzeit bearbeitbar, vor oder nach der Veröffentlichung",
           ],
         },
         {
-          title: "Füge Fotos, Video und mehr hinzu",
-          bullets: [
-            "Lade deine eigenen Fotos überall im Design hoch",
-            "Füge einen Videoclip hinzu, um eure Geschichte lebendig zu machen",
-            "Platziere einen QR-Code zu deiner Website oder zur Einladung eines Gastes",
-          ],
-        },
-        {
-          title: "Module ein- und ausschalten",
+          title: "Schalte die Module ein, die du brauchst",
           bullets: [
             "Countdown, Zusagen, Geschenkwünsche, Dresscode und mehr",
             "Jedes Modul hat seinen eigenen Ein-/Aus-Schalter",
             "Zeige Gästen nur, was für dein Event relevant ist",
+          ],
+        },
+        {
+          title: "Hol dir deinen Link und deine PDF-Unterlagen",
+          bullets: [
+            "Ein Link, sofort aktiv - teile ihn dort, wo deine Gäste Nachrichten wirklich lesen",
+            "Druckfertige PDF-Einladungen, Umschläge und Bankett-Karten",
+            "Aktualisiere später alles - jeder sieht die neueste Version",
           ],
         },
       ],

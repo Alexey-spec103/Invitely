@@ -196,7 +196,7 @@ export const pl: Dictionary = {
       subtext: "Wszystko poniżej dzieje się na żywo, prosto w twojej przeglądarce - bez pobierania, bez uczenia się czegokolwiek.",
       steps: [
         {
-          title: "Dostosuj swój projekt",
+          title: "Wybierz swój styl",
           bullets: [
             "Wybierz spośród 100 motywów od projektantów lub zacznij od pustej kartki",
             "Każdy motyw jest już w pełni dopasowany kolorystycznie, gotowy do użycia",
@@ -204,27 +204,27 @@ export const pl: Dictionary = {
           ],
         },
         {
-          title: "Edytuj dowolny tekst, jak chcesz",
+          title: "Podaj dane swojego wydarzenia",
           bullets: [
-            "Wybierz spośród 149+ czcionek, każda pokazana w podglądzie we własnym kroju",
-            "Zmień kolor, rozmiar, odstępy i wyrównanie",
-            "Kliknij dowolny tekst na kartce, by edytować go od razu",
+            "Imiona, data, miejsce - wpisz raz",
+            "Przenosi się na twoją stronę, zaproszenia i karty bankietowe",
+            "Edytuj to w dowolnym momencie, przed publikacją lub po niej",
           ],
         },
         {
-          title: "Dodaj zdjęcia, wideo i więcej",
-          bullets: [
-            "Prześlij własne zdjęcia w dowolne miejsce projektu",
-            "Dodaj klip wideo, by ożywić waszą historię",
-            "Wstaw kod QR prowadzący do twojej strony lub zaproszenia konkretnego gościa",
-          ],
-        },
-        {
-          title: "Włączaj i wyłączaj moduły",
+          title: "Włącz moduły, których potrzebujesz",
           bullets: [
             "Odliczanie, RSVP, życzenia prezentowe, dress code i więcej",
             "Każdy ma własny przełącznik",
             "Pokazuj gościom tylko to, co dotyczy twojego wydarzenia",
+          ],
+        },
+        {
+          title: "Odbierz swój link i papiery PDF",
+          bullets: [
+            "Jeden link, aktywny od razu - udostępnij go tam, gdzie twoi goście naprawdę sprawdzają wiadomości",
+            "Gotowe do druku zaproszenia PDF, koperty i karty bankietowe",
+            "Aktualizuj cokolwiek później - wszyscy widzą najnowszą wersję",
           ],
         },
       ],

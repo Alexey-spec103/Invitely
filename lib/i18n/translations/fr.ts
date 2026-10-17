@@ -186,7 +186,7 @@ export const fr: Dictionary = {
       subtext: "Tout ce qui suit se passe en direct, dans votre navigateur - aucun téléchargement, rien à apprendre.",
       steps: [
         {
-          title: "Personnalisez votre design",
+          title: "Choisissez votre style",
           bullets: [
             "Choisissez parmi 100 thèmes de designer, ou partez d'une toile vierge",
             "Chaque thème est déjà entièrement harmonisé en couleurs, prêt à l'emploi",
@@ -194,27 +194,27 @@ export const fr: Dictionary = {
           ],
         },
         {
-          title: "Modifiez tout le texte, à votre façon",
+          title: "Renseignez les détails de votre événement",
           bullets: [
-            "Choisissez parmi 149+ polices, chacune prévisualisée dans sa propre typographie",
-            "Changez la couleur, la taille, l'espacement et l'alignement",
-            "Cliquez sur n'importe quel texte sur la toile pour le modifier instantanément",
+            "Noms, date, lieu - à remplir une seule fois",
+            "Se répercute sur votre site, vos invitations et vos cartes de banquet",
+            "Modifiez-le à tout moment, avant ou après publication",
           ],
         },
         {
-          title: "Ajoutez photos, vidéo, et plus",
-          bullets: [
-            "Téléchargez vos propres photos n'importe où sur le design",
-            "Ajoutez un extrait vidéo pour donner vie à votre histoire",
-            "Ajoutez un QR code menant à votre site, ou à l'invitation d'un invité",
-          ],
-        },
-        {
-          title: "Activez et désactivez les modules",
+          title: "Activez les modules dont vous avez besoin",
           bullets: [
             "Compte à rebours, réponses, liste de cadeaux, code vestimentaire, et plus",
             "Chaque module a son propre interrupteur",
             "Montrez à vos invités uniquement ce qui concerne votre événement",
+          ],
+        },
+        {
+          title: "Récupérez votre lien et vos papiers PDF",
+          bullets: [
+            "Un lien, actif instantanément - partagez-le comme vos invités consultent réellement leurs messages",
+            "Invitations, enveloppes et cartes de banquet en PDF prêtes à imprimer",
+            "Mettez à jour n'importe quoi plus tard - chacun voit la dernière version",
           ],
         },
       ],

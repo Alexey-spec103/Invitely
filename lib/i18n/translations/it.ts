@@ -186,7 +186,7 @@ export const it: Dictionary = {
       subtext: "Tutto quello che segue avviene dal vivo, direttamente nel browser - nessun download, niente da imparare.",
       steps: [
         {
-          title: "Personalizza il tuo design",
+          title: "Scegli il tuo stile",
           bullets: [
             "Scegli tra 100 temi di design, oppure parti da una tela vuota",
             "Ogni tema è già completamente coordinato nei colori, pronto all'uso",
@@ -194,27 +194,27 @@ export const it: Dictionary = {
           ],
         },
         {
-          title: "Modifica qualsiasi testo, come vuoi",
+          title: "Inserisci i dettagli del tuo evento",
           bullets: [
-            "Scegli tra 149+ font, ciascuno mostrato in anteprima nel proprio carattere",
-            "Cambia colore, dimensione, spaziatura e allineamento",
-            "Clicca su qualsiasi testo nella tela per modificarlo all'istante",
+            "Nomi, data, location - compilalo una sola volta",
+            "Si riporta sul tuo sito, sugli inviti e sulle carte da banchetto",
+            "Modificalo quando vuoi, prima o dopo la pubblicazione",
           ],
         },
         {
-          title: "Aggiungi foto, video e altro",
-          bullets: [
-            "Carica le tue foto ovunque nel design",
-            "Aggiungi un video per dare vita alla vostra storia",
-            "Inserisci un codice QR che rimanda al tuo sito, o all'invito di un ospite",
-          ],
-        },
-        {
-          title: "Attiva e disattiva i moduli",
+          title: "Attiva i moduli che ti servono",
           bullets: [
             "Conto alla rovescia, conferme, lista regali, dress code e altro",
             "Ognuno ha il proprio interruttore",
             "Mostra agli ospiti solo ciò che è rilevante per il tuo evento",
+          ],
+        },
+        {
+          title: "Ottieni il tuo link e i tuoi PDF da stampare",
+          bullets: [
+            "Un link, attivo all'istante - condividilo come i tuoi ospiti controllano davvero i messaggi",
+            "Inviti, buste e carte da banchetto in PDF pronti per la stampa",
+            "Aggiorna qualsiasi cosa più tardi - tutti vedono l'ultima versione",
           ],
         },
       ],

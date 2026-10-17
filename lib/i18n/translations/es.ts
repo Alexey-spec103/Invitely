@@ -186,7 +186,7 @@ export const es: Dictionary = {
       subtext: "Todo lo de abajo ocurre en vivo, directamente en tu navegador - sin descargas, nada que aprender.",
       steps: [
         {
-          title: "Personaliza tu diseño",
+          title: "Elige tu estilo",
           bullets: [
             "Elige entre 100 temas de diseñador, o empieza desde un lienzo en blanco",
             "Cada tema viene totalmente coordinado en color, listo para usar",
@@ -194,27 +194,27 @@ export const es: Dictionary = {
           ],
         },
         {
-          title: "Edita cualquier texto, a tu manera",
+          title: "Añade los datos de tu evento",
           bullets: [
-            "Elige entre 149+ fuentes, cada una previsualizada en su propia tipografía",
-            "Cambia color, tamaño, espaciado y alineación",
-            "Haz clic en cualquier texto del lienzo para editarlo al instante",
+            "Nombres, fecha, lugar - rellénalo una sola vez",
+            "Se traslada a tu sitio, invitaciones y tarjetas de banquete",
+            "Edítalo cuando quieras, antes o después de publicar",
           ],
         },
         {
-          title: "Añade fotos, vídeo y más",
-          bullets: [
-            "Sube tus propias fotos a cualquier parte del diseño",
-            "Añade un clip de vídeo para dar vida a vuestra historia",
-            "Coloca un código QR que enlace a tu sitio, o a la invitación de un invitado",
-          ],
-        },
-        {
-          title: "Activa y desactiva módulos",
+          title: "Activa los módulos que necesites",
           bullets: [
             "Cuenta atrás, confirmaciones, lista de regalos, código de vestimenta y más",
             "Cada uno tiene su propio interruptor",
             "Muestra a los invitados solo lo relevante para tu evento",
+          ],
+        },
+        {
+          title: "Consigue tu enlace y tus papeles en PDF",
+          bullets: [
+            "Un enlace, activo al instante - compártelo como tus invitados realmente revisen sus mensajes",
+            "Invitaciones, sobres y tarjetas de banquete en PDF listos para imprimir",
+            "Actualiza lo que quieras más tarde - todos ven la última versión",
           ],
         },
       ],
