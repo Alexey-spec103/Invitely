@@ -1,5 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { createServiceClient } from "@/lib/supabase/service";
 import { sendEmail, escapeHtml } from "@/lib/email";
 import { getDictionary } from "@/lib/i18n/dictionary";
@@ -153,7 +154,14 @@ export async function GET(request: NextRequest) {
         .eq("id", event.id);
       eventsEmailed += 1;
     } catch (emailError) {
+      // console.error alone never reaches Sentry here -- same gap as the
+      // instant RSVP-notification catch blocks in app/e/[slug]/actions.ts.
+      // Left silent, last_digest_sent_at correctly stays unmoved (so
+      // tomorrow's run retries these responses), but nobody would ever
+      // know this event's digest has been silently failing in the
+      // meantime without this.
       console.error(`rsvp-digest: send failed for event ${event.id}`, emailError);
+      Sentry.captureException(emailError, { extra: { eventId: event.id } });
     }
   }
 

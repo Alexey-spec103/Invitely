@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies, headers } from "next/headers";
+import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@/lib/supabase/server";
 import type { RsvpFormInput } from "@/components/sections/RsvpSection";
 import type { BanquetTableLookupResult } from "@/components/sections/BanquetNavigatorSection";
@@ -177,7 +178,14 @@ export async function submitRsvp(
         });
       }
     } catch (emailError) {
+      // console.error alone never reaches Sentry (sentry.server.config.ts
+      // only auto-captures uncaught exceptions, not a handled catch branch
+      // like this one) -- without this, a guest never finding out their
+      // RSVP went through was silent beyond Vercel's own logs. Still
+      // best-effort: the RSVP itself already succeeded above, this is only
+      // the confirmation email.
       console.error("submitRsvp confirmation email failed", emailError);
+      Sentry.captureException(emailError, { extra: { eventId, guestId: resolvedGuestId } });
     }
   }
 
@@ -264,7 +272,13 @@ export async function submitRsvp(
       });
     }
   } catch (emailError) {
+    // Same gap as the guest-confirmation catch above: this is the one
+    // email a host actually relies on to know someone RSVP'd without
+    // opening the dashboard -- a silent failure here defeats the whole
+    // point of the feature, so it needs to reach Sentry, not just Vercel's
+    // raw logs.
     console.error("submitRsvp host notification email failed", emailError);
+    Sentry.captureException(emailError, { extra: { eventId } });
   }
 
   return { ok: true };
