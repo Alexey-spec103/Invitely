@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@/lib/supabase/server";
 import { parseGuestLines } from "./parseGuestLines";
 import { sendEmail, escapeHtml } from "@/lib/email";
@@ -198,11 +199,25 @@ export async function sendGuestInvitationEmail(
   // defense-in-depth at near-zero cost.
   const safeFullName = escapeHtml(guest.full_name);
   const safeEventTitle = escapeHtml(event.title);
-  await sendEmail({
-    to: guest.email,
-    subject: t.guestInvitation.subject(event.title),
-    html: `<p>${t.common.greeting(safeFullName)}</p><p>${t.guestInvitation.invitedTo(safeEventTitle)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
-  });
+  try {
+    await sendEmail({
+      to: guest.email,
+      subject: t.guestInvitation.subject(event.title),
+      html: `<p>${t.common.greeting(safeFullName)}</p><p>${t.guestInvitation.invitedTo(safeEventTitle)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
+    });
+  } catch (emailError) {
+    // Unlike every other failure branch above, a bare throw here used to
+    // cross the server-action boundary uncaught -- Next.js redacts a
+    // thrown error's real message in production ("...omitted in
+    // production builds..."), so the host saw a useless generic error
+    // instead of this function's own clean, actionable message pattern.
+    // Also wires it to Sentry, same gap already fixed for the other 4
+    // transactional-email send paths this session (Stripe webhook, RSVP
+    // confirmation/host-notification, digest).
+    console.error("sendGuestInvitationEmail failed", emailError);
+    Sentry.captureException(emailError, { extra: { guestId, eventId: guest.event_id } });
+    return { ok: false, message: "Failed to send invitation email" };
+  }
 
   await recordInvitationSent(guestId, "email");
   return { ok: true };
@@ -253,11 +268,20 @@ export async function sendGuestReminderEmail(
   const t = getDictionary(resolveEmailLocale(event.default_locale)).email;
   const safeFullName = escapeHtml(guest.full_name);
   const safeEventTitle = escapeHtml(event.title);
-  await sendEmail({
-    to: guest.email,
-    subject: t.guestReminder.subject(event.title),
-    html: `<p>${t.common.greeting(safeFullName)}</p><p>${t.guestReminder.reminderText(safeEventTitle)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
-  });
+  try {
+    await sendEmail({
+      to: guest.email,
+      subject: t.guestReminder.subject(event.title),
+      html: `<p>${t.common.greeting(safeFullName)}</p><p>${t.guestReminder.reminderText(safeEventTitle)}</p><p><a href="${rsvpUrl}">${t.common.rsvpLinkLabel}</a></p>`,
+    });
+  } catch (emailError) {
+    // Same gap as sendGuestInvitationEmail above: an uncaught throw here
+    // used to cross the server-action boundary and lose its real message
+    // in production, with no Sentry visibility either.
+    console.error("sendGuestReminderEmail failed", emailError);
+    Sentry.captureException(emailError, { extra: { guestId, eventId: guest.event_id } });
+    return { ok: false, message: "Failed to send reminder email" };
+  }
 
   return { ok: true };
 }
