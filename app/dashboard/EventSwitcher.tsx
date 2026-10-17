@@ -14,16 +14,15 @@ interface EventSwitcherProps {
   currentEventId: string;
 }
 
-const NEW_EVENT_VALUE = "__new__";
-
+// 2026-10-17: "+ New event" moved out to its own NewEventButton, rendered
+// as a separate, on-brand pill next to this -- see that file's own comment.
+// This select now does exactly one thing (switch between existing events),
+// which also means its own options list never needs a special-cased
+// sentinel value mixed in with real event ids.
 export default function EventSwitcher({ events, currentEventId }: EventSwitcherProps) {
   const router = useRouter();
 
   const handleChange = (value: string) => {
-    if (value === NEW_EVENT_VALUE) {
-      router.push("/onboarding");
-      return;
-    }
     router.push(`/dashboard/${value}/site`);
   };
 
@@ -39,7 +38,6 @@ export default function EventSwitcher({ events, currentEventId }: EventSwitcherP
           {event.title} ({event.status === "published" ? "live" : "draft"})
         </option>
       ))}
-      <option value={NEW_EVENT_VALUE}>+ New event</option>
     </select>
   );
 }

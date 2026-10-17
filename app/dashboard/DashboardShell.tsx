@@ -8,6 +8,7 @@ import { ExternalLink, Copy, Check } from "lucide-react";
 import DashboardNav from "./DashboardNav";
 import PublishToggle from "./PublishToggle";
 import EventSwitcher from "./EventSwitcher";
+import NewEventButton from "./NewEventButton";
 import UserMenu from "./UserMenu";
 import PlanBadge from "./PlanBadge";
 import FunnelNav from "./FunnelNav";
@@ -178,6 +179,7 @@ export default function DashboardShell({
           </Link>
           <span className="hidden h-4 w-px bg-[var(--dash-border)] sm:block" />
           <EventSwitcher events={events} currentEventId={navEventId} />
+          <NewEventButton />
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {publish && <CopyLinkButton slug={publish.slug} customDomain={publish.customDomain} />}

@@ -75,7 +75,14 @@ const STEP_FIELDS: Record<StepKey, (keyof OnboardingFormValues)[]> = {
 // lost everything, including an uploaded photo and a theme pick made
 // after browsing up to 124 options. Same localStorage-draft shape this
 // session's FeatureCarousel already uses for its own dismiss-persistence.
-const ONBOARDING_DRAFT_KEY = "invimbo:onboardingDraft:v1";
+// Exported so a deliberate "start a new event" entry point (the dashboard's
+// own NewEventButton) can clear this before navigating here -- see that
+// file's own comment for why: this restore mechanism is correct for a
+// visitor genuinely resuming an abandoned session, but indistinguishable
+// from that case otherwise, so an existing host clicking "+ New event" was
+// silently resuming their *first* event's old draft (including its already-
+// chosen eventType) instead of seeing step 1's event-type picker at all.
+export const ONBOARDING_DRAFT_KEY = "invimbo:onboardingDraft:v1";
 // A months-old abandoned draft resurfacing without context would read as
 // a bug, not a feature -- expiring it keeps "resume where I left off"
 // limited to genuinely recent interruptions.
