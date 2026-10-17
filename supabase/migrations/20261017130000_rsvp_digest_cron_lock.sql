@@ -65,7 +65,13 @@ begin
 end;
 $$;
 
-revoke execute on function public.try_acquire_cron_lock(text, integer) from public;
-revoke execute on function public.release_cron_lock(text) from public;
+-- Revoking from PUBLIC alone isn't enough here -- verified live that anon
+-- could still call this afterward, meaning this project's anon/authenticated
+-- roles carry their own direct EXECUTE grant on public-schema functions
+-- (almost certainly via an ALTER DEFAULT PRIVILEGES set up once at project
+-- provisioning, separate from the PUBLIC pseudo-role), not merely inherited
+-- through PUBLIC. Revoke from both roles by name to actually close it.
+revoke execute on function public.try_acquire_cron_lock(text, integer) from public, anon, authenticated;
+revoke execute on function public.release_cron_lock(text) from public, anon, authenticated;
 
 notify pgrst, 'reload schema';
