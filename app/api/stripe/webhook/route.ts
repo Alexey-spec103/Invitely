@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import * as Sentry from "@sentry/nextjs";
 import { getStripeClient } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase/service";
 import { plans } from "@/lib/plans";
@@ -40,7 +41,16 @@ export async function POST(request: NextRequest) {
     // somehow); skip rather than guess. Re-validate planId against the
     // real plan table rather than trusting the string from Stripe's
     // payload directly, same reasoning as any other external input.
-    if (eventId && planId && plans[planId]) {
+    //
+    // payment_status check is defense-in-depth: createCheckoutSession never
+    // sets payment_method_types (defaults to card-only, which always
+    // settles synchronously), so in practice this event never fires with
+    // anything but "paid" today. But `checkout.session.completed` also
+    // fires for async payment methods (e.g. SEPA debit) while still
+    // "unpaid" -- if an async method is ever enabled from the Stripe
+    // Dashboard without a matching code change here, this is what stops a
+    // plan from unlocking before money has actually arrived.
+    if (eventId && planId && plans[planId] && session.payment_status === "paid") {
       const supabase = createServiceClient();
       const { error } = await supabase
         .from("events")
@@ -51,8 +61,15 @@ export async function POST(request: NextRequest) {
         // Log and 500 so Stripe retries -- silently dropping a paid
         // upgrade because of a transient DB error is worse than a
         // duplicate retry (the update is idempotent: setting the same
-        // plan_id twice is harmless).
+        // plan_id twice is harmless). console.error alone never reaches
+        // Sentry here -- sentry.server.config.ts inits with no console
+        // integration, so only uncaught throws are auto-captured, not a
+        // handled error branch like this one -- without this, a failed
+        // paid upgrade was silent beyond Vercel's own logs.
         console.error("Stripe webhook: failed to upgrade plan", error);
+        Sentry.captureException(error, {
+          extra: { eventId, planId, stripeEventId: event.id },
+        });
         return NextResponse.json({ error: "Failed to apply plan" }, { status: 500 });
       }
     }
