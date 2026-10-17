@@ -217,6 +217,44 @@
   transform: translateY(-50%);
 }
 
+/* 2026-10-17 design pass: a warm panel (not just bigger type) is what
+   actually reads as "this is the special, curated moment" rather than a
+   slightly-larger filter label -- same soft-tint technique as .occasionChip
+   above and .filterActive's own active-state background, reusing the one
+   accent color this product already leans on everywhere instead of
+   introducing a second palette. */
+.popularHeading {
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--dash-accent, #ff6b45) 10%, white),
+    color-mix(in srgb, var(--dash-accent, #ff6b45) 4%, white)
+  );
+}
+
+.popularTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-family: var(--font-source-serif-4, Georgia, serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: #1c1917;
+}
+
+.popularTitle svg {
+  color: var(--dash-accent, #ff6b45);
+}
+
+.popularSubtext {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: #57534e;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -234,6 +272,32 @@
        and auto-fill still lets a wide viewport fit 3+ rather than hardcoding
        a column count. */
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+/* The curated Popular view specifically gets a deliberate, even 3-column
+   showcase (14 picks -> 4 clean rows + a half row) rather than fluid
+   auto-fill's "however many fit" count, which could land on 2 or 4
+   depending on the gallery's own container width -- the one place in this
+   component where a fixed count reads as more intentional than responsive
+   reflow. Every other filtered view (search, a single style, a season)
+   keeps .grid's own auto-fill unchanged, since those result counts vary too
+   widely (1 to 100+) for a fixed column count to ever make sense there.
+   Placed AFTER the 700px .grid rule above: both container queries can be
+   true at once (anything >=900px is also >=700px), and with equal
+   specificity the later rule in the file wins regardless of which class
+   it's attached to -- this has to come second or the 700px auto-fill rule
+   silently overrides it even when the gallery is wide enough for 3 real
+   columns. 760px (not 900px) chosen from live measurement: the onboarding
+   step-3 gallery's own container renders at ~815px, well under the
+   320px-minimum math (3 * 320px + 2 * 1.75rem gaps = ~1016px) that would be
+   needed for .grid's own auto-fill to naturally produce 3 -- so a fixed
+   3-column rule here intentionally trades "320px-minimum per card" for
+   "3 clean columns," landing each card around 253px, still comfortably
+   above every card's own min-width floor (checked live, no squish). */
+@container theme-gallery (min-width: 760px) {
+  .gridPopular {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 

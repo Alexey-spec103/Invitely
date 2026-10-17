@@ -316,7 +316,15 @@ export default function ThemeGallery({
         <hr className={styles.entriesDivider} />
 
         <div className={styles.filterGroup}>
-          <p className={styles.filterLabel}>Style</p>
+          {/* 2026-10-17 design pass: direct product-owner feedback -- once
+              "Popular" is elevated into its own headline treatment above the
+              grid (see .gallery below), it must stay obvious a host isn't
+              limited to those 14 picks. A plain "Style" label reads as pure
+              UI chrome (a filter's name, same register as "Season" below
+              it) rather than an invitation to keep looking -- this one
+              phrasing change is what actually answers "can I pick something
+              else?" without touching layout or hiding anything. */}
+          <p className={styles.filterLabel}>Or pick a specific style</p>
           <button
             type="button"
             onClick={() => updateStyle(null)}
@@ -368,11 +376,41 @@ export default function ThemeGallery({
       </aside>
 
       <div className={styles.gallery}>
-        <p className={styles.resultsCount}>
-          {filtered.length} {filtered.length === 1 ? "style" : "styles"}
-          <span className={styles.hoverHint}>Hover a style to preview it</span>
-        </p>
-        <div className={styles.grid}>
+        {/* 2026-10-17 design pass: direct product-owner feedback -- "Popular"
+            used to be visually identical to every other sidebar filter (a
+            quiet text button with a count badge), so a first-time visitor's
+            very first impression of the catalog carried no signal that
+            these 14 are a deliberate, hand-picked best-of (see
+            lib/themes/index.ts's own POPULAR_THEME_IDS comment -- they
+            already are, curated across every category specifically so this
+            moment wouldn't read as one narrow mood). A real headline + a
+            warm panel behind it is what actually sells "these are our
+            favorites," not the filter mechanism alone. The second line
+            doubles as the answer to "can I see something else" -- same
+            fix as the sidebar's own relabeled "Or pick a specific style"
+            just above, stated plainly instead of relying on the sidebar
+            being noticed. Scoped to the *pure* Popular view only (entry ===
+            "popular", no search/style/season narrowing it further, which
+            the existing state model already guarantees are mutually
+            exclusive) -- every other filtered view keeps the plain count
+            line, unchanged. */}
+        {entry === "popular" ? (
+          <div className={styles.popularHeading}>
+            <p className={styles.popularTitle}>
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
+              Our favorite styles
+            </p>
+            <p className={styles.popularSubtext}>
+              Hand-picked across every category - hover one to preview it, or pick a specific style on the left.
+            </p>
+          </div>
+        ) : (
+          <p className={styles.resultsCount}>
+            {filtered.length} {filtered.length === 1 ? "style" : "styles"}
+            <span className={styles.hoverHint}>Hover a style to preview it</span>
+          </p>
+        )}
+        <div className={entry === "popular" ? `${styles.grid} ${styles.gridPopular}` : styles.grid}>
           {visible.map((theme) => (
             <ThemeGalleryCard
               key={theme.id}
