@@ -136,8 +136,15 @@
     text-align: right;
   }
 
+  /* cqw floor, not a flat rem bump (2026-10-17 fix) -- belt-and-suspenders
+     alongside the @container override at the bottom of this file, which is
+     the real fix for the preview-card case (see its own comment for why).
+     This alone doesn't fully solve it (cqw here resolves against this
+     component's actual, already-small rendered width inside a card
+     preview, not a stable reference size), but it's a harmless additional
+     floor against a flat 7rem never shrinking at all on its own. */
   .bigLetter {
-    font-size: 7rem;
+    font-size: clamp(5rem, 20cqw, 7rem);
   }
 
   .names {
@@ -163,7 +170,7 @@
   }
 
   .bigLetter {
-    font-size: 9rem;
+    font-size: clamp(5rem, 24cqw, 9rem);
   }
 
   .names {
@@ -172,5 +179,64 @@
 
   .photoCol {
     max-width: 21rem;
+  }
+}
+
+/* 2026-10-17 fix, the real one: the @media blocks above switch this
+   component to a side-by-side text+photo row the moment the real browser
+   viewport is >=768px wide -- which it always is on an ordinary desktop
+   monitor, @media having no way to know the difference between "a real,
+   full-width hero on the published site" and "this exact component,
+   reused verbatim inside ThemeGallery's card preview, laid out in a frame
+   barely 150px wide and then shrunk further still." Confirmed live: at
+   that width, a single serif letter at even a conservative size doesn't
+   just look big, the whole row layout cramming a letter + caption + a
+   photo frame side by side has nowhere near enough room, and spills out
+   past the card's own overflow:hidden border -- "Rosalind & Desmond" read
+   as a lone clipped "D".
+   This is the actual fix: forcibly keep the original compact, stacked
+   (column-reverse) layout whenever the nearest `container-type:
+   inline-size` ancestor is narrow -- which is true for every one of these
+   preview contexts (ThemeGallery's own .desktopPanel/.phoneMockup, and the
+   equivalent wrappers in HeroPhoneShowcase/ConstructorScreenshot/
+   PlatformFanSection/SiteOrPaperSection), all comfortably under 700px even
+   at their largest. On the real published site there is no such container
+   anywhere in the render tree (confirmed repo-wide), so `@container`
+   simply never matches there at all -- this rule has zero effect on what
+   an actual guest sees; the row layout the @media blocks above set up
+   keeps working exactly as before. Placed last in the file so it wins the
+   cascade over every @media rule above it for an equal-specificity
+   property, same ordinary CSS rule any of this codebase's other
+   overrides already rely on. */
+@container (max-width: 700px) {
+  .section {
+    flex-direction: column-reverse;
+    gap: 2rem;
+    padding: 3rem 1.25rem;
+  }
+
+  .textCol {
+    align-items: center;
+    text-align: center;
+  }
+
+  .bigLetter {
+    font-size: 5rem;
+  }
+
+  .names {
+    align-items: center;
+    flex-direction: column;
+    font-size: 0.95rem;
+  }
+
+  .date {
+    letter-spacing: 0.2em;
+  }
+
+  .photoCol {
+    max-width: 20rem;
+    align-self: center;
+    margin-bottom: 0;
   }
 }

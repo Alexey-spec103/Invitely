@@ -68,10 +68,26 @@
   margin-bottom: 1rem;
 }
 
+/* cqw, not vw (2026-10-17 fix): this exact component also renders inside
+   ThemeGallery's card preview and the landing page's miniature showcases,
+   both of which lay it out at a fixed 375px reference width and then
+   visually shrink the whole thing via `transform: scale()` -- a real,
+   proven technique for every other property except vw, which always
+   measures the actual browser viewport and ignores that scaling entirely.
+   A longer name pair (e.g. "Saffron & Jonah") at a 1920px-viewport-relative
+   16vw rendered enormous and got clipped by the card's own overflow:hidden,
+   while a short pair happened to fit -- confirmed live, visibly
+   inconsistent card to card in the same grid row. cqw resolves against the
+   nearest `container-type: inline-size` ancestor instead (set on exactly
+   those preview wrappers, see ThemeGallery.module.css/HeroPhoneShowcase.
+   module.css/etc.), so it shrinks in lockstep with everything else there --
+   and on the real published site, where no such container exists, cqw
+   falls back to the same viewport-relative sizing vw already gave it, so
+   this changes nothing for an actual guest. */
 .names {
   font-family: var(--theme-font-script);
   color: var(--theme-accent);
-  font-size: clamp(3.25rem, 16vw, 6rem);
+  font-size: clamp(3.25rem, 16cqw, 6rem);
   line-height: 0.95;
   margin: 0;
   max-width: 22ch;
@@ -108,7 +124,7 @@
 
 @media (min-width: 640px) {
   .names {
-    font-size: clamp(4rem, 14vw, 7.5rem);
+    font-size: clamp(4rem, 14cqw, 7.5rem);
   }
 
   .swash {
@@ -142,7 +158,7 @@
 
 @media (min-width: 1024px) {
   .names {
-    font-size: clamp(4.5rem, 11vw, 9rem);
+    font-size: clamp(4.5rem, 11cqw, 9rem);
   }
 
   .swash {

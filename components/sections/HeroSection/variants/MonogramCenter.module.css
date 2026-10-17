@@ -92,8 +92,13 @@
     padding: 2.5rem 1.5rem;
   }
 
+  /* cqw, not a flat rem bump (2026-10-17 fix) -- see EditorialSplit.
+     module.css's own comment on .bigLetter for the full explanation: this
+     component also renders inside ThemeGallery's scaled-down card
+     preview, where a flat rem value didn't shrink along with everything
+     else and could overflow the frame for a longer name pair. */
   .monogram {
-    font-size: 5.5rem;
+    font-size: clamp(4rem, 14cqw, 5.5rem);
   }
 
   .medallion {
@@ -124,7 +129,7 @@
   }
 
   .monogram {
-    font-size: 7rem;
+    font-size: clamp(4rem, 18cqw, 7rem);
   }
 
   .names {

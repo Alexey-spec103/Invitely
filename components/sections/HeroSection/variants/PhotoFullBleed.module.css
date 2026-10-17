@@ -75,7 +75,11 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: var(--theme-font-heading);
-  font-size: clamp(7rem, 32vw, 20rem);
+  /* cqw, not vw -- see HandLetteringHero.module.css's own comment on
+     .names for why: this component also renders inside scaled-down card
+     previews, where vw measured the real browser viewport instead of the
+     preview's own frame. */
+  font-size: clamp(7rem, 32cqw, 20rem);
   line-height: 1;
   color: var(--theme-accent);
   opacity: 0.08;

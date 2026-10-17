@@ -9,12 +9,18 @@
   color: var(--theme-text);
 }
 
+/* cqw, not vw, on every max-width/max-height below (2026-10-17 fix) -- see
+   HandLetteringHero.module.css's own comment on .names for the full
+   explanation: this component also renders inside scaled-down card
+   previews (ThemeGallery, landing showcases), where vw measured the real
+   browser viewport instead of the preview's own frame, blowing these
+   watercolor blobs far past their intended size there. */
 .blob {
   position: absolute;
   width: 34rem;
   height: 34rem;
-  max-width: 130vw;
-  max-height: 130vw;
+  max-width: 130cqw;
+  max-height: 130cqw;
   background-color: var(--theme-accent);
   opacity: 0.22;
   mask-image: url("/patterns/watercolor-blob.svg");
@@ -55,8 +61,8 @@
   position: absolute;
   width: 36rem;
   height: 36rem;
-  max-width: 95vw;
-  max-height: 95vw;
+  max-width: 95cqw;
+  max-height: 95cqw;
   object-fit: contain;
   pointer-events: none;
 }
@@ -87,8 +93,8 @@
   right: -3rem;
   width: 22rem;
   height: 22rem;
-  max-width: 70vw;
-  max-height: 70vw;
+  max-width: 70cqw;
+  max-height: 70cqw;
   object-fit: contain;
   pointer-events: none;
 }
@@ -99,8 +105,8 @@
   left: -1.5rem;
   width: 10rem;
   height: 10rem;
-  max-width: 40vw;
-  max-height: 40vw;
+  max-width: 40cqw;
+  max-height: 40cqw;
   object-fit: contain;
   opacity: 0.9;
   pointer-events: none;

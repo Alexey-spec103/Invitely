@@ -21,7 +21,11 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: var(--theme-font-heading);
-  font-size: clamp(7rem, 32vw, 20rem);
+  /* cqw, not vw -- see HandLetteringHero.module.css's own comment on
+     .names for why: this component also renders inside scaled-down card
+     previews (ThemeGallery, landing showcases), where vw measured the
+     real browser viewport instead of the preview's own frame. */
+  font-size: clamp(7rem, 32cqw, 20rem);
   line-height: 1;
   color: var(--theme-accent);
   opacity: 0.07;
@@ -99,10 +103,12 @@
     padding: 5rem 1.75rem;
   }
 
+  /* cqw, not a flat rem bump (2026-10-17 fix) -- see EditorialSplit.
+     module.css's own comment on .bigLetter for the full explanation. */
   .names {
     flex-direction: row;
     gap: 1.25rem;
-    font-size: 2.2rem;
+    font-size: clamp(1.6rem, 9cqw, 2.2rem);
   }
 
   .divider {
@@ -128,7 +134,7 @@
 
   .names {
     gap: 1.5rem;
-    font-size: 2.75rem;
+    font-size: clamp(1.6rem, 11cqw, 2.75rem);
   }
 
   .divider {
