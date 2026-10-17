@@ -45,6 +45,39 @@ export async function GET(request: NextRequest) {
 
   const supabase = createServiceClient();
 
+  // Guards against two overlapping runs (a Vercel retry while the real run
+  // is still mid-flight, or a manual re-trigger) double-emailing every
+  // digest-enabled host -- each event's own last_digest_sent_at check
+  // happens too late to catch this on its own, since both runs would read
+  // the same "before" value before either one writes it. See the migration
+  // this RPC comes from (20261017130000) for why this is a leased table
+  // row rather than a Postgres advisory lock.
+  const { data: acquired, error: lockError } = await supabase.rpc("try_acquire_cron_lock", {
+    p_job_name: "rsvp-digest",
+    p_lease_seconds: 600,
+  });
+
+  if (lockError) {
+    console.error("rsvp-digest: failed to acquire cron lock", lockError);
+    Sentry.captureException(lockError);
+    return NextResponse.json({ error: lockError.message }, { status: 500 });
+  }
+
+  if (!acquired) {
+    // Not an error -- a 2xx here (rather than 409/423) is deliberate so
+    // cron infrastructure never reads "someone else is already running
+    // this" as a failure worth retrying.
+    return NextResponse.json({ ok: true, skipped: true, reason: "already running" });
+  }
+
+  try {
+    return await runDigest(supabase);
+  } finally {
+    await supabase.rpc("release_cron_lock", { p_job_name: "rsvp-digest" });
+  }
+}
+
+async function runDigest(supabase: ReturnType<typeof createServiceClient>) {
   const { data: events, error } = await supabase
     .from("events")
     .select("id, title, owner_id, last_digest_sent_at, default_locale")

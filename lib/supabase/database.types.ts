@@ -14,6 +14,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      cron_locks: {
+        Row: {
+          job_name: string
+          locked_until: string
+        }
+        Insert: {
+          job_name: string
+          locked_until: string
+        }
+        Update: {
+          job_name?: string
+          locked_until?: string
+        }
+        Relationships: []
+      }
       banquet_tables: {
         Row: {
           capacity: number | null
@@ -545,6 +560,19 @@ export type Database = {
           p_ip_address: string
         }
         Returns: boolean
+      }
+      try_acquire_cron_lock: {
+        Args: {
+          p_job_name: string
+          p_lease_seconds?: number
+        }
+        Returns: boolean
+      }
+      release_cron_lock: {
+        Args: {
+          p_job_name: string
+        }
+        Returns: undefined
       }
       mark_custom_domain_verified: {
         Args: {
