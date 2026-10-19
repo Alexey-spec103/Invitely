@@ -299,6 +299,12 @@ export async function HomePageContent({ locale }: { locale: Locale }) {
             off. */}
         <AmbientVideoGlow
           src="/marketing/hero-video/details-rings.mp4"
+          // Performance audit (2026-10-19) follow-up: a real frame extracted
+          // from this exact clip (not a stock/placeholder image), shown
+          // instantly instead of LCP waiting on the video's own bytes --
+          // this is the hero's only AmbientVideoGlow instance, the one
+          // that's actually above the fold and LCP-relevant.
+          poster="/marketing/hero-video/details-rings-poster.jpg"
           className="absolute inset-0 -z-10 h-full w-full object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-orange-50 via-orange-50/75 to-orange-50/20" />

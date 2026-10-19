@@ -4,6 +4,14 @@ import { useEffect, useRef } from "react";
 
 interface AmbientVideoGlowProps {
   src: string;
+  /** Performance audit (2026-10-19) follow-up: optional because only the
+   * hero's instance is LCP-relevant -- the final-CTA section's video is
+   * ~11,700px down the page, nowhere near LCP's "largest element painted
+   * early" definition, so it doesn't need one. When set, this is a real
+   * extracted frame (not a placeholder), shown instantly while the video's
+   * own bytes are still loading, instead of LCP waiting on the video
+   * itself. */
+  poster?: string;
   className?: string;
 }
 
@@ -39,7 +47,7 @@ interface AmbientVideoGlowProps {
  * implementing it. rootMargin gives it a head start so playback has
  * already begun by the time it's actually visible, not a jarring freeze-
  * frame-then-play moment. */
-export default function AmbientVideoGlow({ src, className }: AmbientVideoGlowProps) {
+export default function AmbientVideoGlow({ src, poster, className }: AmbientVideoGlowProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -80,6 +88,7 @@ export default function AmbientVideoGlow({ src, className }: AmbientVideoGlowPro
       ref={videoRef}
       className={className}
       src={src}
+      poster={poster}
       muted
       loop
       playsInline
