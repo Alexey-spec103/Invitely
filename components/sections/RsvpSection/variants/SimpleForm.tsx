@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import type { RsvpSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
@@ -57,6 +57,8 @@ export default function SimpleForm({
   const [pending, setPending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const attendingToggleRef = useRef<HTMLDivElement>(null);
 
   // A guest who arrived via their own personal invite link already has a
   // resolved name -- the common case for that audience is a single tap to
@@ -173,6 +175,17 @@ export default function SimpleForm({
 
     if (!guestName.trim() || attending === null) {
       setError(t.missingFieldsError);
+      // Form-strategy audit (2026-10-19): the error message rendered near
+      // the submit button with no cue about WHICH field it referred to --
+      // easy to miss on a long form with host-added custom questions
+      // between the name field and the error. Moves focus/scroll to
+      // whichever is actually the problem, name taking priority since an
+      // empty name is caught first either way.
+      if (!guestName.trim()) {
+        nameInputRef.current?.focus();
+      } else {
+        attendingToggleRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
 
@@ -318,6 +331,7 @@ export default function SimpleForm({
             </label>
             <input
               id="rsvp-guest-name"
+              ref={nameInputRef}
               type="text"
               autoComplete="name"
               className={styles.input}
@@ -330,7 +344,11 @@ export default function SimpleForm({
 
           <div className={styles.field}>
             <span className={styles.label}>{t.willYouJoin}</span>
-            <div className={styles.attendingToggle} aria-describedby={error ? "rsvp-form-error" : undefined}>
+            <div
+              ref={attendingToggleRef}
+              className={styles.attendingToggle}
+              aria-describedby={error ? "rsvp-form-error" : undefined}
+            >
               <button
                 type="button"
                 aria-pressed={attending === true}
@@ -388,6 +406,7 @@ export default function SimpleForm({
                   <input
                     id={`rsvp-attendee-name-${index}`}
                     type="text"
+                    autoComplete="off"
                     placeholder={t.guestNamePlaceholder(index + 2)}
                     className={styles.input}
                     style={{ marginTop: index > 0 ? 8 : 0 }}

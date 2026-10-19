@@ -277,6 +277,13 @@ export interface Dictionary {
     createSite: string;
     saving: string;
     saveFailed: string;
+    /** Form-strategy audit (2026-10-19): completeOnboarding had zero
+     * abuse-resistance -- any session (anonymous ones are free to create)
+     * could call it in a loop, each call creating a real event row.
+     * Distinct from saveFailed (which just says "try again") -- this tells
+     * the rare legitimate case (someone retrying onboarding a few times)
+     * WHY, so they know to wait rather than hammer retry. */
+    rateLimited: string;
     previewBadge: string;
     eventTypeStep: { heading: string; subtext: string };
     styleStep: { heading: string; subtext: string };
@@ -706,6 +713,7 @@ export const en: Dictionary = {
     createSite: "Create my site",
     saving: "Saving...",
     saveFailed: "Failed to save",
+    rateLimited: "Too many attempts - please wait a few minutes and try again.",
     previewBadge: "Preview",
     eventTypeStep: { heading: "\u{1F389} What are you celebrating?", subtext: "This shapes the questions we ask next." },
     styleStep: { heading: "\u{1F3A8} Pick your style", subtext: "You can always change this or design your own later." },

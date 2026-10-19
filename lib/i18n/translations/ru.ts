@@ -359,6 +359,7 @@ export const ru: Dictionary = {
     createSite: "Создать сайт",
     saving: "Сохранение...",
     saveFailed: "Не удалось сохранить",
+    rateLimited: "Слишком много попыток - подождите несколько минут и попробуйте снова.",
     previewBadge: "Превью",
     eventTypeStep: { heading: "\u{1F389} Что вы празднуете?", subtext: "Это определяет следующие вопросы." },
     styleStep: { heading: "\u{1F3A8} Выберите свой стиль", subtext: "Вы всегда сможете изменить его или оформить свой позже." },

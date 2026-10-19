@@ -296,7 +296,14 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
       // upsell cards -- see SitePage's own firstVisit handling.
       router.push(`/dashboard/${result.eventId}/site?firstVisit=1`);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : t.saveFailed);
+      // Form-strategy audit (2026-10-19): "RATE_LIMITED" is a sentinel
+      // code, not a human message -- see completeOnboarding's own comment.
+      // Matched the same way submitRsvp's EVENT_NOT_PUBLISHED already is.
+      if (err instanceof Error && err.message === "RATE_LIMITED") {
+        setFormError(t.rateLimited);
+      } else {
+        setFormError(err instanceof Error ? err.message : t.saveFailed);
+      }
     }
   };
 

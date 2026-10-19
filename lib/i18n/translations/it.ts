@@ -340,6 +340,7 @@ export const it: Dictionary = {
     createSite: "Crea il mio sito",
     saving: "Salvataggio...",
     saveFailed: "Salvataggio non riuscito",
+    rateLimited: "Troppi tentativi - attendi qualche minuto e riprova.",
     previewBadge: "Anteprima",
     eventTypeStep: { heading: "\u{1F389} Cosa state festeggiando?", subtext: "Questo determina le domande successive." },
     styleStep: { heading: "\u{1F3A8} Scegli il tuo stile", subtext: "Potrai sempre cambiarlo o crearne uno tuo più avanti." },

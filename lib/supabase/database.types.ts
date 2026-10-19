@@ -29,6 +29,24 @@ export type Database = {
         }
         Relationships: []
       }
+      event_creation_log: {
+        Row: {
+          id: string
+          ip_address: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          ip_address: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          ip_address?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       banquet_tables: {
         Row: {
           capacity: number | null
@@ -557,6 +575,12 @@ export type Database = {
       check_and_log_site_password_attempt: {
         Args: {
           p_event_id: string
+          p_ip_address: string
+        }
+        Returns: boolean
+      }
+      check_and_log_event_creation: {
+        Args: {
           p_ip_address: string
         }
         Returns: boolean

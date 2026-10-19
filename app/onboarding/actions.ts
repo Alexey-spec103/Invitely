@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createEvent } from "@/lib/events";
 import { getEventType } from "@/lib/eventTypes";
@@ -24,6 +25,32 @@ export async function completeOnboarding(
 
   if (!user) {
     return { ok: false, message: "Not authenticated" };
+  }
+
+  // Form-strategy audit (2026-10-19): this is the one point of abuse
+  // resistance on event creation -- see the migration this RPC comes from
+  // (20261019130000) for why ip-keyed, not user_id-keyed (a disposable
+  // anonymous session is trivial to rotate for a fresh one). Same
+  // x-forwarded-for/x-real-ip resolution and fails-open-on-error philosophy
+  // already established in app/e/[slug]/actions.ts's own rate-limit checks
+  // -- an infra hiccup on the check shouldn't cost a real signup. "RATE_
+  // LIMITED" is a sentinel the client matches (OnboardingWizard.tsx's
+  // onSubmit) to show its own localized t.rateLimited text, same pattern
+  // as submitRsvp's EVENT_NOT_PUBLISHED.
+  const headerList = await headers();
+  const forwardedFor = headerList.get("x-forwarded-for");
+  const ipAddress = forwardedFor?.split(",")[0]?.trim() || headerList.get("x-real-ip");
+  if (ipAddress) {
+    const { data: withinLimit, error: rateLimitError } = await supabase.rpc("check_and_log_event_creation", {
+      p_ip_address: ipAddress,
+    });
+    if (rateLimitError) {
+      console.error("completeOnboarding rate-limit check failed", rateLimitError);
+    } else if (withinLimit === false) {
+      return { ok: false, message: "RATE_LIMITED" };
+    }
+  } else {
+    console.warn("completeOnboarding: no client IP header present, skipping rate limit for this request");
   }
 
   const type = getEventType(input.eventType);

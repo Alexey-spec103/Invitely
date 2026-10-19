@@ -105,6 +105,24 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-accent) 45%, transparent);
 }
 
+/* Form-strategy audit (2026-10-19): the name field already set
+   aria-invalid on a validation error (correct for screen readers), but
+   nothing visually marked it -- a sighted guest saw the error text near
+   the submit button with no cue which field it was actually about, easy
+   to miss on a long form with host-added custom questions in between.
+   A fixed red regardless of theme (not var(--theme-accent)) is deliberate
+   here -- this needs to read as "something's wrong" against every theme's
+   own accent color, including themes whose accent already IS a shade of
+   red/coral. */
+.input[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
+.input[aria-invalid="true"]:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.35);
+}
+
 .textarea {
   resize: vertical;
 }

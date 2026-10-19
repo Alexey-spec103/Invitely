@@ -359,6 +359,7 @@ export const uk: Dictionary = {
     createSite: "Створити сайт",
     saving: "Збереження...",
     saveFailed: "Не вдалося зберегти",
+    rateLimited: "Забагато спроб - зачекайте кілька хвилин і спробуйте ще раз.",
     previewBadge: "Перегляд",
     eventTypeStep: { heading: "\u{1F389} Що ви святкуєте?", subtext: "Це визначає наступні питання." },
     styleStep: { heading: "\u{1F3A8} Оберіть свій стиль", subtext: "Ви завжди зможете змінити його або оформити свій пізніше." },
