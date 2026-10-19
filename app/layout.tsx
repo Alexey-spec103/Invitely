@@ -305,9 +305,9 @@ export const metadata: Metadata = {
   },
   // Separate from the per-event guest-page metadata (app/e/[slug]/page.tsx's
   // own generateMetadata) -- this is only the landing page's own social
-  // preview. No image set: nothing in public/ is framed/sized as an actual
-  // social card (the available screenshots are dashboard UI captures), and
-  // shipping a wrong/placeholder image is worse than omitting it.
+  // preview. No `images` field here on purpose -- app/opengraph-image.tsx
+  // (Next.js's file-convention OG image) is auto-detected and wired into
+  // og:image/twitter:image for this route without needing one.
   openGraph: {
     title: siteTitle,
     description: siteDescription,
@@ -316,7 +316,13 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    // "summary" (a small square thumbnail) was the honest choice with no
+    // real image to show; summary_large_image is the right card now that
+    // app/opengraph-image.tsx provides a proper 1200x630 landscape one --
+    // Twitter/X ignores a large-image card without a matching image, but
+    // silently renders a wasted-space small thumbnail if this stays
+    // "summary" once a real wide image exists.
+    card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
   },
