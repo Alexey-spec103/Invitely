@@ -2,6 +2,17 @@ export const SUPPORTED_LOCALES = ["en", "de", "fr", "es", "it", "pl", "ru", "uk"
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 
+/** SEO fix (2026-10-19): the locales that get their own URL segment
+ * (/de, /fr, etc. -- see app/[locale]/page.tsx) -- every supported locale
+ * except the default, which stays at bare "/" (an /en route would be
+ * near-duplicate content of it). Derived from SUPPORTED_LOCALES rather
+ * than hardcoded a second time, so it can never drift out of sync with it;
+ * shared by app/[locale]/page.tsx (generateStaticParams) and
+ * app/sitemap.ts (which URLs to list). */
+export const NON_DEFAULT_LOCALES = SUPPORTED_LOCALES.filter(
+  (locale): locale is Exclude<Locale, typeof DEFAULT_LOCALE> => locale !== DEFAULT_LOCALE
+);
+
 /** Set server-side by the `setLocale` Server Action (lib/i18n/actions.ts,
  * called from LanguageSwitcher.tsx) and read server-side by resolveLocale.ts.
  * Lives here, not in resolveLocale.ts, specifically so LanguageSwitcher (a

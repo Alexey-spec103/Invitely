@@ -16,8 +16,14 @@ import Link from "next/link";
 // description wasn't, so this page inherited the root layout's own
 // ("Design a beautiful event website...") -- a duplicate-meta-description
 // warning in Search Console, and irrelevant to what this page actually is.
+//
+// Title fix (2026-10-19): was "Privacy Policy - Invimbo" -- the root
+// layout's own `title.template` ("%s | Invimbo") wraps every child page's
+// plain-string title, so this rendered as the literal, confirmed-live
+// "Privacy Policy - Invimbo | Invimbo". Just the page-specific fragment now;
+// the template supplies the brand suffix, same as it's designed to.
 export const metadata = {
-  title: "Privacy Policy - Invimbo",
+  title: "Privacy Policy",
   description: "How Invimbo collects, uses, and protects your data and your guests' data.",
 };
 

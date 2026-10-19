@@ -15,8 +15,12 @@ import Link from "next/link";
 // Technical SEO audit (2026-10-17): same gap as app/privacy/page.tsx's own
 // metadata -- title was overridden, description wasn't, so this page
 // inherited the homepage's unrelated description.
+//
+// Title fix (2026-10-19): same double-branding bug as privacy's own title
+// fix -- see that file's comment. Just the page-specific fragment now; the
+// root layout's title.template supplies " | Invimbo".
 export const metadata = {
-  title: "Terms of Service - Invimbo",
+  title: "Terms of Service",
   description: "The terms that govern using Invimbo to build and publish your event website.",
 };
 
