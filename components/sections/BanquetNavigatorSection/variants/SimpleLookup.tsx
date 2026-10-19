@@ -92,9 +92,20 @@ export default function SimpleLookup({
                 {pending ? t.looking : t.findMyTable}
               </button>
             </form>
-            {error && <p className={styles.error}>{error}</p>}
+            {/* Accessibility audit (2026-10-19): neither the error nor the
+                lookup result was in a live region -- a screen reader user
+                submitting this form heard nothing happen at all, unlike
+                RsvpSection's own SimpleForm.tsx, which already uses
+                role="alert" for its error (WCAG 4.1.3, Status Messages).
+                role="status" (not "alert") for the result: it's an answer
+                the guest asked for, not an urgent interruption. */}
+            {error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            )}
             {result && (
-              <p className={styles.tableAnswer}>
+              <p className={styles.tableAnswer} role="status">
                 {!result.found
                   ? t.resultNotFound(result.searchedFor)
                   : result.tableName

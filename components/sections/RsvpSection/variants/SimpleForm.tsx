@@ -374,21 +374,33 @@ export default function SimpleForm({
                 {t.whoElseIsComing} <span className={styles.optional}>{t.optional}</span>
               </span>
               {Array.from({ length: Math.min(Number(partySize), maxPartySize) - 1 }).map((_, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  placeholder={t.guestNamePlaceholder(index + 2)}
-                  className={styles.input}
-                  style={{ marginTop: index > 0 ? 8 : 0 }}
-                  value={attendeeNames[index] ?? ""}
-                  onChange={(event) =>
-                    setAttendeeNames((prev) => {
-                      const next = [...prev];
-                      next[index] = event.target.value;
-                      return next;
-                    })
-                  }
-                />
+                <div key={index}>
+                  {/* Accessibility audit (2026-10-19): placeholder text alone
+                      is not a real accessible name -- it disappears the
+                      moment a guest starts typing and isn't exposed as a
+                      label by every screen reader (WCAG 3.3.2). A visually-
+                      hidden label gives each dynamic field its own real
+                      name (distinct per index: "guest 2", "guest 3", ...)
+                      while the placeholder keeps doing its sighted-user job. */}
+                  <label className="sr-only" htmlFor={`rsvp-attendee-name-${index}`}>
+                    {t.guestNamePlaceholder(index + 2)}
+                  </label>
+                  <input
+                    id={`rsvp-attendee-name-${index}`}
+                    type="text"
+                    placeholder={t.guestNamePlaceholder(index + 2)}
+                    className={styles.input}
+                    style={{ marginTop: index > 0 ? 8 : 0 }}
+                    value={attendeeNames[index] ?? ""}
+                    onChange={(event) =>
+                      setAttendeeNames((prev) => {
+                        const next = [...prev];
+                        next[index] = event.target.value;
+                        return next;
+                      })
+                    }
+                  />
+                </div>
               ))}
             </div>
           )}
