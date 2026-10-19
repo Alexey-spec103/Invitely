@@ -84,6 +84,21 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // Technical SEO audit (2026-10-17): app/robots.ts deliberately leaves
+    // /e/* unlisted rather than disallowed (crawling isn't "actively
+    // harmful," per that file's own comment) -- but unlisted still means
+    // indexable, and every one of these is a real guest's private wedding
+    // invitation (names, date, often a photo via socialImageUrl above).
+    // Hosts publish expecting a link they share themselves, not a page
+    // Google puts in front of strangers searching their own name. noindex
+    // regardless of publish status -- a draft has even less business being
+    // crawled. follow: false too: these pages have no outbound links worth
+    // passing equity through (the one exception, PublicSiteBadge's link
+    // back to "/", already gets real link equity from the marketing site's
+    // own internal links -- it doesn't need thousands of auto-generated
+    // per-event pages vouching for it, which would read as a link scheme
+    // more than a legitimate signal anyway).
+    robots: { index: false, follow: false },
     openGraph: {
       title,
       description,

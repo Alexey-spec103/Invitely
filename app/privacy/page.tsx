@@ -12,8 +12,13 @@ import Link from "next/link";
 // payments or handles real guests' data -- an AI-drafted policy, however
 // accurate about the *product*, cannot itself constitute legal compliance
 // advice.
+// Technical SEO audit (2026-10-17): title was already overridden but
+// description wasn't, so this page inherited the root layout's own
+// ("Design a beautiful event website...") -- a duplicate-meta-description
+// warning in Search Console, and irrelevant to what this page actually is.
 export const metadata = {
   title: "Privacy Policy - Invimbo",
+  description: "How Invimbo collects, uses, and protects your data and your guests' data.",
 };
 
 export default function PrivacyPage() {

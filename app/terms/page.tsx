@@ -12,8 +12,12 @@ import Link from "next/link";
 // company can make, not something to invent. A real privacy/ToS lawyer in
 // that jurisdiction must still review this before the product takes real
 // payments or handles real guests' data.
+// Technical SEO audit (2026-10-17): same gap as app/privacy/page.tsx's own
+// metadata -- title was overridden, description wasn't, so this page
+// inherited the homepage's unrelated description.
 export const metadata = {
   title: "Terms of Service - Invimbo",
+  description: "The terms that govern using Invimbo to build and publish your event website.",
 };
 
 export default function TermsPage() {

@@ -47,6 +47,32 @@ import { SUPPORTED_LOCALES } from "@/lib/i18n/locales";
 const themeCount = Object.keys(themes).length;
 const fontCount = CANVAS_FONTS.length;
 
+// Same hardcoded production origin as app/layout.tsx/app/robots.ts/
+// app/sitemap.ts -- no env var for this exists anywhere in the codebase yet.
+const SITE_URL = "https://www.invimbo.com";
+
+// Technical SEO audit (2026-10-17): layout.tsx already carries Organization
+// + WebSite JSON-LD, but nothing described the actual priced offers on this
+// page -- a real gap given the pricing section below has 3 genuine, fixed
+// EUR prices (not promotional/fabricated, see planBadges' own comment),
+// exactly the kind of fact Offer schema exists for and that can surface a
+// price directly in a search result. Built from lib/plans.ts, the same
+// source of truth the pricing section itself renders from, so this can
+// never drift out of sync with what a visitor actually sees.
+const pricingJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "Invimbo",
+  description: "An event website builder with matching paper invitations and guest seating, all in one style.",
+  offers: Object.values(plans).map((plan) => ({
+    "@type": "Offer",
+    name: `Invimbo ${plan.name}`,
+    price: plan.priceEur.toFixed(2),
+    priceCurrency: "EUR",
+    url: `${SITE_URL}/#pricing`,
+  })),
+};
+
 // Anchors the €19 price to one concrete, real rendered design instead of a
 // bare number -- reuses InvitationCardPreview (the same component the Paper
 // tab and HeroPhoneShowcase render), not a new rendering path. A richly
@@ -160,6 +186,10 @@ export default async function Home() {
 
   return (
     <div className="marketing-shell bg-white font-sans">
+      {/* eslint-disable-next-line react/no-danger -- static, server-computed
+          JSON from lib/plans.ts, not user input; same pattern as
+          app/layout.tsx's own Organization/WebSite JSON-LD scripts. */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }} />
       {/* 2026-10-09 accessibility audit: a long page (60+ headings) with no
           way for a keyboard user to bypass the header/nav straight to the
           actual content -- sr-only until focused, same accent color as the
