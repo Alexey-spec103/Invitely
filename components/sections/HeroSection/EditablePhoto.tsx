@@ -11,6 +11,11 @@ interface EditablePhotoProps {
    * are guaranteed non-empty; falls back to "" (decorative) rather than a
    * hardcoded placeholder when omitted. */
   alt?: string;
+  /** Performance audit (2026-10-19) follow-up: overrides the default
+   * `sizes` guess (see buildResponsiveProps's own comment on why that
+   * default changed) for the one variant that's actually full-bleed.
+   * PhotoFullBleed.tsx is the only current caller. */
+  sizes?: string;
 }
 
 const UNSPLASH_WIDTH_PATTERN = /([?&])w=(\d+)/;
@@ -32,8 +37,25 @@ const SRCSET_CANDIDATE_WIDTHS = [480, 800, 1200, 1600];
  * Storage upload, which has its own 1400px upload-time resize cap, or any
  * other source) renders exactly as before -- no behavior change, since
  * there's no safe generic way to derive sibling widths for an arbitrary
- * URL. */
-function buildResponsiveProps(src: string): { srcSet?: string; sizes?: string } {
+ * URL.
+ *
+ * Performance audit (2026-10-19) follow-up: the original `sizes: "100vw"`
+ * default here was wrong for the common case, not just imprecise for it --
+ * measured live on /preview/romantic-rosewater, a photo displayed at
+ * 336x448 CSS px still fetched the 1600w candidate, a ~5x over-fetch,
+ * because `sizes="100vw"` tells the browser the image might need the full
+ * viewport width, so it reaches for the largest candidate regardless of
+ * the real display size. Checked every one of the 24 Hero variants' own
+ * `.photo` wrapper CSS (`.medallion`/`.photoFrame`/`.photoCell`/
+ * `.photoPanel`/etc.) -- 23 of 24 cap the photo well under 352px even at
+ * desktop widths (a locket/medallion/framed treatment, not a background);
+ * only PhotoFullBleed.tsx genuinely renders edge-to-edge and passes its
+ * own `sizes="100vw"` override below. 400px covers the largest of the 23
+ * with margin; the mobile fallback (50vw) is still a large overestimate
+ * for a ~100-200px medallion on a typical phone, but a safe one -- sizes
+ * is a browser hint, not a hard clamp, and erring wide costs bytes, erring
+ * narrow costs visible blur. */
+function buildResponsiveProps(src: string, sizes?: string): { srcSet?: string; sizes?: string } {
   const match = UNSPLASH_WIDTH_PATTERN.exec(src);
   if (!src.includes("images.unsplash.com") || !match) return {};
   const requestedWidth = Number(match[2]);
@@ -43,10 +65,7 @@ function buildResponsiveProps(src: string): { srcSet?: string; sizes?: string } 
   const srcSet = widths
     .map((w) => `${src.replace(UNSPLASH_WIDTH_PATTERN, `$1w=${w}`)} ${w}w`)
     .join(", ");
-  // Every Hero variant is either full-bleed or a smaller framed/locket
-  // photo within a full-width section -- 100vw is the conservative, always-
-  // correct upper bound rather than tuning a sizes value per variant.
-  return { srcSet, sizes: "100vw" };
+  return { srcSet, sizes: sizes ?? "(min-width: 768px) 400px, 50vw" };
 }
 
 /** Every Hero photo variant rendered a bare `<img>` -- the only way to
@@ -72,9 +91,9 @@ function buildResponsiveProps(src: string): { srcSet?: string; sizes?: string } 
  * On the public site (no EditableFieldProvider, `editable` is false) this
  * renders as a plain `<img>` -- zero extra DOM/behavior, matching every
  * other EditableText-based field's public/editor split. */
-export default function EditablePhoto({ src, className, alt = "" }: EditablePhotoProps) {
+export default function EditablePhoto({ src, className, alt = "", sizes }: EditablePhotoProps) {
   const { editable } = useEditableField();
-  const responsive = buildResponsiveProps(src);
+  const responsive = buildResponsiveProps(src, sizes);
 
   // 2026-10-16 performance audit: this is the LCP candidate on both the
   // marketing landing page's HeroPhoneShowcase mockup and every published

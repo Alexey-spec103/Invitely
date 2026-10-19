@@ -63,7 +63,16 @@ export default function PhotoFullBleed({
 
   return (
     <section className={styles.section}>
-      <EditablePhoto src={photoUrl} className={styles.photo} alt={names.filter(Boolean).join(" & ")} />
+      {/* Performance audit (2026-10-19): the one Hero variant that's
+          genuinely edge-to-edge (every other one renders through a small
+          medallion/frame, see EditablePhoto's own updated default) --
+          overrides EditablePhoto's new, tighter default back to 100vw. */}
+      <EditablePhoto
+        src={photoUrl}
+        className={styles.photo}
+        alt={names.filter(Boolean).join(" & ")}
+        sizes="100vw"
+      />
       <div className={styles.overlay} />
       <span className={styles.moon} aria-hidden="true" />
       <div className={styles.content}>
