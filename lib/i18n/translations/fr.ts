@@ -118,7 +118,7 @@ export const fr: Dictionary = {
     nav: { constructor: "Constructeur", themes: "Thèmes", whatsIncluded: "Inclus", pricing: "Tarifs", login: "Connexion" },
     mobileNav: { openMenu: "Ouvrir le menu", closeMenu: "Fermer le menu" },
     cta: {
-      primary: "Créer vos invitations",
+      primary: "Créer votre site",
       primaryLoggedIn: "Aller au tableau de bord",
       constructor: "Commencer",
       constructorLoggedIn: "Aller au tableau de bord",

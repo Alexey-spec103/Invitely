@@ -128,7 +128,7 @@ export const pl: Dictionary = {
     nav: { constructor: "Kreator", themes: "Motywy", whatsIncluded: "Co zawiera", pricing: "Cennik", login: "Zaloguj się" },
     mobileNav: { openMenu: "Otwórz menu", closeMenu: "Zamknij menu" },
     cta: {
-      primary: "Stwórz swoje zaproszenia",
+      primary: "Stwórz swoją stronę",
       primaryLoggedIn: "Przejdź do panelu",
       constructor: "Zacznij tworzyć",
       constructorLoggedIn: "Przejdź do panelu",

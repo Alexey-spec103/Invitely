@@ -489,8 +489,20 @@ export const en: Dictionary = {
     topBar: "Visa / Mastercard accepted · Instant delivery - send your invite link anywhere in the world",
     nav: { constructor: "Constructor", themes: "Themes", whatsIncluded: "What's included", pricing: "Pricing", login: "Login" },
     mobileNav: { openMenu: "Open menu", closeMenu: "Close menu" },
+    // CRO audit (2026-10-19): `primary` was "Create your invitations" --
+    // the header's and hero's own CTA pill (the most-clicked, first-seen
+    // button on the page), promising a different product than the hero's
+    // own headline/subtext one paragraph below it actually describe
+    // ("A beautiful event website, matching paper invitations..." --
+    // website-first, paper invitations as a complement, not the other way
+    // around). `final` already had the correctly-framed copy; reused it
+    // here instead of inventing a third variant, so the same promise now
+    // appears consistently at the top AND bottom of the page. `constructor`
+    // (a third wording, "Start building") is left alone -- that's a
+    // different, contextually-apt moment (right next to a live screenshot
+    // of the editor), not the same inconsistency.
     cta: {
-      primary: "Create your invitations",
+      primary: "Create your website",
       primaryLoggedIn: "Go to dashboard",
       constructor: "Start building",
       constructorLoggedIn: "Go to dashboard",

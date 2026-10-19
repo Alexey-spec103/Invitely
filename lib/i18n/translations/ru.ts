@@ -137,7 +137,7 @@ export const ru: Dictionary = {
     nav: { constructor: "Конструктор", themes: "Темы", whatsIncluded: "Что входит", pricing: "Тарифы", login: "Войти" },
     mobileNav: { openMenu: "Открыть меню", closeMenu: "Закрыть меню" },
     cta: {
-      primary: "Создать приглашения",
+      primary: "Создать сайт",
       primaryLoggedIn: "В личный кабинет",
       constructor: "Начать создавать",
       constructorLoggedIn: "В личный кабинет",

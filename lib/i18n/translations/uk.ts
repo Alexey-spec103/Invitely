@@ -137,7 +137,7 @@ export const uk: Dictionary = {
     nav: { constructor: "Конструктор", themes: "Теми", whatsIncluded: "Що входить", pricing: "Тарифи", login: "Увійти" },
     mobileNav: { openMenu: "Відкрити меню", closeMenu: "Закрити меню" },
     cta: {
-      primary: "Створити запрошення",
+      primary: "Створити сайт",
       primaryLoggedIn: "До особистого кабінету",
       constructor: "Почати створювати",
       constructorLoggedIn: "До особистого кабінету",

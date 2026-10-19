@@ -118,7 +118,7 @@ export const it: Dictionary = {
     nav: { constructor: "Costruttore", themes: "Temi", whatsIncluded: "Cosa include", pricing: "Prezzi", login: "Accedi" },
     mobileNav: { openMenu: "Apri menu", closeMenu: "Chiudi menu" },
     cta: {
-      primary: "Crea i tuoi inviti",
+      primary: "Crea il tuo sito",
       primaryLoggedIn: "Vai alla dashboard",
       constructor: "Inizia a creare",
       constructorLoggedIn: "Vai alla dashboard",
