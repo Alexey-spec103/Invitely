@@ -10,10 +10,14 @@
   color: var(--theme-text);
 }
 
+/* max-width/max-height against a vw ceiling so the bigger locket still
+   fits narrow phones without overflowing the section's own padding. */
 .locket {
   position: relative;
-  width: 16rem;
-  height: 16rem;
+  width: 18.5rem;
+  height: 18.5rem;
+  max-width: 88vw;
+  max-height: 88vw;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,8 +43,10 @@
 
 .photo {
   position: relative;
-  width: 11.5rem;
-  height: 11.5rem;
+  width: 13.5rem;
+  height: 13.5rem;
+  max-width: 63vw;
+  max-height: 63vw;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -64,13 +70,13 @@
 
 @media (min-width: 640px) {
   .locket {
-    width: 18rem;
-    height: 18rem;
+    width: 21.5rem;
+    height: 21.5rem;
   }
 
   .photo {
-    width: 13rem;
-    height: 13rem;
+    width: 15.5rem;
+    height: 15.5rem;
   }
 
   .names {
@@ -84,13 +90,13 @@
 
 @media (min-width: 1024px) {
   .locket {
-    width: 20rem;
-    height: 20rem;
+    width: 24rem;
+    height: 24rem;
   }
 
   .photo {
-    width: 14.5rem;
-    height: 14.5rem;
+    width: 17.5rem;
+    height: 17.5rem;
   }
 
   .names {

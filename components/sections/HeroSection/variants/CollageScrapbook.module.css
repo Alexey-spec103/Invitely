@@ -10,9 +10,14 @@
   color: var(--theme-text);
 }
 
+/* width uses min() against 100% (the flex item's own available width,
+   .section's content box with its horizontal padding already subtracted),
+   not a flat rem bump or a vw guess -- vw ignores the section's own
+   padding and overflowed on narrow phones (confirmed live at 350px); 100%
+   can't, by construction. */
 .print {
   position: relative;
-  width: 17rem;
+  width: min(21rem, 100%);
   padding: 0.6rem 0.6rem 1.5rem;
   background-color: var(--theme-bg);
   border: 1px solid color-mix(in srgb, var(--theme-text) 15%, transparent);
@@ -91,9 +96,30 @@
   margin: 0;
 }
 
+/* Confirmed live: growing .print above used to let .sprigColor's existing
+   -2rem/-1.5rem corner bleed (a pre-existing, by-design overhang, untouched
+   here) push past the viewport edge on narrow phones, since .print now
+   sits much closer to the section's own padding than its old fixed 17rem
+   did. Pulling the sprig's bleed in below 420px keeps it a visible tucked
+   corner accent without the overflow -- its exact dangle amount was never
+   the point, just that something peeks out. */
+@media (max-width: 420px) {
+  .sprigColor {
+    right: -0.5rem;
+    bottom: -0.75rem;
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+
+  .sprig {
+    right: 0;
+    bottom: -0.5rem;
+  }
+}
+
 @media (min-width: 640px) {
   .print {
-    width: 20rem;
+    width: min(25rem, 100%);
   }
 
   .sprigColor {
@@ -112,7 +138,7 @@
 
 @media (min-width: 1024px) {
   .print {
-    width: 22rem;
+    width: 27rem;
   }
 
   .sprigColor {

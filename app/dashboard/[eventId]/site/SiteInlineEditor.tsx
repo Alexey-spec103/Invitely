@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Undo2, Redo2, Monitor, Smartphone, Tablet, type LucideIcon } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
@@ -18,8 +18,10 @@ import { MapSection } from "@/components/sections/MapSection";
 import type { MapVariant, MapVenue } from "@/components/sections/MapSection";
 import { RsvpSection } from "@/components/sections/RsvpSection";
 import type { RsvpQuestion } from "@/components/sections/RsvpSection";
-import { applyHiddenFields } from "@/components/sections/registry";
+import { applyHiddenFields, SECTION_ORDER } from "@/components/sections/registry";
 import type { SectionConfig, SectionType } from "@/components/sections/registry";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Dictionary } from "@/lib/i18n/dictionary";
 import type { BackgroundFill } from "@/lib/backgroundFills";
 import SectionBackground from "@/components/background/SectionBackground";
 import SectionBackgroundButton from "@/components/background/SectionBackgroundButton";
@@ -256,6 +258,22 @@ interface SiteInlineEditorProps {
    * registry.tsx) -- simpler than threading a `background` field through
    * every one of the props above individually. */
   allSections: SectionConfig[];
+  /** The HOST's own locale (distinct from `previewLocale` state below, which
+   * simulates what a GUEST sees in a chosen language) -- resolved into this
+   * editor's own chrome translations (toolbar, device toggle, section
+   * headers, Editable blocks panel) internally via getDictionary(locale).
+   * A plain locale string, not a pre-resolved `t` object: this is "use
+   * client" and several of this editor's strings are functions in the
+   * dictionary (collapsedNote), which the server-component parent can't
+   * pass as a prop across the server/client boundary (confirmed live:
+   * "Functions cannot be passed directly to Client Components"). See
+   * lib/i18n/translations/en.ts's `dashboard` namespace comment.
+   * Deliberately separate from `sectionLabels` below, used to be a
+   * hardcoded local constant; `t.sectionLabels` replaces it with the same
+   * per-context wording ("Letter"/"Timeline"/...), independent of the
+   * Modules panel's own translated labels (`t.labels`), which intentionally
+   * use fuller phrasing ("Welcome Letter"/"Schedule"). */
+  locale: Locale;
 }
 
 /** Sets a value at a dot-path field key against a flat draft object -- the
@@ -522,40 +540,6 @@ function useEditableSection<T extends { styleOverrides?: StyleOverrides; hiddenF
   };
 }
 
-const sectionLabels: Record<SectionKey, string> = {
-  letter: "Letter",
-  timeline: "Timeline",
-  map: "Map",
-  rsvp: "RSVP",
-  countdown: "Countdown",
-  gift: "Gift wishes",
-  dressCode: "Dress code",
-  guestbook: "Guestbook",
-  video: "Video",
-  banquetNavigator: "Seating navigator",
-  guestNotes: "Notes for guests",
-  faq: "FAQ",
-  travel: "Travel & Stay",
-};
-
-/** The dashboard's own owner never actually RSVPs from inside their own
- * editor -- clicking "Send RSVP" here must not write a real guest row.
- * Unlike the old iframe preview (which reused the real bound `submitRsvp`
- * action even at `?preview=1`, a pre-existing quirk left alone rather than
- * fixed here), this editor renders the interactive form for layout/text
- * purposes only. Rejecting (rather than a blocking `alert`) surfaces the
- * message through `SimpleForm`'s own existing error paragraph for free. */
-async function previewOnlySubmit(): Promise<{ ok: false; message: string }> {
-  return { ok: false, message: "This is a preview - guests submit RSVPs from your live site, not from here." };
-}
-
-/** Same reasoning as `previewOnlySubmit` above -- the dashboard's live
- * render of the seating lookup form must not run a real guest-table search
- * against this event's actual seating data. */
-async function previewOnlyLookup(): Promise<never> {
-  throw new Error("This is a preview - guests look up their table from your live site, not from here.");
-}
-
 export default function SiteInlineEditor({
   eventId,
   hasBasicAccess,
@@ -580,8 +564,10 @@ export default function SiteInlineEditor({
   faq,
   travel,
   allSections,
+  locale,
 }: SiteInlineEditorProps) {
   const router = useRouter();
+  const t = getDictionary(locale).dashboard.site.editor;
   // The constructor preview never passed `themeCategory` down to any
   // section variant, so every category-gated Recraft illustration (the
   // "beautiful side elements" the user asked about) silently fell back to
@@ -1348,7 +1334,21 @@ export default function SiteInlineEditor({
   // of its own sub-fields, the same adjacency weddingpost.ru's own tree
   // showed live between a "Групповой элемент" row and the text rows next to
   // it -- confirmed in Chrome this session, not guessed.
-  const blocksRaw: BlockRowData[] = [
+  // Real-order fix (shared with the live-preview render further down):
+  // `allSections` is the real saved order from the Site tab's Modules
+  // panel -- a type with no entry yet (never toggled on) falls back to its
+  // canonical SECTION_ORDER position, same fallback SectionModulesPanel.tsx
+  // already uses. This flat field list used to always walk Hero -> Letter
+  // -> Timeline -> ... in that fixed literal order regardless of what a
+  // host actually dragged in the panel, same bug as the live preview below
+  // it, independently.
+  const sectionOrderByType = new Map(allSections.map((section) => [section.type, section.order]));
+  const reorderableSectionTypes = (Object.keys(SECTION_ORDER) as SectionType[]).filter((type) => type !== "hero");
+  const orderedSectionTypes = reorderableSectionTypes
+    .slice()
+    .sort((a, b) => (sectionOrderByType.get(a) ?? SECTION_ORDER[a]) - (sectionOrderByType.get(b) ?? SECTION_ORDER[b]));
+
+  const heroBlockRows: BlockRowData[] = [
     // Hero has no MODULE_ICONS entry (it's always on, no toggle row in the
     // Modules panel either) -- matches that same convention here: a plain
     // label, no icon, rather than inventing one just for this list.
@@ -1419,12 +1419,16 @@ export default function SiteInlineEditor({
     // passed to `.map()`, no matter how deeply the actual `.current` read is
     // nested inside it (confirmed live: only the `.map()`-built rows were
     // flagged, identical plain-array-literal rows elsewhere were not).
-    sectionHeaderRow("letter", sectionLabels.letter, MODULE_ICONS.letter),
+  ];
+
+  const sectionFieldBlocks: Partial<Record<SectionType, BlockRowData[]>> = {
+    letter: [
+    sectionHeaderRow("letter", t.sectionLabels.letter, MODULE_ICONS.letter),
     {
       ...makeRow({
         field: "title",
         label: letterField.draft.title,
-        placeholder: `${sectionLabels.letter} title`,
+        placeholder: `${t.sectionLabels.letter} title`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1438,7 +1442,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "body",
         label: letterField.draft.body,
-        placeholder: `${sectionLabels.letter} body`,
+        placeholder: `${t.sectionLabels.letter} body`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1452,7 +1456,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "quote",
         label: letterField.draft.quote,
-        placeholder: `${sectionLabels.letter} quote`,
+        placeholder: `${t.sectionLabels.letter} quote`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1466,7 +1470,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "note",
         label: letterField.draft.note,
-        placeholder: `${sectionLabels.letter} note`,
+        placeholder: `${t.sectionLabels.letter} note`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1480,7 +1484,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "rsvpDeadline",
         label: letterField.draft.rsvpDeadline,
-        placeholder: `${sectionLabels.letter} RSVP deadline`,
+        placeholder: `${t.sectionLabels.letter} RSVP deadline`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1494,7 +1498,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "closingLine",
         label: letterField.draft.closingLine,
-        placeholder: `${sectionLabels.letter} signature`,
+        placeholder: `${t.sectionLabels.letter} signature`,
         type: "text",
         hiddenFields: letterField.draft.hiddenFields,
         commitHidden: letterField.commitHidden,
@@ -1505,12 +1509,14 @@ export default function SiteInlineEditor({
       },
     },
 
-    sectionHeaderRow("timeline", sectionLabels.timeline, MODULE_ICONS.timeline),
+  ],
+    timeline: [
+    sectionHeaderRow("timeline", t.sectionLabels.timeline, MODULE_ICONS.timeline),
     {
       ...makeRow({
         field: "title",
         label: timelineField.draft.title,
-        placeholder: `${sectionLabels.timeline} title`,
+        placeholder: `${t.sectionLabels.timeline} title`,
         type: "text",
         hiddenFields: timelineField.draft.hiddenFields,
         commitHidden: timelineField.commitHidden,
@@ -1551,12 +1557,14 @@ export default function SiteInlineEditor({
       ),
     ]),
 
-    sectionHeaderRow("map", sectionLabels.map, MODULE_ICONS.map),
+  ],
+    map: [
+    sectionHeaderRow("map", t.sectionLabels.map, MODULE_ICONS.map),
     {
       ...makeRow({
         field: "title",
         label: mapField.draft.title,
-        placeholder: `${sectionLabels.map} title`,
+        placeholder: `${t.sectionLabels.map} title`,
         type: "text",
         hiddenFields: mapField.draft.hiddenFields,
         commitHidden: mapField.commitHidden,
@@ -1599,12 +1607,14 @@ export default function SiteInlineEditor({
       ),
     ]),
 
-    sectionHeaderRow("rsvp", sectionLabels.rsvp, MODULE_ICONS.rsvp),
+  ],
+    rsvp: [
+    sectionHeaderRow("rsvp", t.sectionLabels.rsvp, MODULE_ICONS.rsvp),
     {
       ...makeRow({
         field: "title",
         label: rsvpField.draft.title,
-        placeholder: `${sectionLabels.rsvp} title`,
+        placeholder: `${t.sectionLabels.rsvp} title`,
         type: "text",
         hiddenFields: rsvpField.draft.hiddenFields,
         commitHidden: rsvpField.commitHidden,
@@ -1618,7 +1628,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "description",
         label: rsvpField.draft.description,
-        placeholder: `${sectionLabels.rsvp} description`,
+        placeholder: `${t.sectionLabels.rsvp} description`,
         type: "text",
         hiddenFields: rsvpField.draft.hiddenFields,
         commitHidden: rsvpField.commitHidden,
@@ -1657,12 +1667,14 @@ export default function SiteInlineEditor({
       },
     ]),
 
-    sectionHeaderRow("countdown", sectionLabels.countdown, MODULE_ICONS.countdown),
+  ],
+    countdown: [
+    sectionHeaderRow("countdown", t.sectionLabels.countdown, MODULE_ICONS.countdown),
     {
       ...makeRow({
         field: "title",
         label: countdownField.draft.title,
-        placeholder: `${sectionLabels.countdown} title`,
+        placeholder: `${t.sectionLabels.countdown} title`,
         type: "text",
         hiddenFields: countdownField.draft.hiddenFields,
         commitHidden: countdownField.commitHidden,
@@ -1673,12 +1685,14 @@ export default function SiteInlineEditor({
       },
     },
 
-    sectionHeaderRow("gift", sectionLabels.gift, MODULE_ICONS.gift),
+  ],
+    gift: [
+    sectionHeaderRow("gift", t.sectionLabels.gift, MODULE_ICONS.gift),
     {
       ...makeRow({
         field: "title",
         label: giftField.draft.title,
-        placeholder: `${sectionLabels.gift} title`,
+        placeholder: `${t.sectionLabels.gift} title`,
         type: "text",
         hiddenFields: giftField.draft.hiddenFields,
         commitHidden: giftField.commitHidden,
@@ -1692,7 +1706,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "description",
         label: giftField.draft.description,
-        placeholder: `${sectionLabels.gift} description`,
+        placeholder: `${t.sectionLabels.gift} description`,
         type: "text",
         hiddenFields: giftField.draft.hiddenFields,
         commitHidden: giftField.commitHidden,
@@ -1703,12 +1717,14 @@ export default function SiteInlineEditor({
       },
     },
 
-    sectionHeaderRow("dressCode", sectionLabels.dressCode, MODULE_ICONS.dressCode),
+  ],
+    dressCode: [
+    sectionHeaderRow("dressCode", t.sectionLabels.dressCode, MODULE_ICONS.dressCode),
     {
       ...makeRow({
         field: "title",
         label: dressCodeField.draft.title,
-        placeholder: `${sectionLabels.dressCode} title`,
+        placeholder: `${t.sectionLabels.dressCode} title`,
         type: "text",
         hiddenFields: dressCodeField.draft.hiddenFields,
         commitHidden: dressCodeField.commitHidden,
@@ -1722,7 +1738,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "description",
         label: dressCodeField.draft.description,
-        placeholder: `${sectionLabels.dressCode} description`,
+        placeholder: `${t.sectionLabels.dressCode} description`,
         type: "text",
         hiddenFields: dressCodeField.draft.hiddenFields,
         commitHidden: dressCodeField.commitHidden,
@@ -1761,12 +1777,14 @@ export default function SiteInlineEditor({
       },
     ]),
 
-    sectionHeaderRow("guestbook", sectionLabels.guestbook, MODULE_ICONS.guestbook),
+  ],
+    guestbook: [
+    sectionHeaderRow("guestbook", t.sectionLabels.guestbook, MODULE_ICONS.guestbook),
     {
       ...makeRow({
         field: "title",
         label: guestbookField.draft.title,
-        placeholder: `${sectionLabels.guestbook} title`,
+        placeholder: `${t.sectionLabels.guestbook} title`,
         type: "text",
         hiddenFields: guestbookField.draft.hiddenFields,
         commitHidden: guestbookField.commitHidden,
@@ -1777,12 +1795,14 @@ export default function SiteInlineEditor({
       },
     },
 
-    sectionHeaderRow("video", sectionLabels.video, MODULE_ICONS.video),
+  ],
+    video: [
+    sectionHeaderRow("video", t.sectionLabels.video, MODULE_ICONS.video),
     {
       ...makeRow({
         field: "title",
         label: videoField.draft.title,
-        placeholder: `${sectionLabels.video} title`,
+        placeholder: `${t.sectionLabels.video} title`,
         type: "text",
         hiddenFields: videoField.draft.hiddenFields,
         commitHidden: videoField.commitHidden,
@@ -1793,12 +1813,14 @@ export default function SiteInlineEditor({
       },
     },
 
-    sectionHeaderRow("banquetNavigator", sectionLabels.banquetNavigator, MODULE_ICONS.banquetNavigator),
+  ],
+    banquetNavigator: [
+    sectionHeaderRow("banquetNavigator", t.sectionLabels.banquetNavigator, MODULE_ICONS.banquetNavigator),
     {
       ...makeRow({
         field: "title",
         label: banquetNavigatorField.draft.title,
-        placeholder: `${sectionLabels.banquetNavigator} title`,
+        placeholder: `${t.sectionLabels.banquetNavigator} title`,
         type: "text",
         hiddenFields: banquetNavigatorField.draft.hiddenFields,
         commitHidden: banquetNavigatorField.commitHidden,
@@ -1812,7 +1834,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "description",
         label: banquetNavigatorField.draft.description,
-        placeholder: `${sectionLabels.banquetNavigator} description`,
+        placeholder: `${t.sectionLabels.banquetNavigator} description`,
         type: "text",
         hiddenFields: banquetNavigatorField.draft.hiddenFields,
         commitHidden: banquetNavigatorField.commitHidden,
@@ -1823,12 +1845,14 @@ export default function SiteInlineEditor({
       },
     },
 
-    sectionHeaderRow("guestNotes", sectionLabels.guestNotes, MODULE_ICONS.guestNotes),
+  ],
+    guestNotes: [
+    sectionHeaderRow("guestNotes", t.sectionLabels.guestNotes, MODULE_ICONS.guestNotes),
     {
       ...makeRow({
         field: "title",
         label: guestNotesField.draft.title,
-        placeholder: `${sectionLabels.guestNotes} title`,
+        placeholder: `${t.sectionLabels.guestNotes} title`,
         type: "text",
         hiddenFields: guestNotesField.draft.hiddenFields,
         commitHidden: guestNotesField.commitHidden,
@@ -1842,7 +1866,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "body",
         label: guestNotesField.draft.body,
-        placeholder: `${sectionLabels.guestNotes} body`,
+        placeholder: `${t.sectionLabels.guestNotes} body`,
         type: "text",
         hiddenFields: guestNotesField.draft.hiddenFields,
         commitHidden: guestNotesField.commitHidden,
@@ -1853,12 +1877,14 @@ export default function SiteInlineEditor({
       },
     },
 
-    sectionHeaderRow("faq", sectionLabels.faq, MODULE_ICONS.faq),
+  ],
+    faq: [
+    sectionHeaderRow("faq", t.sectionLabels.faq, MODULE_ICONS.faq),
     {
       ...makeRow({
         field: "title",
         label: faqField.draft.title,
-        placeholder: `${sectionLabels.faq} title`,
+        placeholder: `${t.sectionLabels.faq} title`,
         type: "text",
         hiddenFields: faqField.draft.hiddenFields,
         commitHidden: faqField.commitHidden,
@@ -1899,12 +1925,14 @@ export default function SiteInlineEditor({
       ),
     ]),
 
-    sectionHeaderRow("travel", sectionLabels.travel, MODULE_ICONS.travel),
+  ],
+    travel: [
+    sectionHeaderRow("travel", t.sectionLabels.travel, MODULE_ICONS.travel),
     {
       ...makeRow({
         field: "title",
         label: travelField.draft.title,
-        placeholder: `${sectionLabels.travel} title`,
+        placeholder: `${t.sectionLabels.travel} title`,
         type: "text",
         hiddenFields: travelField.draft.hiddenFields,
         commitHidden: travelField.commitHidden,
@@ -1918,7 +1946,7 @@ export default function SiteInlineEditor({
       ...makeRow({
         field: "description",
         label: travelField.draft.description,
-        placeholder: `${sectionLabels.travel} description`,
+        placeholder: `${t.sectionLabels.travel} description`,
         type: "text",
         hiddenFields: travelField.draft.hiddenFields,
         commitHidden: travelField.commitHidden,
@@ -1958,6 +1986,12 @@ export default function SiteInlineEditor({
         })
       ),
     ]),
+    ],
+  };
+
+  const blocksRaw: BlockRowData[] = [
+    ...heroBlockRows,
+    ...orderedSectionTypes.flatMap((type) => sectionFieldBlocks[type] ?? []),
   ];
 
   // `key` above is each field's raw content-path (e.g. "title",
@@ -1986,7 +2020,7 @@ export default function SiteInlineEditor({
             type="button"
             onClick={runUndo}
             disabled={!activeField?.canUndo}
-            aria-label="Undo"
+            aria-label={t.undo}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--dash-border)] text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--dash-border)] disabled:hover:text-[var(--dash-text-muted)]"
           >
             <Undo2 className="h-4 w-4" />
@@ -1995,7 +2029,7 @@ export default function SiteInlineEditor({
             type="button"
             onClick={runRedo}
             disabled={!activeField?.canRedo}
-            aria-label="Redo"
+            aria-label={t.redo}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--dash-border)] text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--dash-border)] disabled:hover:text-[var(--dash-text-muted)]"
           >
             <Redo2 className="h-4 w-4" />
@@ -2007,7 +2041,7 @@ export default function SiteInlineEditor({
               type="button"
               onClick={() => setDevice("desktop")}
               aria-pressed={device === "desktop"}
-              aria-label="Preview at desktop width"
+              aria-label={t.previewDesktop}
               className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
                 device === "desktop"
                   ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]"
@@ -2020,7 +2054,7 @@ export default function SiteInlineEditor({
               type="button"
               onClick={() => setDevice("phone")}
               aria-pressed={device === "phone"}
-              aria-label="Preview at phone width"
+              aria-label={t.previewPhone}
               className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
                 device === "phone"
                   ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]"
@@ -2033,7 +2067,7 @@ export default function SiteInlineEditor({
               type="button"
               onClick={() => setDevice("tablet")}
               aria-pressed={device === "tablet"}
-              aria-label="Preview at tablet width"
+              aria-label={t.previewTablet}
               className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
                 device === "tablet"
                   ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]"
@@ -2050,11 +2084,11 @@ export default function SiteInlineEditor({
               own labeled, visibly separate control -- language pickers on
               real sites are never hidden inside an unrelated icon group. */}
           <div className="flex items-center gap-1.5 rounded-full border border-[var(--dash-border)] py-0.5 pr-1 pl-2.5">
-            <span className="text-[11px] font-medium text-[var(--dash-text-muted)]">Preview:</span>
+            <span className="text-[11px] font-medium text-[var(--dash-text-muted)]">{t.previewLabel}</span>
             <LanguageSwitcher
               currentLocale={previewLocale}
               availableLocales={SUPPORTED_LOCALES}
-              label="Preview language"
+              label={t.previewLanguageAria}
               onSelect={setPreviewLocale}
             />
           </div>
@@ -2122,7 +2156,7 @@ export default function SiteInlineEditor({
         </SectionBackground>
 
         <SectionHeader
-          label="Hero photo"
+          label={t.heroPhotoLabel}
           state={heroState}
           error={heroError}
           extra={
@@ -2137,7 +2171,7 @@ export default function SiteInlineEditor({
         />
         <div id="hero-photo-controls" className="px-4 pb-4 scroll-mt-24" onClick={(event) => event.stopPropagation()}>
           {PHOTO_CAPABLE_HERO_VARIANTS.has(heroVariant) ? (
-            <PhotoDropzone value={heroPhoto || undefined} onChange={(url) => setHeroPhoto(url ?? "")} label="📷 Photo" />
+            <PhotoDropzone value={heroPhoto || undefined} onChange={(url) => setHeroPhoto(url ?? "")} label={t.photoLabel} />
           ) : (
             // theme-photo-fallback QA report (2026-10-13): this Hero layout doesn't
             // render a photo at all -- showing the upload control here used to let a
@@ -2145,14 +2179,29 @@ export default function SiteInlineEditor({
             // Switch to "Photo Invitation" / another PHOTO_CAPABLE_HERO_VARIANTS layout
             // (Layout filter in the theme gallery) to use a photo in the Hero section.
             <p className="rounded-xl border border-dashed border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2.5 text-xs text-[var(--dash-text-muted)]">
-              This layout doesn&apos;t display a photo in the Hero section. Pick a &ldquo;Photo
-              Invitation&rdquo; style from the theme gallery if you&apos;d like your photo front and center.
+              {t.noPhotoInLayout}
             </p>
           )}
         </div>
 
-        <SectionHeader
-          label={sectionLabels.letter}
+        {/* Real-order fix: each section's own hooks/state (letterField,
+            letterRef, letterContext, etc.) stay exactly where they're
+            declared above, unconditionally, once per fixed name -- only
+            the ORDER these pre-built blocks are placed into the page
+            changes below, driven by `allSections`' real saved order
+            instead of this fixed literal sequence. `allSections` used to
+            be consulted only for background-fill lookups
+            (`getSectionBackground` above) while this live preview quietly
+            ignored it for layout -- a host dragging a module in the Site
+            tab's Modules panel saw the panel and the published site agree,
+            but this editor's own preview kept the old order, lying about
+            what guests would actually see. */}
+        {(() => {
+          const sectionBlocks: Partial<Record<SectionType, ReactNode>> = {
+            letter: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.letter}
           icon={MODULE_ICONS.letter}
           enabled={isSectionOn("letter", letter.enabled)}
           onToggle={(next) => handleToggleSection("letter", next)}
@@ -2189,11 +2238,14 @@ export default function SiteInlineEditor({
             </SectionBackground>
           </RevealOnScroll>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.letter} />
+          <CollapsedSectionNote label={t.sectionLabels.letter} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.timeline}
+              </>
+            ),
+            timeline: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.timeline}
           icon={MODULE_ICONS.timeline}
           enabled={isSectionOn("timeline", timeline.enabled)}
           onToggle={(next) => handleToggleSection("timeline", next)}
@@ -2230,11 +2282,14 @@ export default function SiteInlineEditor({
             </RevealOnScroll>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.timeline} />
+          <CollapsedSectionNote label={t.sectionLabels.timeline} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.map}
+              </>
+            ),
+            map: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.map}
           icon={MODULE_ICONS.map}
           enabled={isSectionOn("map", map.enabled)}
           onToggle={(next) => handleToggleSection("map", next)}
@@ -2297,11 +2352,14 @@ export default function SiteInlineEditor({
             </RevealOnScroll>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.map} />
+          <CollapsedSectionNote label={t.sectionLabels.map} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.rsvp}
+              </>
+            ),
+            rsvp: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.rsvp}
           icon={MODULE_ICONS.rsvp}
           enabled={isSectionOn("rsvp", rsvp.enabled)}
           onToggle={(next) => handleToggleSection("rsvp", next)}
@@ -2342,7 +2400,11 @@ export default function SiteInlineEditor({
                       description={rsvpVisible.description}
                       styleOverrides={rsvpField.draft.styleOverrides}
                       questions={rsvpQuestionsForRender(rsvpVisible.questions)}
-                      onSubmit={previewOnlySubmit}
+                      // The dashboard's own owner never actually RSVPs from inside their
+                      // own editor -- clicking "Send RSVP" here must not write a real
+                      // guest row. Rejecting (rather than a blocking `alert`) surfaces the
+                      // message through SimpleForm's own existing error paragraph for free.
+                      onSubmit={() => Promise.resolve({ ok: false as const, message: t.rsvpPreviewOnly })}
                       locale={previewLocale}
                     />
                   </EditableFieldProvider>
@@ -2351,11 +2413,14 @@ export default function SiteInlineEditor({
             </RevealOnScroll>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.rsvp} />
+          <CollapsedSectionNote label={t.sectionLabels.rsvp} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.countdown}
+              </>
+            ),
+            countdown: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.countdown}
           icon={MODULE_ICONS.countdown}
           enabled={isSectionOn("countdown", countdown.enabled)}
           onToggle={(next) => handleToggleSection("countdown", next)}
@@ -2395,11 +2460,14 @@ export default function SiteInlineEditor({
             </RevealOnScroll>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.countdown} />
+          <CollapsedSectionNote label={t.sectionLabels.countdown} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.gift}
+              </>
+            ),
+            gift: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.gift}
           icon={MODULE_ICONS.gift}
           enabled={isSectionOn("gift", gift.enabled)}
           onToggle={(next) => handleToggleSection("gift", next)}
@@ -2443,11 +2511,14 @@ export default function SiteInlineEditor({
             </RevealOnScroll>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.gift} />
+          <CollapsedSectionNote label={t.sectionLabels.gift} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.dressCode}
+              </>
+            ),
+            dressCode: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.dressCode}
           icon={MODULE_ICONS.dressCode}
           enabled={isSectionOn("dressCode", dressCode.enabled)}
           onToggle={(next) => handleToggleSection("dressCode", next)}
@@ -2494,11 +2565,14 @@ export default function SiteInlineEditor({
             </RevealOnScroll>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.dressCode} />
+          <CollapsedSectionNote label={t.sectionLabels.dressCode} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.guestbook}
+              </>
+            ),
+            guestbook: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.guestbook}
           icon={MODULE_ICONS.guestbook}
           enabled={isSectionOn("guestbook", guestbook.enabled)}
           onToggle={(next) => handleToggleSection("guestbook", next)}
@@ -2535,11 +2609,14 @@ export default function SiteInlineEditor({
             </div>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.guestbook} />
+          <CollapsedSectionNote label={t.sectionLabels.guestbook} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.video}
+              </>
+            ),
+            video: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.video}
           icon={MODULE_ICONS.video}
           enabled={isSectionOn("video", video.enabled)}
           onToggle={(next) => handleToggleSection("video", next)}
@@ -2579,11 +2656,14 @@ export default function SiteInlineEditor({
             </div>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.video} />
+          <CollapsedSectionNote label={t.sectionLabels.video} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={banquetNavigator.seatingLabel}
+              </>
+            ),
+            banquetNavigator: (
+              <>
+                <SectionHeader
+                  label={banquetNavigator.seatingLabel}
           icon={MODULE_ICONS.banquetNavigator}
           enabled={isSectionOn("banquetNavigator", banquetNavigator.enabled)}
           onToggle={(next) => handleToggleSection("banquetNavigator", next)}
@@ -2608,7 +2688,9 @@ export default function SiteInlineEditor({
                     title={banquetNavigatorVisible.title}
                     description={banquetNavigatorVisible.description}
                     styleOverrides={banquetNavigatorField.draft.styleOverrides}
-                    onLookup={previewOnlyLookup}
+                    onLookup={async () => {
+                      throw new Error(t.lookupPreviewOnly);
+                    }}
                     locale={previewLocale}
                   />
                 </EditableFieldProvider>
@@ -2616,11 +2698,14 @@ export default function SiteInlineEditor({
             </SectionBackground>
           </RevealOnScroll>
         ) : (
-          <CollapsedSectionNote label={banquetNavigator.seatingLabel} />
+          <CollapsedSectionNote label={banquetNavigator.seatingLabel} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.guestNotes}
+              </>
+            ),
+            guestNotes: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.guestNotes}
           icon={MODULE_ICONS.guestNotes}
           enabled={isSectionOn("guestNotes", guestNotes.enabled)}
           onToggle={(next) => handleToggleSection("guestNotes", next)}
@@ -2652,11 +2737,14 @@ export default function SiteInlineEditor({
             </SectionBackground>
           </RevealOnScroll>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.guestNotes} />
+          <CollapsedSectionNote label={t.sectionLabels.guestNotes} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.faq}
+              </>
+            ),
+            faq: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.faq}
           icon={MODULE_ICONS.faq}
           enabled={isSectionOn("faq", faq.enabled)}
           onToggle={(next) => handleToggleSection("faq", next)}
@@ -2696,11 +2784,14 @@ export default function SiteInlineEditor({
             </RevealOnScroll>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.faq} />
+          <CollapsedSectionNote label={t.sectionLabels.faq} buildMessage={t.collapsedNote} />
         )}
-
-        <SectionHeader
-          label={sectionLabels.travel}
+              </>
+            ),
+            travel: (
+              <>
+                <SectionHeader
+                  label={t.sectionLabels.travel}
           icon={MODULE_ICONS.travel}
           enabled={isSectionOn("travel", travel.enabled)}
           onToggle={(next) => handleToggleSection("travel", next)}
@@ -2742,8 +2833,16 @@ export default function SiteInlineEditor({
             </RevealOnScroll>
           </>
         ) : (
-          <CollapsedSectionNote label={sectionLabels.travel} />
+          <CollapsedSectionNote label={t.sectionLabels.travel} buildMessage={t.collapsedNote} />
         )}
+              </>
+            ),
+          };
+          // `orderedSectionTypes` is computed once, above, next to
+          // `blocksRaw` -- reused here so the live preview and the
+          // "Editable blocks" jump list can never drift from each other.
+          return orderedSectionTypes.map((type) => <Fragment key={type}>{sectionBlocks[type]}</Fragment>);
+        })()}
       </ThemeProvider>
 
       {selection && toolbarPos && (
@@ -2830,7 +2929,7 @@ export default function SiteInlineEditor({
           click-to-jump behavior, just now reads as "prefer a list instead
           of clicking the page above? here it is" rather than a floating,
           unexplained panel. */}
-      <EditableBlocksPanel blocks={blocks} />
+      <EditableBlocksPanel blocks={blocks} t={t.editableBlocks} />
     </div>
   );
 }
@@ -3116,14 +3215,13 @@ function SectionHeader({
  * short line, instead of a tall, grey, half-dead-looking section still
  * taking up a full screen of scroll. Nothing is deleted: the section's own
  * draft content is untouched, this is purely what's on screen. */
-function CollapsedSectionNote({ label }: { label: string }) {
+function CollapsedSectionNote({ label, buildMessage }: { label: string; buildMessage: (label: string) => string }) {
   return (
     <div
       className="px-4 py-5 text-center text-xs text-[var(--dash-text-muted)]"
       onClick={(event) => event.stopPropagation()}
     >
-      {label} is off, so guests won&apos;t see it - nothing you&apos;ve written here is lost. Flip the switch above to
-      bring it back.
+      {buildMessage(label)}
     </div>
   );
 }
@@ -3169,7 +3267,13 @@ const SOFT_PANEL_VARS = {
   "--dash-text-muted": "#786b5c",
 } as CSSProperties;
 
-function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
+function EditableBlocksPanel({
+  blocks,
+  t,
+}: {
+  blocks: BlockRowData[];
+  t: Dictionary["dashboard"]["site"]["editor"]["editableBlocks"];
+}) {
   const [open, setOpen] = useState(true);
 
   return (
@@ -3185,19 +3289,16 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
         className="flex w-full items-center justify-between text-left"
       >
         <span className="flex items-center gap-2 text-sm font-semibold text-[var(--dash-accent)]">
-          Editable blocks
+          {t.heading}
           <span className="rounded-full bg-[var(--dash-surface-2)] px-2 py-0.5 text-xs font-normal text-[var(--dash-text-muted)]">
             {blocks.length}
           </span>
         </span>
-        <span className="text-xs font-medium text-[var(--dash-text-muted)]">{open ? "Hide" : "Show"}</span>
+        <span className="text-xs font-medium text-[var(--dash-text-muted)]">{open ? t.hide : t.show}</span>
       </button>
       {open && (
         <>
-          <p className="mt-1.5 text-xs text-[var(--dash-text-muted)]">
-            Every text and photo from the site above, in one list - click a row to jump straight to it, or 👁 to
-            hide/show it without deleting what you typed.
-          </p>
+          <p className="mt-1.5 text-xs text-[var(--dash-text-muted)]">{t.description}</p>
           <ul className="mt-3 max-h-80 space-y-1 overflow-y-auto">
           {blocks.map((block) => {
             if (block.type === "sectionHeader") {
@@ -3249,8 +3350,8 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
                         ? "border-[var(--dash-border)] bg-[var(--dash-surface-2)] text-[var(--dash-text-muted)]"
                         : "border-[var(--dash-accent)]/30 bg-[var(--dash-accent)]/10 text-[var(--dash-accent)]"
                     } hover:opacity-80`}
-                    aria-label={block.hidden ? "Show block" : "Hide block"}
-                    title={block.hidden ? "Show block" : "Hide block"}
+                    aria-label={block.hidden ? t.showBlock : t.hideBlock}
+                    title={block.hidden ? t.showBlock : t.hideBlock}
                   >
                     {block.hidden ? "🚫" : "👁"}
                   </button>
@@ -3260,8 +3361,8 @@ function EditableBlocksPanel({ blocks }: { blocks: BlockRowData[] }) {
                     type="button"
                     onClick={block.onDelete}
                     className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] text-base text-[var(--dash-text-muted)] hover:border-red-400 hover:text-red-500"
-                    aria-label="Delete"
-                    title="Delete"
+                    aria-label={t.deleteLabel}
+                    title={t.deleteLabel}
                   >
                     🗑
                   </button>

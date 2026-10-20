@@ -1,6 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+  type PointerEvent as ReactPointerEvent,
+  type RefObject,
+} from "react";
 import { Sparkles, Heart } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import {
@@ -10,7 +19,7 @@ import {
   NEW_THEME_IDS,
 } from "@/lib/themes";
 import type { Theme, ThemeCategory, ThemeSeason } from "@/lib/themes";
-import { EVENT_TYPE_LIST, type EventTypeId } from "@/lib/eventTypes";
+import type { EventTypeId } from "@/lib/eventTypes";
 import { OCCASION_CATEGORIES } from "@/lib/themes/occasionCategories";
 import { useFavoriteThemes } from "@/lib/useFavoriteThemes";
 import { effectiveDecorCategory } from "@/lib/themes/decorMotifs";
@@ -20,7 +29,10 @@ import { highlightFeaturesFor } from "@/lib/themes/highlightFeatures";
 import { HeroSection, HERO_VARIANTS, DEFAULT_HERO_VARIANT } from "@/components/sections/HeroSection";
 import type { HeroVariant } from "@/components/sections/HeroSection";
 import { LetterSection } from "@/components/sections/LetterSection";
-import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
+import { TimelineSection } from "@/components/sections/TimelineSection";
+import type { Locale } from "@/lib/i18n/locales";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { getLocalizedEventTypeList } from "@/lib/eventTypesLocalized";
 import {
   previewPhotoFor,
   previewNamesFor,
@@ -48,32 +60,164 @@ function anchorFor(variant: HeroVariant): "center" | "bottom" | "spread" {
   return "center";
 }
 
+/** Resting translateY per anchor, one table per mockup aspect -- lifted out
+ * of the CSS module (where they used to live as the only values) so the
+ * drag hook below can read the same numbers JS needs for its math. Keep
+ * these in sync with .desktopScaleInner/.phoneScaleInner's own per-anchor
+ * rules in ThemeGallery.module.css if either ever changes. */
+const DESKTOP_REST_VH: Record<"center" | "bottom" | "spread", number> = {
+  center: -30,
+  bottom: -58,
+  spread: 0,
+};
+const PHONE_REST_VH: Record<"center" | "bottom" | "spread", number> = {
+  center: -38,
+  bottom: -68,
+  spread: 0,
+};
+/** How far a drag can reveal -- shared across every anchor (not anchor-
+ * relative, same as the old theme-card-pan keyframe's single end point):
+ * this is a property of the stacked Hero+Letter+Timeline content's own
+ * height, not of where any one Hero variant's content happens to sit.
+ * Checked empirically against the rendered DOM (see theme-card-pan's own
+ * comment in the CSS module for the same number and the reasoning) --
+ * -250vh ran past Timeline's own 3-event list into its trailing section
+ * padding (confirmed live via the phone mockup), so this stops short of
+ * that at -205vh instead. */
+const DEEP_PAN_VH = -205;
+
+/** Real pointer-drag panning for a theme card's miniature site preview --
+ * lets a shopper grab the mockup and drag it like a tall photo in a small
+ * frame, instead of only ever seeing one fixed crop or a canned auto-pan.
+ * `wrapRef` is owned by the caller (not created in here) and must point at
+ * the frame element whose own rendered width stands in for `100cqw` (the
+ * scale factor `.desktopScaleInner`/`.phoneScaleInner` already use) --
+ * `.desktopPanel`/`.phoneMockup` themselves, not their
+ * (pointer-events:none) scale-wrap children, since this hook needs real
+ * pointer events to reach it. Taking the ref as a parameter instead of
+ * returning one keeps this hook's return value plain reactive state --
+ * bundling a ref object into the same returned value as `pan`/`dragging`
+ * trips eslint-plugin-react-hooks's `refs` rule, which can't prove property
+ * reads off that object aren't `.current` reads during render. `onDragStart`
+ * fires once per gesture, the first time movement crosses the drag
+ * threshold -- the card's own onClick uses this to tell an actual tap
+ * (select this theme) apart from the start of a drag (pan, don't select). */
+function useDragPan(
+  wrapRef: RefObject<HTMLDivElement | null>,
+  restVh: number,
+  deepVh: number,
+  onDragStart: () => void,
+) {
+  const [pan, setPan] = useState(restVh);
+  const panRef = useRef(restVh);
+  const dragRef = useRef<{ pointerId: number; startY: number; startPan: number; dragged: boolean } | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  // Wheel needs the current pan synchronously, outside React's render cycle
+  // (see the native listener below) -- a plain ref kept in lockstep with
+  // the state avoids re-subscribing that listener on every scroll tick just
+  // to close over a fresh `pan`.
+  useEffect(() => {
+    panRef.current = pan;
+  }, [pan]);
+
+  // The rest position changes whenever a different theme (different anchor)
+  // is scrolled into view under the same mounted card -- keeps a card that
+  // isn't currently being dragged following its own theme's resting crop
+  // instead of freezing at whatever the previous theme's anchor happened to
+  // leave it at.
+  useEffect(() => {
+    if (!dragRef.current) setPan(restVh);
+  }, [restVh]);
+
+  // Mouse-wheel scrolling -- the actual, discoverable gesture most people
+  // reach for first (confirmed: drag-to-pan alone wasn't found by the
+  // product owner testing live; hovering used to auto-pan before drag
+  // replaced it, so landing on a card with neither a visible hint nor a
+  // response to the ordinary wheel gesture read as "the preview's broken").
+  // A native, non-passive listener, not React's onWheel -- React (18+)
+  // attaches wheel listeners as passive by default, so event.preventDefault
+  // inside a JSX onWheel handler silently fails to stop the page scrolling
+  // underneath the card. Boundary-aware: only preventDefault (and consume
+  // the scroll) while the pan still has room to move in that direction --
+  // once a card is scrolled to either end, further wheel input in that same
+  // direction passes through untouched so the surrounding gallery page
+  // keeps scrolling normally instead of feeling stuck under the cursor.
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const onWheel = (event: WheelEvent) => {
+      const atRest = panRef.current >= restVh;
+      const atDeepEnd = panRef.current <= deepVh;
+      if ((event.deltaY < 0 && atRest) || (event.deltaY > 0 && atDeepEnd)) return;
+      event.preventDefault();
+      const scale = wrap.clientWidth / 375;
+      if (scale <= 0) return;
+      const deltaVh = (event.deltaY * 100) / (scale * window.innerHeight);
+      const next = Math.min(restVh, Math.max(deepVh, panRef.current - deltaVh));
+      setPan(next);
+    };
+    wrap.addEventListener("wheel", onWheel, { passive: false });
+    return () => wrap.removeEventListener("wheel", onWheel);
+  }, [wrapRef, restVh, deepVh]);
+
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    dragRef.current = { pointerId: event.pointerId, startY: event.clientY, startPan: pan, dragged: false };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const deltaY = event.clientY - drag.startY;
+    if (!drag.dragged) {
+      if (Math.abs(deltaY) < 4) return;
+      drag.dragged = true;
+      setDragging(true);
+      onDragStart();
+    }
+    const wrap = wrapRef.current;
+    if (!wrap || typeof window === "undefined") return;
+    const scale = wrap.clientWidth / 375;
+    if (scale <= 0) return;
+    // translateY is in vh (the real document viewport, unaffected by this
+    // card's own container-query width) -- convert the on-screen drag
+    // distance back into that same unit via the current scale factor.
+    const deltaVh = (deltaY * 100) / (scale * window.innerHeight);
+    const next = Math.min(restVh, Math.max(deepVh, drag.startPan + deltaVh));
+    setPan(next);
+  };
+
+  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    dragRef.current = null;
+    setDragging(false);
+  };
+
+  // Deliberately no reset-on-pointerleave: a drag should behave like panning
+  // a real photo -- it stays wherever you left it, not snap back the moment
+  // your cursor drifts off the card (which it very often does right at the
+  // end of an ordinary drag-and-release gesture). `onPointerCancel` already
+  // covers a drag interrupted mid-gesture (e.g. the browser taking over for
+  // a system gesture); a plain pointerleave during an active drag doesn't
+  // end it at all since this element holds pointer capture, so move/up
+  // events keep arriving here regardless of where the cursor physically is.
+
+  return {
+    pan,
+    dragging,
+    handlers: {
+      onPointerDown,
+      onPointerMove,
+      onPointerUp: endDrag,
+      onPointerCancel: endDrag,
+    },
+  };
+}
 
 const PAGE_SIZE = 24;
-
-const CATEGORY_LABELS: Record<ThemeCategory, string> = {
-  romantic: "Romantic",
-  modern: "Modern",
-  botanical: "Botanical",
-  boho: "Boho",
-  luxury: "Luxury",
-  dark: "Dark & Moody",
-  coastal: "Coastal",
-  rustic: "Rustic",
-  vintage: "Vintage",
-  minimal: "Minimal",
-  marble: "Marble",
-  cosmic: "Cosmic",
-  peony: "Peony",
-  provence: "Provence",
-};
-
-const SEASON_LABELS: Record<ThemeSeason, string> = {
-  spring: "Spring",
-  summer: "Summer",
-  autumn: "Autumn",
-  winter: "Winter",
-};
 
 interface ThemeGalleryProps {
   themes: Theme[];
@@ -87,6 +231,11 @@ interface ThemeGalleryProps {
    * every caller has this yet (e.g. a hypothetical theme-only context), so
    * it's optional and the row simply doesn't render without it. */
   eventType?: string;
+  /** Optional, defaulting to English -- same convention as ModuleCard/
+   * FirstVisitTour, so the several not-yet-updated callers (onboarding
+   * wizard, marketing landing page's `LandingThemeShowcase`) keep working
+   * unchanged until their own locale-threading lands. */
+  locale?: Locale;
 }
 
 /** Category/season sidebar + search + a live, screenshot-free dual mockup
@@ -118,7 +267,10 @@ export default function ThemeGallery({
   disabled,
   onCustomize,
   eventType,
+  locale,
 }: ThemeGalleryProps) {
+  const t = getDictionary(locale ?? "en").dashboard.style.gallery;
+  const eventTypeList = useMemo(() => getLocalizedEventTypeList(locale ?? "en"), [locale]);
   // dashboard-audit.md B6: weddingpost.ru's catalog opens on its "Популярные"
   // entry rather than an unfiltered "all" -- confirmed live. This is a
   // separate axis from category/season/layout below (an "entry", not a
@@ -236,7 +388,7 @@ export default function ThemeGallery({
   const combinedStyleEntries: StyleEntry[] = [
     ...categoryEntries
       .filter(([, count]) => count > 0)
-      .map(([cat, count]) => ({ kind: "category" as const, id: cat, label: CATEGORY_LABELS[cat], count })),
+      .map(([cat, count]) => ({ kind: "category" as const, id: cat, label: t.categories[cat], count })),
     ...layoutEntries
       .filter(([, count]) => count >= MIN_STYLE_BUCKET_SIZE)
       .map(([label, count]) => ({ kind: "layout" as const, id: label, label, count })),
@@ -246,7 +398,7 @@ export default function ThemeGallery({
     <div className={styles.root}>
     {eventType && (
       <div className={styles.occasionRow}>
-        {EVENT_TYPE_LIST.map((type) => (
+        {eventTypeList.map((type) => (
           <button
             key={type.id}
             type="button"
@@ -264,7 +416,7 @@ export default function ThemeGallery({
           type="search"
           value={query}
           onChange={(event) => updateQuery(event.target.value)}
-          placeholder="Search styles..."
+          placeholder={t.searchPlaceholder}
           className={styles.search}
         />
 
@@ -276,7 +428,7 @@ export default function ThemeGallery({
           >
             <span className={styles.entryLabel}>
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-              Popular
+              {t.popular}
             </span>
             <span className={styles.count}>{POPULAR_THEME_IDS.length}</span>
           </button>
@@ -285,8 +437,8 @@ export default function ThemeGallery({
             onClick={() => selectEntry("new")}
             className={entry === "new" ? styles.filterActive : styles.filterBtn}
           >
-            <span>New</span>
-            <span className={styles.newBadge}>NEW</span>
+            <span>{t.new}</span>
+            <span className={styles.newBadge}>{t.new.toUpperCase()}</span>
           </button>
           {seasonEntries.map(([s]) => (
             <button
@@ -295,9 +447,7 @@ export default function ThemeGallery({
               onClick={() => updateSeason(season === s && entry === null ? "all" : s)}
               className={entry === null && season === s ? styles.filterActive : styles.filterBtn}
             >
-              <span>
-                {SEASON_LABELS[s]} {currentYear}
-              </span>
+              <span>{t.seasonYear(t.seasons[s], currentYear)}</span>
             </button>
           ))}
           <button
@@ -307,7 +457,7 @@ export default function ThemeGallery({
           >
             <span className={styles.entryLabel}>
               <Heart className="h-3.5 w-3.5" aria-hidden="true" />
-              Favorites
+              {t.favorites}
             </span>
             <span className={styles.count}>{favoriteIds.size}</span>
           </button>
@@ -324,13 +474,13 @@ export default function ThemeGallery({
               it) rather than an invitation to keep looking -- this one
               phrasing change is what actually answers "can I pick something
               else?" without touching layout or hiding anything. */}
-          <p className={styles.filterLabel}>Or pick a specific style</p>
+          <p className={styles.filterLabel}>{t.orPickSpecific}</p>
           <button
             type="button"
             onClick={() => updateStyle(null)}
             className={style === null ? styles.filterActive : styles.filterBtn}
           >
-            <span>All styles</span>
+            <span>{t.allStyles}</span>
             <span className={styles.count}>{themes.length}</span>
           </button>
           {combinedStyleEntries.map((item) => {
@@ -353,13 +503,13 @@ export default function ThemeGallery({
         </div>
 
         <div className={styles.filterGroup}>
-          <p className={styles.filterLabel}>Season</p>
+          <p className={styles.filterLabel}>{t.season}</p>
           <button
             type="button"
             onClick={() => updateSeason("all")}
             className={season === "all" ? styles.filterActive : styles.filterBtn}
           >
-            <span>All year</span>
+            <span>{t.allYear}</span>
           </button>
           {seasonEntries.map(([s, count]) => (
             <button
@@ -368,7 +518,7 @@ export default function ThemeGallery({
               onClick={() => updateSeason(s)}
               className={season === s ? styles.filterActive : styles.filterBtn}
             >
-              <span>{SEASON_LABELS[s]}</span>
+              <span>{t.seasons[s]}</span>
               <span className={styles.count}>{count}</span>
             </button>
           ))}
@@ -398,16 +548,14 @@ export default function ThemeGallery({
           <div className={styles.popularHeading}>
             <p className={styles.popularTitle}>
               <Sparkles className="h-4 w-4" aria-hidden="true" />
-              Our favorite styles
+              {t.favoriteTitle}
             </p>
-            <p className={styles.popularSubtext}>
-              Hand-picked across every category - hover one to preview it, or pick a specific style on the left.
-            </p>
+            <p className={styles.popularSubtext}>{t.favoriteSubtext}</p>
           </div>
         ) : (
           <p className={styles.resultsCount}>
-            {filtered.length} {filtered.length === 1 ? "style" : "styles"}
-            <span className={styles.hoverHint}>Hover a style to preview it</span>
+            {t.resultsCount(filtered.length)}
+            <span className={styles.hoverHint}>{t.hoverHint}</span>
           </p>
         )}
         <div className={entry === "popular" ? `${styles.grid} ${styles.gridPopular}` : styles.grid}>
@@ -421,19 +569,18 @@ export default function ThemeGallery({
               onCustomize={onCustomize}
               isFavorite={favoriteIds.has(theme.id)}
               onToggleFavorite={toggleFavorite}
+              locale={locale}
             />
           ))}
         </div>
-        {filtered.length === 0 && (
-          <p className={styles.empty}>No styles match - try clearing a filter or search.</p>
-        )}
+        {filtered.length === 0 && <p className={styles.empty}>{t.noMatch}</p>}
         {visibleCount < filtered.length && (
           <button
             type="button"
             className={styles.showMore}
             onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
           >
-            Show more styles ({filtered.length - visibleCount} more)
+            {t.showMore(filtered.length - visibleCount)}
           </button>
         )}
       </div>
@@ -464,6 +611,9 @@ export interface ThemeGalleryCardProps {
    * render, same optional-prop convention as `onCustomize` above. */
   isFavorite?: boolean;
   onToggleFavorite?: (themeId: string) => void;
+  /** Optional, defaulting to English -- same convention as `ThemeGallery`
+   * itself (see that prop's own comment). */
+  locale?: Locale;
 }
 
 /** Exported so `LandingThemeShowcase` (the trimmed, no-filters 6-card
@@ -478,7 +628,17 @@ export function ThemeGalleryCard({
   onCustomize,
   isFavorite,
   onToggleFavorite,
+  locale,
 }: ThemeGalleryCardProps) {
+  const resolvedLocale = locale ?? "en";
+  const t = getDictionary(resolvedLocale).dashboard.style.card;
+  // Demo-only schedule, same register as the Letter preview copy below --
+  // a believable sample, never meant to look like real event data.
+  const previewTimelineEvents = [
+    { time: "4:00 PM", title: t.timelineCeremony },
+    { time: "5:00 PM", title: t.timelineCocktail },
+    { time: "6:30 PM", title: t.timelineReception },
+  ];
   const [name1, name2] = previewNamesFor(theme.id);
   const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
   const targetDate = useMemo(() => previewTargetDateFor(theme.id, theme.season), [theme.id, theme.season]);
@@ -491,6 +651,19 @@ export function ThemeGalleryCard({
     ? (recommendedVariant as HeroVariant)
     : DEFAULT_HERO_VARIANT;
   const anchor = anchorFor(heroVariant);
+
+  // Shared between both mockups' drag hooks below: a tap that turns into a
+  // drag must not also select the theme once the pointer lifts -- set the
+  // instant either hook's gesture crosses the drag threshold, read (and
+  // cleared) by this button's own onClick.
+  const justDraggedRef = useRef(false);
+  const markDragged = () => {
+    justDraggedRef.current = true;
+  };
+  const desktopWrapRef = useRef<HTMLDivElement | null>(null);
+  const phoneWrapRef = useRef<HTMLDivElement | null>(null);
+  const desktopDrag = useDragPan(desktopWrapRef, DESKTOP_REST_VH[anchor], DEEP_PAN_VH, markDragged);
+  const phoneDrag = useDragPan(phoneWrapRef, PHONE_REST_VH[anchor], DEEP_PAN_VH, markDragged);
 
   // A static snapshot, not a live tick: this is a decorative demo timer, not
   // a real countdown, and up to ~24 cards on screen each running their own
@@ -552,7 +725,14 @@ export function ThemeGalleryCard({
     <button
       type="button"
       disabled={disabled}
-      onClick={() => (selected && onCustomize ? onCustomize() : onSelect(theme.id))}
+      onClick={() => {
+        if (justDraggedRef.current) {
+          justDraggedRef.current = false;
+          return;
+        }
+        if (selected && onCustomize) onCustomize();
+        else onSelect(theme.id);
+      }}
       onMouseEnter={requestQrPreview}
       onFocus={requestQrPreview}
       className={selected ? styles.cardSelected : styles.card}
@@ -563,7 +743,7 @@ export function ThemeGalleryCard({
             <div className={styles.qrReveal} aria-hidden="true">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={qrDataUrl} alt="" className={styles.qrImage} />
-              <span className={styles.qrCaption}>Scan to preview</span>
+              <span className={styles.qrCaption}>{t.scanToPreview}</span>
             </div>
           )}
           {onToggleFavorite && (
@@ -571,7 +751,7 @@ export function ThemeGalleryCard({
               role="button"
               tabIndex={0}
               aria-pressed={isFavorite}
-              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              aria-label={isFavorite ? t.removeFavorite : t.addFavorite}
               onClick={handleFavoriteClick}
               onKeyDown={handleFavoriteKeyDown}
               className={styles.favoriteHeart}
@@ -579,9 +759,18 @@ export function ThemeGalleryCard({
               <Heart className="h-[18px] w-[18px]" fill={isFavorite ? "currentColor" : "none"} aria-hidden="true" />
             </span>
           )}
-          <div className={styles.desktopPanel}>
+          <div
+            ref={desktopWrapRef}
+            className={styles.desktopPanel}
+            data-dragging={desktopDrag.dragging || undefined}
+            {...desktopDrag.handlers}
+          >
             <div className={styles.desktopScaleWrap}>
-              <div className={styles.desktopScaleInner} data-anchor={anchor}>
+              <div
+                className={styles.desktopScaleInner}
+                data-anchor={anchor}
+                style={{ transform: `scale(calc(100cqw / 375px)) translateY(${desktopDrag.pan}vh)` }}
+              >
                 <HeroSection
                   variant={heroVariant}
                   names={[name1, name2]}
@@ -590,40 +779,49 @@ export function ThemeGalleryCard({
                   themeCategory={effectiveDecorCategory(theme)}
                 />
                 {/* Matches .phoneScaleInner below -- same reasoning: without
-                    a second section here, the shared theme-card-pan
-                    keyframe's extended sweep would pan this panel past its
-                    own (Hero-only) content into empty space. */}
+                    real sections here, dragging this panel would just pan
+                    past its own (Hero-only) content into empty space. */}
                 <LetterSection
                   variant="ornate-border"
-                  title="A Note From Us"
-                  body="We can't wait to celebrate this day surrounded by the people we love most."
+                  title={t.letterTitle}
+                  body={t.letterBody}
                   quote={previewQuoteFor(theme.id)}
-                  locale={DEFAULT_LOCALE}
+                  locale={resolvedLocale}
                 />
+                <TimelineSection variant="vertical-line" title={t.scheduleTitle} events={previewTimelineEvents} />
               </div>
             </div>
           </div>
 
           {(!selected || onCustomize) && (
             <div className={styles.hoverReveal} aria-hidden="true">
-              <span className={styles.hoverRevealBtn}>{selected ? "Customize →" : "Choose this style"}</span>
+              <span className={styles.hoverRevealBtn}>{selected ? t.customize : t.chooseStyle}</span>
             </div>
           )}
 
           {PHOTO_PROMINENT_HERO_VARIANTS.has(heroVariant) && (
-            <span className={styles.photoBadge} title="This style is built around a photo - add yours for the full look">
-              📷 Built for a photo
+            <span className={styles.photoBadge} title={t.builtForPhotoTitle}>
+              {t.builtForPhoto}
             </span>
           )}
 
-          <div className={styles.phoneMockup}>
+          <div
+            ref={phoneWrapRef}
+            className={styles.phoneMockup}
+            data-dragging={phoneDrag.dragging || undefined}
+            {...phoneDrag.handlers}
+          >
             <span className={styles.phoneNotch} aria-hidden="true" />
             <div className={styles.phoneChrome} aria-hidden="true">
               <span className={styles.phoneMenuIcon} />
-              <span className={styles.phoneCalendarPill}>Add to calendar</span>
+              <span className={styles.phoneCalendarPill}>{t.addToCalendar}</span>
             </div>
             <div className={styles.phoneScaleWrap}>
-              <div className={styles.phoneScaleInner} data-anchor={anchor}>
+              <div
+                className={styles.phoneScaleInner}
+                data-anchor={anchor}
+                style={{ transform: `scale(calc(100cqw / 375px)) translateY(${phoneDrag.pan}vh)` }}
+              >
                 <HeroSection
                   variant={heroVariant}
                   names={[name1, name2]}
@@ -631,31 +829,31 @@ export function ThemeGalleryCard({
                   photoUrl={photoUrl}
                   themeCategory={effectiveDecorCategory(theme)}
                 />
-                {/* A second real section below Hero, purely so the hover
-                    pan (theme-card-pan below) has real decor + sample copy
-                    to reveal -- previously it only ever panned through
-                    Hero's own ~100vh, so a host hovering a card never saw
-                    anything but a longer look at the same one section.
-                    Ornate Border specifically for its corner-flourish decor
-                    (CSS-driven off theme tokens, no themeCategory prop
-                    needed, unlike Hero's motif system). */}
+                {/* Two more real sections below Hero -- drag-panning this
+                    mockup (see useDragPan above) reveals Letter's decor +
+                    sample copy, then Timeline's own sample schedule, instead
+                    of just a longer look at Hero alone. Ornate Border
+                    specifically for its corner-flourish decor (CSS-driven
+                    off theme tokens, no themeCategory prop needed, unlike
+                    Hero's motif system). */}
                 <LetterSection
                   variant="ornate-border"
-                  title="A Note From Us"
-                  body="We can't wait to celebrate this day surrounded by the people we love most."
+                  title={t.letterTitle}
+                  body={t.letterBody}
                   quote={previewQuoteFor(theme.id)}
-                  locale={DEFAULT_LOCALE}
+                  locale={resolvedLocale}
                 />
+                <TimelineSection variant="vertical-line" title={t.scheduleTitle} events={previewTimelineEvents} />
               </div>
             </div>
             {countdown && !countdown.reached && (
               <div className={styles.phoneTimer} aria-hidden="true">
                 {[
-                  { value: countdown.weeks, label: "weeks" },
-                  { value: countdown.days, label: "days" },
-                  { value: countdown.hours, label: "hours" },
-                  { value: countdown.minutes, label: "minutes" },
-                  { value: countdown.seconds, label: "seconds" },
+                  { value: countdown.weeks, label: t.countdown.weeks },
+                  { value: countdown.days, label: t.countdown.days },
+                  { value: countdown.hours, label: t.countdown.hours },
+                  { value: countdown.minutes, label: t.countdown.minutes },
+                  { value: countdown.seconds, label: t.countdown.seconds },
                 ].map((unit) => (
                   <div key={unit.label} className={styles.timerUnit}>
                     <span className={styles.timerValue}>{String(unit.value).padStart(2, "0")}</span>
@@ -668,7 +866,7 @@ export function ThemeGalleryCard({
         </div>
       </ThemeProvider>
 
-      <p className={styles.domainCaption}>yourname.com</p>
+      <p className={styles.domainCaption}>{t.domainCaption}</p>
 
       {tags.length > 0 && (
         <div className={styles.tagRow}>
@@ -680,7 +878,7 @@ export function ThemeGalleryCard({
         </div>
       )}
 
-      <p className={styles.customizeCaption}>Everything can be customized further in the constructor</p>
+      <p className={styles.customizeCaption}>{t.customizeFurther}</p>
 
       <div className={styles.cardFooter}>
         <p className={styles.cardName}>{theme.name}</p>

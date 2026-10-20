@@ -12,8 +12,8 @@
 
 .stage {
   position: relative;
-  width: 17rem;
-  height: 20.5rem;
+  width: 18.5rem;
+  height: 22.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,8 +21,8 @@
 
 .photo {
   display: block;
-  width: 12rem;
-  height: 15rem;
+  width: 13.5rem;
+  height: 17rem;
   object-fit: cover;
   border: 2px solid var(--theme-accent);
   border-bottom: none;
@@ -62,14 +62,14 @@
 
 @media (min-width: 640px) {
   .stage {
-    width: 19rem;
-    height: 23rem;
+    width: 23rem;
+    height: 27.5rem;
   }
 
   .photo {
-    width: 14rem;
-    height: 17rem;
-    border-radius: 7rem 7rem 0 0;
+    width: 17rem;
+    height: 20.5rem;
+    border-radius: 8.5rem 8.5rem 0 0;
   }
 
   .archOutline {
@@ -89,14 +89,14 @@
 
 @media (min-width: 1024px) {
   .stage {
-    width: 21rem;
-    height: 26rem;
+    width: 26rem;
+    height: 31rem;
   }
 
   .photo {
-    width: 16rem;
-    height: 19.5rem;
-    border-radius: 8rem 8rem 0 0;
+    width: 19.5rem;
+    height: 23.5rem;
+    border-radius: 9.75rem 9.75rem 0 0;
   }
 
   .names {

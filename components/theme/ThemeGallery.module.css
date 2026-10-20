@@ -528,6 +528,18 @@
   border-radius: 10px;
   border: 3px solid color-mix(in srgb, var(--theme-text) 75%, transparent);
   container-type: inline-size;
+  /* Drag-to-pan affordance (see ThemeGalleryCard's useDragPan) -- grab at
+     rest, grabbing while an actual drag is in progress. touch-action: none
+     so a touch drag that starts on the mockup pans it instead of the
+     browser racing our pointermove handler for the gesture and scrolling
+     the real page underneath the card. */
+  cursor: grab;
+  touch-action: none;
+}
+
+.desktopPanel[data-dragging="true"],
+.phoneMockup[data-dragging="true"] {
+  cursor: grabbing;
 }
 
 /* Renders the theme's own real Hero variant -- same component, same
@@ -572,6 +584,9 @@
   background-color: color-mix(in srgb, var(--theme-bg) 88%, var(--theme-text) 12%);
   overflow: hidden;
   container-type: inline-size;
+  /* See .desktopPanel's matching rule above for why. */
+  cursor: grab;
+  touch-action: none;
 }
 
 .phoneNotch {
@@ -712,33 +727,59 @@
   transform: scale(calc(100cqw / 375px));
 }
 
-/* Hovering a card slowly pans the real Hero render top-to-bottom instead of
- * sitting on the one fixed crop -- flagged live: a host only ever saw the
- * single cropped slice each card rests on, never the rest of that theme's
- * own composition (corner flourishes, a bottom-anchored caption, whatever
- * sits above/below the resting anchor). The scale factor is identical at
- * every point in the sweep (same container width throughout), only
- * translateY moves, so this reuses the exact same crop-scale transform each
- * panel already applies at rest -- hover just animates it instead of
- * holding it still. Respects reduced-motion: the resting crop (already a
- * real, considered composition, not an empty state) is what motion-averse
- * visitors see, same as before this change. */
+/* Hovering a card auto-plays the pan again, same as before drag/wheel
+ * support existed -- confirmed live with the product owner: manual
+ * scroll/drag alone wasn't discoverable (nobody thinks to grab or scroll a
+ * small decorative gallery card), and "it doesn't preview/scroll anymore"
+ * was the actual bug report once drag replaced the old always-on hover
+ * animation. Hover is the passive, zero-effort path everyone finds; drag
+ * (.desktopPanel/.phoneMockup's pointer handlers) and wheel (the native
+ * listener in ThemeGalleryCard's useDragPan) stay available on top of it
+ * for anyone who wants to stop on a specific frame -- CSS animations take
+ * precedence over the inline transform style those set while the animation
+ * is running (per the cascade, animations outrank normal author rules
+ * including inline), so hovering always shows the full sweep regardless of
+ * wherever a prior drag/scroll left the inline transform; it reappears the
+ * moment the pointer leaves and the animation stops. :focus-visible keeps
+ * the same animation for keyboard users, who have no pointer to hover or
+ * drag with. Respects reduced-motion: the resting crop (already a real,
+ * considered composition, not an empty state) is what motion-averse
+ * visitors see. */
 @media (prefers-reduced-motion: no-preference) {
-  /* End point moved from -82vh to -145vh: the pan used to only ever
-     traverse Hero's own ~100vh section (nothing else existed below it to
-     reach) -- now that a second full section (Letter, ~100vh) is stacked
-     underneath, this reaches into Letter's body copy/quote/corner-flourish
-     decor without overshooting past it into blank trailing space (checked
-     empirically against the rendered DOM: -178vh, a naive doubling of the
-     original -82vh, overshot well past Letter's own content; -145vh lands
-     on its body+quote+decor together, still comfortably inside it). */
+  /* End point moved from -145vh to -205vh (checked empirically against the
+     rendered DOM, same discipline as the -145vh value it replaces, and kept
+     in sync with DEEP_PAN_VH in ThemeGallery.tsx -- JS owns the draggable
+     mockups' own bound, this keyframe is only the keyboard-focus fallback):
+     Timeline is a third ~100svh section now stacked under Hero+Letter, and
+     -205vh lands inside its event list without overshooting past it into
+     the section's own trailing padding.
+
+     Added an explicit Letter stop at -95vh (roughly the midpoint of Hero's
+     own ~100vh and the Hero+Letter combined ~200vh, so it lands inside
+     Letter's body/quote regardless of which anchor's Hero height it's
+     following) with 15% of the cycle held nearby (25%-40%) instead of
+     passing straight through on a single easing curve -- flagged live:
+     with only a 0%->50% sweep, Letter's own window was narrow enough
+     relative to Hero's (slow-starting) and Timeline's (slow-ending) own
+     dwell time that it read as "jumps from Hero straight to the schedule,
+     no letter" on several themes, especially bottom/spread-anchored ones
+     whose Hero section itself runs taller before Letter even starts. Not a
+     per-anchor fix (would need three separate keyframes, one per
+     data-anchor, to land exactly on each anchor's own Letter window) --
+     this is the single-keyframe version that gets every anchor close
+     enough to register as "yes, there's a letter in there too" without
+     that bigger rewrite, which isn't warranted for a polish-tier gap. */
   @keyframes theme-card-pan {
     0%,
     100% {
       transform: scale(calc(100cqw / 375px)) translateY(-4vh);
     }
-    50% {
-      transform: scale(calc(100cqw / 375px)) translateY(-145vh);
+    25%,
+    40% {
+      transform: scale(calc(100cqw / 375px)) translateY(-95vh);
+    }
+    70% {
+      transform: scale(calc(100cqw / 375px)) translateY(-205vh);
     }
   }
 

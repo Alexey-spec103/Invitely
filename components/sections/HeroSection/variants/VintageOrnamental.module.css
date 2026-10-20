@@ -10,7 +10,7 @@
 .frame {
   position: relative;
   width: 100%;
-  max-width: 28rem;
+  max-width: 33rem;
   padding: 1.5rem;
   border: 1px solid var(--theme-accent);
 }
@@ -96,8 +96,8 @@
    antique studio photography without fighting the theme's own palette. */
 .photo {
   display: block;
-  width: 78%;
-  max-width: 18rem;
+  width: 85%;
+  max-width: 23rem;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   margin: 0 auto 1.25rem;
@@ -124,11 +124,15 @@
 @media (min-width: 640px) {
   .frame {
     padding: 2rem;
-    max-width: 32rem;
+    max-width: 38rem;
   }
 
   .inner {
     padding: 2.75rem 2rem;
+  }
+
+  .photo {
+    max-width: 27rem;
   }
 
   .flourishColorTl,
@@ -159,5 +163,13 @@
 
   .names {
     font-size: 3.75rem;
+  }
+
+  .frame {
+    max-width: 42rem;
+  }
+
+  .photo {
+    max-width: 31rem;
   }
 }

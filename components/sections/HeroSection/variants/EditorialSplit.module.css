@@ -101,7 +101,7 @@
 
 .photoCol {
   width: 100%;
-  max-width: 20rem;
+  max-width: 25rem;
 }
 
 /* A clean rectangle with a soft offset shadow, like a real photograph set
@@ -158,7 +158,7 @@
   }
 
   .photoCol {
-    max-width: 18rem;
+    max-width: 23rem;
     align-self: flex-end;
     margin-bottom: -2rem;
   }
@@ -178,7 +178,7 @@
   }
 
   .photoCol {
-    max-width: 21rem;
+    max-width: 26rem;
   }
 }
 
@@ -235,7 +235,7 @@
   }
 
   .photoCol {
-    max-width: 20rem;
+    max-width: 24rem;
     align-self: center;
     margin-bottom: 0;
   }

@@ -49,8 +49,8 @@
    replacement for the moon/swash flourishes, since the hand-lettered script
    stays the composition's whole point. */
 .photo {
-  width: 6rem;
-  height: 6rem;
+  width: 8rem;
+  height: 8rem;
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 1.25rem;
@@ -147,8 +147,8 @@
   }
 
   .photo {
-    width: 7rem;
-    height: 7rem;
+    width: 9.5rem;
+    height: 9.5rem;
   }
 
   .date {
@@ -169,5 +169,10 @@
   .moonColor {
     width: 10rem;
     height: 10rem;
+  }
+
+  .photo {
+    width: 11rem;
+    height: 11rem;
   }
 }

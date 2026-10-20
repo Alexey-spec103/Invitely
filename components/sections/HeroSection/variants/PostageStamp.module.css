@@ -21,7 +21,7 @@
    gap is what actually reads as "stamp", a single dashed rule doesn't. */
 .stamp {
   position: relative;
-  width: 11rem;
+  width: 14rem;
   padding: 0.6rem;
   background-color: var(--theme-bg);
   border: 3px dotted color-mix(in srgb, var(--theme-text) 45%, transparent);
@@ -92,7 +92,7 @@
 
 @media (min-width: 640px) {
   .stamp {
-    width: 13rem;
+    width: 16.5rem;
   }
 
   .names {
@@ -106,7 +106,7 @@
 
 @media (min-width: 1024px) {
   .stamp {
-    width: 14.5rem;
+    width: 18.5rem;
   }
 
   .names {
