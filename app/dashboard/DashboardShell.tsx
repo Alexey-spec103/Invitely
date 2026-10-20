@@ -16,6 +16,8 @@ import SupportWidget from "./SupportWidget";
 import AnonymousAccountBanner from "./AnonymousAccountBanner";
 import InvitelyLogo from "@/components/InvitelyLogo";
 import { isConstructorRoute } from "@/lib/dashboardChrome";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 // Every header child (EventSwitcher, UserMenu, PublishToggle, the icon links
 // right here) already reads its colors from these --dash-* custom properties
@@ -68,6 +70,14 @@ interface DashboardShellProps {
     customDomain?: string | null;
   };
   children: ReactNode;
+  /** Resolved server-side from the host's own locale cookie (same one the
+   * guest-facing site/marketing pages use, see lib/i18n/resolveLocale.ts) --
+   * threaded down to every header/nav child below so the dashboard's own
+   * chrome stops being the one surface that ignores it. Defaults to English
+   * so any caller that hasn't been updated yet (there shouldn't be any --
+   * this is the only place DashboardShell is rendered -- but matches the
+   * optional-prop convention every child below also uses) keeps working. */
+  locale?: Locale;
 }
 
 /** The main thing a host needs out of this whole product, repeatedly flagged
@@ -79,8 +89,17 @@ interface DashboardShellProps {
  * wraps all of them. Clipboard write only (no share-sheet/QR here) -- the
  * Guests tab already owns per-guest personalized links and multi-channel
  * sending (SendInviteMenu); this is just the host's own one link. */
-function CopyLinkButton({ slug, customDomain }: { slug: string; customDomain?: string | null }) {
+function CopyLinkButton({
+  slug,
+  customDomain,
+  locale,
+}: {
+  slug: string;
+  customDomain?: string | null;
+  locale: Locale;
+}) {
   const [copied, setCopied] = useState(false);
+  const t = getDictionary(locale).dashboard.shell.copyLink;
 
   // Built at click time, never at render time -- `window.location.origin`
   // doesn't exist during the server render, so computing the full URL in the
@@ -124,13 +143,13 @@ function CopyLinkButton({ slug, customDomain }: { slug: string; customDomain?: s
       {copied ? (
         <>
           <Check className="h-[16px] w-[16px] shrink-0" />
-          <span>Copied!</span>
+          <span>{t.copied}</span>
         </>
       ) : (
         <>
           <Copy className="h-[16px] w-[16px] shrink-0" />
-          <span className="hidden sm:inline">Copy your invitation link</span>
-          <span className="sm:hidden">Copy link</span>
+          <span className="hidden sm:inline">{t.copyFull}</span>
+          <span className="sm:hidden">{t.copyShort}</span>
         </>
       )}
     </button>
@@ -144,6 +163,7 @@ export default function DashboardShell({
   navEventId,
   publish,
   children,
+  locale = "en",
 }: DashboardShellProps) {
   const pathname = usePathname();
   const isConstructor = isConstructorRoute(pathname, navEventId);
@@ -179,10 +199,10 @@ export default function DashboardShell({
           </Link>
           <span className="hidden h-4 w-px bg-[var(--dash-border)] sm:block" />
           <EventSwitcher events={events} currentEventId={navEventId} />
-          <NewEventButton />
+          <NewEventButton locale={locale} />
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
-          {publish && <CopyLinkButton slug={publish.slug} customDomain={publish.customDomain} />}
+          {publish && <CopyLinkButton slug={publish.slug} customDomain={publish.customDomain} locale={locale} />}
           {publish && (
             // Competitor research (Greenvelope's "send a self-test" step):
             // this was icon-only with just a hover title -- easy to miss,
@@ -197,26 +217,26 @@ export default function DashboardShell({
               className="flex h-9 items-center gap-1.5 rounded-full border border-[var(--dash-border)] px-3 text-xs font-medium text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
             >
               <ExternalLink className="h-[16px] w-[16px] shrink-0" />
-              <span className="hidden sm:inline">See what guests see</span>
+              <span className="hidden sm:inline">{getDictionary(locale).dashboard.shell.seeWhatGuestsSee}</span>
             </Link>
           )}
-          {publish && <PlanBadge planId={publish.planId} eventId={publish.eventId} />}
-          <UserMenu userEmail={userEmail} planEventId={navEventId} />
-          {publish && <PublishToggle eventId={publish.eventId} status={publish.status ?? "draft"} />}
+          {publish && <PlanBadge planId={publish.planId} eventId={publish.eventId} locale={locale} />}
+          <UserMenu userEmail={userEmail} planEventId={navEventId} locale={locale} />
+          {publish && <PublishToggle eventId={publish.eventId} status={publish.status ?? "draft"} locale={locale} />}
         </div>
       </header>
 
-      <AnonymousAccountBanner isAnonymous={isAnonymous} />
+      <AnonymousAccountBanner isAnonymous={isAnonymous} locale={locale} />
 
       <div className="flex flex-col sm:flex-row">
-        <DashboardNav eventId={navEventId} />
+        <DashboardNav eventId={navEventId} locale={locale} />
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-10 sm:py-10">
           {children}
-          <FunnelNav eventId={navEventId} />
+          <FunnelNav eventId={navEventId} locale={locale} />
         </main>
       </div>
 
-      <SupportWidget />
+      <SupportWidget locale={locale} />
     </div>
   );
 }

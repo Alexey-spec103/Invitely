@@ -17,6 +17,7 @@ import InvitationDownloads from "../invitations/InvitationDownloads";
 import { getWeddingDataCompleteness } from "@/lib/weddingData";
 import { plans, DEFAULT_PLAN_ID, planMeets } from "@/lib/plans";
 import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
+import { getDictionary } from "@/lib/i18n/dictionary";
 
 export default async function PaperPage({ params }: PageProps<"/dashboard/[eventId]/paper">) {
   const { eventId } = await params;
@@ -33,6 +34,8 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
   }
 
   const locale = await resolveGuestLocale();
+  const t = getDictionary(locale).dashboard.paper;
+  const dashboardCommon = getDictionary(locale).dashboard.common;
 
   const supabase = await createClient();
   const [{ data: siteConfig }, { data: guests }] = await Promise.all([
@@ -70,10 +73,8 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
 
   return (
     <div className="max-w-3xl">
-      <h1 className="dash-h1 text-gray-900">Paper</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        Design, personalize, and download every printable piece - invitation, envelope, seating cards, and more.
-      </p>
+      <h1 className="dash-h1 text-gray-900">{t.pageTitle}</h1>
+      <p className="mt-1 text-sm text-gray-500">{t.pageSubtitle}</p>
 
       {/* Direct feedback: "за 35 евро сразу предупреждать" -- everything on
           this page is the paid/print side of the product, so a host should
@@ -83,43 +84,11 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
           this is the immediate, page-level heads-up. */}
       {locked && (
         <div className="mt-4">
-          <PremiumUpgradeNote eventId={event.id} />
+          <PremiumUpgradeNote eventId={event.id} locale={locale} />
         </div>
       )}
 
-      <FirstVisitTour
-        tourId="paper-constructor"
-        steps={[
-          {
-            title: "👋 Welcome to your paper set",
-            body: "The list on the left is every printable piece - invitation, envelope, program, and more, grouped by kind.",
-          },
-          {
-            title: "🔍 Zoom and flip",
-            body: "Use − / + to zoom the preview, and \"↺ Flip to back\" on the invitation to see the reverse side.",
-          },
-          {
-            title: "🖊️ Design the back",
-            body: "The back of your invitation is its own small canvas - add text, a photo, or a QR code. It saves itself as you go.",
-          },
-          {
-            title: "💍 Where the data comes from",
-            body: "Names, date, venue, timeline and dress code are edited in the Site tab - update them there and these cards follow automatically.",
-          },
-          {
-            title: "🍽️ Banquet materials",
-            body: "Seating charts, place cards and table numbers preview one card at a time - use the arrows to flip through the rest.",
-          },
-          {
-            title: "⬇️ Download when ready",
-            body: "Each \"Download all\" button turns every card in that set into a ready-to-print PDF.",
-          },
-          {
-            title: "💬 Stuck on something?",
-            body: "The button in the bottom-left corner reaches a real person on our support team, any time.",
-          },
-        ]}
-      />
+      <FirstVisitTour tourId="paper-constructor" t={dashboardCommon.tour} steps={t.tourSteps} />
 
       <div className="mt-6">
         <HubOverviewStrip
@@ -129,6 +98,7 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
           weddingDataPercent={weddingDataPercent}
           planName={plan.name}
           planPriceEur={plan.priceEur}
+          locale={locale}
         />
       </div>
 
@@ -168,11 +138,8 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
           second navigation away. Personalized (QR-linked, per-guest)
           downloads now live right here, after the design itself. */}
       <div className="mt-10">
-        <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Download</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Each guest gets a QR code linking straight to your site with them already identified, so their RSVP is
-          matched automatically.
-        </p>
+        <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.downloadHeading}</h2>
+        <p className="mt-1 text-sm text-gray-500">{t.downloadSubtitle}</p>
         <InvitationDownloads
           eventId={event.id}
           theme={theme}

@@ -2,6 +2,8 @@
 
 import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 export interface ModuleCardStatus {
   label: string;
@@ -34,7 +36,29 @@ interface ModuleCardProps {
    * thing every other module actually depends on, not just another item in
    * the list. */
   emphasized?: boolean;
+  /** Host locale -- optional, defaulting to English chrome strings, so the
+   * several call sites across the dashboard that haven't been localized yet
+   * (dashboard i18n is a multi-phase rollout, see
+   * lib/i18n/translations/en.ts's `dashboard` namespace comment) keep
+   * compiling and working unchanged. A `locale` prop (not a pre-resolved `t`
+   * object) on purpose: this component is "use client", and several of its
+   * strings (`toggleAriaLabel`) are functions in the dictionary -- a Server
+   * Component caller (every dashboard tab's page.tsx) can't pass a function
+   * as a prop across the server/client boundary (confirmed live: "Functions
+   * cannot be passed directly to Client Components"), so each client
+   * component resolves its own `t` from a plain, serializable locale string
+   * instead, same pattern WeddingDataForm/EventTypeSwitcher already use for
+   * `getLocalizedEventType(eventType, locale)`. */
+  locale?: Locale;
 }
+
+const DEFAULT_MODULE_CARD_STRINGS = {
+  notSetYet: "Not set yet",
+  couldntSave: "Couldn't save",
+  close: "Close",
+  edit: "Edit",
+  toggleAriaLabel: (title: string, turningOn: boolean) => `Turn ${title} ${turningOn ? "on" : "off"}`,
+};
 
 const TONE_CLASSES: Record<ModuleCardStatus["tone"], string> = {
   on: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
@@ -59,7 +83,9 @@ export default function ModuleCard({
   onToggle,
   configured,
   emphasized,
+  locale,
 }: ModuleCardProps) {
+  const t = locale ? getDictionary(locale).dashboard.common.moduleCard : DEFAULT_MODULE_CARD_STRINGS;
   const router = useRouter();
   // dashboard-audit.md B13: weddingpost.ru's own wedding-data fields (Venue/
   // City/Address) sit directly in the panel, always visible -- confirmed
@@ -92,7 +118,7 @@ export default function ModuleCard({
       router.refresh();
     } catch (err) {
       setChecked(!next);
-      setToggleError(err instanceof Error ? err.message : "Couldn't save");
+      setToggleError(err instanceof Error ? err.message : t.couldntSave);
     }
   };
 
@@ -154,7 +180,7 @@ export default function ModuleCard({
           )}
           {!emphasized && onToggle && checked && configured === false && (
             <span className="shrink-0 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-[5px] text-[10px] font-medium leading-none text-amber-400">
-              Not set yet
+              {t.notSetYet}
             </span>
           )}
         </div>
@@ -168,7 +194,7 @@ export default function ModuleCard({
           )}
           {emphasized && onToggle && checked && configured === false && (
             <span className="shrink-0 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-[5px] text-[10px] font-medium leading-none text-amber-400">
-              Not set yet
+              {t.notSetYet}
             </span>
           )}
           {onToggle && (
@@ -176,7 +202,7 @@ export default function ModuleCard({
               type="button"
               role="switch"
               aria-checked={checked}
-              aria-label={`Turn ${title} ${checked ? "off" : "on"}`}
+              aria-label={t.toggleAriaLabel(title, !checked)}
               onClick={handleToggle}
               className={`relative inline-block h-6 w-[46px] shrink-0 rounded-full transition ${
                 checked ? "bg-[var(--dash-accent)]" : "bg-white/10"
@@ -195,7 +221,7 @@ export default function ModuleCard({
               onClick={() => setOpen((v) => !v)}
               className="rounded-2xl border border-[var(--dash-border)] px-[18px] py-[7px] text-[13px] font-semibold text-[var(--dash-text)] transition hover:border-[var(--dash-accent)]"
             >
-              {open ? "Close" : "Edit"}
+              {open ? t.close : t.edit}
             </button>
           )}
         </div>

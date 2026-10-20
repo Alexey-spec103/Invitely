@@ -2,9 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { MousePointerClick, QrCode, PenTool, Send, Download, Globe, X, type LucideIcon } from "lucide-react";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 // Same "invitely:<kind>:<id>" storage-key convention as FirstVisitTour.
 const STORAGE_KEY = "invitely:featureCarouselDismissed";
+
+interface FeatureCarouselProps {
+  /** Optional, defaulting to English -- see DashboardNav's matching prop
+   * comment for why. */
+  locale?: Locale;
+}
 
 interface FeatureCard {
   icon: LucideIcon;
@@ -12,6 +20,19 @@ interface FeatureCard {
   body: string;
   isNew?: boolean;
 }
+
+// Fixed icon/isNew pairing per card index -- `dashboard.site.featureCarousel.items`
+// (lib/i18n/translations/*.ts) holds the translated title/body for each
+// locale, in this same order; only "Send invites your way" (index 3) gets
+// the NEW badge, matching the reasoning in the comment below.
+const FEATURE_ICONS: { icon: LucideIcon; isNew?: boolean }[] = [
+  { icon: MousePointerClick },
+  { icon: QrCode },
+  { icon: PenTool },
+  { icon: Send, isNew: true },
+  { icon: Download },
+  { icon: Globe },
+];
 
 // dashboard-audit.md D2: weddingpost.ru's own "selling carousel" -- 6 cards
 // with NEW badges, pitching real features. Verified against the actual
@@ -24,39 +45,6 @@ interface FeatureCard {
 // something actually shipped this pass (recordInvitationSent/SendInviteMenu);
 // badging the rest would be dishonest the same way weddingpost's own
 // permanent "NEW V10" badge is.
-const FEATURES: FeatureCard[] = [
-  {
-    icon: MousePointerClick,
-    title: "Edit your site by clicking on it",
-    body: "No separate editor-vs-preview split - click any text on the live page, type, and it autosaves.",
-  },
-  {
-    icon: QrCode,
-    title: "A QR code on every invitation",
-    body: "Guests scan and land straight on their own RSVP page, name already filled in - nothing to type, nowhere to get lost.",
-  },
-  {
-    icon: PenTool,
-    title: "A blank canvas, when you want one",
-    body: "Drop in text, photos, video and QR codes anywhere - a second, freeform way to design, alongside the guided one.",
-  },
-  {
-    icon: Send,
-    title: "Send invites your way",
-    body: "WhatsApp, SMS, email or a plain link - one click opens it pre-filled, and we keep track of who's been sent what.",
-    isNew: true,
-  },
-  {
-    icon: Download,
-    title: "Nothing's ever locked while you decide",
-    body: "Every PDF downloads on every plan - Premium only removes the watermark, it doesn't unlock a download you couldn't get before.",
-  },
-  {
-    icon: Globe,
-    title: "A nicer address for your site",
-    body: "Claim a free claire-and-nathaniel.invimbo.com address, or point a domain you already own at your site instead.",
-  },
-];
 
 // UX audit (2026-10-12): this used to render unconditionally on every
 // single visit, permanently sitting between the page's header and the
@@ -66,8 +54,14 @@ const FEATURES: FeatureCard[] = [
 // same mechanism as FirstVisitTour's own "seen it" flag. Rendered as null
 // (not just visually hidden) once dismissed, so it doesn't still occupy
 // layout space.
-export default function FeatureCarousel() {
+export default function FeatureCarousel({ locale = "en" }: FeatureCarouselProps) {
   const [dismissed, setDismissed] = useState(true);
+  const t = getDictionary(locale).dashboard.site.featureCarousel;
+  const FEATURES: FeatureCard[] = t.items.map((item, index) => ({
+    ...item,
+    icon: FEATURE_ICONS[index].icon,
+    isNew: FEATURE_ICONS[index].isNew,
+  }));
 
   useEffect(() => {
     try {
@@ -95,7 +89,7 @@ export default function FeatureCarousel() {
       <button
         type="button"
         onClick={dismiss}
-        aria-label="Dismiss"
+        aria-label={t.dismiss}
         className="absolute -top-2 right-0 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] text-[var(--dash-text-muted)] transition hover:text-[var(--dash-text)]"
       >
         <X className="h-4 w-4" aria-hidden="true" />
@@ -108,7 +102,7 @@ export default function FeatureCarousel() {
           >
             {feature.isNew && (
               <span className="absolute right-3 top-3 rounded-full bg-[var(--dash-accent)] px-2 py-0.5 text-[10px] font-bold tracking-wide text-[var(--dash-accent-contrast)]">
-                NEW
+                {t.newBadge}
               </span>
             )}
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_16%,transparent)] text-[var(--dash-accent)]">

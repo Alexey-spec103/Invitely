@@ -5,9 +5,16 @@ import { usePathname } from "next/navigation";
 import type { ComponentType } from "react";
 import { StyleRailIcon, SiteRailIcon, PaperRailIcon, GuestsRailIcon } from "@/components/icons/RailIcons";
 import { isConstructorRoute } from "@/lib/dashboardChrome";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface DashboardNavProps {
   eventId: string;
+  /** Optional, defaulting to English -- dashboard i18n is a multi-phase
+   * rollout (see lib/i18n/translations/en.ts's `dashboard` namespace
+   * comment), so call sites that haven't threaded a real locale through yet
+   * keep working unchanged. */
+  locale?: Locale;
 }
 
 /** Cell highlight color per item -- dashboard-audit.md B2's illustrated
@@ -28,10 +35,11 @@ const ACCENTS = {
   indigo: { dark: { bg: "bg-indigo-500/15", text: "text-indigo-300" }, light: { bg: "bg-indigo-50", text: "text-indigo-700" } },
 } as const;
 
-export default function DashboardNav({ eventId }: DashboardNavProps) {
+export default function DashboardNav({ eventId, locale = "en" }: DashboardNavProps) {
   const pathname = usePathname();
   const base = `/dashboard/${eventId}`;
   const isConstructor = isConstructorRoute(pathname, eventId);
+  const t = getDictionary(locale).dashboard.shell.nav;
 
   // Direct feedback: Guests/Banquet/Invitations used to be three separate
   // tabs for one connected task (add a guest, seat them, download their
@@ -40,10 +48,10 @@ export default function DashboardNav({ eventId }: DashboardNavProps) {
   // (already the paid/print hub); both old routes now just redirect rather
   // than 404 on an old link.
   const navItems: { href: string; label: string; icon: ComponentType<{ className?: string }>; accent: keyof typeof ACCENTS }[] = [
-    { href: `${base}/style`, label: "Style", icon: StyleRailIcon, accent: "rose" },
-    { href: `${base}/site`, label: "Site", icon: SiteRailIcon, accent: "teal" },
-    { href: `${base}/paper`, label: "Paper", icon: PaperRailIcon, accent: "pink" },
-    { href: `${base}/guests`, label: "Guests", icon: GuestsRailIcon, accent: "violet" },
+    { href: `${base}/style`, label: t.style, icon: StyleRailIcon, accent: "rose" },
+    { href: `${base}/site`, label: t.site, icon: SiteRailIcon, accent: "teal" },
+    { href: `${base}/paper`, label: t.paper, icon: PaperRailIcon, accent: "pink" },
+    { href: `${base}/guests`, label: t.guests, icon: GuestsRailIcon, accent: "violet" },
   ];
 
   return (

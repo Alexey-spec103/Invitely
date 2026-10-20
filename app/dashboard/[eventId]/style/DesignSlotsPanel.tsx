@@ -7,6 +7,8 @@ import { themes, getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
 import ThemeGallery from "@/components/theme/ThemeGallery";
 import { addThemeSlot, removeThemeSlot } from "./actions";
 import styles from "./DesignSlotsPanel.module.css";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface ThemeSlotRow {
   id: string;
@@ -29,6 +31,9 @@ interface DesignSlotsPanelProps {
    * active", identical to picking a different card in the catalog. */
   onActivate: (themeId: string) => void;
   activating: boolean;
+  /** Optional, defaulting to English -- same convention as ModuleCard/
+   * FirstVisitTour, so any not-yet-localized call site keeps working. */
+  locale?: Locale;
 }
 
 function themeLabel(themeId: string): string {
@@ -39,15 +44,15 @@ function themeLabel(themeId: string): string {
   }
 }
 
-function relativeTime(iso: string): string {
+function relativeTime(iso: string, t: ReturnType<typeof getDictionary>["dashboard"]["style"]["designSlots"]): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   const minutes = Math.round(diffMs / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1) return t.justNow;
+  if (minutes < 60) return t.minutesAgo(minutes);
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t.hoursAgo(hours);
   const days = Math.round(hours / 24);
-  return `${days}d ago`;
+  return t.daysAgo(days);
 }
 
 /** dashboard-audit.md B11: weddingpost.ru's "Слоты стилей" card -- hold a
@@ -62,7 +67,9 @@ export default function DesignSlotsPanel({
   history,
   onActivate,
   activating,
+  locale,
 }: DesignSlotsPanelProps) {
+  const t = getDictionary(locale ?? "en").dashboard.style.designSlots;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +92,7 @@ export default function DesignSlotsPanel({
         if (!result.ok) throw new Error(result.message);
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to add slot");
+        setError(err instanceof Error ? err.message : t.failedToAdd);
       }
     });
   };
@@ -98,7 +105,7 @@ export default function DesignSlotsPanel({
         if (!result.ok) throw new Error(result.message);
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to remove slot");
+        setError(err instanceof Error ? err.message : t.failedToRemove);
       }
     });
   };
@@ -132,7 +139,7 @@ export default function DesignSlotsPanel({
             <span className={styles.swatchAccent} style={{ background: currentTheme.vars["--theme-accent"] }} />
           </span>
           <span className={styles.cardName}>{currentTheme.name}</span>
-          <span className={styles.cardBadge}>Active</span>
+          <span className={styles.cardBadge}>{t.active}</span>
         </div>
 
         {visibleSlots.map((slot) => {
@@ -157,7 +164,7 @@ export default function DesignSlotsPanel({
               <span
                 role="button"
                 tabIndex={0}
-                aria-label={`Remove ${slotTheme.name} slot`}
+                aria-label={t.removeSlot(slotTheme.name)}
                 className={styles.removeBtn}
                 onClick={(event) => {
                   event.stopPropagation();
@@ -182,7 +189,7 @@ export default function DesignSlotsPanel({
           className={styles.addCard}
           onClick={() => setAddOpen(true)}
           disabled={busy}
-          aria-label="Add a design slot"
+          aria-label={t.addSlot}
         >
           <Plus className="h-5 w-5" aria-hidden="true" />
         </button>
@@ -192,16 +199,16 @@ export default function DesignSlotsPanel({
             type="button"
             className={styles.historyBtn}
             onClick={() => setHistoryOpen((open) => !open)}
-            aria-label="Design version history"
+            aria-label={t.historyLabel}
             aria-expanded={historyOpen}
           >
             <History className="h-4 w-4" aria-hidden="true" />
           </button>
           {historyOpen && (
             <div className={styles.historyPopover}>
-              <p className={styles.historyTitle}>Recent styles</p>
+              <p className={styles.historyTitle}>{t.recentStyles}</p>
               {nonActiveHistory.length === 0 ? (
-                <p className={styles.historyEmpty}>No past styles yet.</p>
+                <p className={styles.historyEmpty}>{t.noPastStyles}</p>
               ) : (
                 <ul className={styles.historyList}>
                   {nonActiveHistory.map((entry) => (
@@ -216,7 +223,7 @@ export default function DesignSlotsPanel({
                         }}
                       >
                         <span>{themeLabel(entry.theme_id)}</span>
-                        <span className={styles.historyTime}>{relativeTime(entry.changed_at)}</span>
+                        <span className={styles.historyTime}>{relativeTime(entry.changed_at, t)}</span>
                       </button>
                     </li>
                   ))}
@@ -234,15 +241,15 @@ export default function DesignSlotsPanel({
           <div className={styles.modal} onClick={(event) => event.stopPropagation()}>
             <div className={styles.modalHeader}>
               <div>
-                <p className={styles.modalEyebrow}>Add a design slot</p>
-                <p className={styles.modalHint}>Pick a theme to keep as a candidate -- it won&apos;t go live until you switch to it.</p>
+                <p className={styles.modalEyebrow}>{t.addModalEyebrow}</p>
+                <p className={styles.modalHint}>{t.addModalHint}</p>
               </div>
-              <button type="button" className={styles.closeBtn} onClick={() => setAddOpen(false)} aria-label="Close">
+              <button type="button" className={styles.closeBtn} onClick={() => setAddOpen(false)} aria-label={t.close}>
                 &times;
               </button>
             </div>
             <div className={styles.modalGallery}>
-              <ThemeGallery themes={Object.values(themes)} onSelect={handleAddSlot} />
+              <ThemeGallery themes={Object.values(themes)} onSelect={handleAddSlot} locale={locale} />
             </div>
           </div>
         </div>

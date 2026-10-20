@@ -21,20 +21,26 @@ import {
 import BulkAddGuests from "./BulkAddGuests";
 import { normalizeGuestName } from "./parseGuestLines";
 import type { Tables } from "@/lib/supabase/database.types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
-const guestFormSchema = z.object({
-  fullName: z.string().min(1, "Enter a name"),
-  email: z.string().email("Enter a valid email").or(z.literal("")),
-  phone: z
-    .string()
-    .refine((value) => value === "" || /^[0-9+\-()\s]{6,20}$/.test(value), "Enter a valid phone number"),
-  groupLabel: z.string(),
-  maxPlusOnes: z.string(),
-  paperEnabled: z.boolean(),
-  siteEnabled: z.boolean(),
-});
+type GuestsDict = ReturnType<typeof getDictionary>["dashboard"]["guests"];
 
-type GuestFormValues = z.infer<typeof guestFormSchema>;
+function buildGuestFormSchema(t: GuestsDict["form"]) {
+  return z.object({
+    fullName: z.string().min(1, t.errorEnterName),
+    email: z.string().email(t.errorEnterEmail).or(z.literal("")),
+    phone: z
+      .string()
+      .refine((value) => value === "" || /^[0-9+\-()\s]{6,20}$/.test(value), t.errorEnterPhone),
+    groupLabel: z.string(),
+    maxPlusOnes: z.string(),
+    paperEnabled: z.boolean(),
+    siteEnabled: z.boolean(),
+  });
+}
+
+type GuestFormValues = z.infer<ReturnType<typeof buildGuestFormSchema>>;
 
 interface GuestManagerProps {
   eventId: string;
@@ -44,6 +50,7 @@ interface GuestManagerProps {
   attendees: Tables<"guest_attendees">[];
   /** guestId -> attending, only present once that guest has actually RSVP'd. */
   rsvpStatusByGuestId: Record<string, boolean>;
+  locale?: Locale;
 }
 
 /** dashboard-audit.md follow-up: "Copy site link" alone meant a host still
@@ -52,7 +59,7 @@ interface GuestManagerProps {
  * mailto:), just pointed at the general site link instead of one guest's
  * invite code, and with no phone/email lookup needed since this is the
  * host sharing their own link, not inviting one specific person. */
-function ShareLinkBanner({ eventSlug, eventTitle }: { eventSlug: string; eventTitle: string }) {
+function ShareLinkBanner({ eventSlug, eventTitle, t }: { eventSlug: string; eventTitle: string; t: GuestsDict["shareLink"] }) {
   const [copied, setCopied] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const shareRef = useRef<HTMLDivElement>(null);
@@ -84,7 +91,7 @@ function ShareLinkBanner({ eventSlug, eventTitle }: { eventSlug: string; eventTi
   const handleShare = (channel: "whatsapp" | "sms" | "email") => {
     setShareOpen(false);
     const url = getUrl();
-    const message = `You're invited to ${eventTitle}! RSVP here: ${url}`;
+    const message = t.shareMessage(eventTitle, url);
     if (channel === "whatsapp") {
       // No phone number -- wa.me with no number opens WhatsApp's own
       // contact picker instead of a single prefilled chat.
@@ -99,19 +106,17 @@ function ShareLinkBanner({ eventSlug, eventTitle }: { eventSlug: string; eventTi
   return (
     <div className="mt-6 rounded-2xl bg-[color-mix(in_srgb,var(--dash-accent)_10%,white)] px-4 py-3">
       <p className="text-sm font-semibold text-gray-900">
-        ✨ Short on time to add every guest by hand?
+        {t.prompt}
       </p>
       <p className="mt-1 text-xs text-gray-600">
-        Share your site&apos;s one link with everyone - anyone who RSVPs from it is added to your
-        guest list automatically, no invite codes needed.
+        {t.body1}
       </p>
       <p className="mt-1 text-xs text-gray-600">
-        Add guests individually below instead if you&apos;d rather track who&apos;s RSVP&apos;d by name - each one gets
-        their own personal link, separate from this shared one.
+        {t.body2}
       </p>
       <div className="mt-2 flex items-center gap-2">
         <button type="button" onClick={handleCopy} className="dash-btn dash-btn-secondary px-3 py-1 text-xs">
-          {copied ? "Link copied!" : "Copy site link"}
+          {copied ? t.linkCopied : t.copyLink}
         </button>
         <div ref={shareRef} className="relative inline-block">
           <button
@@ -121,7 +126,7 @@ function ShareLinkBanner({ eventSlug, eventTitle }: { eventSlug: string; eventTi
             aria-expanded={shareOpen}
             className="dash-btn dash-btn-secondary px-3 py-1 text-xs"
           >
-            Share link ↗
+            {t.shareLink}
           </button>
           {shareOpen && (
             <div
@@ -134,7 +139,7 @@ function ShareLinkBanner({ eventSlug, eventTitle }: { eventSlug: string; eventTi
                 onClick={() => handleShare("whatsapp")}
                 className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
               >
-                💬 WhatsApp
+                {t.shareWhatsapp}
               </button>
               <button
                 type="button"
@@ -142,7 +147,7 @@ function ShareLinkBanner({ eventSlug, eventTitle }: { eventSlug: string; eventTi
                 onClick={() => handleShare("sms")}
                 className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
               >
-                📱 SMS
+                {t.shareSms}
               </button>
               <button
                 type="button"
@@ -150,7 +155,7 @@ function ShareLinkBanner({ eventSlug, eventTitle }: { eventSlug: string; eventTi
                 onClick={() => handleShare("email")}
                 className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
               >
-                ✉️ Email
+                {t.shareEmail}
               </button>
             </div>
           )}
@@ -210,14 +215,6 @@ function getGuestStatus(
   return guest.invitation_sent_at != null ? "sent" : "created";
 }
 
-const STATUS_FILTERS: { key: StatusFilter; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "created", label: "Created" },
-  { key: "sent", label: "Sent" },
-  { key: "accepted", label: "Accepted" },
-  { key: "declined", label: "Declined" },
-];
-
 /** dashboard-audit.md A8: weddingpost.ru's guest widget (on its finish/invite
  * screen, not its bare guests page) has a single-select pill row -- Все /
  * Созданы / Отправлены / Приняты / Отказ, each with a live count -- confirmed
@@ -227,14 +224,23 @@ function StatusPills({
   counts,
   active,
   onChange,
+  t,
 }: {
   counts: Record<StatusFilter, number>;
   active: StatusFilter;
   onChange: (status: StatusFilter) => void;
+  t: GuestsDict["statusFilters"];
 }) {
+  const statusFilters: { key: StatusFilter; label: string }[] = [
+    { key: "all", label: t.all },
+    { key: "created", label: t.created },
+    { key: "sent", label: t.sent },
+    { key: "accepted", label: t.accepted },
+    { key: "declined", label: t.declined },
+  ];
   return (
     <div className="flex flex-wrap gap-1.5">
-      {STATUS_FILTERS.map(({ key, label }) => {
+      {statusFilters.map(({ key, label }) => {
         const isActive = active === key;
         return (
           <button
@@ -264,7 +270,7 @@ function StatusPills({
   );
 }
 
-function RsvpStatusBadge({ status }: { status: boolean | undefined }) {
+function RsvpStatusBadge({ status, t }: { status: boolean | undefined; t: GuestsDict["guestRow"] }) {
   if (status === undefined) return null;
   return (
     <span
@@ -274,7 +280,7 @@ function RsvpStatusBadge({ status }: { status: boolean | undefined }) {
           : "rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-medium text-rose-700"
       }
     >
-      {status ? "Confirmed" : "Declined"}
+      {status ? t.confirmed : t.declined}
     </span>
   );
 }
@@ -283,10 +289,12 @@ function CopyInviteLinkButton({
   guestId,
   slug,
   inviteCode,
+  t,
 }: {
   guestId: string;
   slug: string;
   inviteCode: string | null;
+  t: GuestsDict["copyInviteLink"];
 }) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
@@ -321,7 +329,7 @@ function CopyInviteLinkButton({
       onClick={handleCopy}
       className="text-sm font-medium text-gray-700 hover:text-gray-900"
     >
-      {copied ? "Copied!" : "Copy link"}
+      {copied ? t.copied : t.copy}
     </button>
   );
 }
@@ -332,21 +340,16 @@ const CHANNEL_ICONS: Record<SendChannel, string> = {
   sms: "📱",
   email: "✉️",
 };
-const CHANNEL_LABELS: Record<SendChannel, string> = {
-  link: "link copied",
-  whatsapp: "WhatsApp",
-  sms: "SMS",
-  email: "email",
-};
-
 function InvitationSentBadge({
   guestId,
   sent,
   channels,
+  t,
 }: {
   guestId: string;
   sent: boolean;
   channels: string[];
+  t: GuestsDict["invitationSent"] & { channelLabels: GuestsDict["channelLabels"] };
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -362,7 +365,7 @@ function InvitationSentBadge({
       await setInvitationSent(guestId, !sent);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setPending(false);
     }
@@ -384,12 +387,12 @@ function InvitationSentBadge({
       title={
         sent
           ? knownChannels.length > 0
-            ? `Sent via ${knownChannels.map((channel) => CHANNEL_LABELS[channel]).join(", ")} - click to mark as not sent`
-            : "Click to mark as not sent"
-          : "Click to mark as sent"
+            ? t.sentVia(knownChannels.map((channel) => t.channelLabels[channel]).join(", "))
+            : t.clickToMarkNotSent
+          : t.clickToMarkSent
       }
     >
-      {sent ? "Sent" : "Not sent"}
+      {sent ? t.sent : t.notSent}
       {sent && knownChannels.length > 0 && (
         <span className="ml-1" aria-hidden="true">
           {knownChannels.map((channel) => CHANNEL_ICONS[channel]).join(" ")}
@@ -416,6 +419,7 @@ function SendInviteMenu({
   phone,
   email,
   eventTitle,
+  t,
 }: {
   guestId: string;
   guestName: string;
@@ -424,6 +428,7 @@ function SendInviteMenu({
   phone: string | null;
   email: string | null;
   eventTitle: string;
+  t: GuestsDict["sendMenu"] & { personalMessage: GuestsDict["shareLink"]["personalMessage"] };
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -454,7 +459,7 @@ function SendInviteMenu({
   const handleSend = async (channel: Extract<SendChannel, "sms" | "whatsapp">) => {
     setOpen(false);
     const url = `${window.location.origin}/e/${slug}?invite=${inviteCode}`;
-    const message = `Hi ${guestName}! You're invited to ${eventTitle}. RSVP here: ${url}`;
+    const message = t.personalMessage(guestName, eventTitle, url);
 
     if (channel === "whatsapp" && phone) {
       const digits = phone.replace(/[^0-9]/g, "");
@@ -481,7 +486,7 @@ function SendInviteMenu({
       if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
-      setEmailError(err instanceof Error ? err.message : "Failed to send email");
+      setEmailError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setSendingEmail(false);
     }
@@ -496,7 +501,7 @@ function SendInviteMenu({
         aria-expanded={open}
         className="text-sm font-medium text-gray-700 hover:text-gray-900"
       >
-        Send
+        {t.send}
       </button>
       {open && (
         <div
@@ -510,7 +515,7 @@ function SendInviteMenu({
               onClick={() => handleSend("whatsapp")}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
             >
-              💬 WhatsApp
+              {t.whatsapp}
             </button>
           )}
           {phone && (
@@ -520,7 +525,7 @@ function SendInviteMenu({
               onClick={() => handleSend("sms")}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
             >
-              📱 SMS
+              {t.sms}
             </button>
           )}
           {email && (
@@ -531,7 +536,7 @@ function SendInviteMenu({
               disabled={sendingEmail}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              ✉️ {sendingEmail ? "Sending..." : "Email"}
+              {sendingEmail ? t.sending : t.email}
             </button>
           )}
         </div>
@@ -548,9 +553,11 @@ function SendInviteMenu({
 function AttendeeList({
   guestId,
   attendees,
+  t,
 }: {
   guestId: string;
   attendees: Tables<"guest_attendees">[];
+  t: GuestsDict["attendeeList"];
 }) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -573,7 +580,7 @@ function AttendeeList({
       setName("");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add");
+      setError(err instanceof Error ? err.message : t.genericAddError);
     } finally {
       setAdding(false);
     }
@@ -583,7 +590,7 @@ function AttendeeList({
     // Matches the confirm() gate the top-level guest delete already uses
     // below -- this one had none at all, so a misclick silently dropped a
     // named person off the invitation with no recovery.
-    if (!window.confirm(`Remove ${attendeeName} from this invitation?`)) {
+    if (!window.confirm(t.removeConfirm(attendeeName))) {
       return;
     }
     setError(null);
@@ -592,7 +599,7 @@ function AttendeeList({
       await deleteGuestAttendee(attendeeId);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to remove");
+      setError(err instanceof Error ? err.message : t.genericRemoveError);
     } finally {
       setRemovingId(null);
     }
@@ -606,7 +613,7 @@ function AttendeeList({
           ("Mom and Dad" on one invite, not two separate rows) -- easy to
           miss without saying so, since it's just a small input tucked under
           each guest. */}
-      <p className="text-xs text-gray-400">Add more people to this invitation:</p>
+      <p className="text-xs text-gray-400">{t.addMore}</p>
       {attendees.length > 0 && (
         <ul className="space-y-1">
           {attendees.map((attendee) => (
@@ -618,7 +625,7 @@ function AttendeeList({
                 disabled={removingId === attendee.id}
                 className="text-red-500 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Remove
+                {t.remove}
               </button>
             </li>
           ))}
@@ -635,7 +642,7 @@ function AttendeeList({
               void handleAdd();
             }
           }}
-          placeholder="Name an attendee"
+          placeholder={t.placeholder}
           className="w-full max-w-xs rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
         />
         <button
@@ -644,7 +651,7 @@ function AttendeeList({
           disabled={adding || !name.trim()}
           className="whitespace-nowrap rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {adding ? "Adding..." : "+ Add"}
+          {adding ? t.adding : t.add}
         </button>
       </div>
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
@@ -656,10 +663,12 @@ function EditGuestForm({
   guest,
   onDone,
   onCancel,
+  t,
 }: {
   guest: Tables<"guests">;
   onDone: () => void;
   onCancel: () => void;
+  t: GuestsDict["editForm"] & { formLabels: GuestsDict["form"] };
 }) {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
@@ -669,7 +678,7 @@ function EditGuestForm({
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<GuestFormValues>({
-    resolver: zodResolver(guestFormSchema),
+    resolver: zodResolver(buildGuestFormSchema(t.formLabels)),
     defaultValues: {
       fullName: guest.full_name,
       email: guest.email ?? "",
@@ -693,7 +702,7 @@ function EditGuestForm({
       router.refresh();
       onDone();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to save");
+      setFormError(err instanceof Error ? err.message : t.genericError);
     }
   };
 
@@ -701,22 +710,22 @@ function EditGuestForm({
     <form onSubmit={handleSubmit(onSubmit)} className="mt-2 grid gap-3 sm:grid-cols-2" noValidate>
       <div className="flex items-start gap-4 sm:col-span-2">
         <ToggleCheckbox
-          label="Paper invite"
+          label={t.formLabels.paperInviteLabel}
           icon="📄"
-          hint="Include in printed/PDF invitations"
+          hint={t.formLabels.paperInviteHint}
           registration={register("paperEnabled")}
         />
         <ToggleCheckbox
-          label="Site invite"
+          label={t.formLabels.siteInviteLabel}
           icon="📱"
-          hint="Give them a personal RSVP link to your site"
+          hint={t.formLabels.siteInviteHint}
           registration={register("siteEnabled")}
         />
       </div>
 
       <div>
         <label htmlFor={`edit-fullName-${guest.id}`} className="block text-xs font-semibold text-gray-900">
-          Full name
+          {t.fullNameLabel}
         </label>
         <input id={`edit-fullName-${guest.id}`} type="text" className="dash-input mt-1 text-sm" {...register("fullName")} />
         {errors.fullName && <p className="mt-1 text-xs text-red-600">{errors.fullName.message}</p>}
@@ -724,14 +733,14 @@ function EditGuestForm({
 
       <div>
         <label htmlFor={`edit-groupLabel-${guest.id}`} className="block text-xs font-semibold text-gray-900">
-          Group
+          {t.groupLabel}
         </label>
         <input id={`edit-groupLabel-${guest.id}`} type="text" className="dash-input mt-1 text-sm" {...register("groupLabel")} />
       </div>
 
       <div>
         <label htmlFor={`edit-email-${guest.id}`} className="block text-xs font-semibold text-gray-900">
-          Email
+          {t.emailLabel}
         </label>
         <input id={`edit-email-${guest.id}`} type="email" className="dash-input mt-1 text-sm" {...register("email")} />
         {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
@@ -739,7 +748,7 @@ function EditGuestForm({
 
       <div>
         <label htmlFor={`edit-phone-${guest.id}`} className="block text-xs font-semibold text-gray-900">
-          Phone
+          {t.phoneLabel}
         </label>
         <input id={`edit-phone-${guest.id}`} type="tel" className="dash-input mt-1 text-sm" {...register("phone")} />
         {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone.message}</p>}
@@ -747,7 +756,7 @@ function EditGuestForm({
 
       <div>
         <label htmlFor={`edit-maxPlusOnes-${guest.id}`} className="block text-xs font-semibold text-gray-900">
-          Plus-ones allowed
+          {t.plusOnesLabel}
         </label>
         <input
           id={`edit-maxPlusOnes-${guest.id}`}
@@ -766,14 +775,14 @@ function EditGuestForm({
 
       <div className="flex items-center gap-3 sm:col-span-2">
         <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary px-3 py-1.5 text-xs">
-          {isSubmitting ? "Saving..." : "Save"}
+          {isSubmitting ? t.saving : t.save}
         </button>
         <button
           type="button"
           onClick={onCancel}
           className="text-xs font-medium text-gray-600 hover:text-gray-900"
         >
-          Cancel
+          {t.cancel}
         </button>
       </div>
     </form>
@@ -787,7 +796,9 @@ export default function GuestManager({
   guests,
   attendees,
   rsvpStatusByGuestId,
+  locale = "en",
 }: GuestManagerProps) {
+  const t = getDictionary(locale).dashboard.guests;
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -864,7 +875,7 @@ export default function GuestManager({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<GuestFormValues>({
-    resolver: zodResolver(guestFormSchema),
+    resolver: zodResolver(buildGuestFormSchema(t.form)),
     defaultValues: { fullName: "", email: "", phone: "", groupLabel: "", paperEnabled: true, siteEnabled: true },
   });
 
@@ -873,7 +884,7 @@ export default function GuestManager({
     const isDuplicate = guests.some(
       (guest) => normalizeGuestName(guest.full_name) === normalizeGuestName(values.fullName)
     );
-    if (isDuplicate && !window.confirm(`"${values.fullName}" looks like a guest you already added. Add another one anyway?`)) {
+    if (isDuplicate && !window.confirm(t.form.duplicateConfirm(values.fullName))) {
       return;
     }
     try {
@@ -889,7 +900,7 @@ export default function GuestManager({
       setAddedGuestName(values.fullName);
       addedToastTimeoutRef.current = setTimeout(() => setAddedGuestName(null), UNDO_WINDOW_MS);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to save");
+      setFormError(err instanceof Error ? err.message : t.form.genericError);
     }
   };
 
@@ -907,7 +918,7 @@ export default function GuestManager({
       }
       router.refresh();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to delete");
+      setFormError(err instanceof Error ? err.message : t.attendeeList.genericRemoveError);
       // The call failed, so these guests were never actually removed --
       // bring them back into view rather than leaving them stuck hidden.
       setHiddenIds((prev) => {
@@ -986,7 +997,7 @@ export default function GuestManager({
   const handleBulkDelete = () => {
     const count = selectedIds.size;
     if (count === 0) return;
-    startRemoval(Array.from(selectedIds), `${count} guest${count === 1 ? "" : "s"}`);
+    startRemoval(Array.from(selectedIds), t.removalToast.bulkCountLabel(count));
     setSelectedIds(new Set());
   };
 
@@ -1012,13 +1023,13 @@ export default function GuestManager({
     try {
       const result = await sendBulkGuestInvitationEmails(eventId, window.location.origin);
       if (!result.ok) throw new Error(result.message);
-      const parts = [`Sent to ${result.sent} guest${result.sent === 1 ? "" : "s"}`];
-      if (result.skipped > 0) parts.push(`${result.skipped} skipped (no email on file or already sent)`);
-      if (result.failed.length > 0) parts.push(`${result.failed.length} failed`);
+      const parts = [t.bulkEmail.sentSummary(result.sent)];
+      if (result.skipped > 0) parts.push(t.bulkEmail.skippedSummary(result.skipped));
+      if (result.failed.length > 0) parts.push(t.bulkEmail.failedSummary(result.failed.length));
       setBulkResult(parts.join(" - "));
       router.refresh();
     } catch (err) {
-      setBulkResult(err instanceof Error ? err.message : "Failed to send");
+      setBulkResult(err instanceof Error ? err.message : t.bulkEmail.genericError);
     } finally {
       setBulkSending(false);
     }
@@ -1030,12 +1041,12 @@ export default function GuestManager({
     try {
       const result = await sendBulkGuestReminderEmails(eventId, window.location.origin);
       if (!result.ok) throw new Error(result.message);
-      const parts = [`Reminded ${result.sent} guest${result.sent === 1 ? "" : "s"}`];
-      if (result.skipped > 0) parts.push(`${result.skipped} skipped (no email on file or already responded)`);
-      if (result.failed.length > 0) parts.push(`${result.failed.length} failed`);
+      const parts = [t.bulkReminder.sentSummary(result.sent)];
+      if (result.skipped > 0) parts.push(t.bulkReminder.skippedSummary(result.skipped));
+      if (result.failed.length > 0) parts.push(t.bulkReminder.failedSummary(result.failed.length));
       setReminderResult(parts.join(" - "));
     } catch (err) {
-      setReminderResult(err instanceof Error ? err.message : "Failed to send");
+      setReminderResult(err instanceof Error ? err.message : t.bulkReminder.genericError);
     } finally {
       setReminderSending(false);
     }
@@ -1043,7 +1054,7 @@ export default function GuestManager({
 
   return (
     <div>
-      <ShareLinkBanner eventSlug={eventSlug} eventTitle={eventTitle} />
+      <ShareLinkBanner eventSlug={eventSlug} eventTitle={eventTitle} t={t.shareLink} />
 
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -1052,27 +1063,27 @@ export default function GuestManager({
       >
         <div className="flex items-start gap-4 sm:col-span-2">
           <ToggleCheckbox
-            label="Paper invite"
+            label={t.form.paperInviteLabel}
             icon="📄"
-            hint="Include in printed/PDF invitations"
+            hint={t.form.paperInviteHint}
             registration={register("paperEnabled")}
           />
           <ToggleCheckbox
-            label="Site invite"
+            label={t.form.siteInviteLabel}
             icon="📱"
-            hint="Give them a personal RSVP link to your site"
+            hint={t.form.siteInviteHint}
             registration={register("siteEnabled")}
           />
         </div>
 
         <div>
           <label htmlFor="fullName" className="block text-sm font-semibold text-gray-900">
-            Full name
+            {t.form.fullNameLabel}
           </label>
           <input
             id="fullName"
             type="text"
-            placeholder="First & last name, no titles (e.g. Jamie Rivera)"
+            placeholder={t.form.fullNamePlaceholder}
             className="dash-input mt-1"
             {...register("fullName")}
           />
@@ -1083,12 +1094,12 @@ export default function GuestManager({
 
         <div>
           <label htmlFor="groupLabel" className="block text-sm font-semibold text-gray-900">
-            Group <span className="font-normal text-gray-400">(optional)</span>
+            {t.form.groupLabel} <span className="font-normal text-gray-400">{t.form.optional}</span>
           </label>
           <input
             id="groupLabel"
             type="text"
-            placeholder="Family, friends..."
+            placeholder={t.form.groupPlaceholder}
             className="dash-input mt-1"
             {...register("groupLabel")}
           />
@@ -1096,12 +1107,12 @@ export default function GuestManager({
 
         <div>
           <label htmlFor="email" className="block text-sm font-semibold text-gray-900">
-            Email <span className="font-normal text-gray-400">(optional)</span>
+            {t.form.emailLabel} <span className="font-normal text-gray-400">{t.form.optional}</span>
           </label>
           <input
             id="email"
             type="email"
-            placeholder="For emailing their invitation"
+            placeholder={t.form.emailPlaceholder}
             className="dash-input mt-1"
             {...register("email")}
           />
@@ -1110,12 +1121,12 @@ export default function GuestManager({
 
         <div>
           <label htmlFor="phone" className="block text-sm font-semibold text-gray-900">
-            Phone <span className="font-normal text-gray-400">(optional)</span>
+            {t.form.phoneLabel} <span className="font-normal text-gray-400">{t.form.optional}</span>
           </label>
           <input
             id="phone"
             type="tel"
-            placeholder="For SMS or WhatsApp"
+            placeholder={t.form.phonePlaceholder}
             className="dash-input mt-1"
             {...register("phone")}
           />
@@ -1124,7 +1135,7 @@ export default function GuestManager({
 
         <div>
           <label htmlFor="maxPlusOnes" className="block text-sm font-semibold text-gray-900">
-            Plus-ones allowed <span className="font-normal text-gray-400">(optional)</span>
+            {t.form.plusOnesLabel} <span className="font-normal text-gray-400">{t.form.optional}</span>
           </label>
           <input
             id="maxPlusOnes"
@@ -1143,12 +1154,12 @@ export default function GuestManager({
 
         <div className="sm:col-span-2">
           <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary">
-            {isSubmitting ? "Adding..." : "Add guest"}
+            {isSubmitting ? t.form.adding : t.form.addGuest}
           </button>
         </div>
       </form>
 
-      <BulkAddGuests eventId={eventId} existingGuests={guests} />
+      <BulkAddGuests eventId={eventId} existingGuests={guests} locale={locale} />
 
       {guests.length > 0 && (
         <div className="mt-8 flex flex-col gap-3">
@@ -1157,14 +1168,14 @@ export default function GuestManager({
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search guests by name, group, email, phone..."
+              placeholder={t.search.placeholder}
               className="dash-input max-w-sm"
             />
             <span className="whitespace-nowrap text-xs text-gray-500">
-              {filteredGuests.length} of {guests.length} guest{guests.length === 1 ? "" : "s"}
+              {t.search.countOf(filteredGuests.length, guests.length)}
             </span>
           </div>
-          <StatusPills counts={statusCounts} active={statusFilter} onChange={setStatusFilter} />
+          <StatusPills counts={statusCounts} active={statusFilter} onChange={setStatusFilter} t={t.statusFilters} />
           {eligibleForBulkEmail > 0 && (
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -1173,9 +1184,7 @@ export default function GuestManager({
                 disabled={bulkSending}
                 className="dash-btn dash-btn-secondary px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {bulkSending
-                  ? "Sending..."
-                  : `✉️ Email everyone who hasn't been sent one (${eligibleForBulkEmail})`}
+                {bulkSending ? t.bulkEmail.sending : t.bulkEmail.sendButton(eligibleForBulkEmail)}
               </button>
               {bulkResult && <span className="text-xs text-gray-500">{bulkResult}</span>}
             </div>
@@ -1188,9 +1197,7 @@ export default function GuestManager({
                 disabled={reminderSending}
                 className="dash-btn dash-btn-secondary px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {reminderSending
-                  ? "Sending..."
-                  : `⏰ Remind guests who haven't responded (${eligibleForReminder})`}
+                {reminderSending ? t.bulkReminder.sending : t.bulkReminder.sendButton(eligibleForReminder)}
               </button>
               {reminderResult && <span className="text-xs text-gray-500">{reminderResult}</span>}
             </div>
@@ -1204,21 +1211,21 @@ export default function GuestManager({
                   onChange={toggleSelectAllVisible}
                   className="h-3.5 w-3.5 rounded border-gray-300"
                 />
-                {selectedIds.size} selected
+                {t.selection.selected(selectedIds.size)}
               </label>
               <button
                 type="button"
                 onClick={handleBulkDelete}
                 className="text-xs font-semibold text-red-600 hover:text-red-700"
               >
-                Remove selected
+                {t.selection.removeSelected}
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedIds(new Set())}
                 className="text-xs font-medium text-gray-500 hover:text-gray-700"
               >
-                Clear selection
+                {t.selection.clearSelection}
               </button>
             </div>
           ) : (
@@ -1230,7 +1237,7 @@ export default function GuestManager({
                   onChange={toggleSelectAllVisible}
                   className="h-3.5 w-3.5 rounded border-gray-300"
                 />
-                Select all
+                {t.selection.selectAll}
               </label>
             )
           )}
@@ -1248,14 +1255,14 @@ export default function GuestManager({
               <span className="text-2xl" aria-hidden="true">
                 🎈
               </span>
-              <span className="text-sm font-medium">Create your first guest</span>
-              <span className="text-xs text-gray-400">Fill in the form above to get started</span>
+              <span className="text-sm font-medium">{t.emptyState.createFirst}</span>
+              <span className="text-xs text-gray-400">{t.emptyState.fillForm}</span>
             </button>
           </li>
         )}
         {guests.length > 0 && filteredGuests.length === 0 && (
           <li className="py-4 text-sm text-gray-500">
-            {search ? `No guests match "${search}".` : "No guests match this filter."}
+            {search ? t.search.noMatchQuery(search) : t.search.noMatchFilter}
           </li>
         )}
         {filteredGuests.map((guest) => {
@@ -1275,19 +1282,20 @@ export default function GuestManager({
                     type="checkbox"
                     checked={selectedIds.has(guest.id)}
                     onChange={() => toggleSelected(guest.id)}
-                    aria-label={`Select ${guest.full_name}`}
+                    aria-label={t.guestRow.selectAriaLabel(guest.full_name)}
                     className="mt-1 h-3.5 w-3.5 shrink-0 rounded border-gray-300"
                   />
                 )}
                 <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-sm font-medium text-gray-900">Dear {guest.full_name}!</p>
+                  <p className="text-sm font-medium text-gray-900">{t.guestRow.dear(guest.full_name)}</p>
                   <InvitationSentBadge
                     guestId={guest.id}
                     sent={guest.invitation_sent_at != null}
                     channels={guest.sent_channels}
+                    t={{ ...t.invitationSent, channelLabels: t.channelLabels }}
                   />
-                  <RsvpStatusBadge status={rsvpStatus} />
+                  <RsvpStatusBadge status={rsvpStatus} t={t.guestRow} />
                 </div>
                 <p className="text-xs text-gray-500">
                   {[guest.group_label, guest.email, guest.phone].filter(Boolean).join(" · ")}
@@ -1298,7 +1306,7 @@ export default function GuestManager({
                 <div className="flex flex-wrap items-center gap-3">
                   {guest.site_enabled && (
                     <>
-                      <CopyInviteLinkButton guestId={guest.id} slug={eventSlug} inviteCode={guest.invite_code} />
+                      <CopyInviteLinkButton guestId={guest.id} slug={eventSlug} inviteCode={guest.invite_code} t={t.copyInviteLink} />
                       <SendInviteMenu
                         guestId={guest.id}
                         guestName={guest.full_name}
@@ -1307,6 +1315,7 @@ export default function GuestManager({
                         phone={guest.phone}
                         email={guest.email}
                         eventTitle={eventTitle}
+                        t={{ ...t.sendMenu, personalMessage: t.shareLink.personalMessage }}
                       />
                     </>
                   )}
@@ -1315,14 +1324,14 @@ export default function GuestManager({
                     onClick={() => setEditingId(guest.id)}
                     className="text-sm font-medium text-gray-700 hover:text-gray-900"
                   >
-                    Edit
+                    {t.guestRow.edit}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(guest.id, guest.full_name)}
                     className="text-sm font-medium text-red-600 hover:text-red-700"
                   >
-                    Remove
+                    {t.guestRow.remove}
                   </button>
                 </div>
               )}
@@ -1332,11 +1341,13 @@ export default function GuestManager({
                 guest={guest}
                 onDone={() => setEditingId(null)}
                 onCancel={() => setEditingId(null)}
+                t={{ ...t.editForm, formLabels: t.form }}
               />
             )}
             <AttendeeList
               guestId={guest.id}
               attendees={attendees.filter((attendee) => attendee.guest_id === guest.id)}
+              t={t.attendeeList}
             />
           </li>
           );
@@ -1348,13 +1359,13 @@ export default function GuestManager({
           role="status"
           className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm shadow-lg"
         >
-          <span className="text-gray-700">Removed {pendingRemoval.label}.</span>
+          <span className="text-gray-700">{t.removalToast.removed(pendingRemoval.label)}</span>
           <button
             type="button"
             onClick={handleUndoRemoval}
             className="font-semibold text-[var(--dash-accent)] hover:underline"
           >
-            Undo
+            {t.removalToast.undo}
           </button>
         </div>
       )}
@@ -1367,7 +1378,7 @@ export default function GuestManager({
             (pendingRemoval ? "bottom-24" : "bottom-6")
           }
         >
-          <span className="text-gray-700">Added {addedGuestName}.</span>
+          <span className="text-gray-700">{t.addedToast.added(addedGuestName)}</span>
         </div>
       )}
     </div>

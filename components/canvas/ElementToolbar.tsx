@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import type { CanvasElement } from "@/lib/canvas/types";
 import FontPicker from "./FontPicker";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface ElementToolbarProps {
   element: CanvasElement;
@@ -29,6 +31,8 @@ interface ElementToolbarProps {
   /** Lets the parent measure this popover's own rendered height, so it can
    * flip above/below the selected element depending on available space. */
   measureRef?: (el: HTMLDivElement | null) => void;
+  /** Optional, defaults to English -- same pattern as AddElementModal/FontPicker. */
+  locale?: Locale;
 }
 
 const iconButtonClass =
@@ -53,7 +57,14 @@ export default function ElementToolbar({
   onReorder,
   onPreviewAnimation,
   measureRef,
+  locale,
 }: ElementToolbarProps) {
+  const t = getDictionary(locale ?? "en").dashboard.paper.canvas.toolbar;
+  const ALIGN_LABELS: Record<"left" | "center" | "right", string> = {
+    left: t.alignLeft,
+    center: t.alignCenter,
+    right: t.alignRight,
+  };
   return (
     <div
       ref={measureRef}
@@ -64,25 +75,25 @@ export default function ElementToolbar({
       {element.type === "text" && (
         <>
           <div className="flex flex-wrap items-center gap-1.5">
-            <FontPicker value={element.fontFamily} onChange={(family) => onUpdate({ fontFamily: family })} />
+            <FontPicker value={element.fontFamily} onChange={(family) => onUpdate({ fontFamily: family })} locale={locale} />
             <input
               type="number"
               value={element.fontSize}
               onChange={(event) => onUpdate({ fontSize: Number(event.target.value) || 1 })}
               className="w-14 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-sm text-[var(--dash-text)]"
-              title="Font size"
+              title={t.fontSize}
             />
             <input
               type="color"
               value={element.color}
               onChange={(event) => onUpdate({ color: event.target.value })}
               className="h-7 w-8 rounded border border-[var(--dash-border)]"
-              title="Color"
+              title={t.color}
             />
             <button
               type="button"
               onClick={() => onUpdate({ fontWeight: element.fontWeight >= 600 ? 400 : 700 })}
-              title="Bold"
+              title={t.bold}
               className={element.fontWeight >= 600 ? iconButtonActiveClass : iconButtonClass}
             >
               <Bold className="h-4 w-4" aria-hidden="true" />
@@ -98,7 +109,7 @@ export default function ElementToolbar({
                 key={value}
                 type="button"
                 onClick={() => onUpdate({ textAlign: value })}
-                title={`Align ${value}`}
+                title={t.align(ALIGN_LABELS[value])}
                 className={element.textAlign === value ? iconButtonActiveClass : iconButtonClass}
               >
                 <Icon className="h-4 w-4" aria-hidden="true" />
@@ -108,7 +119,7 @@ export default function ElementToolbar({
           <div className="flex flex-wrap items-center gap-1.5">
             <label
               className="flex items-center gap-1 rounded-md border border-[var(--dash-border)] px-1.5 py-1 text-xs text-[var(--dash-text-muted)]"
-              title="Line height"
+              title={t.lineHeight}
             >
               <AlignVerticalSpaceAround className="h-3.5 w-3.5" aria-hidden="true" />
               <input
@@ -122,7 +133,7 @@ export default function ElementToolbar({
             </label>
             <label
               className="flex items-center gap-1 rounded-md border border-[var(--dash-border)] px-1.5 py-1 text-xs text-[var(--dash-text-muted)]"
-              title="Letter spacing (px)"
+              title={t.letterSpacing}
             >
               <MoveHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
               <input
@@ -143,16 +154,16 @@ export default function ElementToolbar({
             value={element.source}
             onChange={(event) => onUpdate({ source: event.target.value as "inviteLink" | "siteLink" })}
             className="rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-xs text-[var(--dash-text)]"
-            title="What this QR code links to"
+            title={t.qrLinksTo}
           >
-            <option value="siteLink">Site link</option>
-            <option value="inviteLink">Guest&apos;s personal invite</option>
+            <option value="siteLink">{t.qrSiteLink}</option>
+            <option value="inviteLink">{t.qrGuestLink}</option>
           </select>
           <input
             type="text"
             value={element.caption ?? ""}
             onChange={(event) => onUpdate({ caption: event.target.value || undefined })}
-            placeholder="Caption (optional)"
+            placeholder={t.qrCaptionPlaceholder}
             className="w-36 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-xs text-[var(--dash-text)] placeholder:text-[var(--dash-text-muted)]"
           />
         </div>
@@ -161,7 +172,7 @@ export default function ElementToolbar({
       <div className="flex flex-wrap items-center gap-1.5">
         <label
           className="flex items-center gap-1 rounded-md border border-[var(--dash-border)] px-1.5 py-1 text-xs text-[var(--dash-text-muted)]"
-          title="Entrance animation duration (seconds)"
+          title={t.animationDuration}
         >
           <Play className="h-3.5 w-3.5" aria-hidden="true" />
           <input
@@ -176,33 +187,33 @@ export default function ElementToolbar({
           s
         </label>
         {!!element.animationDuration && (
-          <button type="button" onClick={onPreviewAnimation} title="Preview animation" className={iconButtonClass}>
+          <button type="button" onClick={onPreviewAnimation} title={t.previewAnimation} className={iconButtonClass}>
             <Play className="h-4 w-4" aria-hidden="true" />
           </button>
         )}
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 border-t border-[var(--dash-border)] pt-1.5">
-        <button type="button" onClick={() => onReorder("front")} title="Bring to front" className={iconButtonClass}>
+        <button type="button" onClick={() => onReorder("front")} title={t.bringToFront} className={iconButtonClass}>
           <BringToFront className="h-4 w-4" aria-hidden="true" />
         </button>
-        <button type="button" onClick={() => onReorder("forward")} title="Bring forward" className={iconButtonClass}>
+        <button type="button" onClick={() => onReorder("forward")} title={t.bringForward} className={iconButtonClass}>
           <ChevronUp className="h-4 w-4" aria-hidden="true" />
         </button>
-        <button type="button" onClick={() => onReorder("backward")} title="Send backward" className={iconButtonClass}>
+        <button type="button" onClick={() => onReorder("backward")} title={t.sendBackward} className={iconButtonClass}>
           <ChevronDown className="h-4 w-4" aria-hidden="true" />
         </button>
-        <button type="button" onClick={() => onReorder("back")} title="Send to back" className={iconButtonClass}>
+        <button type="button" onClick={() => onReorder("back")} title={t.sendToBack} className={iconButtonClass}>
           <SendToBack className="h-4 w-4" aria-hidden="true" />
         </button>
         <span className="mx-0.5 h-5 w-px bg-[var(--dash-border)]" />
-        <button type="button" onClick={onDuplicate} title="Duplicate" className={iconButtonClass}>
+        <button type="button" onClick={onDuplicate} title={t.duplicate} className={iconButtonClass}>
           <Copy className="h-4 w-4" aria-hidden="true" />
         </button>
         <button
           type="button"
           onClick={onDelete}
-          title="Delete"
+          title={t.delete}
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-red-400 hover:bg-red-500/10"
         >
           <Trash2 className="h-4 w-4" aria-hidden="true" />

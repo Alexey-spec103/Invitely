@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   updateInvitationBackCanvas,
@@ -16,6 +15,7 @@ import {
 } from "./actions";
 import { getEventType } from "@/lib/eventTypes";
 import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import { useAutosave } from "@/lib/useAutosave";
 import AutosaveStatus from "@/components/ui/AutosaveStatus";
 import type { Theme } from "@/lib/themes";
@@ -333,7 +333,7 @@ function createEnvelopeCanvasSeed(args: {
       height: 60,
       rotation: 0,
       zIndex: 3,
-      text: "Guest address",
+      text: getDictionary(locale).dashboard.paper.seed.guestAddress,
       fontFamily: "Inter",
       fontSize: 16,
       fontWeight: 400,
@@ -365,8 +365,13 @@ function createEnvelopeCanvasSeed(args: {
  * title plus one text block per existing timeline event (time + title on
  * one line, description below it if there is one), stacked top to bottom --
  * reproduces the static ProgramCardPreview's own reading order. */
-function createProgramCanvasSeed(args: { theme: Theme; title?: string; events: ProgramCardEvent[] }): CanvasFrame {
-  const { theme, title, events } = args;
+function createProgramCanvasSeed(args: {
+  theme: Theme;
+  title?: string;
+  events: ProgramCardEvent[];
+  locale: Locale;
+}): CanvasFrame {
+  const { theme, title, events, locale } = args;
   const textColor = theme.vars["--theme-text"];
   const accentColor = theme.vars["--theme-accent"];
 
@@ -380,7 +385,7 @@ function createProgramCanvasSeed(args: { theme: Theme; title?: string; events: P
       height: 80,
       rotation: 0,
       zIndex: 1,
-      text: title || "Order of the day",
+      text: title || getDictionary(locale).dashboard.paper.seed.orderOfTheDay,
       fontFamily: "Playfair Display",
       fontSize: 44,
       fontWeight: 600,
@@ -455,8 +460,13 @@ function createProgramCanvasSeed(args: { theme: Theme; title?: string; events: P
  * color-swatch element, so the swatches themselves aren't reproduced here --
  * a host opening this wants to write their own wording ("мало ли он хочет
  * что-то своё написать"), same reasoning as every other card's seed. */
-function createDressCodeCanvasSeed(args: { theme: Theme; title: string; description?: string }): CanvasFrame {
-  const { theme, title, description } = args;
+function createDressCodeCanvasSeed(args: {
+  theme: Theme;
+  title: string;
+  description?: string;
+  locale: Locale;
+}): CanvasFrame {
+  const { theme, title, description, locale } = args;
   const textColor = theme.vars["--theme-text"];
 
   const elements: CanvasElement[] = [
@@ -469,7 +479,7 @@ function createDressCodeCanvasSeed(args: { theme: Theme; title: string; descript
       height: 100,
       rotation: 0,
       zIndex: 1,
-      text: title || "Dress Code",
+      text: title || getDictionary(locale).dashboard.paper.seed.dressCodeTitle,
       fontFamily: "Playfair Display",
       fontSize: 48,
       fontWeight: 600,
@@ -535,7 +545,7 @@ function createSaveTheDateCanvasSeed(args: { theme: Theme; names: string[]; even
       height: 50,
       rotation: 0,
       zIndex: 1,
-      text: "Save the date",
+      text: getDictionary(locale).dashboard.paper.seed.saveTheDate,
       fontFamily: "Inter",
       fontSize: 22,
       fontWeight: 500,
@@ -589,7 +599,7 @@ function createSaveTheDateCanvasSeed(args: { theme: Theme; names: string[]; even
       height: 40,
       rotation: 0,
       zIndex: 4,
-      text: "Formal invitation to follow",
+      text: getDictionary(locale).dashboard.paper.seed.formalInvitationToFollow,
       fontFamily: "Inter",
       fontSize: 16,
       fontWeight: 400,
@@ -614,8 +624,9 @@ function createSaveTheDateCanvasSeed(args: { theme: Theme; names: string[]; even
  * warm thank-you message plus the names, in the event's real theme colors.
  * Transparent background, same reasoning as createSaveTheDateCanvasSeed --
  * this frame renders INSIDE ThankYouCardPreview's own .customContent slot. */
-function createThankYouCanvasSeed(args: { theme: Theme; names: string[] }): CanvasFrame {
-  const { theme, names } = args;
+function createThankYouCanvasSeed(args: { theme: Theme; names: string[]; locale: Locale }): CanvasFrame {
+  const { theme, names, locale } = args;
+  const t = getDictionary(locale).dashboard.paper.seed;
   const textColor = theme.vars["--theme-text"];
   const accentColor = theme.vars["--theme-accent"];
 
@@ -629,7 +640,7 @@ function createThankYouCanvasSeed(args: { theme: Theme; names: string[] }): Canv
       height: 90,
       rotation: 0,
       zIndex: 1,
-      text: "Thank You",
+      text: t.thankYouTitle,
       fontFamily: "Playfair Display",
       fontSize: 50,
       fontWeight: 600,
@@ -647,7 +658,7 @@ function createThankYouCanvasSeed(args: { theme: Theme; names: string[] }): Canv
       height: 120,
       rotation: 0,
       zIndex: 2,
-      text: "Thank you for celebrating with us -- your presence meant more than words can say.",
+      text: t.thankYouBody,
       fontFamily: "Inter",
       fontSize: 22,
       fontWeight: 400,
@@ -796,42 +807,51 @@ export default function PaperConstructor({
   locale,
 }: PaperConstructorProps) {
   const router = useRouter();
+  const dictionary = getDictionary(locale);
+  const t = dictionary.dashboard.paper;
+  // Interpolated into caption.programDefault/dressCodeDefault below -- those
+  // sentences used to wrap a real `<Link>` to the Site tab around this exact
+  // text; the translated sentence templates take the label as plain text
+  // instead (so every locale's own word order/case around it stays correct),
+  // which means this mention no longer links anywhere -- a host can still
+  // reach it via the left nav, just not as a one-click deep link from here.
+  const siteTabLabel = dictionary.dashboard.shell.nav.site;
 
-  const media = useMemo<MediaItem[]>(() => {
-    const list: MediaItem[] = [
-      { id: "invitation-front", label: "Front", group: "Invitation", aspectRatio: "420 / 595" },
-      { id: "invitation-back", label: "Back", group: "Invitation", aspectRatio: "420 / 595" },
-      { id: "envelope", label: "Envelope", group: "Extras", aspectRatio: "649 / 459" },
-    ];
-    if (timelineEvents.length > 0) {
-      list.push({ id: "program", label: "Program card", group: "Extras", aspectRatio: "420 / 595" });
-    }
-    if (dressCodeColors.length > 0) {
-      list.push({ id: "dressCode", label: "Dress-code card", group: "Extras", aspectRatio: "420 / 595" });
-    }
-    // Save-the-date and thank-you cards only need names/date, always
-    // present -- unlike program/dressCode, they aren't gated on Site-tab
-    // data existing yet.
-    list.push({ id: "saveTheDate", label: "Save the date", group: "Extras", aspectRatio: "420 / 595" });
-    list.push({ id: "thankYou", label: "Thank you", group: "Extras", aspectRatio: "420 / 595" });
-    if (tableCardData.length > 0) {
-      list.push({ id: "seatingChart", label: "Seating chart", group: "Banquet", aspectRatio: "420 / 595" });
-    }
-    if (allGuestNames.length > 0) {
-      list.push({ id: "placeCards", label: "Place cards", group: "Banquet", aspectRatio: "252 / 144" });
-    }
-    if (tableNames.length > 0) {
-      list.push({ id: "tableNumbers", label: "Table numbers", group: "Banquet", aspectRatio: "1 / 1" });
-    }
-    return list;
-  }, [timelineEvents.length, dressCodeColors.length, tableCardData.length, allGuestNames.length, tableNames.length]);
+  // Plain computed values, not useMemo: this list is at most ~10 items and
+  // depends on `t` (derived from `locale`, not itself a stable reference the
+  // React Compiler's dependency-preservation check can see through
+  // getDictionary()) -- cheap enough to just recompute, and the Compiler's
+  // own automatic memoization handles the rest.
+  const media: MediaItem[] = [
+    { id: "invitation-front", label: t.items.front, group: "Invitation", aspectRatio: "420 / 595" },
+    { id: "invitation-back", label: t.items.back, group: "Invitation", aspectRatio: "420 / 595" },
+    { id: "envelope", label: t.items.envelope, group: "Extras", aspectRatio: "649 / 459" },
+  ];
+  if (timelineEvents.length > 0) {
+    media.push({ id: "program", label: t.items.program, group: "Extras", aspectRatio: "420 / 595" });
+  }
+  if (dressCodeColors.length > 0) {
+    media.push({ id: "dressCode", label: t.items.dressCode, group: "Extras", aspectRatio: "420 / 595" });
+  }
+  // Save-the-date and thank-you cards only need names/date, always present
+  // -- unlike program/dressCode, they aren't gated on Site-tab data existing
+  // yet.
+  media.push({ id: "saveTheDate", label: t.items.saveTheDate, group: "Extras", aspectRatio: "420 / 595" });
+  media.push({ id: "thankYou", label: t.items.thankYou, group: "Extras", aspectRatio: "420 / 595" });
+  if (tableCardData.length > 0) {
+    media.push({ id: "seatingChart", label: t.items.seatingChart, group: "Banquet", aspectRatio: "420 / 595" });
+  }
+  if (allGuestNames.length > 0) {
+    media.push({ id: "placeCards", label: t.items.placeCards, group: "Banquet", aspectRatio: "252 / 144" });
+  }
+  if (tableNames.length > 0) {
+    media.push({ id: "tableNumbers", label: t.items.tableNumbers, group: "Banquet", aspectRatio: "1 / 1" });
+  }
 
-  const groupedMedia = useMemo(() => {
-    return GROUP_ORDER.map((group) => ({
-      group,
-      items: media.filter((item) => item.group === group),
-    })).filter(({ items }) => items.length > 0);
-  }, [media]);
+  const groupedMedia = GROUP_ORDER.map((group) => ({
+    group,
+    items: media.filter((item) => item.group === group),
+  })).filter(({ items }) => items.length > 0);
 
   const [activeId, setActiveId] = useState<MediaId>("invitation-front");
   const [zoom, setZoom] = useState(1);
@@ -909,14 +929,15 @@ export default function PaperConstructor({
   const programCanvasState = useCardCanvas({
     eventId,
     initial: initialProgramCanvas,
-    createSeed: () => createProgramCanvasSeed({ theme, title: timelineTitle, events: timelineEvents }),
+    createSeed: () => createProgramCanvasSeed({ theme, title: timelineTitle, events: timelineEvents, locale }),
     save: updateInvitationProgramCanvas,
     router,
   });
   const dressCodeCanvasState = useCardCanvas({
     eventId,
     initial: initialDressCodeCanvas,
-    createSeed: () => createDressCodeCanvasSeed({ theme, title: dressCodeTitle || "Dress Code", description: dressCodeDescription }),
+    createSeed: () =>
+      createDressCodeCanvasSeed({ theme, title: dressCodeTitle || t.seed.dressCodeTitle, description: dressCodeDescription, locale }),
     save: updateInvitationDressCodeCanvas,
     router,
   });
@@ -930,7 +951,7 @@ export default function PaperConstructor({
   const thankYouCanvasState = useCardCanvas({
     eventId,
     initial: initialThankYouCanvas,
-    createSeed: () => createThankYouCanvasSeed({ theme, names }),
+    createSeed: () => createThankYouCanvasSeed({ theme, names, locale }),
     save: updateInvitationThankYouCanvas,
     router,
   });
@@ -991,7 +1012,7 @@ export default function PaperConstructor({
       const blob = await pdf(<TableCardDocument theme={theme} tables={tableCardData} locked={locked} />).toBlob();
       saveBlob(blob, "seating-chart.pdf");
     } catch (err) {
-      setDownloadError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setDownloadError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingDownload(null);
     }
@@ -1008,7 +1029,7 @@ export default function PaperConstructor({
       const blob = await pdf(<PlaceCardDocument theme={theme} guestNames={allGuestNames} locked={locked} />).toBlob();
       saveBlob(blob, "place-cards.pdf");
     } catch (err) {
-      setDownloadError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setDownloadError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingDownload(null);
     }
@@ -1025,7 +1046,7 @@ export default function PaperConstructor({
       const blob = await pdf(<TableNumberCardDocument theme={theme} tableNames={tableNames} locked={locked} />).toBlob();
       saveBlob(blob, "table-numbers.pdf");
     } catch (err) {
-      setDownloadError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setDownloadError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingDownload(null);
     }
@@ -1046,9 +1067,9 @@ export default function PaperConstructor({
   };
 
   const upgradePromptCopy: Record<"seatingChart" | "placeCards" | "tableNumbers", string> = {
-    seatingChart: "Downloading the seating chart",
-    placeCards: "Downloading place cards",
-    tableNumbers: "Downloading table numbers",
+    seatingChart: t.upgradePrompt.seatingChart,
+    placeCards: t.upgradePrompt.placeCards,
+    tableNumbers: t.upgradePrompt.tableNumbers,
   };
 
   const isAnyCanvasEditorActive =
@@ -1086,7 +1107,7 @@ export default function PaperConstructor({
                   adapt per event type, same as the "...tab" hint text
                   elsewhere in this file, or a Graduation/Corporate Event
                   host sees "BANQUET" over their seating cards regardless. */}
-              {group === "Banquet" ? seatingLabel : group}
+              {group === "Banquet" ? seatingLabel : group === "Invitation" ? t.groups.invitation : t.groups.extras}
             </p>
             <div className="mt-1 space-y-0.5">
               {items.map((item) => (
@@ -1111,15 +1132,14 @@ export default function PaperConstructor({
       {isBackCanvasActive ? (
         <div className="mt-6 min-w-0 flex-1 sm:mt-0">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs text-[var(--dash-text-muted)]">
-              Design the back of your invitation -- add text, photos, or a QR code linking to your site.
-            </p>
+            <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.back}</p>
             <AutosaveStatus state={canvasSaveState} error={canvasSaveError} />
           </div>
           <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
             <CanvasFrameEditor
               frame={backCanvasFrame}
               onUpdateFrame={updateBackCanvasFrame}
+              locale={locale}
               onUndo={undoBackCanvas}
               canUndo={canvasHistoryIndex > 0}
               onRedo={redoBackCanvas}
@@ -1130,16 +1150,14 @@ export default function PaperConstructor({
       ) : isFrontCanvasActive ? (
         <div className="mt-6 min-w-0 flex-1 sm:mt-0">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs text-[var(--dash-text-muted)]">
-              Write whatever you want on the front -- move, resize, or replace any line. Starts from your current
-              names/date/venue.
-            </p>
+            <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.front}</p>
             <AutosaveStatus state={frontCanvasSaveState} error={frontCanvasSaveError} />
           </div>
           <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
             <CanvasFrameEditor
               frame={frontCanvasFrame}
               onUpdateFrame={updateFrontCanvasFrame}
+              locale={locale}
               onUndo={undoFrontCanvas}
               canUndo={frontCanvasHistoryIndex > 0}
               onRedo={redoFrontCanvas}
@@ -1150,7 +1168,7 @@ export default function PaperConstructor({
                   onClick={() => setIsEditingFront(false)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  Done
+                  {t.done}
                 </button>
               }
             />
@@ -1159,16 +1177,14 @@ export default function PaperConstructor({
       ) : isEnvelopeCanvasActive ? (
         <div className="mt-6 min-w-0 flex-1 sm:mt-0">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs text-[var(--dash-text-muted)]">
-              Write whatever you want on the envelope -- move, resize, or replace any line. Starts from your current
-              names/date.
-            </p>
+            <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.envelope}</p>
             <AutosaveStatus state={envelopeCanvasState.saveState} error={envelopeCanvasState.saveError} />
           </div>
           <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
             <CanvasFrameEditor
               frame={envelopeCanvasState.frame}
               onUpdateFrame={envelopeCanvasState.updateFrame}
+              locale={locale}
               onUndo={envelopeCanvasState.undo}
               canUndo={envelopeCanvasState.canUndo}
               onRedo={envelopeCanvasState.redo}
@@ -1179,7 +1195,7 @@ export default function PaperConstructor({
                   onClick={() => envelopeCanvasState.setIsEditing(false)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  Done
+                  {t.done}
                 </button>
               }
             />
@@ -1188,16 +1204,14 @@ export default function PaperConstructor({
       ) : isProgramCanvasActive ? (
         <div className="mt-6 min-w-0 flex-1 sm:mt-0">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs text-[var(--dash-text-muted)]">
-              Write whatever you want on the program card -- move, resize, or replace any line. Starts from your
-              current schedule.
-            </p>
+            <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.program}</p>
             <AutosaveStatus state={programCanvasState.saveState} error={programCanvasState.saveError} />
           </div>
           <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
             <CanvasFrameEditor
               frame={programCanvasState.frame}
               onUpdateFrame={programCanvasState.updateFrame}
+              locale={locale}
               onUndo={programCanvasState.undo}
               canUndo={programCanvasState.canUndo}
               onRedo={programCanvasState.redo}
@@ -1208,7 +1222,7 @@ export default function PaperConstructor({
                   onClick={() => programCanvasState.setIsEditing(false)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  Done
+                  {t.done}
                 </button>
               }
             />
@@ -1217,16 +1231,14 @@ export default function PaperConstructor({
       ) : isDressCodeCanvasActive ? (
         <div className="mt-6 min-w-0 flex-1 sm:mt-0">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs text-[var(--dash-text-muted)]">
-              Write whatever you want on the dress-code card -- move, resize, or replace any line. Starts from your
-              current wording.
-            </p>
+            <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.dressCode}</p>
             <AutosaveStatus state={dressCodeCanvasState.saveState} error={dressCodeCanvasState.saveError} />
           </div>
           <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
             <CanvasFrameEditor
               frame={dressCodeCanvasState.frame}
               onUpdateFrame={dressCodeCanvasState.updateFrame}
+              locale={locale}
               onUndo={dressCodeCanvasState.undo}
               canUndo={dressCodeCanvasState.canUndo}
               onRedo={dressCodeCanvasState.redo}
@@ -1237,7 +1249,7 @@ export default function PaperConstructor({
                   onClick={() => dressCodeCanvasState.setIsEditing(false)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  Done
+                  {t.done}
                 </button>
               }
             />
@@ -1246,16 +1258,14 @@ export default function PaperConstructor({
       ) : isSaveTheDateCanvasActive ? (
         <div className="mt-6 min-w-0 flex-1 sm:mt-0">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs text-[var(--dash-text-muted)]">
-              Write whatever you want on the save-the-date card -- move, resize, or replace any line. Starts from
-              your current names/date.
-            </p>
+            <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.saveTheDate}</p>
             <AutosaveStatus state={saveTheDateCanvasState.saveState} error={saveTheDateCanvasState.saveError} />
           </div>
           <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
             <CanvasFrameEditor
               frame={saveTheDateCanvasState.frame}
               onUpdateFrame={saveTheDateCanvasState.updateFrame}
+              locale={locale}
               onUndo={saveTheDateCanvasState.undo}
               canUndo={saveTheDateCanvasState.canUndo}
               onRedo={saveTheDateCanvasState.redo}
@@ -1266,7 +1276,7 @@ export default function PaperConstructor({
                   onClick={() => saveTheDateCanvasState.setIsEditing(false)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  Done
+                  {t.done}
                 </button>
               }
             />
@@ -1275,16 +1285,14 @@ export default function PaperConstructor({
       ) : isThankYouCanvasActive ? (
         <div className="mt-6 min-w-0 flex-1 sm:mt-0">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs text-[var(--dash-text-muted)]">
-              Write whatever you want on the thank-you card -- move, resize, or replace any line. Starts from your
-              current names.
-            </p>
+            <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.thankYou}</p>
             <AutosaveStatus state={thankYouCanvasState.saveState} error={thankYouCanvasState.saveError} />
           </div>
           <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
             <CanvasFrameEditor
               frame={thankYouCanvasState.frame}
               onUpdateFrame={thankYouCanvasState.updateFrame}
+              locale={locale}
               onUndo={thankYouCanvasState.undo}
               canUndo={thankYouCanvasState.canUndo}
               onRedo={thankYouCanvasState.redo}
@@ -1295,7 +1303,7 @@ export default function PaperConstructor({
                   onClick={() => thankYouCanvasState.setIsEditing(false)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  Done
+                  {t.done}
                 </button>
               }
             />
@@ -1408,7 +1416,7 @@ export default function PaperConstructor({
               <button
                 type="button"
                 onClick={() => setZoom((z) => Math.max(ZOOM_MIN, +(z - ZOOM_STEP).toFixed(2)))}
-                aria-label="Zoom out"
+                aria-label={t.zoomOut}
                 className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
               >
                 −
@@ -1416,7 +1424,7 @@ export default function PaperConstructor({
               <button
                 type="button"
                 onClick={() => setZoom((z) => Math.min(ZOOM_MAX, +(z + ZOOM_STEP).toFixed(2)))}
-                aria-label="Zoom in"
+                aria-label={t.zoomIn}
                 className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
               >
                 +
@@ -1428,11 +1436,11 @@ export default function PaperConstructor({
                     onClick={() => setIsEditingFront(true)}
                     className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                   >
-                    {hasCustomFront ? "Edit text" : "Customize text"}
+                    {hasCustomFront ? t.editText : t.customizeText}
                   </button>
                   {hasCustomFront && (
                     <button type="button" onClick={revertFrontCanvas} className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm">
-                      Revert to default
+                      {t.revertToDefault}
                     </button>
                   )}
                   <button
@@ -1440,7 +1448,7 @@ export default function PaperConstructor({
                     onClick={() => setActiveId("invitation-back")}
                     className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                   >
-                    ↺ Flip to back
+                    {t.flipToBack}
                   </button>
                 </>
               )}
@@ -1450,7 +1458,7 @@ export default function PaperConstructor({
                   onClick={() => envelopeCanvasState.setIsEditing(true)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  {envelopeCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                  {envelopeCanvasState.hasCustom ? t.editText : t.customizeText}
                 </button>
               )}
               {activeMedia.id === "program" && (
@@ -1459,7 +1467,7 @@ export default function PaperConstructor({
                   onClick={() => programCanvasState.setIsEditing(true)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  {programCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                  {programCanvasState.hasCustom ? t.editText : t.customizeText}
                 </button>
               )}
               {activeMedia.id === "dressCode" && (
@@ -1468,7 +1476,7 @@ export default function PaperConstructor({
                   onClick={() => dressCodeCanvasState.setIsEditing(true)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  {dressCodeCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                  {dressCodeCanvasState.hasCustom ? t.editText : t.customizeText}
                 </button>
               )}
               {activeMedia.id === "saveTheDate" && (
@@ -1477,7 +1485,7 @@ export default function PaperConstructor({
                   onClick={() => saveTheDateCanvasState.setIsEditing(true)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  {saveTheDateCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                  {saveTheDateCanvasState.hasCustom ? t.editText : t.customizeText}
                 </button>
               )}
               {activeMedia.id === "thankYou" && (
@@ -1486,7 +1494,7 @@ export default function PaperConstructor({
                   onClick={() => thankYouCanvasState.setIsEditing(true)}
                   className="dash-btn dash-btn-neutral px-2.5 py-1 text-sm"
                 >
-                  {thankYouCanvasState.hasCustom ? "Edit text" : "Customize text"}
+                  {thankYouCanvasState.hasCustom ? t.editText : t.customizeText}
                 </button>
               )}
             </div>
@@ -1497,7 +1505,7 @@ export default function PaperConstructor({
                   type="button"
                   onClick={() => setBanquetIndex((i) => Math.max(0, i - 1))}
                   disabled={banquetItemIndex === 0}
-                  aria-label="Previous"
+                  aria-label={t.previous}
                   className="dash-btn dash-btn-neutral p-1 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
@@ -1509,7 +1517,7 @@ export default function PaperConstructor({
                   type="button"
                   onClick={() => setBanquetIndex((i) => Math.min(banquetCount - 1, i + 1))}
                   disabled={banquetItemIndex === banquetCount - 1}
-                  aria-label="Next"
+                  aria-label={t.next}
                   className="dash-btn dash-btn-neutral p-1 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -1522,91 +1530,40 @@ export default function PaperConstructor({
             {activeMedia.id === "invitation-front" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
                 {hasCustomFront ? (
-                  <>
-                    This card now uses your own custom text -- click &quot;Edit text&quot; to change it, or
-                    rearrange/resize anything.
-                  </>
+                  t.caption.customEdit
                 ) : (
-                  <>
-                    Names, date &amp; venue come from your{" "}
-                    <Link href={`/dashboard/${eventId}/site#wedding-data-card`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
-                      {getLocalizedEventType(eventType, locale).label} data
-                    </Link>
-                    . Edit them there and this card updates automatically -- or click &quot;Customize text&quot; to
-                    write your own instead.
-                  </>
+                  t.caption.frontDefault(`${getLocalizedEventType(eventType, locale).label} data`)
                 )}
               </p>
             )}
             {activeMedia.id === "envelope" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
-                {envelopeCanvasState.hasCustom ? (
-                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
-                ) : (
-                  <>
-                    The return address uses the same names &amp; date as your invitation. Click &quot;Customize
-                    text&quot; to write your own instead.
-                  </>
-                )}
+                {envelopeCanvasState.hasCustom ? t.caption.customEdit : t.caption.envelopeDefault}
               </p>
             )}
             {activeMedia.id === "program" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
-                {programCanvasState.hasCustom ? (
-                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
-                ) : (
-                  <>
-                    Edit your schedule in the{" "}
-                    <Link href={`/dashboard/${eventId}/site`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
-                      Site tab
-                    </Link>
-                    &apos;s Timeline card, or click &quot;Customize text&quot; to write your own instead.
-                  </>
-                )}
+                {programCanvasState.hasCustom ? t.caption.customEdit : t.caption.programDefault(siteTabLabel)}
               </p>
             )}
             {activeMedia.id === "dressCode" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
-                {dressCodeCanvasState.hasCustom ? (
-                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
-                ) : (
-                  <>
-                    Edit your palette in the{" "}
-                    <Link href={`/dashboard/${eventId}/site`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
-                      Site tab
-                    </Link>
-                    &apos;s Dress code card, or click &quot;Customize text&quot; to write your own instead.
-                  </>
-                )}
+                {dressCodeCanvasState.hasCustom ? t.caption.customEdit : t.caption.dressCodeDefault(siteTabLabel)}
               </p>
             )}
             {activeMedia.id === "saveTheDate" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
-                {saveTheDateCanvasState.hasCustom ? (
-                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
-                ) : (
-                  <>Uses your event&apos;s names and date. Click &quot;Customize text&quot; to write your own instead.</>
-                )}
+                {saveTheDateCanvasState.hasCustom ? t.caption.customEdit : t.caption.saveTheDateDefault}
               </p>
             )}
             {activeMedia.id === "thankYou" && (
               <p className="text-xs text-[var(--dash-text-muted)]">
-                {thankYouCanvasState.hasCustom ? (
-                  <>This card now uses your own custom text -- click &quot;Edit text&quot; to change it.</>
-                ) : (
-                  <>Uses your event&apos;s names. Click &quot;Customize text&quot; to write your own instead.</>
-                )}
+                {thankYouCanvasState.hasCustom ? t.caption.customEdit : t.caption.thankYouDefault}
               </p>
             )}
             {activeMedia.id === "seatingChart" && (
               <div className="space-y-3">
-                <p className="text-xs text-[var(--dash-text-muted)]">
-                  One card per table, listing everyone seated there. Manage tables and seating in the{" "}
-                  <Link href={`/dashboard/${eventId}/banquet`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
-                    {seatingLabel} tab
-                  </Link>
-                  .
-                </p>
+                <p className="text-xs text-[var(--dash-text-muted)]">{t.caption.seatingChartHint(seatingLabel)}</p>
                 <button
                   type="button"
                   onClick={() => handleDownloadClick("seatingChart")}
@@ -1621,16 +1578,16 @@ export default function PaperConstructor({
                   disabled={pendingDownload !== null || tableCardData.length === 0}
                   className="dash-btn dash-btn-primary"
                 >
-                  {pendingDownload === "seatingChart" ? "Generating..." : `Download all (${tableCardData.length}) as PDF`}
+                  {pendingDownload === "seatingChart" ? t.generating : t.downloadAllAsPdf(tableCardData.length)}
                 </button>
-                {locked && <PremiumUpgradeNote eventId={eventId} />}
+                {locked && <PremiumUpgradeNote eventId={eventId} locale={locale} />}
               </div>
             )}
             {activeMedia.id === "placeCards" && (
               <div className="space-y-3">
                 <p className="text-xs text-[var(--dash-text-muted)]">
-                  One card per guest, ready to cut.
-                  {placeCardsFilteredByRsvp && " Only includes guests who've RSVP'd attending."}
+                  {t.caption.placeCardsHint}
+                  {placeCardsFilteredByRsvp && t.caption.placeCardsRsvpNote}
                 </p>
                 <button
                   type="button"
@@ -1638,29 +1595,23 @@ export default function PaperConstructor({
                   disabled={pendingDownload !== null || allGuestNames.length === 0}
                   className="dash-btn dash-btn-primary"
                 >
-                  {pendingDownload === "placeCards" ? "Generating..." : `Download all (${allGuestNames.length}) as PDF`}
+                  {pendingDownload === "placeCards" ? t.generating : t.downloadAllAsPdf(allGuestNames.length)}
                 </button>
-                {locked && <PremiumUpgradeNote eventId={eventId} />}
+                {locked && <PremiumUpgradeNote eventId={eventId} locale={locale} />}
               </div>
             )}
             {activeMedia.id === "tableNumbers" && (
               <div className="space-y-3">
-                <p className="text-xs text-[var(--dash-text-muted)]">
-                  A freestanding number card for each table. Manage tables in the{" "}
-                  <Link href={`/dashboard/${eventId}/banquet`} className="font-medium text-[var(--dash-accent)] underline underline-offset-2">
-                    {seatingLabel} tab
-                  </Link>
-                  .
-                </p>
+                <p className="text-xs text-[var(--dash-text-muted)]">{t.caption.tableNumbersHint(seatingLabel)}</p>
                 <button
                   type="button"
                   onClick={() => handleDownloadClick("tableNumbers")}
                   disabled={pendingDownload !== null || tableNames.length === 0}
                   className="dash-btn dash-btn-primary"
                 >
-                  {pendingDownload === "tableNumbers" ? "Generating..." : `Download all (${tableNames.length}) as PDF`}
+                  {pendingDownload === "tableNumbers" ? t.generating : t.downloadAllAsPdf(tableNames.length)}
                 </button>
-                {locked && <PremiumUpgradeNote eventId={eventId} />}
+                {locked && <PremiumUpgradeNote eventId={eventId} locale={locale} />}
               </div>
             )}
             {downloadError && (
@@ -1678,6 +1629,7 @@ export default function PaperConstructor({
         onContinueAnyway={() => {
           if (pendingUpgradePrompt) downloadActions[pendingUpgradePrompt]();
         }}
+        locale={locale}
       />
     </div>
   );

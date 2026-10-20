@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getAuthedUser } from "@/lib/session";
 import { getEventById, listEvents } from "@/lib/events";
+import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
 import DashboardShell from "../DashboardShell";
 
 export default async function EventDashboardLayout({
@@ -21,6 +22,7 @@ export default async function EventDashboardLayout({
   }
 
   const events = await listEvents(user.id);
+  const locale = await resolveGuestLocale();
 
   return (
     <DashboardShell
@@ -28,6 +30,7 @@ export default async function EventDashboardLayout({
       isAnonymous={user.is_anonymous ?? false}
       events={events}
       navEventId={event.id}
+      locale={locale}
       publish={{
         eventId: event.id,
         status: event.status,

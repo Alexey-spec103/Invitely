@@ -6,6 +6,7 @@ import { X, ChevronDown } from "lucide-react";
 import { getLocalizedEventTypeList } from "@/lib/eventTypesLocalized";
 import { EVENT_TYPE_ICON_COMPONENTS } from "@/lib/eventTypeIcons";
 import type { Locale } from "@/lib/i18n/locales";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import { changeEventType } from "./actions";
 
 interface EventTypeSwitcherProps {
@@ -13,6 +14,13 @@ interface EventTypeSwitcherProps {
   currentEventType: string;
   name1: string;
   name2?: string;
+  /** Resolved internally via getDictionary(locale) -- this is "use client"
+   * and most of this switcher's strings are functions in the dictionary
+   * (switchTo, updateNotice, titleWillBe, switchButton), which a
+   * server-component caller can't pass as a prop across the server/client
+   * boundary (confirmed live: "Functions cannot be passed directly to
+   * Client Components"). See lib/i18n/translations/en.ts's `dashboard`
+   * namespace comment. */
   locale: Locale;
 }
 
@@ -25,6 +33,7 @@ interface EventTypeSwitcherProps {
  * action, rather than inventing a second write path. */
 export default function EventTypeSwitcher({ eventId, currentEventType, name1, name2, locale }: EventTypeSwitcherProps) {
   const router = useRouter();
+  const t = getDictionary(locale).dashboard.site.eventTypeSwitcher;
   const types = useMemo(() => getLocalizedEventTypeList(locale), [locale]);
   const current = types.find((t) => t.id === currentEventType) ?? types[0];
 
@@ -114,13 +123,13 @@ export default function EventTypeSwitcher({ eventId, currentEventType, name1, na
           <div className="w-full max-w-lg rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
             <div className="mb-4 flex items-start justify-between gap-3">
               <h2 className="dash-h2 text-base text-[var(--dash-text)]">
-                {pendingType ? `Switch to ${pendingType.label}?` : "What are you celebrating?"}
+                {pendingType ? t.switchTo(pendingType.label) : t.whatCelebrating}
               </h2>
               <button
                 type="button"
                 onClick={closeModal}
                 className="text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
-                title="Close"
+                title={t.close}
               >
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
@@ -152,9 +161,8 @@ export default function EventTypeSwitcher({ eventId, currentEventType, name1, na
             ) : (
               <div className="space-y-4">
                 <p className="text-sm text-[var(--dash-text-muted)]">
-                  Your site&apos;s title, prompts, and labels will update to match{" "}
-                  <span className="font-medium text-[var(--dash-text)]">{pendingType.label}</span>.
-                  {namesModeChanges && " This type asks for names a little differently -- check the field below."}
+                  {t.updateNotice(pendingType.label)}
+                  {namesModeChanges && ` ${t.namesModeChangeNote}`}
                 </p>
 
                 <div>
@@ -178,7 +186,7 @@ export default function EventTypeSwitcher({ eventId, currentEventType, name1, na
                       after. */}
                   {pendingType.namesMode !== "couple" && newName1.trim() && (
                     <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
-                      Your site will be titled "{pendingType.titleTemplate([newName1.trim()])}"
+                      {t.titleWillBe(pendingType.titleTemplate([newName1.trim()]))}
                     </p>
                   )}
                 </div>
@@ -207,7 +215,7 @@ export default function EventTypeSwitcher({ eventId, currentEventType, name1, na
                     disabled={isSaving || !newName1.trim()}
                     className="dash-btn dash-btn-primary flex-1 justify-center disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {isSaving ? "Saving..." : `Switch to ${pendingType.label}`}
+                    {isSaving ? t.saving : t.switchButton(pendingType.label)}
                   </button>
                   <button
                     type="button"
@@ -215,7 +223,7 @@ export default function EventTypeSwitcher({ eventId, currentEventType, name1, na
                     disabled={isSaving}
                     className="dash-btn dash-btn-neutral"
                   >
-                    Back
+                    {t.back}
                   </button>
                 </div>
               </div>

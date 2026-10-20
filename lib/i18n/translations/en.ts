@@ -371,6 +371,698 @@ export interface Dictionary {
       questionsNote: string;
     };
   };
+  /** Host-facing dashboard UI (NOT the guest-facing site, which is
+   * everything above). First real dashboard namespace, added after a host
+   * reported the dashboard showing a random English/[locale] mix: a few
+   * strings (via getLocalizedEventType, built for onboarding) happened to
+   * translate while ~95% of the dashboard's own chrome stayed hardcoded
+   * English -- confirmed "критично" (critical), not cosmetic, from the
+   * product owner directly. This is phase 1 of a multi-phase rollout -- only
+   * the Site tab and its direct dependencies are covered so far (see
+   * `site` below); other tabs (Style/Paper/Guests) get their own
+   * `dashboard.*` additions in later phases, same pattern. `common` holds
+   * small chrome shared by components reused across tabs (FirstVisitTour,
+   * ModuleCard) so a later phase can reuse it instead of re-adding the same
+   * four words under a different key. */
+  dashboard: {
+    common: {
+      statusOn: string;
+      statusNotSet: string;
+      statusVerified: string;
+      statusPending: string;
+      tour: { skip: string; back: string; next: string; gotIt: string };
+      moduleCard: {
+        notSetYet: string;
+        couldntSave: string;
+        close: string;
+        edit: string;
+        toggleAriaLabel: (title: string, turningOn: boolean) => string;
+      };
+      backgroundPicker: {
+        noFill: string;
+        colorAriaLabel: (color: string) => string;
+        customColor: string;
+        pickCustomColor: string;
+        opacity: string;
+      };
+      upgradeModal: {
+        featureSuffix: (planName: string) => string;
+        defaultConsequence: string;
+        upgradeSentence: (planName: string, priceEur: number, benefit: string) => string;
+        defaultBenefit: string;
+        upgradeButton: (planName: string) => string;
+        continueWithWatermark: string;
+        notNow: string;
+        close: string;
+      };
+      upgradeNote: {
+        warning: string;
+        upgradeLinkText: (priceEur: number) => string;
+        removeSuffix: string;
+      };
+      hubStrip: {
+        weddingStyle: string;
+        eventStyle: string;
+        edit: string;
+        weddingDetails: string;
+        eventDetails: string;
+        fillWeddingDetails: string;
+        fillEventDetails: string;
+        percentComplete: (percent: number) => string;
+        yourPlan: string;
+        noPaymentCollected: string;
+        changePlan: string;
+      };
+    };
+    site: {
+      pageTitle: string;
+      freeCanvas: string;
+      checkoutPending: { title: string; body: string };
+      weddingDataReminder: { wedding: string; generic: string; cta: (typeLabel: string) => string };
+      startScreen: { title: string; body: string; editInPreview: string };
+      music: { title: string };
+      linkPreview: { title: string };
+      customDomain: { title: string; verified: string; pending: string };
+      editorPreviewLabel: string;
+      openFullPreview: string;
+      removeBadge: (priceEur: number) => string;
+      tourSteps: { title: string; body: string }[];
+      modules: {
+        heading: string;
+        description: string;
+        groups: { core: string; funExtras: string; logistics: string };
+        labels: {
+          letter: string;
+          timeline: string;
+          map: string;
+          rsvp: string;
+          countdown: string;
+          gift: string;
+          dressCode: string;
+          guestbook: string;
+          video: string;
+          banquetNavigator: string;
+          guestNotes: string;
+          faq: string;
+          travel: string;
+        };
+        toggleAriaLabel: (label: string, turningOn: boolean) => string;
+        basicBadge: string;
+        gatedOnButHidden: string;
+        gatedPreviewOnly: string;
+        addSeatGuestsLink: string;
+        envelopeReveal: { label: string; description: string; toggleAriaLabel: (turningOn: boolean) => string };
+        failedToSave: string;
+        upgradeModal: { action: (label: string) => string; consequence: string; benefit: string; continueLabel: string };
+      };
+      weddingData: {
+        cardTitle: (typeLabel: string) => string;
+        complete: (percent: number) => string;
+        helper: string;
+        dateLabel: (typeLabel: string) => string;
+        venueName: string;
+        venueNamePlaceholder: string;
+        city: string;
+        address: string;
+        titleWillBe: (title: string) => string;
+        errorEnterName: string;
+        errorEnterDate: string;
+      };
+      eventTypeSwitcher: {
+        switchTo: (label: string) => string;
+        whatCelebrating: string;
+        close: string;
+        updateNotice: (label: string) => string;
+        namesModeChangeNote: string;
+        titleWillBe: (title: string) => string;
+        saving: string;
+        switchButton: (label: string) => string;
+        back: string;
+      };
+      editor: {
+        undo: string;
+        redo: string;
+        previewDesktop: string;
+        previewPhone: string;
+        previewTablet: string;
+        previewLabel: string;
+        previewLanguageAria: string;
+        heroPhotoLabel: string;
+        photoLabel: string;
+        noPhotoInLayout: string;
+        sectionLabels: {
+          letter: string;
+          timeline: string;
+          map: string;
+          rsvp: string;
+          countdown: string;
+          gift: string;
+          dressCode: string;
+          guestbook: string;
+          video: string;
+          banquetNavigator: string;
+          guestNotes: string;
+          faq: string;
+          travel: string;
+        };
+        collapsedNote: (label: string) => string;
+        editableBlocks: {
+          heading: string;
+          hide: string;
+          show: string;
+          description: string;
+          showBlock: string;
+          hideBlock: string;
+          deleteLabel: string;
+        };
+        rsvpPreviewOnly: string;
+        lookupPreviewOnly: string;
+      };
+      sendingGuide: {
+        title: string;
+        copied: string;
+        copy: string;
+        open: string;
+        helperWithEmail: string;
+        helperWithoutEmail: string;
+        qrTitle: string;
+        qrCaption: string;
+        download: string;
+        downloadPapers: string;
+      };
+      featureCarousel: {
+        dismiss: string;
+        items: { title: string; body: string }[];
+        newBadge: string;
+      };
+    };
+    style: {
+      header: { title: string; subtitle: string; helper: string; previewFullSet: string };
+      howItWorks: {
+        button: string;
+        heading: string;
+        step1: string;
+        step2: string;
+        step3: string;
+        gotIt: string;
+      };
+      colorVariant: {
+        label: string;
+        useOwnColors: (themeName: string) => string;
+        useColors: (optionName: string) => string;
+      };
+      designSlots: {
+        active: string;
+        addSlot: string;
+        historyLabel: string;
+        recentStyles: string;
+        noPastStyles: string;
+        removeSlot: (themeName: string) => string;
+        justNow: string;
+        minutesAgo: (minutes: number) => string;
+        hoursAgo: (hours: number) => string;
+        daysAgo: (days: number) => string;
+        failedToAdd: string;
+        failedToRemove: string;
+        addModalEyebrow: string;
+        addModalHint: string;
+        close: string;
+      };
+      materialsPreview: {
+        eyebrow: string;
+        close: string;
+        invitations: string;
+        banquet: string;
+        website: string;
+        paperInvitation: string;
+        togetherWithFamilies: string;
+        yourEventDate: string;
+        tableLabel: string;
+        tableNumberCaption: string;
+        guestName: string;
+        tableWithNumber: (tableNumber: number) => string;
+        placeCard: string;
+        footerNote: string;
+      };
+      gallery: {
+        searchPlaceholder: string;
+        popular: string;
+        new: string;
+        favorites: string;
+        seasonYear: (seasonLabel: string, year: number) => string;
+        orPickSpecific: string;
+        allStyles: string;
+        season: string;
+        allYear: string;
+        favoriteTitle: string;
+        favoriteSubtext: string;
+        resultsCount: (count: number) => string;
+        hoverHint: string;
+        noMatch: string;
+        showMore: (remaining: number) => string;
+        categories: Record<
+          "romantic" | "modern" | "botanical" | "boho" | "luxury" | "dark" | "coastal" | "rustic" | "vintage" | "minimal" | "marble" | "cosmic" | "peony" | "provence",
+          string
+        >;
+        seasons: { spring: string; summer: string; autumn: string; winter: string };
+      };
+      card: {
+        scanToPreview: string;
+        removeFavorite: string;
+        addFavorite: string;
+        chooseStyle: string;
+        customize: string;
+        builtForPhoto: string;
+        builtForPhotoTitle: string;
+        addToCalendar: string;
+        letterTitle: string;
+        letterBody: string;
+        scheduleTitle: string;
+        timelineCeremony: string;
+        timelineCocktail: string;
+        timelineReception: string;
+        domainCaption: string;
+        customizeFurther: string;
+        countdown: { weeks: string; days: string; hours: string; minutes: string; seconds: string };
+      };
+    };
+    paper: {
+      pageTitle: string;
+      pageSubtitle: string;
+      tourSteps: { title: string; body: string }[];
+      downloadHeading: string;
+      downloadSubtitle: string;
+      groups: { invitation: string; extras: string; banquet: string };
+      items: {
+        front: string;
+        back: string;
+        envelope: string;
+        program: string;
+        dressCode: string;
+        saveTheDate: string;
+        thankYou: string;
+        seatingChart: string;
+        placeCards: string;
+        tableNumbers: string;
+      };
+      seed: {
+        guestAddress: string;
+        orderOfTheDay: string;
+        dressCodeTitle: string;
+        saveTheDate: string;
+        formalInvitationToFollow: string;
+        thankYouTitle: string;
+        thankYouBody: string;
+      };
+      customizeText: string;
+      editText: string;
+      revertToDefault: string;
+      flipToBack: string;
+      done: string;
+      zoomOut: string;
+      zoomIn: string;
+      previous: string;
+      next: string;
+      generating: string;
+      downloadAllAsPdf: (count: number) => string;
+      failedToGeneratePdf: string;
+      editorHint: {
+        back: string;
+        front: string;
+        envelope: string;
+        program: string;
+        dressCode: string;
+        saveTheDate: string;
+        thankYou: string;
+      };
+      caption: {
+        customEdit: string;
+        frontDefault: (dataLinkLabel: string) => string;
+        envelopeDefault: string;
+        programDefault: (siteTabLabel: string) => string;
+        dressCodeDefault: (siteTabLabel: string) => string;
+        saveTheDateDefault: string;
+        thankYouDefault: string;
+        seatingChartHint: (seatingLabel: string) => string;
+        placeCardsHint: string;
+        placeCardsRsvpNote: string;
+        tableNumbersHint: (seatingLabel: string) => string;
+        seatingTabSuffix: string;
+      };
+      upgradePrompt: { seatingChart: string; placeCards: string; tableNumbers: string };
+      canvas: {
+        addElement: string;
+        uploading: string;
+        undo: string;
+        redo: string;
+        newTextDefault: string;
+        addElementModal: {
+          heading: string;
+          close: string;
+          text: { label: string; body: string };
+          image: { label: string; body: string };
+          video: { label: string; body: string };
+          qr: { label: string; body: string };
+        };
+        toolbar: {
+          fontSize: string;
+          color: string;
+          bold: string;
+          align: (direction: string) => string;
+          alignLeft: string;
+          alignCenter: string;
+          alignRight: string;
+          lineHeight: string;
+          letterSpacing: string;
+          qrLinksTo: string;
+          qrSiteLink: string;
+          qrGuestLink: string;
+          qrCaptionPlaceholder: string;
+          animationDuration: string;
+          previewAnimation: string;
+          bringToFront: string;
+          bringForward: string;
+          sendBackward: string;
+          sendToBack: string;
+          duplicate: string;
+          delete: string;
+        };
+        layers: {
+          heading: string;
+          empty: string;
+          video: string;
+          qrCode: string;
+          image: string;
+          emptyText: string;
+          desktopOnlyOn: string;
+          desktopOnlyOff: string;
+          hiddenOn: string;
+          hiddenOff: string;
+          delete: string;
+          backgroundHeading: string;
+          addPhoto: string;
+          changeImage: string;
+          removeImage: string;
+          openPanel: string;
+          closePanel: string;
+        };
+        fontPicker: {
+          searchPlaceholder: string;
+          noFontsFound: string;
+          categories: { serif: string; sansSerif: string; script: string; display: string };
+        };
+        couldntUploadPhoto: string;
+        couldntUploadVideo: string;
+      };
+      downloads: {
+        heading: string;
+        description: string;
+        canvasNote: string;
+        generic: string;
+        custom: string;
+        envelope: string;
+        program: string;
+        dressCode: string;
+        saveTheDate: string;
+        thankYou: string;
+        generating: string;
+        generatingProgress: (done: number, total: number) => string;
+        downloadAllAsZip: (count: number) => string;
+        noGuestsYet: string;
+        addGuestsHint: string;
+        downloadPdf: string;
+        failedToGeneratePdfs: string;
+      };
+    };
+    shell: {
+      nav: { style: string; site: string; paper: string; guests: string };
+      copyLink: { copied: string; copyFull: string; copyShort: string };
+      seeWhatGuestsSee: string;
+      publish: { saving: string; unpublish: string; publish: string; visibleNote: string; hiddenNote: string };
+      newEvent: string;
+      anonBanner: {
+        saveProgress: string;
+        createAccount: string;
+        notNow: string;
+        creating: string;
+        cancel: string;
+        emailPlaceholder: string;
+        passwordPlaceholder: string;
+        pendingConfirmation: string;
+        genericError: string;
+      };
+      planBadge: {
+        removeBadgeShort: (priceEur: number) => string;
+        removeBadgeFull: (priceEur: number) => string;
+        current: string;
+        free: string;
+        seePlanDetails: string;
+        managePlan: string;
+      };
+      userMenu: { plan: string; accountSettings: string; signOut: string; signingOut: string; guestFallback: string };
+      funnelNav: { backTo: (label: string) => string; getYourLink: string };
+      supportWidget: { openLabel: string; closeLabel: string; needHand: string; body: string };
+    };
+    guests: {
+      page: {
+        title: string;
+        subtitle: string;
+        attending: string;
+        notAttending: string;
+        awaitingResponse: string;
+        notYetContacted: string;
+        seatingHeading: string;
+        seatingBodyOn: string;
+        seatingBodyOff: string;
+      };
+      tour: {
+        step1Title: string;
+        step1Body: string;
+        step2Title: string;
+        step2Body: string;
+        step3Title: string;
+        step3Body: string;
+      };
+      shareLink: {
+        prompt: string;
+        body1: string;
+        body2: string;
+        copyLink: string;
+        linkCopied: string;
+        shareLink: string;
+        shareWhatsapp: string;
+        shareSms: string;
+        shareEmail: string;
+        shareMessage: (eventTitle: string, url: string) => string;
+        personalMessage: (guestName: string, eventTitle: string, url: string) => string;
+      };
+      form: {
+        paperInviteLabel: string;
+        paperInviteHint: string;
+        siteInviteLabel: string;
+        siteInviteHint: string;
+        fullNameLabel: string;
+        fullNamePlaceholder: string;
+        errorEnterName: string;
+        errorEnterEmail: string;
+        errorEnterPhone: string;
+        groupLabel: string;
+        optional: string;
+        groupPlaceholder: string;
+        emailLabel: string;
+        emailPlaceholder: string;
+        phoneLabel: string;
+        phonePlaceholder: string;
+        plusOnesLabel: string;
+        addGuest: string;
+        adding: string;
+        duplicateConfirm: (name: string) => string;
+        genericError: string;
+      };
+      editForm: {
+        fullNameLabel: string;
+        groupLabel: string;
+        emailLabel: string;
+        phoneLabel: string;
+        plusOnesLabel: string;
+        save: string;
+        saving: string;
+        cancel: string;
+        genericError: string;
+      };
+      attendeeList: {
+        addMore: string;
+        removeConfirm: (name: string) => string;
+        placeholder: string;
+        add: string;
+        adding: string;
+        remove: string;
+        genericAddError: string;
+        genericRemoveError: string;
+      };
+      statusFilters: { all: string; created: string; sent: string; accepted: string; declined: string };
+      guestRow: {
+        dear: (name: string) => string;
+        confirmed: string;
+        declined: string;
+        selectAriaLabel: (name: string) => string;
+        edit: string;
+        remove: string;
+      };
+      invitationSent: {
+        sent: string;
+        notSent: string;
+        sentVia: (channels: string) => string;
+        clickToMarkNotSent: string;
+        clickToMarkSent: string;
+        genericError: string;
+      };
+      channelLabels: { link: string; whatsapp: string; sms: string; email: string };
+      copyInviteLink: { copied: string; copy: string };
+      sendMenu: { send: string; whatsapp: string; sms: string; email: string; sending: string; genericError: string };
+      search: {
+        placeholder: string;
+        countOf: (filtered: number, total: number) => string;
+        noMatchQuery: (query: string) => string;
+        noMatchFilter: string;
+      };
+      selection: { selected: (count: number) => string; removeSelected: string; clearSelection: string; selectAll: string };
+      bulkEmail: {
+        sendButton: (count: number) => string;
+        sending: string;
+        sentSummary: (count: number) => string;
+        skippedSummary: (count: number) => string;
+        failedSummary: (count: number) => string;
+        genericError: string;
+      };
+      bulkReminder: {
+        sendButton: (count: number) => string;
+        sending: string;
+        sentSummary: (count: number) => string;
+        skippedSummary: (count: number) => string;
+        failedSummary: (count: number) => string;
+        genericError: string;
+      };
+      emptyState: { createFirst: string; fillForm: string };
+      removalToast: { removed: (label: string) => string; undo: string; bulkCountLabel: (count: number) => string };
+      addedToast: { added: (name: string) => string };
+      bulkAdd: {
+        toggleOpen: string;
+        toggleClose: string;
+        csvTemplateHeaders: { fullName: string; group: string; email: string; phone: string };
+        instructions: string;
+        uploadCsv: string;
+        downloadTemplate: string;
+        csvReadSummary: (count: number, filename: string) => string;
+        csvNoNamesError: string;
+        csvReadError: string;
+        textareaPlaceholder: string;
+        duplicateWarning: (count: number, names: string) => string;
+        duplicateConfirm: (count: number, names: string) => string;
+        submitDefault: string;
+        submitWithCount: (count: number) => string;
+        submitting: string;
+        addedSummary: (count: number) => string;
+        genericError: string;
+      };
+      rsvpResponses: {
+        heading: string;
+        subtitle: string;
+        guestbookWall: (count: number) => string;
+        hideAll: string;
+        hidingAll: string;
+        showAll: string;
+        showingAll: string;
+        searchPlaceholder: string;
+        emptyHeading: string;
+        emptySubtitle: string;
+        noMatch: (query: string) => string;
+        attending: string;
+        notAttending: string;
+        guestCountSuffix: (count: number) => string;
+        hiddenShow: string;
+        visibleHide: string;
+        matchToGuestLabel: string;
+        unmatchedOption: string;
+        delete: string;
+        deleting: string;
+        deleteConfirm: string;
+        genericError: string;
+      };
+      notifications: {
+        emailMeTitle: string;
+        emailMeBody: string;
+        dailyTitle: string;
+        dailyBody: string;
+        genericError: string;
+      };
+      photos: {
+        heading: string;
+        subtitle: string;
+        printHint: string;
+        loading: string;
+        empty: string;
+        deleteAria: string;
+        deletedToast: string;
+      };
+      download: {
+        pdfButton: string;
+        generating: string;
+        csvButton: string;
+        hint: string;
+        genericError: string;
+        csvHeaders: { name: string; group: string; status: string; partySize: string; table: string; notes: string };
+        statusAttending: string;
+        statusNotAttending: string;
+        statusAwaiting: string;
+        statusNotContacted: string;
+      };
+      banquet: {
+        addTable: string;
+        adding: string;
+        tableNameLabel: string;
+        tableNamePlaceholder: string;
+        errorEnterTableName: string;
+        seatsLabel: string;
+        optional: string;
+        seatsPlaceholder: string;
+        save: string;
+        saving: string;
+        cancel: string;
+        genericError: string;
+        seatsCount: (seated: number, capacity: number) => string;
+        removeTableAria: string;
+        removeTableConfirm: string;
+        noGuestsYet: string;
+        addGuestsHint: string;
+        chooseGuestOption: string;
+        addGuestButton: string;
+        everyGuestSeated: string;
+        assignHeading: string;
+        assignSubtitle: string;
+        overCapacity: (list: string) => string;
+        searchPlaceholder: string;
+        unassignedOnly: string;
+        attendingOnly: string;
+        countOf: (filtered: number, total: number) => string;
+        chooseTableOption: string;
+        assignAll: (count: number) => string;
+        assigning: string;
+        emptyHeading: string;
+        emptySubtitle: string;
+        noMatch: string;
+        unassignedOption: string;
+      };
+      supportCard: {
+        heading: string;
+        bulletPdf: string;
+        bulletNoAccount: string;
+        bulletNoWaiting: string;
+        bulletContact: string;
+        questionsCaption: string;
+      };
+    };
+  };
 }
 
 export const en: Dictionary = {
@@ -884,6 +1576,863 @@ export const en: Dictionary = {
       includedNote:
         "<p>This address is included with your plan for as long as it's active - nothing to renew, no extra domain purchase, no expiry date to track.</p>",
       questionsNote: "<p>Questions? Just reply to this email or reach us at support@invimbo.com.</p>",
+    },
+  },
+  dashboard: {
+    common: {
+      statusOn: "On",
+      statusNotSet: "Not set",
+      statusVerified: "Verified",
+      statusPending: "Pending",
+      tour: { skip: "Skip", back: "Back", next: "Next", gotIt: "Got it" },
+      moduleCard: {
+        notSetYet: "Not set yet",
+        couldntSave: "Couldn't save",
+        close: "Close",
+        edit: "Edit",
+        toggleAriaLabel: (title, turningOn) => `Turn ${title} ${turningOn ? "on" : "off"}`,
+      },
+      backgroundPicker: {
+        noFill: "None",
+        colorAriaLabel: (color) => `Color ${color}`,
+        customColor: "Custom color",
+        pickCustomColor: "Pick a custom color",
+        opacity: "Opacity",
+      },
+      upgradeModal: {
+        featureSuffix: (planName) => `${planName} feature`,
+        defaultConsequence: 'adds a "Made with Invimbo" watermark on your current plan.',
+        upgradeSentence: (planName, priceEur, benefit) => `Upgrade to ${planName} (€${priceEur}) to ${benefit}.`,
+        defaultBenefit: "remove it from every invitation and banquet card",
+        upgradeButton: (planName) => `Upgrade to ${planName}`,
+        continueWithWatermark: "Continue with watermark",
+        notNow: "Not now",
+        close: "Close",
+      },
+      upgradeNote: {
+        warning: "This is a paid feature - downloads with a watermark on Free and Basic.",
+        upgradeLinkText: (priceEur) => `Upgrade to Premium (€${priceEur})`,
+        removeSuffix: "to remove it.",
+      },
+      hubStrip: {
+        weddingStyle: "Wedding style",
+        eventStyle: "Event style",
+        edit: "Edit",
+        weddingDetails: "Wedding details",
+        eventDetails: "Event details",
+        fillWeddingDetails: "Fill in your wedding details to complete your invitation text",
+        fillEventDetails: "Fill in your event details to complete your invitation text",
+        percentComplete: (percent) => `${percent}% complete`,
+        yourPlan: "Your plan",
+        noPaymentCollected: "🔓 No payment collected",
+        changePlan: "Change plan",
+      },
+    },
+    site: {
+      pageTitle: "Site",
+      freeCanvas: "🎨 Free canvas",
+      checkoutPending: {
+        title: "⏳ Confirming your payment…",
+        body: "Stripe is finishing up - this page will unlock automatically in a few seconds. If it doesn't, refresh, or contact support if your card was charged and this still doesn't update.",
+      },
+      weddingDataReminder: {
+        wedding: "Fill in your wedding details to complete your site and paper set.",
+        generic: "Fill in your event details to complete your site and paper set.",
+        cta: (typeLabel) => `${typeLabel} data`,
+      },
+      startScreen: {
+        title: "Start screen",
+        body: "Your cover photo, names and date are edited directly in the live preview.",
+        editInPreview: "Edit in the preview",
+      },
+      music: { title: "Music" },
+      linkPreview: { title: "Link preview" },
+      customDomain: { title: "Custom domain", verified: "Verified", pending: "Pending" },
+      editorPreviewLabel: "Site editor - click any text to edit it in place",
+      openFullPreview: "Open full preview in a new tab",
+      removeBadge: (priceEur) => `Happy with it? Remove the badge - €${priceEur}`,
+      tourSteps: [
+        {
+          title: "👋 Welcome to your site editor",
+          body: "Everything here saves itself as you type - there's no Save button to remember.",
+        },
+        {
+          title: "✏️ Click any text to edit it",
+          body: "No separate editor-vs-preview split - click straight on a name, date, or line of copy on the live page below and start typing.",
+        },
+        {
+          title: "📷 Add your photos",
+          body: "Drag a photo straight into any photo field. We'll resize it automatically.",
+        },
+        {
+          title: "🧩 Turn modules on or off",
+          body: "Countdown, RSVP, gift wishes, dress code and more - each has its own on/off switch right here.",
+        },
+        {
+          title: "🔎 Can't find something?",
+          body: "Editable blocks (below the preview) lists every text and photo on your site, grouped by section, so you can jump straight to it.",
+        },
+      ],
+      modules: {
+        heading: "Modules",
+        description:
+          "Guests won't see a module until it's turned on here - drag to change the order they appear in on your public site.",
+        groups: { core: "Core", funExtras: "Fun extras", logistics: "Logistics" },
+        labels: {
+          letter: "Welcome Letter",
+          timeline: "Schedule",
+          map: "Location",
+          rsvp: "RSVP",
+          countdown: "Countdown",
+          gift: "Gifts",
+          dressCode: "Dress Code",
+          guestbook: "Guestbook",
+          video: "Video",
+          banquetNavigator: "Find My Table",
+          guestNotes: "Notes for Guests",
+          faq: "FAQ",
+          travel: "Travel & Stay",
+        },
+        toggleAriaLabel: (label, turningOn) => `Turn ${label} ${turningOn ? "on" : "off"}`,
+        basicBadge: "Basic",
+        gatedOnButHidden:
+          "Visible to you here, but it won't show on your published site until you're on the Basic plan or above.",
+        gatedPreviewOnly:
+          "Turn this on and preview it freely - it only shows on your published site once you're on the Basic plan or above.",
+        addSeatGuestsLink: "Add & seat your guests on the Guests tab",
+        envelopeReveal: {
+          label: "Envelope reveal",
+          description: "A brief animated envelope guests tap open before seeing your site.",
+          toggleAriaLabel: (turningOn) => `Turn envelope reveal ${turningOn ? "on" : "off"}`,
+        },
+        failedToSave: "Failed to save - please try again.",
+        upgradeModal: {
+          action: (label) => `Turning on ${label}`,
+          consequence: "won't show on your published site until you upgrade.",
+          benefit: "show it (and unlock the rest of Basic) on your site",
+          continueLabel: "Continue (preview only)",
+        },
+      },
+      weddingData: {
+        cardTitle: (typeLabel) => `${typeLabel} data`,
+        complete: (percent) => `${percent}% complete`,
+        helper: "Names, date & venue - used across your site and paper set.",
+        dateLabel: (typeLabel) => `${typeLabel} date`,
+        venueName: "Venue name",
+        venueNamePlaceholder: "Name of the venue, restaurant, or hall...",
+        city: "City",
+        address: "Address",
+        titleWillBe: (title) => `Your site will be titled "${title}"`,
+        errorEnterName: "Enter a name",
+        errorEnterDate: "Enter a date",
+      },
+      eventTypeSwitcher: {
+        switchTo: (label) => `Switch to ${label}?`,
+        whatCelebrating: "What are you celebrating?",
+        close: "Close",
+        updateNotice: (label) => `Your site's title, prompts, and labels will update to match ${label}.`,
+        namesModeChangeNote: "This type asks for names a little differently - check the field below.",
+        titleWillBe: (title) => `Your site will be titled "${title}"`,
+        saving: "Saving...",
+        switchButton: (label) => `Switch to ${label}`,
+        back: "Back",
+      },
+      editor: {
+        undo: "Undo",
+        redo: "Redo",
+        previewDesktop: "Preview at desktop width",
+        previewPhone: "Preview at phone width",
+        previewTablet: "Preview at tablet width",
+        previewLabel: "Preview:",
+        previewLanguageAria: "Preview language",
+        heroPhotoLabel: "Hero photo",
+        photoLabel: "📷 Photo",
+        noPhotoInLayout:
+          'This layout doesn\'t display a photo in the Hero section. Pick a "Photo Invitation" style from the theme gallery if you\'d like your photo front and center.',
+        sectionLabels: {
+          letter: "Letter",
+          timeline: "Timeline",
+          map: "Map",
+          rsvp: "RSVP",
+          countdown: "Countdown",
+          gift: "Gift wishes",
+          dressCode: "Dress code",
+          guestbook: "Guestbook",
+          video: "Video",
+          banquetNavigator: "Seating navigator",
+          guestNotes: "Notes for guests",
+          faq: "FAQ",
+          travel: "Travel & Stay",
+        },
+        collapsedNote: (label) => `${label} is off, so guests won't see it - nothing you've written here is lost. Flip the switch above to bring it back.`,
+        editableBlocks: {
+          heading: "Editable blocks",
+          hide: "Hide",
+          show: "Show",
+          description:
+            "Every text and photo from the site above, in one list - click a row to jump straight to it, or 👁 to hide/show it without deleting what you typed.",
+          showBlock: "Show block",
+          hideBlock: "Hide block",
+          deleteLabel: "Delete",
+        },
+        rsvpPreviewOnly: "This is a preview - guests submit RSVPs from your live site, not from here.",
+        lookupPreviewOnly: "This is a preview - guests look up their table from your live site, not from here.",
+      },
+      sendingGuide: {
+        title: "🔗 Your invitation link",
+        copied: "Copied!",
+        copy: "Copy",
+        open: "Open",
+        helperWithEmail:
+          "Send it however you like (text, email, WhatsApp) - guests open it, RSVP, and a reply lands in your inbox the moment they answer (you can also check the Guests tab anytime).",
+        helperWithoutEmail:
+          "Send it however you like (text, email, WhatsApp) - guests open it, RSVP, and you can check their answer anytime in the Guests tab (email alerts are off - turn them back on there).",
+        qrTitle: "QR code for your link",
+        qrCaption: "Print it on a welcome sign, table cards, or a thank-you note.",
+        download: "Download",
+        downloadPapers: "Download your watermark-free paper PDFs",
+      },
+      featureCarousel: {
+        dismiss: "Dismiss",
+        newBadge: "NEW",
+        items: [
+          {
+            title: "Edit your site by clicking on it",
+            body: "No separate editor-vs-preview split - click any text on the live page, type, and it autosaves.",
+          },
+          {
+            title: "A QR code on every invitation",
+            body: "Guests scan and land straight on their own RSVP page, name already filled in - nothing to type, nowhere to get lost.",
+          },
+          {
+            title: "A blank canvas, when you want one",
+            body: "Drop in text, photos, video and QR codes anywhere - a second, freeform way to design, alongside the guided one.",
+          },
+          {
+            title: "Send invites your way",
+            body: "WhatsApp, SMS, email or a plain link - one click opens it pre-filled, and we keep track of who's been sent what.",
+          },
+          {
+            title: "Nothing's ever locked while you decide",
+            body: "Every PDF downloads on every plan - Premium only removes the watermark, it doesn't unlock a download you couldn't get before.",
+          },
+          {
+            title: "A nicer address for your site",
+            body: "Claim a free claire-and-nathaniel.invimbo.com address, or point a domain you already own at your site instead.",
+          },
+        ],
+      },
+    },
+    style: {
+      header: {
+        title: "Style",
+        subtitle: "Let's find the style and design for your event.",
+        helper: "Everything here can be customized further in the constructor.",
+        previewFullSet: "Preview full material set",
+      },
+      howItWorks: {
+        button: "How does this work?",
+        heading: "Pick a look, not a final answer",
+        step1: "Browse styles below with your own names and date already filled in.",
+        step2: "Pick whichever feels closest - nothing is locked in.",
+        step3: "Fine-tune colors, photos, and every section afterwards in the constructor.",
+        gotIt: "Got it",
+      },
+      colorVariant: {
+        label: "Color",
+        useOwnColors: (themeName) => `Use ${themeName}'s own colors`,
+        useColors: (optionName) => `Use ${optionName}'s colors`,
+      },
+      designSlots: {
+        active: "Active",
+        addSlot: "Add a design slot",
+        historyLabel: "Design version history",
+        recentStyles: "Recent styles",
+        noPastStyles: "No past styles yet.",
+        removeSlot: (themeName) => `Remove ${themeName} slot`,
+        justNow: "just now",
+        minutesAgo: (minutes) => `${minutes}m ago`,
+        hoursAgo: (hours) => `${hours}h ago`,
+        daysAgo: (days) => `${days}d ago`,
+        failedToAdd: "Failed to add slot",
+        failedToRemove: "Failed to remove slot",
+        addModalEyebrow: "Add a design slot",
+        addModalHint: "Pick a theme to keep as a candidate - it won't go live until you switch to it.",
+        close: "Close",
+      },
+      materialsPreview: {
+        eyebrow: "Full material set",
+        close: "Close",
+        invitations: "Invitations",
+        banquet: "Banquet",
+        website: "Website",
+        paperInvitation: "Paper invitation",
+        togetherWithFamilies: "Together with their families",
+        yourEventDate: "Your event date",
+        tableLabel: "Table",
+        tableNumberCaption: "Table number",
+        guestName: "Guest Name",
+        tableWithNumber: (tableNumber) => `Table ${tableNumber}`,
+        placeCard: "Place card",
+        footerNote:
+          "One style, applied everywhere your guests see it - change it once here and it carries through the site, invitations, and banquet cards.",
+      },
+      gallery: {
+        searchPlaceholder: "Search styles...",
+        popular: "Popular",
+        new: "New",
+        favorites: "Favorites",
+        seasonYear: (seasonLabel, year) => `${seasonLabel} ${year}`,
+        orPickSpecific: "Or pick a specific style",
+        allStyles: "All styles",
+        season: "Season",
+        allYear: "All year",
+        favoriteTitle: "Our favorite styles",
+        favoriteSubtext: "Hand-picked across every category - hover one to preview it, or pick a specific style on the left.",
+        resultsCount: (count) => `${count} ${count === 1 ? "style" : "styles"}`,
+        hoverHint: "Hover a style to preview it",
+        noMatch: "No styles match - try clearing a filter or search.",
+        showMore: (remaining) => `Show more styles (${remaining} more)`,
+        categories: {
+          romantic: "Romantic",
+          modern: "Modern",
+          botanical: "Botanical",
+          boho: "Boho",
+          luxury: "Luxury",
+          dark: "Dark & Moody",
+          coastal: "Coastal",
+          rustic: "Rustic",
+          vintage: "Vintage",
+          minimal: "Minimal",
+          marble: "Marble",
+          cosmic: "Cosmic",
+          peony: "Peony",
+          provence: "Provence",
+        },
+        seasons: { spring: "Spring", summer: "Summer", autumn: "Autumn", winter: "Winter" },
+      },
+      card: {
+        scanToPreview: "Scan to preview",
+        removeFavorite: "Remove from favorites",
+        addFavorite: "Add to favorites",
+        chooseStyle: "Choose this style",
+        customize: "Customize →",
+        builtForPhoto: "📷 Built for a photo",
+        builtForPhotoTitle: "This style is built around a photo - add yours for the full look",
+        addToCalendar: "Add to calendar",
+        letterTitle: "A Note From Us",
+        letterBody: "We can't wait to celebrate this day surrounded by the people we love most.",
+        scheduleTitle: "Schedule",
+        timelineCeremony: "Ceremony",
+        timelineCocktail: "Cocktail Hour",
+        timelineReception: "Reception & Dinner",
+        domainCaption: "yourname.com",
+        customizeFurther: "Everything can be customized further in the constructor",
+        countdown: { weeks: "weeks", days: "days", hours: "hours", minutes: "minutes", seconds: "seconds" },
+      },
+    },
+    paper: {
+      pageTitle: "Paper",
+      pageSubtitle: "Design, personalize, and download every printable piece - invitation, envelope, seating cards, and more.",
+      tourSteps: [
+        {
+          title: "👋 Welcome to your paper set",
+          body: "The list on the left is every printable piece - invitation, envelope, program, and more, grouped by kind.",
+        },
+        {
+          title: "🔍 Zoom and flip",
+          body: "Use − / + to zoom the preview, and \"↺ Flip to back\" on the invitation to see the reverse side.",
+        },
+        {
+          title: "🖊️ Design the back",
+          body: "The back of your invitation is its own small canvas - add text, a photo, or a QR code. It saves itself as you go.",
+        },
+        {
+          title: "💍 Where the data comes from",
+          body: "Names, date, venue, timeline and dress code are edited in the Site tab - update them there and these cards follow automatically.",
+        },
+        {
+          title: "🍽️ Banquet materials",
+          body: "Seating charts, place cards and table numbers preview one card at a time - use the arrows to flip through the rest.",
+        },
+        {
+          title: "⬇️ Download when ready",
+          body: "Each \"Download all\" button turns every card in that set into a ready-to-print PDF.",
+        },
+        {
+          title: "💬 Stuck on something?",
+          body: "The button in the bottom-left corner reaches a real person on our support team, any time.",
+        },
+      ],
+      downloadHeading: "Download",
+      downloadSubtitle:
+        "Each guest gets a QR code linking straight to your site with them already identified, so their RSVP is matched automatically.",
+      groups: { invitation: "Invitation", extras: "Extras", banquet: "Banquet" },
+      items: {
+        front: "Front",
+        back: "Back",
+        envelope: "Envelope",
+        program: "Program card",
+        dressCode: "Dress-code card",
+        saveTheDate: "Save the date",
+        thankYou: "Thank you",
+        seatingChart: "Seating chart",
+        placeCards: "Place cards",
+        tableNumbers: "Table numbers",
+      },
+      seed: {
+        guestAddress: "Guest address",
+        orderOfTheDay: "Order of the day",
+        dressCodeTitle: "Dress Code",
+        saveTheDate: "Save the date",
+        formalInvitationToFollow: "Formal invitation to follow",
+        thankYouTitle: "Thank You",
+        thankYouBody: "Thank you for celebrating with us - your presence meant more than words can say.",
+      },
+      customizeText: "Customize text",
+      editText: "Edit text",
+      revertToDefault: "Revert to default",
+      flipToBack: "↺ Flip to back",
+      done: "Done",
+      zoomOut: "Zoom out",
+      zoomIn: "Zoom in",
+      previous: "Previous",
+      next: "Next",
+      generating: "Generating...",
+      downloadAllAsPdf: (count) => `Download all (${count}) as PDF`,
+      failedToGeneratePdf: "Failed to generate PDF",
+      editorHint: {
+        back: "Design the back of your invitation - add text, photos, or a QR code linking to your site.",
+        front: "Write whatever you want on the front - move, resize, or replace any line. Starts from your current names/date/venue.",
+        envelope: "Write whatever you want on the envelope - move, resize, or replace any line. Starts from your current names/date.",
+        program:
+          "Write whatever you want on the program card - move, resize, or replace any line. Starts from your current schedule.",
+        dressCode:
+          "Write whatever you want on the dress-code card - move, resize, or replace any line. Starts from your current wording.",
+        saveTheDate:
+          "Write whatever you want on the save-the-date card - move, resize, or replace any line. Starts from your current names/date.",
+        thankYou: "Write whatever you want on the thank-you card - move, resize, or replace any line. Starts from your current names.",
+      },
+      caption: {
+        customEdit: 'This card now uses your own custom text - click "Edit text" to change it, or rearrange/resize anything.',
+        frontDefault: (dataLinkLabel) =>
+          `Names, date & venue come from your ${dataLinkLabel}. Edit them there and this card updates automatically - or click "Customize text" to write your own instead.`,
+        envelopeDefault: 'The return address uses the same names & date as your invitation. Click "Customize text" to write your own instead.',
+        programDefault: (siteTabLabel) =>
+          `Edit your schedule in the ${siteTabLabel}'s Timeline card, or click "Customize text" to write your own instead.`,
+        dressCodeDefault: (siteTabLabel) =>
+          `Edit your palette in the ${siteTabLabel}'s Dress code card, or click "Customize text" to write your own instead.`,
+        saveTheDateDefault: 'Uses your event\'s names and date. Click "Customize text" to write your own instead.',
+        thankYouDefault: 'Uses your event\'s names. Click "Customize text" to write your own instead.',
+        seatingChartHint: (seatingLabel) => `One card per table, listing everyone seated there. Manage tables and seating in the ${seatingLabel} tab.`,
+        placeCardsHint: "One card per guest, ready to cut.",
+        placeCardsRsvpNote: " Only includes guests who've RSVP'd attending.",
+        tableNumbersHint: (seatingLabel) => `A freestanding number card for each table. Manage tables in the ${seatingLabel} tab.`,
+        seatingTabSuffix: "tab",
+      },
+      upgradePrompt: {
+        seatingChart: "Downloading the seating chart",
+        placeCards: "Downloading place cards",
+        tableNumbers: "Downloading table numbers",
+      },
+      canvas: {
+        addElement: "+ Add element",
+        uploading: "Uploading...",
+        undo: "Undo",
+        redo: "Redo",
+        newTextDefault: "New text",
+        addElementModal: {
+          heading: "Add element",
+          close: "Close",
+          text: { label: "Text", body: "A heading, name, or line of copy" },
+          image: { label: "Image", body: "Upload a photo from your device" },
+          video: { label: "Video", body: "Upload a short clip from your device" },
+          qr: { label: "QR code", body: "Links to your site, or a guest's invite" },
+        },
+        toolbar: {
+          fontSize: "Font size",
+          color: "Color",
+          bold: "Bold",
+          align: (direction) => `Align ${direction}`,
+          alignLeft: "left",
+          alignCenter: "center",
+          alignRight: "right",
+          lineHeight: "Line height",
+          letterSpacing: "Letter spacing (px)",
+          qrLinksTo: "What this QR code links to",
+          qrSiteLink: "Site link",
+          qrGuestLink: "Guest's personal invite",
+          qrCaptionPlaceholder: "Caption (optional)",
+          animationDuration: "Entrance animation duration (seconds)",
+          previewAnimation: "Preview animation",
+          bringToFront: "Bring to front",
+          bringForward: "Bring forward",
+          sendBackward: "Send backward",
+          sendToBack: "Send to back",
+          duplicate: "Duplicate",
+          delete: "Delete",
+        },
+        layers: {
+          heading: "Layers",
+          empty: "Nothing on this page yet.",
+          video: "Video",
+          qrCode: "QR code",
+          image: "Image",
+          emptyText: "(empty text)",
+          desktopOnlyOn: "Shown on desktop only - click to show everywhere",
+          desktopOnlyOff: "Show on desktop only",
+          hiddenOn: "Hidden from your site - click to show",
+          hiddenOff: "Hide from your site",
+          delete: "Delete",
+          backgroundHeading: "Background",
+          addPhoto: "Add photo",
+          changeImage: "Change image",
+          removeImage: "Remove image",
+          openPanel: "Open layers panel",
+          closePanel: "Close layers panel",
+        },
+        fontPicker: {
+          searchPlaceholder: "Search fonts...",
+          noFontsFound: "No fonts found",
+          categories: { serif: "Serif", sansSerif: "Sans-serif", script: "Script", display: "Display" },
+        },
+        couldntUploadPhoto: "Couldn't upload that photo",
+        couldntUploadVideo: "Couldn't upload that video",
+      },
+      downloads: {
+        heading: "Personalized invitations",
+        description:
+          "Each includes a QR code that links straight to your site with the guest already identified, so their RSVP is automatically matched.",
+        canvasNote:
+          " These use your theme's default layout rather than your custom canvas design - per-guest personalization for canvas designs isn't available yet.",
+        generic: "Download generic invitation PDF",
+        custom: "Download invitation PDF (your design)",
+        envelope: "Download envelope PDF",
+        program: "Download program card PDF",
+        dressCode: "Download dress-code card PDF",
+        saveTheDate: "Download save-the-date PDF",
+        thankYou: "Download thank-you card PDF",
+        generating: "Generating...",
+        generatingProgress: (done, total) => `Generating ${done}/${total}...`,
+        downloadAllAsZip: (count) => `Download all (${count}) as ZIP (PDFs)`,
+        noGuestsYet: "No guests yet",
+        addGuestsHint: "Add guests on the Guests tab to download their invitations",
+        downloadPdf: "Download PDF",
+        failedToGeneratePdfs: "Failed to generate PDFs",
+      },
+    },
+    shell: {
+      nav: { style: "Style", site: "Site", paper: "Paper", guests: "Guests" },
+      copyLink: { copied: "Copied!", copyFull: "Copy your invitation link", copyShort: "Copy link" },
+      seeWhatGuestsSee: "See what guests see",
+      publish: {
+        saving: "Saving...",
+        unpublish: "Unpublish",
+        publish: "Publish site",
+        visibleNote: "Your site is visible to guests via the link",
+        hiddenNote: "Guests can't see your site until it's published",
+      },
+      newEvent: "Create another event",
+      anonBanner: {
+        saveProgress: "💾 Save your progress - create a free account",
+        createAccount: "Create account",
+        notNow: "Not now",
+        creating: "Creating…",
+        cancel: "Cancel",
+        emailPlaceholder: "Email",
+        passwordPlaceholder: "Password (min 6 characters)",
+        pendingConfirmation:
+          "📬 Check your email to confirm - everything you've made is already saved, keep working while you wait.",
+        genericError: "Failed to create account",
+      },
+      planBadge: {
+        removeBadgeShort: (priceEur) => `Remove badge - €${priceEur}`,
+        removeBadgeFull: (priceEur) => `Remove the badge - €${priceEur}`,
+        current: "Current",
+        free: "Free",
+        seePlanDetails: "See plan details",
+        managePlan: "Manage plan",
+      },
+      userMenu: {
+        plan: "Plan",
+        accountSettings: "Account settings",
+        signOut: "Sign out",
+        signingOut: "Signing out...",
+        guestFallback: "Guest",
+      },
+      funnelNav: { backTo: (label) => `Back to ${label}`, getYourLink: "Get your link" },
+      supportWidget: {
+        openLabel: "Contact support",
+        closeLabel: "Close support",
+        needHand: "Need a hand?",
+        body: "We don't run a live chat yet - email us and a real person will get back to you.",
+      },
+    },
+    guests: {
+      page: {
+        title: "Guests",
+        subtitle: "Keep track of everyone you're inviting.",
+        attending: "attending",
+        notAttending: "not attending",
+        awaitingResponse: "awaiting response",
+        notYetContacted: "not yet contacted",
+        seatingHeading: "Seating",
+        seatingBodyOn: `Optional - who sits where. This is what powers the "Find My Table" search on your site.`,
+        seatingBodyOff: `Optional - plan who sits where whenever you like. Turn on "Find My Table" in your Site's Modules list to let guests look it up themselves.`,
+      },
+      tour: {
+        step1Title: "👋 Add your guests",
+        step1Body: "Add people one at a time below, or paste a whole list in at once - each gets their own RSVP link.",
+        step2Title: "📤 Send invites your way",
+        step2Body:
+          "Copy your one shared link, or send each guest their own personal link by WhatsApp, SMS, or email - we track who's been sent what.",
+        step3Title: "✅ See who's answered",
+        step3Body:
+          "Responses show up live below as guests RSVP - turn on email notifications so you don't have to keep checking back.",
+      },
+      shareLink: {
+        prompt: "✨ Short on time to add every guest by hand?",
+        body1:
+          "Share your site's one link with everyone - anyone who RSVPs from it is added to your guest list automatically, no invite codes needed.",
+        body2:
+          "Add guests individually below instead if you'd rather track who's RSVP'd by name - each one gets their own personal link, separate from this shared one.",
+        copyLink: "Copy site link",
+        linkCopied: "Link copied!",
+        shareLink: "Share link ↗",
+        shareWhatsapp: "💬 WhatsApp",
+        shareSms: "📱 SMS",
+        shareEmail: "✉️ Email",
+        shareMessage: (eventTitle, url) => `You're invited to ${eventTitle}! RSVP here: ${url}`,
+        personalMessage: (guestName, eventTitle, url) => `Hi ${guestName}! You're invited to ${eventTitle}. RSVP here: ${url}`,
+      },
+      form: {
+        paperInviteLabel: "Paper invite",
+        paperInviteHint: "Include in printed/PDF invitations",
+        siteInviteLabel: "Site invite",
+        siteInviteHint: "Give them a personal RSVP link to your site",
+        fullNameLabel: "Full name",
+        fullNamePlaceholder: "First & last name, no titles (e.g. Jamie Rivera)",
+        errorEnterName: "Enter a name",
+        errorEnterEmail: "Enter a valid email",
+        errorEnterPhone: "Enter a valid phone number",
+        groupLabel: "Group",
+        optional: "(optional)",
+        groupPlaceholder: "Family, friends...",
+        emailLabel: "Email",
+        emailPlaceholder: "For emailing their invitation",
+        phoneLabel: "Phone",
+        phonePlaceholder: "For SMS or WhatsApp",
+        plusOnesLabel: "Plus-ones allowed",
+        addGuest: "Add guest",
+        adding: "Adding...",
+        duplicateConfirm: (name) => `"${name}" looks like a guest you already added. Add another one anyway?`,
+        genericError: "Failed to save",
+      },
+      editForm: {
+        fullNameLabel: "Full name",
+        groupLabel: "Group",
+        emailLabel: "Email",
+        phoneLabel: "Phone",
+        plusOnesLabel: "Plus-ones allowed",
+        save: "Save",
+        saving: "Saving...",
+        cancel: "Cancel",
+        genericError: "Failed to save",
+      },
+      attendeeList: {
+        addMore: "Add more people to this invitation:",
+        removeConfirm: (name) => `Remove ${name} from this invitation?`,
+        placeholder: "Name an attendee",
+        add: "+ Add",
+        adding: "Adding...",
+        remove: "Remove",
+        genericAddError: "Failed to add",
+        genericRemoveError: "Failed to remove",
+      },
+      statusFilters: { all: "All", created: "Created", sent: "Sent", accepted: "Accepted", declined: "Declined" },
+      guestRow: {
+        dear: (name) => `Dear ${name}!`,
+        confirmed: "Confirmed",
+        declined: "Declined",
+        selectAriaLabel: (name) => `Select ${name}`,
+        edit: "Edit",
+        remove: "Remove",
+      },
+      invitationSent: {
+        sent: "Sent",
+        notSent: "Not sent",
+        sentVia: (channels) => `Sent via ${channels} - click to mark as not sent`,
+        clickToMarkNotSent: "Click to mark as not sent",
+        clickToMarkSent: "Click to mark as sent",
+        genericError: "Failed to update",
+      },
+      channelLabels: { link: "link copied", whatsapp: "WhatsApp", sms: "SMS", email: "email" },
+      copyInviteLink: { copied: "Copied!", copy: "Copy link" },
+      sendMenu: {
+        send: "Send",
+        whatsapp: "💬 WhatsApp",
+        sms: "📱 SMS",
+        email: "✉️ Email",
+        sending: "Sending...",
+        genericError: "Failed to send email",
+      },
+      search: {
+        placeholder: "Search guests by name, group, email, phone...",
+        countOf: (filtered, total) => `${filtered} of ${total} guest${total === 1 ? "" : "s"}`,
+        noMatchQuery: (query) => `No guests match "${query}".`,
+        noMatchFilter: "No guests match this filter.",
+      },
+      selection: {
+        selected: (count) => `${count} selected`,
+        removeSelected: "Remove selected",
+        clearSelection: "Clear selection",
+        selectAll: "Select all",
+      },
+      bulkEmail: {
+        sendButton: (count) => `✉️ Email everyone who hasn't been sent one (${count})`,
+        sending: "Sending...",
+        sentSummary: (count) => `Sent to ${count} guest${count === 1 ? "" : "s"}`,
+        skippedSummary: (count) => `${count} skipped (no email on file or already sent)`,
+        failedSummary: (count) => `${count} failed`,
+        genericError: "Failed to send",
+      },
+      bulkReminder: {
+        sendButton: (count) => `⏰ Remind guests who haven't responded (${count})`,
+        sending: "Sending...",
+        sentSummary: (count) => `Reminded ${count} guest${count === 1 ? "" : "s"}`,
+        skippedSummary: (count) => `${count} skipped (no email on file or already responded)`,
+        failedSummary: (count) => `${count} failed`,
+        genericError: "Failed to send",
+      },
+      emptyState: { createFirst: "Create your first guest", fillForm: "Fill in the form above to get started" },
+      removalToast: {
+        removed: (label) => `Removed ${label}.`,
+        undo: "Undo",
+        bulkCountLabel: (count) => `${count} guest${count === 1 ? "" : "s"}`,
+      },
+      addedToast: { added: (name) => `Added ${name}.` },
+      bulkAdd: {
+        toggleOpen: "Add many guests at once →",
+        csvTemplateHeaders: { fullName: "Full Name", group: "Group", email: "Email", phone: "Phone" },
+        toggleClose: "Hide bulk add",
+        instructions:
+          "Paste one guest per line - from a spreadsheet or typed by hand. Optionally add group, email, and phone after a comma or tab:",
+        uploadCsv: "Or upload a CSV file →",
+        downloadTemplate: "Download a blank template (.csv)",
+        csvReadSummary: (count, filename) =>
+          `Read ${count} guest${count === 1 ? "" : "s"} from "${filename}" - review below, then add.`,
+        csvNoNamesError: "Couldn't find any names in that file - make sure one column has each guest's name.",
+        csvReadError: "Couldn't read that file - make sure it's a .csv file exported from a spreadsheet.",
+        textareaPlaceholder: "Maria Test\nIvan Petrov, Friends\nOlga Sidorova, Family, olga@example.com",
+        duplicateWarning: (count, names) =>
+          `${count} name${count === 1 ? "" : "s"} look like guests you already have: ${names}`,
+        duplicateConfirm: (count, names) =>
+          `${count} of these names (${names}) look like guests you already have. Add them anyway?`,
+        submitDefault: "Add guests",
+        submitWithCount: (count) => `Add ${count} guest${count === 1 ? "" : "s"}`,
+        submitting: "Adding...",
+        addedSummary: (count) => `Added ${count} guests`,
+        genericError: "Failed to add guests",
+      },
+      rsvpResponses: {
+        heading: "RSVP responses",
+        subtitle: "Match each response to someone on your guest list above, if you'd like.",
+        guestbookWall: (count) => `Guestbook wall (${count} messages):`,
+        hideAll: "Hide all",
+        hidingAll: "Hiding all...",
+        showAll: "Show all",
+        showingAll: "Showing all...",
+        searchPlaceholder: "Search responses by name...",
+        emptyHeading: "No responses yet",
+        emptySubtitle: "They'll show up here as guests RSVP",
+        noMatch: (query) => `No responses match "${query}".`,
+        attending: "Attending",
+        notAttending: "Not attending",
+        guestCountSuffix: (count) => `${count} guest(s)`,
+        hiddenShow: "Hidden from guestbook - show",
+        visibleHide: "Visible in guestbook - hide",
+        matchToGuestLabel: "Match to guest",
+        unmatchedOption: "- unmatched -",
+        delete: "Delete",
+        deleting: "Deleting...",
+        deleteConfirm: "Delete this RSVP response? This can't be undone.",
+        genericError: "Failed to update",
+      },
+      notifications: {
+        emailMeTitle: "📧 Email me new RSVP responses",
+        emailMeBody:
+          "Get an email the moment a guest responds, with a running total of who's said yes or no so far. You can always check every response above, whether this is on or off.",
+        dailyTitle: "🗞️ Daily summary instead",
+        dailyBody:
+          "One email a day with everything new since the last one, instead of (or alongside) an email per response - easier to skim if you have a lot of guests.",
+        genericError: "Couldn't save",
+      },
+      photos: {
+        heading: "Guest photos",
+        subtitle: "Guests scan this code to add their own photos - no account needed. You can delete any of them below.",
+        printHint: "Print this on a table card, or share the link",
+        loading: "Loading...",
+        empty: "No photos from guests yet.",
+        deleteAria: "Delete photo",
+        deletedToast: "Photo deleted.",
+      },
+      download: {
+        pdfButton: "Download printable guest list (PDF)",
+        generating: "Generating...",
+        csvButton: "Download as spreadsheet (CSV)",
+        hint:
+          "A flat name/group/RSVP/table sheet - handy for door staff, a caterer, or day-of reference. The CSV opens in Excel, Google Sheets, or Numbers.",
+        genericError: "Failed to generate PDF",
+        csvHeaders: { name: "Name", group: "Group", status: "RSVP status", partySize: "Party size", table: "Table", notes: "Notes" },
+        statusAttending: "Attending",
+        statusNotAttending: "Not attending",
+        statusAwaiting: "Awaiting response",
+        statusNotContacted: "Not contacted",
+      },
+      banquet: {
+        addTable: "Add table",
+        adding: "Adding...",
+        tableNameLabel: "Table name",
+        tableNamePlaceholder: "Table 1",
+        errorEnterTableName: "Enter a table name",
+        seatsLabel: "Seats",
+        optional: "(optional)",
+        seatsPlaceholder: "8",
+        save: "Save",
+        saving: "Saving...",
+        cancel: "Cancel",
+        genericError: "Failed to save",
+        seatsCount: (seated, capacity) => `${seated}/${capacity} seats`,
+        removeTableAria: "Remove table",
+        removeTableConfirm: "Remove this table? Any assigned guests will become unassigned.",
+        noGuestsYet: "No guests yet",
+        addGuestsHint: "Add guests to fill this table.",
+        chooseGuestOption: "Choose a guest...",
+        addGuestButton: "Add guest",
+        everyGuestSeated: "Every guest is already seated",
+        assignHeading: "Seat guests",
+        assignSubtitle: "Assign each guest to a table.",
+        overCapacity: (list) => `Over capacity: ${list}`,
+        searchPlaceholder: "Search guests...",
+        unassignedOnly: "Unassigned only",
+        attendingOnly: "Attending only",
+        countOf: (filtered, total) => `${filtered} of ${total} guest${total === 1 ? "" : "s"}`,
+        chooseTableOption: "Choose a table...",
+        assignAll: (count) => `Assign all ${count} unassigned in view`,
+        assigning: "Assigning...",
+        emptyHeading: "No guests yet",
+        emptySubtitle: "Add guests on the Guests tab, then seat them here",
+        noMatch: "No guests match your search/filter.",
+        unassignedOption: "- unassigned -",
+      },
+      supportCard: {
+        heading: "✨ A few things worth knowing",
+        bulletPdf: "Everything here downloads as an unlimited PDF - nothing is locked behind a paywall while you're still deciding.",
+        bulletNoAccount: "Guests just open your link and answer - no account, no app, nothing to install on their end.",
+        bulletNoWaiting: "Your site and RSVPs update the moment you hit save - no waiting on anyone to approve or process anything.",
+        bulletContact: "Found a bug, or just have a question? Reach out - a real person reads every message.",
+        questionsCaption: "Questions? We're here.",
+      },
     },
   },
 };

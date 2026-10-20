@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { ImagePlus, QrCode, Type, Video, X } from "lucide-react";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface AddElementModalProps {
   open: boolean;
@@ -12,6 +14,10 @@ interface AddElementModalProps {
   onAddVideo: () => void;
   uploadingVideo: boolean;
   onAddQr: () => void;
+  /** Optional, defaults to English -- callers that already resolve the
+   * host's locale (PaperConstructor) pass it through; any other call site
+   * keeps working unchanged. Same pattern as components/ui/ModuleCard.tsx. */
+  locale?: Locale;
 }
 
 /** Replaces the old bare "+Text"/"+Image" toolbar buttons with a small
@@ -30,7 +36,9 @@ export default function AddElementModal({
   onAddVideo,
   uploadingVideo,
   onAddQr,
+  locale,
 }: AddElementModalProps) {
+  const t = getDictionary(locale ?? "en").dashboard.paper.canvas.addElementModal;
   useEffect(() => {
     if (!open) return;
     const handler = (event: KeyboardEvent) => {
@@ -51,8 +59,8 @@ export default function AddElementModal({
     >
       <div className="w-full max-w-md rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="dash-h2 text-base text-[var(--dash-accent)]">Add element</h2>
-          <button type="button" onClick={onClose} className="text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]" title="Close">
+          <h2 className="dash-h2 text-base text-[var(--dash-accent)]">{t.heading}</h2>
+          <button type="button" onClick={onClose} className="text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]" title={t.close}>
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
@@ -66,8 +74,8 @@ export default function AddElementModal({
             className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-white/5"
           >
             <Type className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
-            <span className="text-sm font-medium text-[var(--dash-text)]">Text</span>
-            <span className="text-xs text-[var(--dash-text-muted)]">A heading, name, or line of copy</span>
+            <span className="text-sm font-medium text-[var(--dash-text)]">{t.text.label}</span>
+            <span className="text-xs text-[var(--dash-text-muted)]">{t.text.body}</span>
           </button>
           <button
             type="button"
@@ -79,8 +87,8 @@ export default function AddElementModal({
             className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <ImagePlus className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
-            <span className="text-sm font-medium text-[var(--dash-text)]">Image</span>
-            <span className="text-xs text-[var(--dash-text-muted)]">Upload a photo from your device</span>
+            <span className="text-sm font-medium text-[var(--dash-text)]">{t.image.label}</span>
+            <span className="text-xs text-[var(--dash-text-muted)]">{t.image.body}</span>
           </button>
           <button
             type="button"
@@ -92,8 +100,8 @@ export default function AddElementModal({
             className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Video className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
-            <span className="text-sm font-medium text-[var(--dash-text)]">Video</span>
-            <span className="text-xs text-[var(--dash-text-muted)]">Upload a short clip from your device</span>
+            <span className="text-sm font-medium text-[var(--dash-text)]">{t.video.label}</span>
+            <span className="text-xs text-[var(--dash-text-muted)]">{t.video.body}</span>
           </button>
           <button
             type="button"
@@ -104,8 +112,8 @@ export default function AddElementModal({
             className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-white/5"
           >
             <QrCode className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
-            <span className="text-sm font-medium text-[var(--dash-text)]">QR code</span>
-            <span className="text-xs text-[var(--dash-text-muted)]">Links to your site, or a guest&apos;s invite</span>
+            <span className="text-sm font-medium text-[var(--dash-text)]">{t.qr.label}</span>
+            <span className="text-xs text-[var(--dash-text-muted)]">{t.qr.body}</span>
           </button>
         </div>
       </div>

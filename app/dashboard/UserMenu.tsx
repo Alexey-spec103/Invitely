@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CreditCard, LogOut, Settings, UserRound } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface UserMenuProps {
   userEmail: string;
@@ -12,18 +14,22 @@ interface UserMenuProps {
    * event the rail/switcher currently point at (same `navEventId` DashboardNav
    * itself uses), so this menu item always resolves to somewhere real. */
   planEventId: string;
+  /** Optional, defaulting to English -- see DashboardNav's matching prop
+   * comment for why. */
+  locale?: Locale;
 }
 
 /** dashboard-audit.md B1: `Plan` moves out of the rail and into "the user
  * menu" -- this is that menu, opened from the header's profile icon. */
-export default function UserMenu({ userEmail, planEventId }: UserMenuProps) {
+export default function UserMenu({ userEmail, planEventId, locale = "en" }: UserMenuProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const t = getDictionary(locale).dashboard.shell.userMenu;
   const rootRef = useRef<HTMLDivElement>(null);
   // An anonymous trial session has no email at all -- show a clear fallback
   // rather than a blank line/tooltip.
-  const displayEmail = userEmail || "Guest";
+  const displayEmail = userEmail || t.guestFallback;
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -90,7 +96,7 @@ export default function UserMenu({ userEmail, planEventId }: UserMenuProps) {
             className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm font-medium text-[var(--dash-text)] hover:bg-white/5"
           >
             <CreditCard className="h-4 w-4 text-[var(--dash-text-muted)]" aria-hidden="true" />
-            Plan
+            {t.plan}
           </Link>
           <Link
             href="/dashboard/account"
@@ -99,7 +105,7 @@ export default function UserMenu({ userEmail, planEventId }: UserMenuProps) {
             className="flex items-center gap-2.5 px-3.5 py-2.5 text-sm font-medium text-[var(--dash-text)] hover:bg-white/5"
           >
             <Settings className="h-4 w-4 text-[var(--dash-text-muted)]" aria-hidden="true" />
-            Account settings
+            {t.accountSettings}
           </Link>
           <button
             type="button"
@@ -109,7 +115,7 @@ export default function UserMenu({ userEmail, planEventId }: UserMenuProps) {
             className="flex w-full items-center gap-2.5 border-t border-[var(--dash-border)] px-3.5 py-2.5 text-left text-sm font-medium text-[var(--dash-text)] hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <LogOut className="h-4 w-4 text-[var(--dash-text-muted)]" aria-hidden="true" />
-            {signingOut ? "Signing out..." : "Sign out"}
+            {signingOut ? t.signingOut : t.signOut}
           </button>
         </div>
       )}

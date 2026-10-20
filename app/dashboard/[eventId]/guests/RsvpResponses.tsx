@@ -10,15 +10,19 @@ import {
 } from "./actions";
 import { formatAnswers, type RsvpQuestionLabel } from "./formatAnswers";
 import type { Tables } from "@/lib/supabase/database.types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface RsvpResponsesProps {
   eventId: string;
   responses: Tables<"rsvp_responses">[];
   guests: Tables<"guests">[];
   questions: RsvpQuestionLabel[];
+  locale?: Locale;
 }
 
-export default function RsvpResponses({ eventId, responses, guests, questions }: RsvpResponsesProps) {
+export default function RsvpResponses({ eventId, responses, guests, questions, locale = "en" }: RsvpResponsesProps) {
+  const t = getDictionary(locale).dashboard.guests.rsvpResponses;
   const router = useRouter();
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [bulkPending, setBulkPending] = useState<"hide" | "show" | null>(null);
@@ -36,7 +40,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
   }, [responses, search]);
 
   const handleDelete = async (responseId: string) => {
-    if (!window.confirm("Delete this RSVP response? This can't be undone.")) {
+    if (!window.confirm(t.deleteConfirm)) {
       return;
     }
     setError(null);
@@ -46,7 +50,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
       if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setPendingId(null);
     }
@@ -60,7 +64,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
       if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setPendingId(null);
     }
@@ -74,7 +78,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
       if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setPendingId(null);
     }
@@ -88,7 +92,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
       if (!result.ok) throw new Error(result.message);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setBulkPending(null);
     }
@@ -96,21 +100,21 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
 
   return (
     <div className="mt-12 border-t border-gray-200 pt-8">
-      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">RSVP responses</h2>
+      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.heading}</h2>
       <p className="mt-1 text-sm text-gray-500">
-        Match each response to someone on your guest list above, if you&apos;d like.
+        {t.subtitle}
       </p>
 
       {commentedCount > 1 && (
         <div className="mt-3 flex items-center gap-3 text-xs">
-          <span className="text-gray-500">Guestbook wall ({commentedCount} messages):</span>
+          <span className="text-gray-500">{t.guestbookWall(commentedCount)}</span>
           <button
             type="button"
             onClick={() => handleBulkGuestbook(true)}
             disabled={bulkPending !== null}
             className="font-medium text-gray-600 underline hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {bulkPending === "hide" ? "Hiding all..." : "Hide all"}
+            {bulkPending === "hide" ? t.hidingAll : t.hideAll}
           </button>
           <button
             type="button"
@@ -118,7 +122,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
             disabled={bulkPending !== null}
             className="font-medium text-gray-600 underline hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {bulkPending === "show" ? "Showing all..." : "Show all"}
+            {bulkPending === "show" ? t.showingAll : t.showAll}
           </button>
         </div>
       )}
@@ -132,7 +136,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
           type="text"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search responses by name..."
+          placeholder={t.searchPlaceholder}
           className="dash-input mt-4 max-w-xs"
         />
       )}
@@ -144,13 +148,13 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
               <span className="text-2xl" aria-hidden="true">
                 📬
               </span>
-              <span className="text-sm font-medium">No responses yet</span>
-              <span className="text-xs text-gray-400">They&apos;ll show up here as guests RSVP</span>
+              <span className="text-sm font-medium">{t.emptyHeading}</span>
+              <span className="text-xs text-gray-400">{t.emptySubtitle}</span>
             </div>
           </li>
         )}
         {responses.length > 0 && filteredResponses.length === 0 && (
-          <li className="py-4 text-sm text-gray-500">No responses match &ldquo;{search}&rdquo;.</li>
+          <li className="py-4 text-sm text-gray-500">{t.noMatch(search)}</li>
         )}
         {filteredResponses.map((response) => {
           const answers = formatAnswers(response.meal_preferences, questions);
@@ -165,12 +169,12 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
                     : "rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700"
                 }
               >
-                {response.attending ? "Attending" : "Not attending"}
+                {response.attending ? t.attending : t.notAttending}
               </span>
             </div>
             <p className="mt-1 text-xs text-gray-500">
               {[
-                response.attending ? `${response.party_size} guest(s)` : null,
+                response.attending ? t.guestCountSuffix(response.party_size) : null,
                 response.allergies,
                 response.comment,
               ]
@@ -202,13 +206,13 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
                 disabled={pendingId === response.id}
                 className="mt-1 text-xs font-medium text-gray-500 underline hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {response.guestbook_hidden ? "Hidden from guestbook - show" : "Visible in guestbook - hide"}
+                {response.guestbook_hidden ? t.hiddenShow : t.visibleHide}
               </button>
             )}
 
             <div className="mt-2 flex items-center gap-3">
               <label className="sr-only" htmlFor={`link-${response.id}`}>
-                Match to guest
+                {t.matchToGuestLabel}
               </label>
               <select
                 id={`link-${response.id}`}
@@ -217,7 +221,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
                 onChange={(event) => handleLink(response.id, event.target.value)}
                 className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <option value="">- unmatched -</option>
+                <option value="">{t.unmatchedOption}</option>
                 {guests.map((guest) => (
                   <option key={guest.id} value={guest.id}>
                     {guest.full_name}
@@ -230,7 +234,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions }:
                 disabled={pendingId === response.id}
                 className="text-xs font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {pendingId === response.id ? "Deleting..." : "Delete"}
+                {pendingId === response.id ? t.deleting : t.delete}
               </button>
             </div>
           </li>

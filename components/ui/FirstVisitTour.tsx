@@ -23,7 +23,17 @@ interface FirstVisitTourProps {
    * distinct tour (e.g. "site-editor", "onboarding") so they don't collide. */
   tourId: string;
   steps: TourStep[];
+  /** This component's own chrome strings (Skip/Back/Next/Got it) -- optional,
+   * defaulting to English, so the several call sites across the dashboard
+   * that haven't been localized yet (dashboard i18n is a multi-phase
+   * rollout, see lib/i18n/translations/en.ts's `dashboard` namespace
+   * comment) keep compiling and working unchanged. Pass
+   * `t.dashboard.common.tour` from a page that already resolves the host's
+   * locale. */
+  t?: { skip: string; back: string; next: string; gotIt: string };
 }
+
+const DEFAULT_TOUR_STRINGS = { skip: "Skip", back: "Back", next: "Next", gotIt: "Got it" };
 
 const CARD_WIDTH = 320;
 const CARD_GAP = 12;
@@ -41,7 +51,7 @@ const CARD_GAP = 12;
  * widget to point at) keep the original floating-corner behavior, since
  * forcing an anchor onto those would just point at an arbitrary element
  * instead of the thing the copy is actually about. */
-export default function FirstVisitTour({ tourId, steps }: FirstVisitTourProps) {
+export default function FirstVisitTour({ tourId, steps, t = DEFAULT_TOUR_STRINGS }: FirstVisitTourProps) {
   const storageKey = `invitely:tourSeen:${tourId}`;
   const [step, setStep] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -212,9 +222,9 @@ export default function FirstVisitTour({ tourId, steps }: FirstVisitTourProps) {
             type="button"
             onClick={dismiss}
             className="-m-2 shrink-0 rounded px-2 py-2 text-xs font-medium text-gray-400 hover:text-gray-600"
-            aria-label="Skip tour"
+            aria-label={t.skip}
           >
-            Skip
+            {t.skip}
           </button>
         </div>
         <p className="mt-1.5 text-sm text-gray-600">{current.body}</p>
@@ -235,7 +245,7 @@ export default function FirstVisitTour({ tourId, steps }: FirstVisitTourProps) {
                 onClick={() => setStep((s) => s - 1)}
                 className="text-xs font-medium text-gray-500 hover:text-gray-800"
               >
-                Back
+                {t.back}
               </button>
             )}
             <button
@@ -243,7 +253,7 @@ export default function FirstVisitTour({ tourId, steps }: FirstVisitTourProps) {
               onClick={() => (isLast ? dismiss() : setStep((s) => s + 1))}
               className="rounded-full bg-rose-600 px-3 py-1 text-xs font-semibold text-white hover:bg-rose-700"
             >
-              {isLast ? "Got it" : "Next"}
+              {isLast ? t.gotIt : t.next}
             </button>
           </div>
         </div>

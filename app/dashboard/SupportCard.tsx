@@ -9,25 +9,20 @@
  * bullet promises a designer will personally fix a couple's layout on
  * request -- a real human service we don't offer, so it isn't copied here;
  * the other two are swapped for things Invimbo genuinely does. */
-export default function SupportCard() {
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
+
+export default function SupportCard({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).dashboard.guests.supportCard;
   return (
     <div className="flex flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-6 sm:flex-row sm:items-center sm:p-8">
       <div className="flex-1">
-        <p className="text-sm font-semibold text-gray-900">✨ A few things worth knowing</p>
+        <p className="text-sm font-semibold text-gray-900">{t.heading}</p>
         <ul className="mt-3 space-y-2 text-sm text-gray-600">
-          <li>
-            Everything here downloads as an <span className="font-medium text-gray-900">unlimited PDF</span> - nothing
-            is locked behind a paywall while you&apos;re still deciding.
-          </li>
-          <li>
-            Guests just open your link and answer -{" "}
-            <span className="font-medium text-gray-900">no account, no app, nothing to install</span> on their end.
-          </li>
-          <li>
-            Your site and RSVPs update the moment you hit save -{" "}
-            <span className="font-medium text-gray-900">no waiting</span> on anyone to approve or process anything.
-          </li>
-          <li>Found a bug, or just have a question? Reach out - a real person reads every message.</li>
+          <li>{t.bulletPdf}</li>
+          <li>{t.bulletNoAccount}</li>
+          <li>{t.bulletNoWaiting}</li>
+          <li>{t.bulletContact}</li>
         </ul>
       </div>
 
@@ -35,7 +30,7 @@ export default function SupportCard() {
         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_12%,white)] text-2xl" aria-hidden="true">
           💌
         </span>
-        <p className="text-xs text-gray-500">Questions? We&apos;re here.</p>
+        <p className="text-xs text-gray-500">{t.questionsCaption}</p>
         <a
           href="mailto:support@invimbo.com"
           className="text-sm font-semibold text-[var(--dash-accent)] underline underline-offset-2"

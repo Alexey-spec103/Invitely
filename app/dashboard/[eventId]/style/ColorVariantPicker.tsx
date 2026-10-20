@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { colorVariantOptionsFor } from "@/lib/themes";
 import type { Theme } from "@/lib/themes";
 import { updateColorVariant } from "../actions";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface ColorVariantPickerProps {
   eventId: string;
@@ -13,6 +15,9 @@ interface ColorVariantPickerProps {
    * comment for why only those two categories are safe to recolor). */
   theme: Theme;
   currentColorVariantId: string | null;
+  /** Optional, defaulting to English -- same convention as ModuleCard/
+   * FirstVisitTour, so any not-yet-localized call site keeps working. */
+  locale?: Locale;
 }
 
 /** A small swatch row letting a modern/minimal theme borrow a same-category
@@ -21,7 +26,8 @@ interface ColorVariantPickerProps {
  * lib/themes/decorMotifs.ts), so this never renders for those. Reuses
  * already-designed, already-contrast-checked sibling palettes rather than
  * inventing new colors -- zero new color-design risk. */
-export default function ColorVariantPicker({ eventId, theme, currentColorVariantId }: ColorVariantPickerProps) {
+export default function ColorVariantPicker({ eventId, theme, currentColorVariantId, locale }: ColorVariantPickerProps) {
+  const t = getDictionary(locale ?? "en").dashboard.style.colorVariant;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -43,13 +49,13 @@ export default function ColorVariantPicker({ eventId, theme, currentColorVariant
 
   return (
     <div className="mt-4 flex flex-wrap items-center gap-2 rounded-md border border-gray-200 bg-white p-3">
-      <span className="text-xs font-medium text-gray-500">Color</span>
+      <span className="text-xs font-medium text-gray-500">{t.label}</span>
       <button
         type="button"
         onClick={() => apply(null)}
         disabled={isPending}
         title={theme.name}
-        aria-label={`Use ${theme.name}'s own colors`}
+        aria-label={t.useOwnColors(theme.name)}
         className={`h-7 w-7 shrink-0 rounded-full border-2 transition ${
           !currentColorVariantId ? "border-gray-900" : "border-transparent hover:border-gray-300"
         }`}
@@ -62,7 +68,7 @@ export default function ColorVariantPicker({ eventId, theme, currentColorVariant
           onClick={() => apply(option.id)}
           disabled={isPending}
           title={option.name}
-          aria-label={`Use ${option.name}'s colors`}
+          aria-label={t.useColors(option.name)}
           className={`h-7 w-7 shrink-0 rounded-full border-2 transition ${
             currentColorVariantId === option.id ? "border-gray-900" : "border-transparent hover:border-gray-300"
           }`}

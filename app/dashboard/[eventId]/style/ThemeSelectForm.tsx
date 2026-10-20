@@ -11,6 +11,7 @@ import { updateTheme } from "../actions";
 import EventTypeSwitcher from "../EventTypeSwitcher";
 import ColorVariantPicker from "./ColorVariantPicker";
 import type { Locale } from "@/lib/i18n/locales";
+import { getDictionary } from "@/lib/i18n/dictionary";
 
 interface ThemeSlotRow {
   id: string;
@@ -48,6 +49,7 @@ export default function ThemeSelectForm({
   history,
   locale,
 }: ThemeSelectFormProps) {
+  const t = getDictionary(locale).dashboard.style;
   const router = useRouter();
   const [selected, setSelected] = useState(currentThemeId);
   const [isPending, startTransition] = useTransition();
@@ -78,24 +80,35 @@ export default function ThemeSelectForm({
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="dash-h1 text-gray-900">Style</h1>
-          <p className="mt-1 text-sm text-gray-500">Let&apos;s find the style and design for your event.</p>
-          <p className="mt-1 text-xs text-gray-400">Everything here can be customized further in the constructor.</p>
+          <h1 className="dash-h1 text-gray-900">{t.header.title}</h1>
+          <p className="mt-1 text-sm text-gray-500">{t.header.subtitle}</p>
+          <p className="mt-1 text-xs text-gray-400">{t.header.helper}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <EventTypeSwitcher eventId={eventId} currentEventType={eventType} name1={name1} name2={name2} locale={locale} />
-          <HowItWorksButton />
+          <EventTypeSwitcher
+            eventId={eventId}
+            currentEventType={eventType}
+            name1={name1}
+            name2={name2}
+            locale={locale}
+          />
+          <HowItWorksButton locale={locale} />
           <button
             type="button"
             onClick={() => setPreviewOpen(true)}
             className="dash-btn dash-btn-neutral"
           >
-            Preview full material set
+            {t.header.previewFullSet}
           </button>
         </div>
       </div>
 
-      <ColorVariantPicker eventId={eventId} theme={selectedTheme} currentColorVariantId={currentColorVariantId} />
+      <ColorVariantPicker
+        eventId={eventId}
+        theme={selectedTheme}
+        currentColorVariantId={currentColorVariantId}
+        locale={locale}
+      />
 
       <DesignSlotsPanel
         eventId={eventId}
@@ -104,6 +117,7 @@ export default function ThemeSelectForm({
         history={history}
         onActivate={handleSelect}
         activating={isPending}
+        locale={locale}
       />
 
       {previewOpen && (
@@ -113,6 +127,7 @@ export default function ThemeSelectForm({
           name2={name2}
           eventDate={eventDate}
           onClose={() => setPreviewOpen(false)}
+          locale={locale}
         />
       )}
 
@@ -124,6 +139,7 @@ export default function ThemeSelectForm({
           disabled={isPending}
           onCustomize={() => router.push(`/dashboard/${eventId}/site`)}
           eventType={eventType}
+          locale={locale}
         />
       </div>
 

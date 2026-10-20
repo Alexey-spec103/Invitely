@@ -6,10 +6,13 @@ import { addGuestsBulk, addGuestsStructured } from "./actions";
 import { parseGuestLines, normalizeGuestName } from "./parseGuestLines";
 import { parseCsvText, mapCsvRowsToGuests, guestRowsToBulkText, toCsvText, type ParsedCsvGuestRow } from "./parseCsv";
 import type { Tables } from "@/lib/supabase/database.types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface BulkAddGuestsProps {
   eventId: string;
   existingGuests: Tables<"guests">[];
+  locale?: Locale;
 }
 
 function saveBlob(blob: Blob, filename: string) {
@@ -21,10 +24,10 @@ function saveBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-const CSV_TEMPLATE_HEADERS = ["Full Name", "Group", "Email", "Phone"];
 const CSV_TEMPLATE_EXAMPLE_ROW = ["Maria Test", "Family", "maria@example.com", "+1 555 0100"];
 
-export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuestsProps) {
+export default function BulkAddGuests({ eventId, existingGuests, locale = "en" }: BulkAddGuestsProps) {
+  const t = getDictionary(locale).dashboard.guests.bulkAdd;
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
@@ -51,7 +54,8 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
   const usingStructuredCsv = csvRows !== null && text === csvPreviewText;
 
   const handleDownloadTemplate = () => {
-    const csv = toCsvText(CSV_TEMPLATE_HEADERS, [CSV_TEMPLATE_EXAMPLE_ROW]);
+    const csvTemplateHeaders = [t.csvTemplateHeaders.fullName, t.csvTemplateHeaders.group, t.csvTemplateHeaders.email, t.csvTemplateHeaders.phone];
+    const csv = toCsvText(csvTemplateHeaders, [CSV_TEMPLATE_EXAMPLE_ROW]);
     saveBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), "guest-list-template.csv");
   };
 
@@ -62,7 +66,7 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
       const raw = await file.text();
       const guestRows = mapCsvRowsToGuests(parseCsvText(raw));
       if (guestRows.length === 0) {
-        setError("Couldn't find any names in that file - make sure one column has each guest's name.");
+        setError(t.csvNoNamesError);
         return;
       }
       // Replaces rather than appends: mixing a CSV upload with separately
@@ -74,9 +78,9 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
       setText(preview);
       setCsvRows(guestRows);
       setCsvPreviewText(preview);
-      setCsvNotice(`Read ${guestRows.length} guest${guestRows.length === 1 ? "" : "s"} from "${file.name}" - review below, then add.`);
+      setCsvNotice(t.csvReadSummary(guestRows.length, file.name));
     } catch {
-      setError("Couldn't read that file - make sure it's a .csv file exported from a spreadsheet.");
+      setError(t.csvReadError);
     }
   };
 
@@ -88,11 +92,10 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
   }, [parsed, existingGuests]);
 
   const handleSubmit = async () => {
+    const duplicateNamesPreview = `${duplicateNames.slice(0, 3).join(", ")}${duplicateNames.length > 3 ? ", ..." : ""}`;
     if (
       duplicateNames.length > 0 &&
-      !window.confirm(
-        `${duplicateNames.length} of these names (${duplicateNames.slice(0, 3).join(", ")}${duplicateNames.length > 3 ? ", ..." : ""}) look like guests you already have. Add them anyway?`
-      )
+      !window.confirm(t.duplicateConfirm(duplicateNames.length, duplicateNamesPreview))
     ) {
       return;
     }
@@ -111,7 +114,7 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
       setCsvPreviewText(null);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add guests");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setSubmitting(false);
     }
@@ -124,14 +127,13 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
         onClick={() => setOpen((v) => !v)}
         className="text-sm font-medium text-gray-700 underline hover:text-gray-900"
       >
-        {open ? "Hide bulk add" : "Add many guests at once →"}
+        {open ? t.toggleClose : t.toggleOpen}
       </button>
 
       {open && (
         <div className="mt-3">
           <p className="text-xs text-gray-500">
-            Paste one guest per line - from a spreadsheet or typed by hand. Optionally add group,
-            email, and phone after a comma or tab: <code>Maria Test, Family, maria@example.com</code>
+            {t.instructions} <code>Maria Test, Family, maria@example.com</code>
           </p>
 
           <div className="mt-2 flex flex-wrap items-center gap-3 text-xs">
@@ -151,14 +153,14 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
               onClick={() => fileInputRef.current?.click()}
               className="font-medium text-gray-700 underline hover:text-gray-900"
             >
-              Or upload a CSV file →
+              {t.uploadCsv}
             </button>
             <button
               type="button"
               onClick={handleDownloadTemplate}
               className="text-gray-500 underline hover:text-gray-700"
             >
-              Download a blank template (.csv)
+              {t.downloadTemplate}
             </button>
           </div>
 
@@ -168,15 +170,13 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
             rows={6}
             value={text}
             onChange={(event) => setText(event.target.value)}
-            placeholder={"Maria Test\nIvan Petrov, Friends\nOlga Sidorova, Family, olga@example.com"}
+            placeholder={t.textareaPlaceholder}
             className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
           />
 
           {duplicateNames.length > 0 && (
             <p className="mt-2 text-xs text-amber-700">
-              {duplicateNames.length} name{duplicateNames.length === 1 ? "" : "s"} look like guests
-              you already have: {duplicateNames.slice(0, 3).join(", ")}
-              {duplicateNames.length > 3 ? ", ..." : ""}
+              {t.duplicateWarning(duplicateNames.length, `${duplicateNames.slice(0, 3).join(", ")}${duplicateNames.length > 3 ? ", ..." : ""}`)}
             </p>
           )}
 
@@ -187,14 +187,10 @@ export default function BulkAddGuests({ eventId, existingGuests }: BulkAddGuests
               disabled={submitting || parsed.length === 0}
               className="dash-btn dash-btn-primary"
             >
-              {submitting
-                ? "Adding..."
-                : parsed.length > 0
-                  ? `Add ${parsed.length} guest${parsed.length === 1 ? "" : "s"}`
-                  : "Add guests"}
+              {submitting ? t.submitting : parsed.length > 0 ? t.submitWithCount(parsed.length) : t.submitDefault}
             </button>
             {addedCount !== null && (
-              <span className="text-sm text-green-700">Added {addedCount} guests</span>
+              <span className="text-sm text-green-700">{t.addedSummary(addedCount)}</span>
             )}
           </div>
 

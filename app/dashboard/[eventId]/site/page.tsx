@@ -43,6 +43,7 @@ import { getWeddingDataCompleteness } from "@/lib/weddingData";
 import WeddingDataForm from "../WeddingDataForm";
 import EventTypeSwitcher from "../EventTypeSwitcher";
 import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
+import { getDictionary } from "@/lib/i18n/dictionary";
 import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
 
 function extractStyleOverrides(content: Record<string, unknown>): Record<string, TextStyleOverride> | undefined {
@@ -83,6 +84,9 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
   }
 
   const locale = await resolveGuestLocale();
+  const dictionary = getDictionary(locale);
+  const t = dictionary.dashboard.site;
+  const dashboardCommon = dictionary.dashboard.common;
 
   const supabase = await createClient();
   const { data: siteConfig } = await supabase
@@ -494,8 +498,8 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
     theme = getTheme(DEFAULT_THEME_ID);
   }
 
-  const onStatus = { label: "On", tone: "on" as const };
-  const notSetStatus = { label: "Not set", tone: "off" as const };
+  const onStatus = { label: dashboardCommon.statusOn, tone: "on" as const };
+  const notSetStatus = { label: dashboardCommon.statusNotSet, tone: "off" as const };
 
   // Wedding data has no separate hub screen anymore (matches weddingpost.ru --
   // its own "Данные свадьбе" data lives behind a button surfaced from inside
@@ -518,38 +522,20 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
   // comment above.
   const sellingAndModulesBlock = (
     <>
-      <FeatureCarousel />
+      <FeatureCarousel locale={locale} />
 
       <FirstVisitTour
         tourId="site-editor"
+        t={dashboardCommon.tour}
         steps={[
-          {
-            title: "👋 Welcome to your site editor",
-            body: "Everything here saves itself as you type - there's no Save button to remember.",
-          },
-          {
-            title: "✏️ Click any text to edit it",
-            body: "No separate editor-vs-preview split - click straight on a name, date, or line of copy on the live page below and start typing.",
-          },
-          {
-            title: "📷 Add your photos",
-            body: "Drag a photo straight into any photo field. We'll resize it automatically.",
-          },
-          {
-            title: "🧩 Turn modules on or off",
-            // dashboard-audit critique 2026-10-04 (onboarding-tour spotlight):
-            // was "...inside their card," a leftover from the old per-module
-            // ModuleCard scheme this panel replaced -- every toggle already
-            // lives right here, so this step now rings-highlights the panel
-            // itself instead of describing a layout that no longer exists.
-            body: "Countdown, RSVP, gift wishes, dress code and more - each has its own on/off switch right here.",
-            targetSelector: "#site-modules-panel",
-          },
-          {
-            title: "🔎 Can't find something?",
-            body: "Editable blocks (below the preview) lists every text and photo on your site, grouped by section, so you can jump straight to it.",
-            targetSelector: "#editable-blocks-panel",
-          },
+          // dashboard-audit critique 2026-10-04 (onboarding-tour spotlight):
+          // step 4's targetSelector ring-highlights the Modules panel itself
+          // (a leftover layout this used to describe no longer exists).
+          { ...t.tourSteps[0] },
+          { ...t.tourSteps[1] },
+          { ...t.tourSteps[2] },
+          { ...t.tourSteps[3], targetSelector: "#site-modules-panel" },
+          { ...t.tourSteps[4], targetSelector: "#editable-blocks-panel" },
         ]}
       />
 
@@ -558,6 +544,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
         sections={allSections}
         hasBasicAccess={hasBasicAccess}
         envelopeRevealEnabled={envelopeRevealEnabled}
+        locale={locale}
       />
     </>
   );
@@ -576,15 +563,15 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
               <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" aria-hidden="true" />
               <p className="text-sm text-[var(--dash-text)]">
                 {getEventType(event.event_type).id === "wedding"
-                  ? "Fill in your wedding details to complete your site and paper set."
-                  : "Fill in your event details to complete your site and paper set."}
+                  ? t.weddingDataReminder.wedding
+                  : t.weddingDataReminder.generic}
               </p>
             </div>
             <a
               href="#wedding-data-card"
               className="mt-3 inline-block rounded-full bg-[var(--dash-accent)] px-4 py-2 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
             >
-              {getLocalizedEventType(event.event_type, locale).label} data
+              {t.weddingDataReminder.cta(getLocalizedEventType(event.event_type, locale).label)}
             </a>
           </div>
         )}
@@ -592,18 +579,22 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
         <ModuleCard
           id="wedding-data-card"
           icon="💍"
-          title={`${getLocalizedEventType(event.event_type, locale).label} data`}
+          title={t.weddingData.cardTitle(getLocalizedEventType(event.event_type, locale).label)}
           status={{
-            label: `${weddingDataPercent}% complete`,
+            label: t.weddingData.complete(weddingDataPercent),
             tone: weddingDataPercent === 100 ? "on" : "neutral",
           }}
           defaultOpen={weddingDataPercent < 100}
           emphasized
+          locale={locale}
         >
-          <p className="mb-3 text-xs text-[var(--dash-text-muted)]">
-            Names, date & venue - used across your site and paper set.
-          </p>
-          <WeddingDataForm eventId={event.id} eventType={event.event_type} defaultValues={weddingDataDefaultValues} locale={locale} />
+          <p className="mb-3 text-xs text-[var(--dash-text-muted)]">{t.weddingData.helper}</p>
+          <WeddingDataForm
+            eventId={event.id}
+            eventType={event.event_type}
+            defaultValues={weddingDataDefaultValues}
+            locale={locale}
+          />
         </ModuleCard>
 
         {/* dashboard-audit.md B14: weddingpost.ru's own "quick settings" row
@@ -615,30 +606,35 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             status shortcut, not a duplicate edit surface. */}
         <ModuleCard
           icon="🖼️"
-          title="Start screen"
+          title={t.startScreen.title}
           previewImageUrl={heroPhotoUrl || undefined}
           status={heroPhotoUrl ? onStatus : notSetStatus}
+          locale={locale}
         >
-          <p className="text-xs text-[var(--dash-text-muted)]">
-            Your cover photo, names and date are edited directly in the live preview.
-          </p>
+          <p className="text-xs text-[var(--dash-text-muted)]">{t.startScreen.body}</p>
           <a
             href="#site-editor-preview"
             className="mt-3 inline-block rounded-full bg-[var(--dash-accent)] px-4 py-2 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
           >
-            Edit in the preview
+            {t.startScreen.editInPreview}
           </a>
         </ModuleCard>
 
-        <ModuleCard icon="🎵" title="Music" status={siteSettingsDefaultValues.musicUrl ? onStatus : notSetStatus}>
+        <ModuleCard
+          icon="🎵"
+          title={t.music.title}
+          status={siteSettingsDefaultValues.musicUrl ? onStatus : notSetStatus}
+          locale={locale}
+        >
           <SiteSettingsEditForm eventId={event.id} defaultValues={siteSettingsDefaultValues} />
         </ModuleCard>
 
         <ModuleCard
           icon="🔗"
-          title="Link preview"
+          title={t.linkPreview.title}
           previewImageUrl={socialImageUrl || heroPhotoUrl || undefined}
           status={socialImageUrl || heroPhotoUrl ? onStatus : notSetStatus}
+          locale={locale}
         >
           <LinkPreviewCard
             eventId={event.id}
@@ -652,14 +648,15 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
         <ModuleCard
           id="custom-domain-card"
           icon="🌐"
-          title="Custom domain"
+          title={t.customDomain.title}
           status={
             event.custom_domain_verified_at
-              ? { label: "Verified", tone: "on" }
+              ? { label: t.customDomain.verified, tone: "on" }
               : event.custom_domain
-                ? { label: "Pending", tone: "neutral" }
+                ? { label: t.customDomain.pending, tone: "neutral" }
                 : notSetStatus
           }
+          locale={locale}
         >
           <DomainEditForm
             eventId={event.id}
@@ -691,7 +688,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           top of the preview's own top edge instead of above it. */}
       <div id="site-editor-preview" className="mt-6 flex scroll-mt-6 flex-col items-center lg:sticky lg:top-[97px] lg:mt-0">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
-          Site editor - click any text to edit it in place
+          {t.editorPreviewLabel}
         </p>
         {/* No max-width here -- SiteInlineEditor's own device frame (phone/
             tablet/desktop) is what caps and centers itself now, via its own
@@ -764,6 +761,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
               faq={{ enabled: faqEnabled, values: faqDefaultValues }}
               travel={{ enabled: travelEnabled, values: travelDefaultValues }}
               allSections={allSections}
+              locale={locale}
             />
         </div>
         {/* Was a tiny underlined text link -- easy to miss entirely next to
@@ -779,7 +777,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           className="dash-btn dash-btn-primary mt-3 flex w-full items-center justify-center gap-2"
         >
           <ExternalLink className="h-4 w-4" aria-hidden="true" />
-          Open full preview in a new tab
+          {t.openFullPreview}
         </a>
       </div>
     </div>
@@ -792,7 +790,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
       }`}
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="dash-h1 text-[var(--dash-text)]">Site</h1>
+        <h1 className="dash-h1 text-[var(--dash-text)]">{t.pageTitle}</h1>
         <div className="flex flex-wrap items-center gap-2">
           <EventTypeSwitcher
             eventId={event.id}
@@ -805,7 +803,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             href={`/dashboard/${event.id}/canvas`}
             className="rounded-full border border-[var(--dash-border)] px-3.5 py-1.5 text-xs font-medium text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
           >
-            🎨 Free canvas
+            {t.freeCanvas}
           </Link>
         </div>
       </div>
@@ -835,11 +833,8 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           />
         ) : (
           <div className="mt-4 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5">
-            <p className="text-base font-bold text-amber-900">⏳ Confirming your payment…</p>
-            <p className="mt-1 text-sm text-amber-800">
-              Stripe is finishing up - this page will unlock automatically in a few seconds. If it doesn&apos;t,
-              refresh, or contact support if your card was charged and this still doesn&apos;t update.
-            </p>
+            <p className="text-base font-bold text-amber-900">{t.checkoutPending.title}</p>
+            <p className="mt-1 text-sm text-amber-800">{t.checkoutPending.body}</p>
           </div>
         ))}
 
@@ -856,6 +851,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           appDomain={process.env.NEXT_PUBLIC_APP_DOMAIN ?? "invimbo.com"}
           hasPremiumAccess={hasPremiumAccess}
           rsvpEmailNotifications={rsvpEmailNotifications}
+          locale={locale}
         />
       )}
 
@@ -892,7 +888,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             href={`/dashboard/${event.id}/plan`}
             className="mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-[var(--dash-accent)] px-4 py-2.5 text-sm font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)]"
           >
-            Happy with it? Remove the badge - €{plans.basic.priceEur}
+            {t.removeBadge(plans.basic.priceEur)}
           </Link>
         </div>
       )}

@@ -3,10 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { plans, DEFAULT_PLAN_ID } from "@/lib/plans";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface PlanBadgeProps {
   planId: string;
   eventId: string;
+  /** Optional, defaulting to English -- see DashboardNav's matching prop
+   * comment for why. Plan tier names themselves (Free/Basic/Premium, from
+   * lib/plans.ts) stay in English deliberately, same convention as the
+   * product name "Invimbo" -- brand/product-tier names, not UI chrome. */
+  locale?: Locale;
 }
 
 /** A host's current plan lived only inside UserMenu's dropdown -- easy to
@@ -18,10 +25,11 @@ interface PlanBadgeProps {
  * Paper's watermark note/modal) still does its own thing at the point of
  * use; this is just the one place a host can check their status at a
  * glance. */
-export default function PlanBadge({ planId, eventId }: PlanBadgeProps) {
+export default function PlanBadge({ planId, eventId, locale = "en" }: PlanBadgeProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const plan = plans[planId] ?? plans[DEFAULT_PLAN_ID];
+  const t = getDictionary(locale).dashboard.shell.planBadge;
 
   useEffect(() => {
     if (!open) return;
@@ -92,8 +100,8 @@ export default function PlanBadge({ planId, eventId }: PlanBadgeProps) {
                 inside its fixed h-9 height once the header row's squeezed
                 for space on a narrow screen, clipping "Upgrade" off the top
                 (confirmed via a real mobile-width check). */}
-            <span className="sm:hidden">Remove badge - €{basicPrice}</span>
-            <span className="hidden sm:inline">Remove the badge - €{basicPrice}</span>
+            <span className="sm:hidden">{t.removeBadgeShort(basicPrice)}</span>
+            <span className="hidden sm:inline">{t.removeBadgeFull(basicPrice)}</span>
           </>
         ) : (
           `${plan.name} plan`
@@ -121,11 +129,11 @@ export default function PlanBadge({ planId, eventId }: PlanBadgeProps) {
               <span className="text-sm font-medium">{tier.name}</span>
               {tier.id === plan.id && (
                 <span className="rounded-full bg-[var(--dash-accent)]/15 px-2 py-0.5 text-[10px] font-medium text-[var(--dash-accent)]">
-                  Current
+                  {t.current}
                 </span>
               )}
               <span className="ml-auto text-xs text-[var(--dash-text-muted)]">
-                {tier.priceEur === 0 ? "Free" : `€${tier.priceEur}`}
+                {tier.priceEur === 0 ? t.free : `€${tier.priceEur}`}
               </span>
             </div>
           ))}
@@ -134,7 +142,7 @@ export default function PlanBadge({ planId, eventId }: PlanBadgeProps) {
             onClick={() => setOpen(false)}
             className="dash-btn dash-btn-primary mt-2 w-full justify-center text-sm"
           >
-            {plan.id === "premium" ? "Manage plan" : "See plan details"}
+            {plan.id === "premium" ? t.managePlan : t.seePlanDetails}
           </Link>
         </div>
       )}

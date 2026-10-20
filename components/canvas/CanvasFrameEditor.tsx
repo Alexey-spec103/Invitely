@@ -13,6 +13,8 @@ import { Layers, QrCode, Redo2, Undo2, X } from "lucide-react";
 import LayersPanel from "./LayersPanel";
 import ElementToolbar from "./ElementToolbar";
 import AddElementModal from "./AddElementModal";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 export interface CanvasFrameEditorProps {
   frame: CanvasFrame;
@@ -32,6 +34,10 @@ export interface CanvasFrameEditorProps {
   /** Rendered directly under the toolbar row -- e.g. a host's page-tabs
    * strip. This component has no concept of "other frames" at all. */
   belowToolbar?: ReactNode;
+  /** Optional, defaults to English -- same pattern as the other canvas
+   * sub-components (AddElementModal/LayersPanel/ElementToolbar/FontPicker),
+   * threaded down to all of them. */
+  locale?: Locale;
 }
 
 function makeId() {
@@ -45,7 +51,7 @@ const ARROW_KEYS: Record<string, [number, number]> = {
   ArrowRight: [1, 0],
 };
 
-function defaultTextElement(): CanvasElement {
+function defaultTextElement(newTextDefault: string): CanvasElement {
   return {
     id: makeId(),
     type: "text",
@@ -55,7 +61,7 @@ function defaultTextElement(): CanvasElement {
     height: 60,
     rotation: 0,
     zIndex: 1,
-    text: "New text",
+    text: newTextDefault,
     fontFamily: "Inter",
     fontSize: 24,
     fontWeight: 400,
@@ -127,7 +133,9 @@ export default function CanvasFrameEditor({
   canRedo,
   toolbarRight,
   belowToolbar,
+  locale,
 }: CanvasFrameEditorProps) {
+  const t = getDictionary(locale ?? "en").dashboard.paper.canvas;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [previewAnimId, setPreviewAnimId] = useState<string | null>(null);
@@ -323,7 +331,7 @@ export default function CanvasFrameEditor({
   );
 
   const addText = () => {
-    const el = defaultTextElement();
+    const el = defaultTextElement(t.newTextDefault);
     onUpdateFrame((f) => ({ ...f, elements: [...f.elements, el] }));
     setSelectedId(el.id);
   };
@@ -360,7 +368,7 @@ export default function CanvasFrameEditor({
       onUpdateFrame((f) => ({ ...f, elements: [...f.elements, el] }));
       setSelectedId(el.id);
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Couldn't upload that photo");
+      setUploadError(err instanceof Error ? err.message : t.couldntUploadPhoto);
     } finally {
       setUploadingImage(false);
     }
@@ -376,7 +384,7 @@ export default function CanvasFrameEditor({
       onUpdateFrame((f) => ({ ...f, elements: [...f.elements, el] }));
       setSelectedId(el.id);
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Couldn't upload that video");
+      setUploadError(err instanceof Error ? err.message : t.couldntUploadVideo);
     } finally {
       setUploadingVideo(false);
     }
@@ -412,7 +420,7 @@ export default function CanvasFrameEditor({
       const url = await uploadEventPhoto(file);
       updateBackground({ imageUrl: url, fill: undefined });
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Couldn't upload that photo");
+      setUploadError(err instanceof Error ? err.message : t.couldntUploadPhoto);
     } finally {
       setUploadingBackground(false);
     }
@@ -494,7 +502,7 @@ export default function CanvasFrameEditor({
           disabled={uploadingImage}
           className="rounded-md bg-[var(--dash-accent)] px-3 py-1.5 text-sm font-medium text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent-hover)] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {uploadingImage ? "Uploading..." : "+ Add element"}
+          {uploadingImage ? t.uploading : t.addElement}
         </button>
 
         <span className="mx-2 h-5 w-px bg-[var(--dash-border)]" />
@@ -503,7 +511,7 @@ export default function CanvasFrameEditor({
           type="button"
           onClick={onUndo}
           disabled={!canUndo}
-          title="Undo"
+          title={t.undo}
           className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Undo2 className="h-4 w-4" aria-hidden="true" />
@@ -512,7 +520,7 @@ export default function CanvasFrameEditor({
           type="button"
           onClick={onRedo}
           disabled={!canRedo}
-          title="Redo"
+          title={t.redo}
           className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Redo2 className="h-4 w-4" aria-hidden="true" />
@@ -566,6 +574,7 @@ export default function CanvasFrameEditor({
               onDuplicate={duplicateSelected}
               onDelete={deleteSelected}
               onReorder={reorderSelected}
+              locale={locale}
               onPreviewAnimation={() => {
                 setPreviewAnimId(null);
                 requestAnimationFrame(() => setPreviewAnimId(selectedElement.id));
@@ -773,7 +782,7 @@ export default function CanvasFrameEditor({
           type="button"
           onClick={() => setLayersOpen((v) => !v)}
           aria-expanded={layersOpen}
-          aria-label={layersOpen ? "Close layers panel" : "Open layers panel"}
+          aria-label={layersOpen ? t.layers.closePanel : t.layers.openPanel}
           className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)] shadow-lg hover:bg-[var(--dash-accent-hover)] sm:hidden"
         >
           {layersOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Layers className="h-5 w-5" aria-hidden="true" />}
@@ -816,6 +825,7 @@ export default function CanvasFrameEditor({
             onBackgroundImageRemove={() => updateBackground({ imageUrl: undefined })}
             uploadingBackground={uploadingBackground}
             uploadError={uploadError}
+            locale={locale}
           />
         </div>
       </div>
@@ -829,6 +839,7 @@ export default function CanvasFrameEditor({
         onAddVideo={addVideo}
         uploadingVideo={uploadingVideo}
         onAddQr={addQr}
+        locale={locale}
       />
     </div>
   );

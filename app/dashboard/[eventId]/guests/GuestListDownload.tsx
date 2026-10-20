@@ -4,13 +4,14 @@ import { useState } from "react";
 import type { Theme } from "@/lib/themes";
 import type { GuestListRow } from "@/components/pdf/GuestListDocument";
 import { toCsvText } from "./parseCsv";
-
-const CSV_HEADERS = ["Name", "Group", "RSVP status", "Party size", "Table", "Notes"];
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface GuestListDownloadProps {
   theme: Theme;
   eventTitle: string;
   rows: GuestListRow[];
+  locale?: Locale;
 }
 
 function saveBlob(blob: Blob, filename: string) {
@@ -22,7 +23,8 @@ function saveBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export default function GuestListDownload({ theme, eventTitle, rows }: GuestListDownloadProps) {
+export default function GuestListDownload({ theme, eventTitle, rows, locale = "en" }: GuestListDownloadProps) {
+  const t = getDictionary(locale).dashboard.guests.download;
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,15 +41,23 @@ export default function GuestListDownload({ theme, eventTitle, rows }: GuestList
       ).toBlob();
       saveBlob(blob, "guest-list.pdf");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setPending(false);
     }
   };
 
   const handleDownloadCsv = () => {
+    const csvHeaders = [
+      t.csvHeaders.name,
+      t.csvHeaders.group,
+      t.csvHeaders.status,
+      t.csvHeaders.partySize,
+      t.csvHeaders.table,
+      t.csvHeaders.notes,
+    ];
     const csv = toCsvText(
-      CSV_HEADERS,
+      csvHeaders,
       rows.map((row) => [row.name, row.group, row.status, row.partySize, row.table, row.notes])
     );
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -67,7 +77,7 @@ export default function GuestListDownload({ theme, eventTitle, rows }: GuestList
           disabled={pending || rows.length === 0}
           className="dash-btn dash-btn-neutral"
         >
-          {pending ? "Generating..." : "Download printable guest list (PDF)"}
+          {pending ? t.generating : t.pdfButton}
         </button>
         <button
           type="button"
@@ -75,12 +85,11 @@ export default function GuestListDownload({ theme, eventTitle, rows }: GuestList
           disabled={rows.length === 0}
           className="dash-btn dash-btn-neutral"
         >
-          Download as spreadsheet (CSV)
+          {t.csvButton}
         </button>
       </div>
       <p className="mt-1 text-xs text-gray-500">
-        A flat name/group/RSVP/table sheet - handy for door staff, a caterer, or day-of reference.
-        The CSV opens in Excel, Google Sheets, or Numbers.
+        {t.hint}
       </p>
       {error && (
         <p className="mt-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>

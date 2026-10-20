@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Copy, Check, ExternalLink, FileDown, Download } from "lucide-react";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface SendingGuideCardProps {
   eventId: string;
@@ -10,6 +12,9 @@ interface SendingGuideCardProps {
   appDomain: string;
   hasPremiumAccess: boolean;
   rsvpEmailNotifications: boolean;
+  /** Optional, defaulting to English -- see DashboardNav's matching prop
+   * comment for why. */
+  locale?: Locale;
 }
 
 /** post-payment-guidance audit (2026-10-12) + direct feedback (2026-10-13):
@@ -28,9 +33,11 @@ export default function SendingGuideCard({
   appDomain,
   hasPremiumAccess,
   rsvpEmailNotifications,
+  locale = "en",
 }: SendingGuideCardProps) {
   const [copied, setCopied] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const t = getDictionary(locale).dashboard.site.sendingGuide;
 
   // 2026-10-16: a host had a QR code for every individual paper invitation
   // (PaperConstructor's per-guest codes) and for the guest photo-upload link
@@ -64,7 +71,7 @@ export default function SendingGuideCard({
 
   return (
     <div className="mt-4 rounded-2xl border-2 border-[var(--dash-accent)] bg-[color-mix(in_srgb,var(--dash-accent)_10%,var(--dash-surface))] p-4">
-      <p className="text-sm font-bold text-[var(--dash-text)]">🔗 Your invitation link</p>
+      <p className="text-sm font-bold text-[var(--dash-text)]">{t.title}</p>
 
       <div className="mt-2 flex flex-col gap-2 rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-3 sm:flex-row sm:items-center">
         <span className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-sm font-semibold text-[var(--dash-text)] sm:text-base">
@@ -78,11 +85,11 @@ export default function SendingGuideCard({
           >
             {copied ? (
               <>
-                <Check className="h-[14px] w-[14px]" /> Copied!
+                <Check className="h-[14px] w-[14px]" /> {t.copied}
               </>
             ) : (
               <>
-                <Copy className="h-[14px] w-[14px]" /> Copy
+                <Copy className="h-[14px] w-[14px]" /> {t.copy}
               </>
             )}
           </button>
@@ -92,16 +99,13 @@ export default function SendingGuideCard({
             rel="noreferrer"
             className="flex h-9 items-center gap-1.5 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 text-xs font-semibold text-[var(--dash-text)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
           >
-            Open <ExternalLink className="h-[14px] w-[14px]" />
+            {t.open} <ExternalLink className="h-[14px] w-[14px]" />
           </Link>
         </div>
       </div>
 
       <p className="mt-2 text-xs text-[var(--dash-text-muted)]">
-        Send it however you like (text, email, WhatsApp) - guests open it, RSVP, and{" "}
-        {rsvpEmailNotifications
-          ? "a reply lands in your inbox the moment they answer (you can also check the Guests tab anytime)."
-          : "you can check their answer anytime in the Guests tab (email alerts are off - turn them back on there)."}
+        {rsvpEmailNotifications ? t.helperWithEmail : t.helperWithoutEmail}
       </p>
 
       <div className="mt-3 flex items-center gap-3 border-t border-[var(--dash-border)] pt-3">
@@ -116,10 +120,8 @@ export default function SendingGuideCard({
           <div className="h-16 w-16 flex-none animate-pulse rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface)]" />
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold text-[var(--dash-text)]">QR code for your link</p>
-          <p className="text-[11px] text-[var(--dash-text-muted)]">
-            Print it on a welcome sign, table cards, or a thank-you note.
-          </p>
+          <p className="text-xs font-semibold text-[var(--dash-text)]">{t.qrTitle}</p>
+          <p className="text-[11px] text-[var(--dash-text-muted)]">{t.qrCaption}</p>
         </div>
         <a
           href={qrDataUrl ?? undefined}
@@ -129,7 +131,7 @@ export default function SendingGuideCard({
             qrDataUrl ? "" : "pointer-events-none opacity-50"
           }`}
         >
-          <Download className="h-[13px] w-[13px]" /> Download
+          <Download className="h-[13px] w-[13px]" /> {t.download}
         </a>
       </div>
 
@@ -138,7 +140,7 @@ export default function SendingGuideCard({
           href={`/dashboard/${eventId}/paper`}
           className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--dash-accent)] hover:underline"
         >
-          <FileDown className="h-[13px] w-[13px]" /> Download your watermark-free paper PDFs
+          <FileDown className="h-[13px] w-[13px]" /> {t.downloadPapers}
         </Link>
       )}
     </div>

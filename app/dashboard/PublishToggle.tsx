@@ -3,16 +3,22 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { togglePublish } from "./[eventId]/actions";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface PublishToggleProps {
   eventId: string;
   status: string;
+  /** Optional, defaulting to English -- see DashboardNav's matching prop
+   * comment for why. */
+  locale?: Locale;
 }
 
-export default function PublishToggle({ eventId, status }: PublishToggleProps) {
+export default function PublishToggle({ eventId, status, locale = "en" }: PublishToggleProps) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = getDictionary(locale).dashboard.shell.publish;
 
   const isPublished = status === "published";
 
@@ -45,12 +51,10 @@ export default function PublishToggle({ eventId, status }: PublishToggleProps) {
             : "rounded-full bg-[var(--dash-accent-text)] px-4 py-2.5 text-sm font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
         }
       >
-        {isPending ? "Saving..." : isPublished ? "Unpublish" : "Publish site"}
+        {isPending ? t.saving : isPublished ? t.unpublish : t.publish}
       </button>
       <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
-        {isPublished
-          ? "Your site is visible to guests via the link"
-          : "Guests can't see your site until it's published"}
+        {isPublished ? t.visibleNote : t.hiddenNote}
       </p>
       {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
     </div>

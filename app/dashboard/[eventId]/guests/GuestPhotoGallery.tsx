@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { listGuestPhotos, deleteGuestPhoto, type GuestPhotoItem } from "./photoActions";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface GuestPhotoGalleryProps {
   eventId: string;
   eventSlug: string;
+  locale?: Locale;
 }
 
 /** The host's side of the shared guest photo album: a QR code guests scan to
@@ -13,7 +16,8 @@ interface GuestPhotoGalleryProps {
  * what's come in so far with a delete action per photo. Lives on the Guests
  * tab since it's fundamentally about what guests contribute, same home as
  * RSVP responses and the guestbook. */
-export default function GuestPhotoGallery({ eventId, eventSlug }: GuestPhotoGalleryProps) {
+export default function GuestPhotoGallery({ eventId, eventSlug, locale = "en" }: GuestPhotoGalleryProps) {
+  const t = getDictionary(locale).dashboard.guests.photos;
   const [photos, setPhotos] = useState<GuestPhotoItem[] | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -39,7 +43,7 @@ export default function GuestPhotoGallery({ eventId, eventSlug }: GuestPhotoGall
     setDeletingId(null);
     if (result.ok) {
       setPhotos((prev) => (prev ?? []).filter((photo) => photo.id !== photoId));
-      setToast("Photo deleted.");
+      setToast(t.deletedToast);
       setTimeout(() => setToast(null), 3000);
     } else {
       setToast(result.message);
@@ -49,9 +53,9 @@ export default function GuestPhotoGallery({ eventId, eventSlug }: GuestPhotoGall
 
   return (
     <div className="mt-10 border-t border-gray-200 pt-8">
-      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Guest photos</h2>
+      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.heading}</h2>
       <p className="mt-1 text-sm text-gray-500">
-        Guests scan this code to add their own photos - no account needed. You can delete any of them below.
+        {t.subtitle}
       </p>
 
       <div className="mt-4 flex items-center gap-4 rounded-md border border-gray-200 bg-gray-50 p-4">
@@ -62,15 +66,15 @@ export default function GuestPhotoGallery({ eventId, eventSlug }: GuestPhotoGall
           <div className="h-24 w-24 flex-none animate-pulse rounded bg-gray-200" />
         )}
         <div className="text-sm text-gray-600">
-          <p className="font-medium text-gray-900">Print this on a table card, or share the link</p>
+          <p className="font-medium text-gray-900">{t.printHint}</p>
           <p className="mt-1 break-all text-gray-500">{`/e/${eventSlug}/photos`}</p>
         </div>
       </div>
 
       {photos === null ? (
-        <p className="mt-4 text-sm text-gray-400">Loading...</p>
+        <p className="mt-4 text-sm text-gray-400">{t.loading}</p>
       ) : photos.length === 0 ? (
-        <p className="mt-4 text-sm text-gray-400">No photos from guests yet.</p>
+        <p className="mt-4 text-sm text-gray-400">{t.empty}</p>
       ) : (
         <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
           {photos.map((photo) => (
@@ -82,7 +86,7 @@ export default function GuestPhotoGallery({ eventId, eventSlug }: GuestPhotoGall
                 onClick={() => handleDelete(photo.id)}
                 disabled={deletingId === photo.id}
                 className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs text-white opacity-0 transition hover:bg-black/80 disabled:opacity-60 group-hover:opacity-100"
-                aria-label="Delete photo"
+                aria-label={t.deleteAria}
               >
                 {deletingId === photo.id ? "…" : "✕"}
               </button>

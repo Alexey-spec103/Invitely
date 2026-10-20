@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { assignGuestToTable } from "./banquet-actions";
 import type { Tables } from "@/lib/supabase/database.types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface GuestTableAssignmentsProps {
   eventId: string;
@@ -13,6 +15,7 @@ interface GuestTableAssignmentsProps {
   attendees: Tables<"guest_attendees">[];
   /** guestId -> RSVP `attending` value; a guest with no entry hasn't responded yet. */
   attendingStatusByGuestId: Record<string, boolean | undefined>;
+  locale?: Locale;
 }
 
 export default function GuestTableAssignments({
@@ -21,7 +24,10 @@ export default function GuestTableAssignments({
   tables,
   attendees,
   attendingStatusByGuestId,
+  locale = "en",
 }: GuestTableAssignmentsProps) {
+  const t = getDictionary(locale).dashboard.guests.banquet;
+  const tr = getDictionary(locale).dashboard.guests.rsvpResponses;
   const router = useRouter();
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +49,7 @@ export default function GuestTableAssignments({
       await assignGuestToTable({ guestId, tableId: tableId || null });
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setPendingId(null);
     }
@@ -92,7 +98,7 @@ export default function GuestTableAssignments({
       setBulkTableId("");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to bulk-assign");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setBulkAssigning(false);
     }
@@ -100,16 +106,17 @@ export default function GuestTableAssignments({
 
   return (
     <div className="mt-12 border-t border-gray-200 pt-8">
-      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Seat guests</h2>
-      <p className="mt-1 text-sm text-gray-500">Assign each guest to a table.</p>
+      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.assignHeading}</h2>
+      <p className="mt-1 text-sm text-gray-500">{t.assignSubtitle}</p>
 
       {tables.some((table) => table.capacity != null && (seatedCountByTable.get(table.id) ?? 0) > table.capacity) && (
         <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          Over capacity:{" "}
-          {tables
-            .filter((table) => table.capacity != null && (seatedCountByTable.get(table.id) ?? 0) > table.capacity)
-            .map((table) => `${table.name} (${seatedCountByTable.get(table.id)}/${table.capacity})`)
-            .join(", ")}
+          {t.overCapacity(
+            tables
+              .filter((table) => table.capacity != null && (seatedCountByTable.get(table.id) ?? 0) > table.capacity)
+              .map((table) => `${table.name} (${seatedCountByTable.get(table.id)}/${table.capacity})`)
+              .join(", ")
+          )}
         </p>
       )}
 
@@ -124,7 +131,7 @@ export default function GuestTableAssignments({
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search guests..."
+              placeholder={t.searchPlaceholder}
               className="dash-input max-w-xs"
             />
             <label className="flex items-center gap-1.5 text-xs text-gray-600">
@@ -134,7 +141,7 @@ export default function GuestTableAssignments({
                 onChange={(event) => setUnassignedOnly(event.target.checked)}
                 className="h-3.5 w-3.5 rounded border-gray-300"
               />
-              Unassigned only
+              {t.unassignedOnly}
             </label>
             {Object.keys(attendingStatusByGuestId).length > 0 && (
               <label className="flex items-center gap-1.5 text-xs text-gray-600">
@@ -144,11 +151,11 @@ export default function GuestTableAssignments({
                   onChange={(event) => setAttendingOnly(event.target.checked)}
                   className="h-3.5 w-3.5 rounded border-gray-300"
                 />
-                Attending only
+                {t.attendingOnly}
               </label>
             )}
             <span className="text-xs text-gray-500">
-              {filteredGuests.length} of {guests.length} guest{guests.length === 1 ? "" : "s"}
+              {t.countOf(filteredGuests.length, guests.length)}
             </span>
           </div>
 
@@ -160,7 +167,7 @@ export default function GuestTableAssignments({
                 disabled={bulkAssigning}
                 className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <option value="">Choose a table...</option>
+                <option value="">{t.chooseTableOption}</option>
                 {tables.map((table) => (
                   <option key={table.id} value={table.id}>
                     {tableLabel(table)}
@@ -173,9 +180,7 @@ export default function GuestTableAssignments({
                 disabled={!bulkTableId || unassignedInView.length === 0 || bulkAssigning}
                 className="dash-btn dash-btn-neutral px-2 py-1 text-xs"
               >
-                {bulkAssigning
-                  ? "Assigning..."
-                  : `Assign all ${unassignedInView.length} unassigned in view`}
+                {bulkAssigning ? t.assigning : t.assignAll(unassignedInView.length)}
               </button>
             </div>
           )}
@@ -192,13 +197,13 @@ export default function GuestTableAssignments({
               <span className="text-2xl" aria-hidden="true">
                 🍽️
               </span>
-              <span className="text-sm font-medium">No guests yet</span>
-              <span className="text-xs text-gray-400">Add guests on the Guests tab, then seat them here</span>
+              <span className="text-sm font-medium">{t.emptyHeading}</span>
+              <span className="text-xs text-gray-400">{t.emptySubtitle}</span>
             </Link>
           </li>
         )}
         {guests.length > 0 && filteredGuests.length === 0 && (
-          <li className="py-4 text-sm text-gray-500">No guests match your search/filter.</li>
+          <li className="py-4 text-sm text-gray-500">{t.noMatch}</li>
         )}
         {filteredGuests.map((guest) => {
           const partyAttendees = attendees.filter((attendee) => attendee.guest_id === guest.id);
@@ -212,14 +217,14 @@ export default function GuestTableAssignments({
                   if (status === true) {
                     return (
                       <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700">
-                        Attending
+                        {tr.attending}
                       </span>
                     );
                   }
                   if (status === false) {
                     return (
                       <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
-                        Not attending
+                        {tr.notAttending}
                       </span>
                     );
                   }
@@ -238,7 +243,7 @@ export default function GuestTableAssignments({
               onChange={(event) => handleAssign(guest.id, event.target.value)}
               className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <option value="">- unassigned -</option>
+              <option value="">{t.unassignedOption}</option>
               {tables.map((table) => (
                 <option key={table.id} value={table.id}>
                   {table.name}

@@ -6,6 +6,7 @@ import PremiumUpgradeNote from "@/components/paper/PremiumUpgradeNote";
 import type { Theme } from "@/lib/themes";
 import type { CanvasFrame } from "@/lib/canvas/types";
 import type { Locale } from "@/lib/i18n/locales";
+import { getDictionary } from "@/lib/i18n/dictionary";
 
 interface GuestItem {
   id: string;
@@ -94,6 +95,7 @@ export default function InvitationDownloads({
   locked,
   locale,
 }: InvitationDownloadsProps) {
+  const t = getDictionary(locale).dashboard.paper;
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
@@ -118,7 +120,7 @@ export default function InvitationDownloads({
       const blob = await pdf(<CanvasPdfDocument frames={resolvedFrames} />).toBlob();
       saveBlob(blob, "invitation.pdf");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingId(null);
     }
@@ -143,7 +145,7 @@ export default function InvitationDownloads({
       ).toBlob();
       saveBlob(blob, "program-card.pdf");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingId(null);
     }
@@ -160,7 +162,7 @@ export default function InvitationDownloads({
       const blob = await pdf(
         <DressCodeCardDocument
           theme={theme}
-          title={dressCodeTitle || "Dress Code"}
+          title={dressCodeTitle || t.seed.dressCodeTitle}
           description={dressCodeDescription}
           colors={dressCodeColors}
           frame={dressCodeCanvas}
@@ -169,7 +171,7 @@ export default function InvitationDownloads({
       ).toBlob();
       saveBlob(blob, "dress-code-card.pdf");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingId(null);
     }
@@ -195,7 +197,7 @@ export default function InvitationDownloads({
       ).toBlob();
       saveBlob(blob, "envelope.pdf");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingId(null);
     }
@@ -221,7 +223,7 @@ export default function InvitationDownloads({
       ).toBlob();
       saveBlob(blob, "save-the-date.pdf");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingId(null);
     }
@@ -240,7 +242,7 @@ export default function InvitationDownloads({
       ).toBlob();
       saveBlob(blob, "thank-you.pdf");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingId(null);
     }
@@ -313,7 +315,7 @@ export default function InvitationDownloads({
       const blob = await renderGuestPdf(guest, pdfModule, documentModule);
       saveBlob(blob, guest ? `invitation-${guest.fullName}.pdf` : "invitation.pdf");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
     } finally {
       setPendingId(null);
     }
@@ -341,7 +343,7 @@ export default function InvitationDownloads({
       const zipBlob = await zip.generateAsync({ type: "blob" });
       saveBlob(zipBlob, "invitations.zip");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate PDFs");
+      setError(err instanceof Error ? err.message : t.downloads.failedToGeneratePdfs);
     } finally {
       setPendingId(null);
       setBulkProgress(null);
@@ -358,29 +360,29 @@ export default function InvitationDownloads({
           className="dash-btn dash-btn-primary"
         >
           {pendingId === "generic"
-            ? "Generating..."
+            ? t.downloads.generating
             : hasCanvasDesign
-              ? "Download invitation PDF (your design)"
-              : "Download generic invitation PDF"}
+              ? t.downloads.custom
+              : t.downloads.generic}
         </button>
         <button type="button" onClick={generateEnvelope} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
-          {pendingId === "envelope" ? "Generating..." : "Download envelope PDF"}
+          {pendingId === "envelope" ? t.downloads.generating : t.downloads.envelope}
         </button>
         {timelineEvents.length > 0 && (
           <button type="button" onClick={generateProgramCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
-            {pendingId === "program" ? "Generating..." : "Download program card PDF"}
+            {pendingId === "program" ? t.downloads.generating : t.downloads.program}
           </button>
         )}
         {dressCodeColors.length > 0 && (
           <button type="button" onClick={generateDressCodeCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
-            {pendingId === "dresscode" ? "Generating..." : "Download dress-code card PDF"}
+            {pendingId === "dresscode" ? t.downloads.generating : t.downloads.dressCode}
           </button>
         )}
         <button type="button" onClick={generateSaveTheDateCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
-          {pendingId === "savethedate" ? "Generating..." : "Download save-the-date PDF"}
+          {pendingId === "savethedate" ? t.downloads.generating : t.downloads.saveTheDate}
         </button>
         <button type="button" onClick={generateThankYouCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
-          {pendingId === "thankyou" ? "Generating..." : "Download thank-you card PDF"}
+          {pendingId === "thankyou" ? t.downloads.generating : t.downloads.thankYou}
         </button>
       </div>
 
@@ -389,12 +391,10 @@ export default function InvitationDownloads({
       )}
 
       <div className="mt-8 border-t border-gray-200 pt-6">
-        <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Personalized invitations</h2>
+        <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.downloads.heading}</h2>
         <p className="mt-1 text-sm text-gray-500">
-          Each includes a QR code that links straight to your site with the guest already
-          identified, so their RSVP is automatically matched.
-          {hasCanvasDesign &&
-            " These use your theme's default layout rather than your custom canvas design - per-guest personalization for canvas designs isn't available yet."}
+          {t.downloads.description}
+          {hasCanvasDesign && t.downloads.canvasNote}
         </p>
         {/* dashboard-audit.md B21: personalized invitations are a
             Premium-tier material in lib/plans.ts -- watermarked (not
@@ -402,7 +402,7 @@ export default function InvitationDownloads({
             remove it" logic as the banquet materials. */}
         {locked && (
           <div className="mt-1">
-            <PremiumUpgradeNote eventId={eventId} />
+            <PremiumUpgradeNote eventId={eventId} locale={locale} />
           </div>
         )}
 
@@ -411,9 +411,9 @@ export default function InvitationDownloads({
             <button type="button" onClick={generateAll} disabled={pendingId !== null} className="dash-btn dash-btn-primary">
               {pendingId === "all"
                 ? bulkProgress
-                  ? `Generating ${bulkProgress.done}/${bulkProgress.total}...`
-                  : "Generating..."
-                : `Download all (${guests.length}) as ZIP (PDFs)`}
+                  ? t.downloads.generatingProgress(bulkProgress.done, bulkProgress.total)
+                  : t.downloads.generating
+                : t.downloads.downloadAllAsZip(guests.length)}
             </button>
           </div>
         )}
@@ -428,8 +428,8 @@ export default function InvitationDownloads({
                 <span className="text-2xl" aria-hidden="true">
                   💌
                 </span>
-                <span className="text-sm font-medium">No guests yet</span>
-                <span className="text-xs text-gray-400">Add guests on the Guests tab to download their invitations</span>
+                <span className="text-sm font-medium">{t.downloads.noGuestsYet}</span>
+                <span className="text-xs text-gray-400">{t.downloads.addGuestsHint}</span>
               </Link>
             </li>
           )}
@@ -442,7 +442,7 @@ export default function InvitationDownloads({
                 disabled={pendingId !== null}
                 className="text-sm font-medium text-gray-500 hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {pendingId === guest.id ? "Generating..." : "Download PDF"}
+                {pendingId === guest.id ? t.downloads.generating : t.downloads.downloadPdf}
               </button>
             </li>
           ))}

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Trash2, Plus, Users } from "lucide-react";
 import { renameBanquetTable, updateBanquetTableCapacity, deleteBanquetTable, assignGuestToTable } from "./banquet-actions";
 import type { Tables } from "@/lib/supabase/database.types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 export interface SeatedGuest {
   id: string;
@@ -16,6 +18,7 @@ interface TableCardProps {
   table: Tables<"banquet_tables">;
   seatedGuests: SeatedGuest[];
   unassignedGuests: Tables<"guests">[];
+  locale?: Locale;
 }
 
 /** dashboard-audit.md B16: weddingpost.ru's own "Карточка стола" -- the
@@ -29,7 +32,8 @@ interface TableCardProps {
  * showing up in a free planning tool. The actual paper preview still lives
  * on Paper (PaperConstructor already renders the real thing independently)
  * -- this is now just the seating-assignment management itself. */
-export default function TableCard({ table, seatedGuests, unassignedGuests }: TableCardProps) {
+export default function TableCard({ table, seatedGuests, unassignedGuests, locale = "en" }: TableCardProps) {
+  const t = getDictionary(locale).dashboard.guests.banquet;
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(table.name);
@@ -55,21 +59,21 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
       router.refresh();
       setIsEditing(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setSavingEdit(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Remove this table? Any assigned guests will become unassigned.")) return;
+    if (!window.confirm(t.removeTableConfirm)) return;
     setDeleting(true);
     setError(null);
     try {
       await deleteBanquetTable(table.id);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete");
+      setError(err instanceof Error ? err.message : t.genericError);
       setDeleting(false);
     }
   };
@@ -84,7 +88,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
       setIsAddingGuest(false);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add guest");
+      setError(err instanceof Error ? err.message : t.genericError);
     } finally {
       setAssigning(false);
     }
@@ -106,7 +110,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
               <input
                 type="number"
                 min={1}
-                placeholder="Seats"
+                placeholder={t.seatsLabel}
                 value={capacity}
                 onChange={(event) => setCapacity(event.target.value)}
                 className="dash-input w-20"
@@ -117,7 +121,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
                 disabled={savingEdit || !name.trim()}
                 className="whitespace-nowrap text-sm font-medium text-gray-900 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {savingEdit ? "Saving..." : "Save"}
+                {savingEdit ? t.saving : t.save}
               </button>
               <button
                 type="button"
@@ -128,7 +132,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
                 }}
                 className="whitespace-nowrap text-sm font-medium text-gray-600 hover:text-gray-900"
               >
-                Cancel
+                {t.cancel}
               </button>
             </div>
           ) : (
@@ -137,7 +141,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
                 {table.name}
                 {table.capacity != null && (
                   <span className="ml-2 text-xs font-normal text-gray-500">
-                    {seatedCount}/{table.capacity} seats
+                    {t.seatsCount(seatedCount, table.capacity)}
                   </span>
                 )}
               </p>
@@ -148,7 +152,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
             type="button"
             onClick={handleDelete}
             disabled={deleting}
-            aria-label="Remove table"
+            aria-label={t.removeTableAria}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Trash2 className="h-4 w-4" aria-hidden="true" />
@@ -160,8 +164,8 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
             <div className="flex items-start gap-2 text-sm text-gray-500">
               <Users className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
               <div>
-                <p>No guests yet</p>
-                <p className="text-xs text-gray-400">Add guests to fill this table.</p>
+                <p>{t.noGuestsYet}</p>
+                <p className="text-xs text-gray-400">{t.addGuestsHint}</p>
               </div>
             </div>
           ) : (
@@ -188,7 +192,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
                 onChange={(event) => setSelectedGuestId(event.target.value)}
                 className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
               >
-                <option value="">Choose a guest...</option>
+                <option value="">{t.chooseGuestOption}</option>
                 {unassignedGuests.map((guest) => (
                   <option key={guest.id} value={guest.id}>
                     {guest.full_name}
@@ -201,14 +205,14 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
                 disabled={!selectedGuestId || assigning}
                 className="dash-btn dash-btn-neutral px-2 py-1 text-xs"
               >
-                {assigning ? "Adding..." : "Add"}
+                {assigning ? t.adding : t.addGuestButton}
               </button>
               <button
                 type="button"
                 onClick={() => setIsAddingGuest(false)}
                 className="text-xs font-medium text-gray-600 hover:text-gray-900"
               >
-                Cancel
+                {t.cancel}
               </button>
             </div>
           ) : (
@@ -216,10 +220,10 @@ export default function TableCard({ table, seatedGuests, unassignedGuests }: Tab
               type="button"
               onClick={() => setIsAddingGuest(true)}
               disabled={unassignedGuests.length === 0}
-              title={unassignedGuests.length === 0 ? "Every guest is already seated" : undefined}
+              title={unassignedGuests.length === 0 ? t.everyGuestSeated : undefined}
               className="dash-btn dash-btn-neutral gap-1 px-3 py-1.5 text-xs"
             >
-              <Plus className="h-3.5 w-3.5" aria-hidden="true" /> Add guest
+              <Plus className="h-3.5 w-3.5" aria-hidden="true" /> {t.addGuestButton}
             </button>
           )}
         </div>

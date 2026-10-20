@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { plans } from "@/lib/plans";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface PremiumUpgradeNoteProps {
   eventId: string;
+  /** Optional, defaults to English -- same pattern as the canvas sub-components. */
+  locale?: Locale;
 }
 
 /** dashboard-audit.md B21: shared caption next to a watermarked material,
@@ -13,7 +17,8 @@ interface PremiumUpgradeNoteProps {
  *
  * Watermark-free printable materials are a Premium feature -- Basic covers
  * the digital site only. */
-export default function PremiumUpgradeNote({ eventId }: PremiumUpgradeNoteProps) {
+export default function PremiumUpgradeNote({ eventId, locale }: PremiumUpgradeNoteProps) {
+  const t = getDictionary(locale ?? "en").dashboard.common.upgradeNote;
   // Direct feedback: this used to be a tiny gray caption (text-xs
   // text-gray-500) sitting quietly next to the material -- easy to miss
   // entirely, which meant a host could believe a watermarked download was
@@ -26,14 +31,14 @@ export default function PremiumUpgradeNote({ eventId }: PremiumUpgradeNoteProps)
         🔒
       </span>
       <p className="text-sm font-bold text-amber-900">
-        This is a paid feature - downloads with a watermark on Free and Basic.{" "}
+        {t.warning}{" "}
         <Link
           href={`/dashboard/${eventId}/plan`}
           className="underline decoration-2 underline-offset-2 hover:text-amber-700"
         >
-          Upgrade to Premium (€{plans.premium.priceEur})
+          {t.upgradeLinkText(plans.premium.priceEur)}
         </Link>{" "}
-        to remove it.
+        {t.removeSuffix}
       </p>
     </div>
   );

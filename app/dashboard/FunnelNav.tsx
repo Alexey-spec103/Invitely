@@ -3,9 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface FunnelNavProps {
   eventId: string;
+  /** Optional, defaulting to English -- see DashboardNav's matching prop
+   * comment for why. */
+  locale?: Locale;
 }
 
 type StepId = "style" | "site" | "paper" | "guests";
@@ -25,21 +30,22 @@ type StepId = "style" | "site" | "paper" | "guests";
  * it can't drift out of sync with the rail; renders nothing on Style itself
  * (the funnel's entry point, per the audit has no bar) or on routes outside
  * the funnel entirely (Account, Plan, Canvas). */
-// impeccable critique P1 follow-up: the host's actual ask wasn't "stop
-// reminding me to pay" (the header pill + Site's sticky footer CTA were
-// both deliberate reachability choices, kept as-is) but "make it obvious
-// where I am and what's next" -- a plain back/forward link pair doesn't
-// show that on its own. Labels match stepHrefs below.
-const STEP_LABELS: Record<StepId, string> = {
-  style: "Style",
-  site: "Site",
-  paper: "Paper",
-  guests: "Guests",
-};
-
-export default function FunnelNav({ eventId }: FunnelNavProps) {
+export default function FunnelNav({ eventId, locale = "en" }: FunnelNavProps) {
   const pathname = usePathname();
   const base = `/dashboard/${eventId}`;
+  const t = getDictionary(locale).dashboard.shell;
+  // impeccable critique P1 follow-up: the host's actual ask wasn't "stop
+  // reminding me to pay" (the header pill + Site's sticky footer CTA were
+  // both deliberate reachability choices, kept as-is) but "make it obvious
+  // where I am and what's next" -- a plain back/forward link pair doesn't
+  // show that on its own. Labels match stepHrefs below, and reuse
+  // DashboardNav's own nav labels so the two never drift apart.
+  const STEP_LABELS: Record<StepId, string> = {
+    style: t.nav.style,
+    site: t.nav.site,
+    paper: t.nav.paper,
+    guests: t.nav.guests,
+  };
 
   const stepHrefs: { id: StepId; href: string }[] = [
     { id: "style", href: `${base}/style` },
@@ -57,15 +63,24 @@ export default function FunnelNav({ eventId }: FunnelNavProps) {
     Exclude<StepId, "style">,
     { back: { href: string; label: string }; forward?: { href: string; label: string } }
   > = {
-    site: { back: { href: `${base}/style`, label: "Back to Style" }, forward: { href: `${base}/paper`, label: "Paper" } },
-    paper: { back: { href: `${base}/style`, label: "Back to Style" }, forward: { href: `${base}/guests`, label: "Guests" } },
+    site: {
+      back: { href: `${base}/style`, label: t.funnelNav.backTo(t.nav.style) },
+      forward: { href: `${base}/paper`, label: t.nav.paper },
+    },
+    paper: {
+      back: { href: `${base}/style`, label: t.funnelNav.backTo(t.nav.style) },
+      forward: { href: `${base}/guests`, label: t.nav.guests },
+    },
     // Direct feedback: Guests is the last funnel step now, and it used to
     // just stop -- nothing told a host who just finished adding/seating
     // guests that there was anywhere left to go. /plan is where "get your
     // link" actually happens (publish works on any plan already; this is
     // where a host decides whether to stay free-with-watermark or pay to
     // remove it) -- the one genuinely new destination to close the loop on.
-    guests: { back: { href: `${base}/paper`, label: "Paper" }, forward: { href: `${base}/plan`, label: "Get your link" } },
+    guests: {
+      back: { href: `${base}/paper`, label: t.nav.paper },
+      forward: { href: `${base}/plan`, label: t.funnelNav.getYourLink },
+    },
   };
 
   const { back, forward } = links[current.id];

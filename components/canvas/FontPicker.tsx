@@ -2,20 +2,24 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CANVAS_FONTS, ensureCanvasFontLoaded } from "@/lib/canvas/fonts";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface FontPickerProps {
   value: string;
   onChange: (family: string) => void;
+  /** Optional, defaults to English -- same pattern as AddElementModal. */
+  locale?: Locale;
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  serif: "Serif",
-  "sans-serif": "Sans-serif",
-  script: "Script",
-  display: "Display",
-};
-
-export default function FontPicker({ value, onChange }: FontPickerProps) {
+export default function FontPicker({ value, onChange, locale }: FontPickerProps) {
+  const t = getDictionary(locale ?? "en").dashboard.paper.canvas.fontPicker;
+  const CATEGORY_LABELS: Record<string, string> = {
+    serif: t.categories.serif,
+    "sans-serif": t.categories.sansSerif,
+    script: t.categories.script,
+    display: t.categories.display,
+  };
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
@@ -73,7 +77,7 @@ export default function FontPicker({ value, onChange }: FontPickerProps) {
             type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search fonts..."
+            placeholder={t.searchPlaceholder}
             className="w-full border-b border-[var(--dash-border)] bg-transparent px-3 py-2 text-sm text-[var(--dash-text)] outline-none placeholder:text-[var(--dash-text-muted)]"
           />
           <div className="max-h-72 overflow-auto py-1">
@@ -104,7 +108,7 @@ export default function FontPicker({ value, onChange }: FontPickerProps) {
               </div>
             ))}
             {filtered.length === 0 && (
-              <div className="px-3 py-4 text-center text-sm text-[var(--dash-text-muted)]">No fonts found</div>
+              <div className="px-3 py-4 text-center text-sm text-[var(--dash-text-muted)]">{t.noFontsFound}</div>
             )}
           </div>
         </div>

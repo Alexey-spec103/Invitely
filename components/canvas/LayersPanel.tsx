@@ -3,6 +3,9 @@
 import type { CanvasElement, CanvasFrame } from "@/lib/canvas/types";
 import type { BackgroundFill } from "@/lib/backgroundFills";
 import BackgroundPicker from "@/components/background/BackgroundPicker";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
+import type { Dictionary } from "@/lib/i18n/dictionary";
 
 interface LayersPanelProps {
   elements: CanvasElement[];
@@ -17,15 +20,17 @@ interface LayersPanelProps {
   onBackgroundImageRemove: () => void;
   uploadingBackground: boolean;
   uploadError: string | null;
+  /** Optional, defaults to English -- same pattern as AddElementModal/FontPicker. */
+  locale?: Locale;
 }
 
-function elementLabel(element: CanvasElement): string {
+function elementLabel(element: CanvasElement, t: Dictionary["dashboard"]["paper"]["canvas"]["layers"]): string {
   if (element.type === "text") {
-    return element.text.trim() || "(empty text)";
+    return element.text.trim() || t.emptyText;
   }
-  if (element.type === "video") return "Video";
-  if (element.type === "qr") return "QR code";
-  return "Image";
+  if (element.type === "video") return t.video;
+  if (element.type === "qr") return t.qrCode;
+  return t.image;
 }
 
 function elementIcon(element: CanvasElement): string {
@@ -52,16 +57,19 @@ export default function LayersPanel({
   onBackgroundImageRemove,
   uploadingBackground,
   uploadError,
+  locale,
 }: LayersPanelProps) {
+  const canvasT = getDictionary(locale ?? "en").dashboard.paper.canvas;
+  const t = canvasT.layers;
   const sorted = [...elements].sort((a, b) => b.zIndex - a.zIndex);
 
   return (
     <div className="w-64 flex-none overflow-y-auto border-l border-[var(--dash-border)] bg-[var(--dash-surface)]">
       <p className="border-b border-[var(--dash-border)] px-3 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
-        Layers
+        {t.heading}
       </p>
       {sorted.length === 0 && (
-        <p className="px-3 py-4 text-xs text-[var(--dash-text-muted)]">Nothing on this page yet.</p>
+        <p className="px-3 py-4 text-xs text-[var(--dash-text-muted)]">{t.empty}</p>
       )}
       <ul>
         {sorted.map((element) => {
@@ -87,15 +95,15 @@ export default function LayersPanel({
                 type="button"
                 onClick={() => onSelect(element.id)}
                 className="flex min-w-0 flex-1 items-center gap-2 text-left"
-                title={elementLabel(element)}
+                title={elementLabel(element, t)}
               >
                 <span className="shrink-0 text-[var(--dash-text-muted)]">{elementIcon(element)}</span>
-                <span className="truncate text-[var(--dash-text)]">{elementLabel(element)}</span>
+                <span className="truncate text-[var(--dash-text)]">{elementLabel(element, t)}</span>
               </button>
               <button
                 type="button"
                 onClick={() => onToggleDesktopOnly(element.id)}
-                title={element.desktopOnly ? "Shown on desktop only - click to show everywhere" : "Show on desktop only"}
+                title={element.desktopOnly ? t.desktopOnlyOn : t.desktopOnlyOff}
                 className={
                   "shrink-0 rounded px-1 text-[10px] font-semibold uppercase transition-opacity " +
                   (element.desktopOnly ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)] opacity-100" : `text-[var(--dash-text-muted)] hover:text-[var(--dash-text)] ${revealClass}`)
@@ -106,7 +114,7 @@ export default function LayersPanel({
               <button
                 type="button"
                 onClick={() => onToggleHidden(element.id)}
-                title={element.hidden ? "Hidden from your site - click to show" : "Hide from your site"}
+                title={element.hidden ? t.hiddenOn : t.hiddenOff}
                 className={
                   "shrink-0 text-[var(--dash-text-muted)] hover:text-[var(--dash-text)] transition-opacity " +
                   (element.hidden ? "opacity-100" : revealClass)
@@ -117,7 +125,7 @@ export default function LayersPanel({
               <button
                 type="button"
                 onClick={() => onDelete(element.id)}
-                title="Delete"
+                title={t.delete}
                 className={"shrink-0 text-[var(--dash-text-muted)] hover:text-red-400 transition-opacity " + revealClass}
               >
                 🗑
@@ -132,8 +140,8 @@ export default function LayersPanel({
        * panel, where a block's background/visibility settings sit under its
        * element list rather than in a separate always-visible toolbar. */}
       <div className="border-t border-[var(--dash-border)] px-3 py-3">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">Background</p>
-        <BackgroundPicker value={background.fill} onChange={onBackgroundFillChange} />
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">{t.backgroundHeading}</p>
+        <BackgroundPicker value={background.fill} onChange={onBackgroundFillChange} locale={locale} />
         <div className="mt-2 flex items-center gap-2">
           <button
             type="button"
@@ -141,7 +149,7 @@ export default function LayersPanel({
             disabled={uploadingBackground}
             className="flex-1 rounded-md border border-[var(--dash-border)] px-2.5 py-1.5 text-xs font-medium text-[var(--dash-text)] hover:border-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {uploadingBackground ? "Uploading..." : background.imageUrl ? "Change image" : "Add photo"}
+            {uploadingBackground ? canvasT.uploading : background.imageUrl ? t.changeImage : t.addPhoto}
           </button>
         </div>
         {background.imageUrl && (
@@ -150,7 +158,7 @@ export default function LayersPanel({
             onClick={onBackgroundImageRemove}
             className="mt-2 w-full rounded-md border border-[var(--dash-border)] px-2.5 py-1.5 text-xs font-medium text-[var(--dash-text)] hover:border-[var(--dash-accent)]"
           >
-            Remove image
+            {t.removeImage}
           </button>
         )}
         {/* Background-upload-specific failures still show here too -- a

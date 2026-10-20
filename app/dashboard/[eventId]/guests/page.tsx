@@ -16,10 +16,15 @@ import RsvpNotificationToggle from "./RsvpNotificationToggle";
 import FirstVisitTour from "@/components/ui/FirstVisitTour";
 import GuestPhotoGallery from "./GuestPhotoGallery";
 import type { GuestListRow } from "@/components/pdf/GuestListDocument";
+import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
+import { getDictionary } from "@/lib/i18n/dictionary";
 
 export default async function GuestsPage({ params }: PageProps<"/dashboard/[eventId]/guests">) {
   const { eventId } = await params;
   const user = await getAuthedUser();
+  const locale = await resolveGuestLocale();
+  const t = getDictionary(locale).dashboard.guests;
+  const dashboardCommon = getDictionary(locale).dashboard.common;
 
   if (!user) {
     redirect("/login");
@@ -152,11 +157,11 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
       group: guest.group_label ?? "",
       status: response
         ? response.attending
-          ? "Attending"
-          : "Not attending"
+          ? t.download.statusAttending
+          : t.download.statusNotAttending
         : guest.invitation_sent_at
-          ? "Awaiting response"
-          : "Not contacted",
+          ? t.download.statusAwaiting
+          : t.download.statusNotContacted,
       partySize: response?.attending ? String(response.party_size ?? 1) : "",
       table: guest.table_id ? (tableNameById.get(guest.table_id) ?? "") : "",
       notes: [response?.allergies, ...customAnswers.map((a) => `${a.label}: ${a.answer}`)]
@@ -167,30 +172,30 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
 
   return (
     <div className="max-w-2xl">
-      <h1 className="dash-h1 text-gray-900">Guests</h1>
+      <h1 className="dash-h1 text-gray-900">{t.page.title}</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Keep track of everyone you&apos;re inviting.
+        {t.page.subtitle}
       </p>
 
       {allGuests.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-4 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm">
           <span className="text-emerald-700">
-            <span className="font-semibold">{attendingCount}</span> attending
+            <span className="font-semibold">{attendingCount}</span> {t.page.attending}
           </span>
           <span className="text-gray-500">
-            <span className="font-semibold">{notAttendingCount}</span> not attending
+            <span className="font-semibold">{notAttendingCount}</span> {t.page.notAttending}
           </span>
           <span className="text-amber-700">
-            <span className="font-semibold">{noResponseCount}</span> awaiting response
+            <span className="font-semibold">{noResponseCount}</span> {t.page.awaitingResponse}
           </span>
           <span className="text-gray-500">
-            <span className="font-semibold">{notSentCount}</span> not yet contacted
+            <span className="font-semibold">{notSentCount}</span> {t.page.notYetContacted}
           </span>
         </div>
       )}
 
       <div className="mt-6">
-        <SupportCard />
+        <SupportCard locale={locale} />
       </div>
 
       {/* Site and Paper each already have their own FirstVisitTour
@@ -203,19 +208,11 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
        * own stated rule for when to skip anchoring. */}
       <FirstVisitTour
         tourId="guests"
+        t={dashboardCommon.tour}
         steps={[
-          {
-            title: "👋 Add your guests",
-            body: "Add people one at a time below, or paste a whole list in at once - each gets their own RSVP link.",
-          },
-          {
-            title: "📤 Send invites your way",
-            body: "Copy your one shared link, or send each guest their own personal link by WhatsApp, SMS, or email - we track who's been sent what.",
-          },
-          {
-            title: "✅ See who's answered",
-            body: "Responses show up live below as guests RSVP - turn on email notifications so you don't have to keep checking back.",
-          },
+          { title: t.tour.step1Title, body: t.tour.step1Body },
+          { title: t.tour.step2Title, body: t.tour.step2Body },
+          { title: t.tour.step3Title, body: t.tour.step3Body },
         ]}
       />
 
@@ -231,18 +228,25 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
             response.attending,
           ])
         )}
+        locale={locale}
       />
 
-      <RsvpNotificationToggle eventId={event.id} enabled={rsvpEmailNotifications} digestEnabled={rsvpDigestEmail} />
+      <RsvpNotificationToggle
+        eventId={event.id}
+        enabled={rsvpEmailNotifications}
+        digestEnabled={rsvpDigestEmail}
+        locale={locale}
+      />
 
       <RsvpResponses
         eventId={event.id}
         responses={allResponses}
         guests={allGuests}
         questions={rsvpQuestions}
+        locale={locale}
       />
 
-      <GuestPhotoGallery eventId={event.id} eventSlug={event.slug} />
+      <GuestPhotoGallery eventId={event.id} eventSlug={event.slug} locale={locale} />
 
       {/* Direct feedback: this used to live on its own Banquet tab, mixed in
           with the printable-card showcase -- which read as "that whole tab
@@ -253,14 +257,18 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
           the site or RSVP to work, and it stays exactly as useful whether
           or not "Find My Table" is even turned on. */}
       <div className="mt-10 border-t border-gray-200 pt-8">
-        <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">Seating</h2>
+        <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.page.seatingHeading}</h2>
         <p className="mt-1 text-sm text-gray-500">
-          {banquetNavigatorEnabled
-            ? "Optional - who sits where. This is what powers the “Find My Table” search on your site."
-            : "Optional - plan who sits where whenever you like. Turn on “Find My Table” in your Site’s Modules list to let guests look it up themselves."}
+          {banquetNavigatorEnabled ? t.page.seatingBodyOn : t.page.seatingBodyOff}
         </p>
         <div className="mt-4">
-          <BanquetTablesManager eventId={event.id} tables={banquetTables ?? []} guests={allGuests} attendees={attendees ?? []} />
+          <BanquetTablesManager
+            eventId={event.id}
+            tables={banquetTables ?? []}
+            guests={allGuests}
+            attendees={attendees ?? []}
+            locale={locale}
+          />
         </div>
         <GuestTableAssignments
           eventId={event.id}
@@ -268,10 +276,11 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
           tables={banquetTables ?? []}
           attendees={attendees ?? []}
           attendingStatusByGuestId={attendingStatusByGuestId}
+          locale={locale}
         />
       </div>
 
-      <GuestListDownload theme={theme} eventTitle={event.title} rows={guestListRows} />
+      <GuestListDownload theme={theme} eventTitle={event.title} rows={guestListRows} locale={locale} />
     </div>
   );
 }

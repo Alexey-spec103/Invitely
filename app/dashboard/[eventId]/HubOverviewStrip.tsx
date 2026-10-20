@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Sparkles, ListChecks } from "lucide-react";
 import { getEventType } from "@/lib/eventTypes";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface HubOverviewStripProps {
   eventId: string;
@@ -9,6 +11,7 @@ interface HubOverviewStripProps {
   weddingDataPercent: number;
   planName: string;
   planPriceEur: number;
+  locale: Locale;
 }
 
 /** The 3-card strip weddingpost.ru shows atop its "Приглашения"/"Банкет" hub
@@ -25,14 +28,16 @@ export default function HubOverviewStrip({
   weddingDataPercent,
   planName,
   planPriceEur,
+  locale,
 }: HubOverviewStripProps) {
+  const t = getDictionary(locale).dashboard.common.hubStrip;
   const base = `/dashboard/${eventId}`;
   const isWedding = getEventType(eventType).id === "wedding";
 
   return (
     <div className="mb-6 grid gap-4 sm:grid-cols-3">
       <div className="flex flex-col rounded-2xl bg-white p-5 text-center shadow-sm">
-        <p className="text-sm font-semibold text-gray-900">{isWedding ? "Wedding style" : "Event style"}</p>
+        <p className="text-sm font-semibold text-gray-900">{isWedding ? t.weddingStyle : t.eventStyle}</p>
         <div className="mt-4 flex flex-1 items-center justify-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_12%,white)] text-[var(--dash-accent)]">
             <Sparkles className="h-5 w-5" />
@@ -40,18 +45,16 @@ export default function HubOverviewStrip({
           <span className="text-base font-semibold text-gray-900">{themeName}</span>
         </div>
         <Link href={`${base}/style`} className="dash-btn dash-btn-secondary mt-4 justify-self-center self-center">
-          Edit
+          {t.edit}
         </Link>
       </div>
 
       <div className="flex flex-col rounded-2xl bg-white p-5 text-center shadow-sm">
-        <p className="text-sm font-semibold text-gray-900">{isWedding ? "Wedding details" : "Event details"}</p>
+        <p className="text-sm font-semibold text-gray-900">{isWedding ? t.weddingDetails : t.eventDetails}</p>
         <div className="mt-4 flex-1">
           <p className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
             <ListChecks className="h-3.5 w-3.5 shrink-0 text-gray-400" />
-            {isWedding
-              ? "Fill in your wedding details to complete your invitation text"
-              : "Fill in your event details to complete your invitation text"}
+            {isWedding ? t.fillWeddingDetails : t.fillEventDetails}
           </p>
           <div className="mt-3 h-1.5 w-full rounded-full bg-gray-200">
             <div
@@ -59,15 +62,15 @@ export default function HubOverviewStrip({
               style={{ width: `${weddingDataPercent}%` }}
             />
           </div>
-          <p className="mt-1 text-xs text-gray-400">{weddingDataPercent}% complete</p>
+          <p className="mt-1 text-xs text-gray-400">{t.percentComplete(weddingDataPercent)}</p>
         </div>
         <Link href={`${base}/site#wedding-data-card`} className="dash-btn dash-btn-secondary mt-4 self-center">
-          Edit
+          {t.edit}
         </Link>
       </div>
 
       <div className="flex flex-col rounded-2xl bg-white p-5 text-center shadow-sm">
-        <p className="text-sm font-semibold text-gray-900">Your plan</p>
+        <p className="text-sm font-semibold text-gray-900">{t.yourPlan}</p>
         <div className="mt-4 flex-1">
           <p className="text-2xl font-semibold text-gray-900">
             {planName}
@@ -83,10 +86,10 @@ export default function HubOverviewStrip({
             state plainly that nothing is charged, in the same
             badge-at-the-button position rather than quiet footer text. */}
         <span className="mt-3 inline-flex items-center justify-center gap-1 self-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700">
-          🔓 No payment collected
+          {t.noPaymentCollected}
         </span>
         <Link href={`${base}/plan`} className="dash-btn dash-btn-secondary mt-3 self-center">
-          Change plan
+          {t.changePlan}
         </Link>
       </div>
     </div>

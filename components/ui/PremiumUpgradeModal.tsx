@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
 import { plans } from "@/lib/plans";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface PremiumUpgradeModalProps {
   open: boolean;
@@ -33,6 +35,8 @@ interface PremiumUpgradeModalProps {
    * since "watermark" means nothing outside the paper-download context. */
   continueLabel?: string;
   onContinueAnyway?: () => void;
+  /** Optional, defaults to English -- same pattern as the canvas sub-components. */
+  locale?: Locale;
 }
 
 /** dashboard-audit.md follow-up: previously a gated action (paper
@@ -57,7 +61,9 @@ export default function PremiumUpgradeModal({
   canContinueAnyway,
   continueLabel,
   onContinueAnyway,
+  locale,
 }: PremiumUpgradeModalProps) {
+  const t = getDictionary(locale ?? "en").dashboard.common.upgradeModal;
   const targetPlan = plans[targetPlanId ?? "premium"] ?? plans.premium;
 
   useEffect(() => {
@@ -82,24 +88,23 @@ export default function PremiumUpgradeModal({
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="text-lg" aria-hidden="true">🔒</span>
-            <h2 className="dash-h2 text-base text-[var(--dash-accent)]">{targetPlan.name} feature</h2>
+            <h2 className="dash-h2 text-base text-[var(--dash-accent)]">{t.featureSuffix(targetPlan.name)}</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
-            title="Close"
+            title={t.close}
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
         <p className="text-sm text-[var(--dash-text)]">
-          {action} {consequence ?? 'adds a "Made with Invimbo" watermark on your current plan.'}
+          {action} {consequence ?? t.defaultConsequence}
         </p>
         <p className="mt-2 text-sm text-[var(--dash-text-muted)]">
-          Upgrade to <span className="font-semibold text-[var(--dash-text)]">{targetPlan.name}</span>{" "}
-          (€{targetPlan.priceEur}) to {benefit ?? "remove it from every invitation and banquet card"}.
+          {t.upgradeSentence(targetPlan.name, targetPlan.priceEur, benefit ?? t.defaultBenefit)}
         </p>
 
         <div className="mt-5 flex flex-col gap-2">
@@ -107,7 +112,7 @@ export default function PremiumUpgradeModal({
             href={`/dashboard/${eventId}/plan`}
             className="dash-btn dash-btn-primary w-full justify-center"
           >
-            Upgrade to {targetPlan.name}
+            {t.upgradeButton(targetPlan.name)}
           </Link>
           {canContinueAnyway ? (
             <button
@@ -118,7 +123,7 @@ export default function PremiumUpgradeModal({
               }}
               className="dash-btn dash-btn-neutral w-full justify-center text-sm"
             >
-              {continueLabel ?? "Continue with watermark"}
+              {continueLabel ?? t.continueWithWatermark}
             </button>
           ) : (
             <button
@@ -126,7 +131,7 @@ export default function PremiumUpgradeModal({
               onClick={onClose}
               className="dash-btn dash-btn-neutral w-full justify-center text-sm"
             >
-              Not now
+              {t.notNow}
             </button>
           )}
         </div>

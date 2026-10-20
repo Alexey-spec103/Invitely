@@ -9,19 +9,24 @@ import { Plus } from "lucide-react";
 import { addBanquetTable } from "./banquet-actions";
 import TableCard, { type SeatedGuest } from "./TableCard";
 import type { Tables } from "@/lib/supabase/database.types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
-const tableFormSchema = z.object({
-  name: z.string().min(1, "Enter a table name"),
-  capacity: z.string(),
-});
+function buildTableFormSchema(errorEnterTableName: string) {
+  return z.object({
+    name: z.string().min(1, errorEnterTableName),
+    capacity: z.string(),
+  });
+}
 
-type TableFormValues = z.infer<typeof tableFormSchema>;
+type TableFormValues = z.infer<ReturnType<typeof buildTableFormSchema>>;
 
 interface BanquetTablesManagerProps {
   eventId: string;
   tables: Tables<"banquet_tables">[];
   guests: Tables<"guests">[];
   attendees: Tables<"guest_attendees">[];
+  locale?: Locale;
 }
 
 /** dashboard-audit.md B16: replaces the old bare add-table form + plain
@@ -34,7 +39,9 @@ export default function BanquetTablesManager({
   tables,
   guests,
   attendees,
+  locale = "en",
 }: BanquetTablesManagerProps) {
+  const t = getDictionary(locale).dashboard.guests.banquet;
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -45,7 +52,7 @@ export default function BanquetTablesManager({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<TableFormValues>({
-    resolver: zodResolver(tableFormSchema),
+    resolver: zodResolver(buildTableFormSchema(t.errorEnterTableName)),
     defaultValues: { name: "", capacity: "" },
   });
 
@@ -57,7 +64,7 @@ export default function BanquetTablesManager({
       setIsAdding(false);
       router.refresh();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to save");
+      setFormError(err instanceof Error ? err.message : t.genericError);
     }
   };
 
@@ -83,6 +90,7 @@ export default function BanquetTablesManager({
             table={table}
             seatedGuests={seatedGuestsByTable(table.id)}
             unassignedGuests={unassignedGuests}
+            locale={locale}
           />
         ))}
 
@@ -94,21 +102,21 @@ export default function BanquetTablesManager({
           >
             <div>
               <label htmlFor="tableName" className="block text-xs font-semibold text-gray-900">
-                Table name
+                {t.tableNameLabel}
               </label>
-              <input id="tableName" type="text" placeholder="Table 1" className="dash-input mt-1" autoFocus {...register("name")} />
+              <input id="tableName" type="text" placeholder={t.tableNamePlaceholder} className="dash-input mt-1" autoFocus {...register("name")} />
               {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
             </div>
             <div>
               <label htmlFor="tableCapacity" className="block text-xs font-semibold text-gray-900">
-                Seats <span className="font-normal text-gray-400">(optional)</span>
+                {t.seatsLabel} <span className="font-normal text-gray-400">{t.optional}</span>
               </label>
-              <input id="tableCapacity" type="number" min={1} placeholder="8" className="dash-input mt-1" {...register("capacity")} />
+              <input id="tableCapacity" type="number" min={1} placeholder={t.seatsPlaceholder} className="dash-input mt-1" {...register("capacity")} />
             </div>
             {formError && <p className="text-xs text-red-600">{formError}</p>}
             <div className="flex items-center gap-3">
               <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary text-sm">
-                {isSubmitting ? "Adding..." : "Add table"}
+                {isSubmitting ? t.adding : t.addTable}
               </button>
               <button
                 type="button"
@@ -119,7 +127,7 @@ export default function BanquetTablesManager({
                 }}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900"
               >
-                Cancel
+                {t.cancel}
               </button>
             </div>
           </form>
@@ -132,7 +140,7 @@ export default function BanquetTablesManager({
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
               <Plus className="h-5 w-5" aria-hidden="true" />
             </span>
-            <span className="text-sm font-medium">Add table</span>
+            <span className="text-sm font-medium">{t.addTable}</span>
           </button>
         )}
       </div>

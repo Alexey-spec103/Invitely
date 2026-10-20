@@ -15,13 +15,22 @@ import {
 import { BASIC_GATED_SECTION_TYPES } from "@/lib/plans";
 import SectionToggleSwitch from "./SectionToggleSwitch";
 import PremiumUpgradeModal from "@/components/ui/PremiumUpgradeModal";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
+
+// Hero is always-on with no toggle row (see below) and has no entry in
+// `t.labels`/`t.groups` -- this alias lets every piece of local state that
+// only ever holds a toggleable module's type say so in its own signature,
+// instead of the broader SectionType (hero included) that would otherwise
+// make every `t.labels[type]` lookup below a type error.
+type ModuleType = Exclude<SectionType, "hero">;
 
 // Every toggleable module, in the app's canonical order -- not derived from
 // the `sections` prop, because a module never toggled on yet for this event
 // has no entry in `site_config.sections` at all, and still needs a row here
 // (that row's toggle is how it gets its first entry, via `toggleSection`).
 const ALL_MODULE_TYPES = (Object.keys(SECTION_LABELS) as SectionType[])
-  .filter((type) => type !== "hero")
+  .filter((type): type is ModuleType => type !== "hero")
   .sort((a, b) => SECTION_ORDER[a] - SECTION_ORDER[b]);
 
 // dashboard-audit.md (impeccable critique, P1): 11 modules in one flat,
@@ -32,20 +41,20 @@ const ALL_MODULE_TYPES = (Object.keys(SECTION_LABELS) as SectionType[])
 // drag-and-drop itself (the saved order stays one flat list, same as
 // before -- a module can still be dragged into any position, a group label
 // just stops appearing above it once it's no longer first in its run).
-const MODULE_GROUPS: Partial<Record<SectionType, string>> = {
-  letter: "Core",
-  timeline: "Core",
-  map: "Core",
-  rsvp: "Core",
-  countdown: "Fun extras",
-  gift: "Fun extras",
-  dressCode: "Fun extras",
-  guestbook: "Fun extras",
-  video: "Fun extras",
-  banquetNavigator: "Logistics",
-  guestNotes: "Logistics",
-  faq: "Logistics",
-  travel: "Logistics",
+const MODULE_GROUP_KEYS: Partial<Record<SectionType, "core" | "funExtras" | "logistics">> = {
+  letter: "core",
+  timeline: "core",
+  map: "core",
+  rsvp: "core",
+  countdown: "funExtras",
+  gift: "funExtras",
+  dressCode: "funExtras",
+  guestbook: "funExtras",
+  video: "funExtras",
+  banquetNavigator: "logistics",
+  guestNotes: "logistics",
+  faq: "logistics",
+  travel: "logistics",
 };
 
 interface SectionModulesPanelProps {
@@ -64,6 +73,18 @@ interface SectionModulesPanelProps {
    * `sections[]` entry, but toggled from right here for the same on/off UX
    * as every other module. */
   envelopeRevealEnabled: boolean;
+  /** Host locale, not a pre-resolved `t` object -- this is "use client" and
+   * several of its strings (toggleAriaLabel, upgradeModal.action) are
+   * functions in the dictionary, which the server-component caller
+   * (page.tsx) can't pass as a prop across the server/client boundary
+   * (confirmed live: "Functions cannot be passed directly to Client
+   * Components"). Resolved internally via getDictionary(locale) instead,
+   * same fix as ModuleCard's own `locale` prop. See
+   * lib/i18n/translations/en.ts's `dashboard` namespace comment.
+   * Deliberately separate from `SECTION_LABELS` (shared with the
+   * guest-facing nav, out of scope here) so this panel's labels can be
+   * localized without touching that. */
+  locale: Locale;
 }
 
 // Decorative only -- weddingpost.ru's own module column has its own icon
@@ -85,14 +106,16 @@ export default function SectionModulesPanel({
   sections,
   hasBasicAccess,
   envelopeRevealEnabled,
+  locale,
 }: SectionModulesPanelProps) {
   const router = useRouter();
+  const t = getDictionary(locale).dashboard.site.modules;
   const byType = new Map(sections.map((section) => [section.type, section]));
   // Hero excluded -- always on, no row, no drag, order pinned to 0 by
   // reorderSections always receiving "hero" first (see handleDrop). Sorted
   // by each module's saved order where it has one, falling back to the
   // canonical order for a module never toggled on yet.
-  const [order, setOrder] = useState<SectionType[]>(
+  const [order, setOrder] = useState<ModuleType[]>(
     ALL_MODULE_TYPES.slice().sort(
       (a, b) => (byType.get(a)?.order ?? SECTION_ORDER[a]) - (byType.get(b)?.order ?? SECTION_ORDER[b])
     )
@@ -100,14 +123,14 @@ export default function SectionModulesPanel({
   const [enabled, setEnabled] = useState<Record<string, boolean>>(
     Object.fromEntries(ALL_MODULE_TYPES.map((type) => [type, byType.get(type)?.enabled ?? false]))
   );
-  const [draggingType, setDraggingType] = useState<SectionType | null>(null);
-  const [pendingToggle, setPendingToggle] = useState<SectionType | null>(null);
+  const [draggingType, setDraggingType] = useState<ModuleType | null>(null);
+  const [pendingToggle, setPendingToggle] = useState<ModuleType | null>(null);
   // dashboard-audit.md "fresh eyes" finding #2: the 🔒 Basic badge's real
   // meaning (toggle and preview freely -- only the published result is
   // gated) previously lived only in a native `title` tooltip, which needs a
   // sustained hover and doesn't exist at all on touch. Click-to-expand
   // works on both.
-  const [expandedGateInfo, setExpandedGateInfo] = useState<SectionType | null>(null);
+  const [expandedGateInfo, setExpandedGateInfo] = useState<ModuleType | null>(null);
   const [envelopeEnabled, setEnvelopeEnabled] = useState(envelopeRevealEnabled);
   const [envelopePending, setEnvelopePending] = useState(false);
   // impeccable critique P3: a failed toggle used to revert silently --
@@ -121,7 +144,7 @@ export default function SectionModulesPanel({
   // render for guests. Same "modal before the action, Continue anyway does
   // it" pattern Paper's PremiumUpgradeModal already uses for watermarked
   // downloads -- turning OFF never routes through this.
-  const [pendingGateModal, setPendingGateModal] = useState<SectionType | null>(null);
+  const [pendingGateModal, setPendingGateModal] = useState<ModuleType | null>(null);
 
   const isGatedType = (type: SectionType) =>
     !hasBasicAccess && (BASIC_GATED_SECTION_TYPES as readonly string[]).includes(type);
@@ -136,13 +159,13 @@ export default function SectionModulesPanel({
       router.refresh();
     } catch (err) {
       setEnvelopeEnabled(!next);
-      setToggleError(err instanceof Error ? err.message : "Failed to save -- please try again.");
+      setToggleError(err instanceof Error ? err.message : t.failedToSave);
     } finally {
       setEnvelopePending(false);
     }
   };
 
-  const handleToggle = async (type: SectionType, next: boolean) => {
+  const handleToggle = async (type: ModuleType, next: boolean) => {
     setToggleError(null);
     setEnabled((prev) => ({ ...prev, [type]: next }));
     setPendingToggle(type);
@@ -152,13 +175,13 @@ export default function SectionModulesPanel({
       router.refresh();
     } catch (err) {
       setEnabled((prev) => ({ ...prev, [type]: !next }));
-      setToggleError(err instanceof Error ? err.message : "Failed to save -- please try again.");
+      setToggleError(err instanceof Error ? err.message : t.failedToSave);
     } finally {
       setPendingToggle(null);
     }
   };
 
-  const requestToggle = (type: SectionType, next: boolean) => {
+  const requestToggle = (type: ModuleType, next: boolean) => {
     if (next && isGatedType(type)) {
       setPendingGateModal(type);
       return;
@@ -166,7 +189,7 @@ export default function SectionModulesPanel({
     handleToggle(type, next);
   };
 
-  const handleDrop = async (targetType: SectionType) => {
+  const handleDrop = async (targetType: ModuleType) => {
     if (!draggingType || draggingType === targetType) {
       setDraggingType(null);
       return;
@@ -194,23 +217,21 @@ export default function SectionModulesPanel({
       router.refresh();
     } catch (err) {
       setOrder(previous);
-      setToggleError(err instanceof Error ? err.message : "Failed to save -- please try again.");
+      setToggleError(err instanceof Error ? err.message : t.failedToSave);
     }
   };
 
   return (
     <div id="site-modules-panel" className="mb-8 rounded-[10px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
-      <h2 className="dash-h2 text-sm text-[var(--dash-accent)]">Modules</h2>
-      <p className="mt-1 text-xs text-[var(--dash-text-muted)]">
-        Guests won&apos;t see a module until it&apos;s turned on here - drag to change the order they appear in on your public site.
-      </p>
+      <h2 className="dash-h2 text-sm text-[var(--dash-accent)]">{t.heading}</h2>
+      <p className="mt-1 text-xs text-[var(--dash-text-muted)]">{t.description}</p>
       {toggleError && <p className="mt-1 text-sm text-red-400">{toggleError}</p>}
       <ul className="mt-3 space-y-1">
         {order.map((type, index) => {
           const isGated = isGatedType(type);
           const ModuleIcon = SECTION_ICONS[type];
-          const group = MODULE_GROUPS[type];
-          const showGroupLabel = group && group !== MODULE_GROUPS[order[index - 1]];
+          const groupKey = MODULE_GROUP_KEYS[type];
+          const showGroupLabel = groupKey && groupKey !== MODULE_GROUP_KEYS[order[index - 1]];
           return (
           <Fragment key={type}>
           {showGroupLabel && (
@@ -220,7 +241,7 @@ export default function SectionModulesPanel({
                 index === 0 ? "pb-1" : "pb-1 pt-3"
               }`}
             >
-              {group}
+              {t.groups[groupKey]}
             </li>
           )}
           <li
@@ -241,7 +262,7 @@ export default function SectionModulesPanel({
                 {ModuleIcon && (
                   <ModuleIcon className="h-3.5 w-3.5 shrink-0 text-[var(--dash-text-muted)]" aria-hidden="true" />
                 )}
-                {SECTION_LABELS[type]}
+                {t.labels[type]}
                 {isGated && (
                   <button
                     type="button"
@@ -250,7 +271,7 @@ export default function SectionModulesPanel({
                     className="flex items-center gap-0.5 rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--dash-accent)]"
                   >
                     <Lock className="h-2.5 w-2.5" aria-hidden="true" />
-                    Basic
+                    {t.basicBadge}
                   </button>
                 )}
               </span>
@@ -258,7 +279,7 @@ export default function SectionModulesPanel({
                 checked={enabled[type]}
                 onChange={(next) => requestToggle(type, next)}
                 disabled={pendingToggle === type}
-                label={`Turn ${SECTION_LABELS[type]} ${enabled[type] ? "off" : "on"}`}
+                label={t.toggleAriaLabel(t.labels[type], !enabled[type])}
               />
             </div>
             {/* UX audit (2026-10-12): this used to only appear after clicking
@@ -271,9 +292,7 @@ export default function SectionModulesPanel({
                 explanation before turning it on. */}
             {isGated && (enabled[type] || expandedGateInfo === type) && (
               <p className="border-t border-[var(--dash-border)] px-3 py-2 text-xs text-[var(--dash-text-muted)]">
-                {enabled[type]
-                  ? "Visible to you here, but it won't show on your published site until you're on the Basic plan or above."
-                  : "Turn this on and preview it freely - it only shows on your published site once you're on the Basic plan or above."}
+                {enabled[type] ? t.gatedOnButHidden : t.gatedPreviewOnly}
               </p>
             )}
             {/* Direct feedback: turning this on doesn't do anything by
@@ -286,7 +305,7 @@ export default function SectionModulesPanel({
                 href={`/dashboard/${eventId}/guests`}
                 className="flex items-center gap-1 border-t border-[var(--dash-border)] px-3 py-2 text-xs font-medium text-[var(--dash-accent)] hover:text-[var(--dash-accent-hover)]"
               >
-                Add &amp; seat your guests on the Guests tab
+                {t.addSeatGuestsLink}
                 <ArrowRight className="h-3 w-3 shrink-0" aria-hidden="true" />
               </Link>
             )}
@@ -304,33 +323,32 @@ export default function SectionModulesPanel({
         <div className="flex items-center justify-between px-3 py-1.5 text-sm text-[var(--dash-text)]">
           <span className="flex items-center gap-2">
             <MailOpen className="h-3.5 w-3.5 shrink-0 text-[var(--dash-text-muted)]" aria-hidden="true" />
-            Envelope reveal
+            {t.envelopeReveal.label}
           </span>
           <SectionToggleSwitch
             checked={envelopeEnabled}
             onChange={handleEnvelopeToggle}
             disabled={envelopePending}
-            label={`Turn envelope reveal ${envelopeEnabled ? "off" : "on"}`}
+            label={t.envelopeReveal.toggleAriaLabel(!envelopeEnabled)}
           />
         </div>
-        <p className="px-3 pb-1 text-xs text-[var(--dash-text-muted)]">
-          A brief animated envelope guests tap open before seeing your site.
-        </p>
+        <p className="px-3 pb-1 text-xs text-[var(--dash-text-muted)]">{t.envelopeReveal.description}</p>
       </div>
 
       <PremiumUpgradeModal
         open={pendingGateModal !== null}
         onClose={() => setPendingGateModal(null)}
         eventId={eventId}
-        action={pendingGateModal ? `Turning on ${SECTION_LABELS[pendingGateModal]}` : ""}
+        action={pendingGateModal ? t.upgradeModal.action(t.labels[pendingGateModal]) : ""}
         targetPlanId="basic"
-        consequence="won't show on your published site until you upgrade."
-        benefit="show it (and unlock the rest of Basic) on your site"
+        consequence={t.upgradeModal.consequence}
+        benefit={t.upgradeModal.benefit}
         canContinueAnyway
-        continueLabel="Continue (preview only)"
+        continueLabel={t.upgradeModal.continueLabel}
         onContinueAnyway={() => {
           if (pendingGateModal) handleToggle(pendingGateModal, true);
         }}
+        locale={locale}
       />
     </div>
   );

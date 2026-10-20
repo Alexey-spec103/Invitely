@@ -3,6 +3,14 @@
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { ONBOARDING_DRAFT_KEY } from "@/app/onboarding/OnboardingWizard";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
+
+interface NewEventButtonProps {
+  /** Optional, defaulting to English -- see DashboardNav's matching prop
+   * comment for why. */
+  locale?: Locale;
+}
 
 /** Direct product-owner feedback (2026-10-17): "+ New event" used to be one
  * plain <option> buried inside EventSwitcher's own dropdown -- easy to miss,
@@ -23,8 +31,9 @@ import { ONBOARDING_DRAFT_KEY } from "@/app/onboarding/OnboardingWizard";
  * (arriving some other way, e.g. a bookmarked /onboarding link) still gets
  * their progress back exactly as before -- this button is the only thing
  * that proactively clears it. */
-export default function NewEventButton() {
+export default function NewEventButton({ locale = "en" }: NewEventButtonProps) {
   const router = useRouter();
+  const t = getDictionary(locale).dashboard.shell;
 
   const handleClick = () => {
     try {
@@ -43,7 +52,7 @@ export default function NewEventButton() {
       className="flex h-9 items-center gap-1.5 rounded-full bg-[var(--dash-accent)] px-4 text-sm font-semibold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
     >
       <Plus className="h-[16px] w-[16px] shrink-0" strokeWidth={2.5} />
-      <span className="whitespace-nowrap">Create another event</span>
+      <span className="whitespace-nowrap">{t.newEvent}</span>
     </button>
   );
 }

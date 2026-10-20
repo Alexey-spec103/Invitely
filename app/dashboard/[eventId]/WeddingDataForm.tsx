@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,29 +10,35 @@ import { useAutosave } from "@/lib/useAutosave";
 import AutosaveStatus from "@/components/ui/AutosaveStatus";
 import { getLocalizedEventType } from "@/lib/eventTypesLocalized";
 import type { Locale } from "@/lib/i18n/locales";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Dictionary } from "@/lib/i18n/dictionary";
 
-const weddingDataFormSchema = z.object({
-  name1: z.string().min(1, "Enter a name"),
-  name2: z.string(),
-  eventDate: z.string().min(1, "Enter a date"),
-  venueName: z.string(),
-  venueCity: z.string(),
-  venueAddress: z.string(),
-});
+function buildWeddingDataFormSchema(t: Dictionary["dashboard"]["site"]["weddingData"]) {
+  return z.object({
+    name1: z.string().min(1, t.errorEnterName),
+    name2: z.string(),
+    eventDate: z.string().min(1, t.errorEnterDate),
+    venueName: z.string(),
+    venueCity: z.string(),
+    venueAddress: z.string(),
+  });
+}
 
-type WeddingDataFormValues = z.infer<typeof weddingDataFormSchema>;
+type WeddingDataFormValues = z.infer<ReturnType<typeof buildWeddingDataFormSchema>>;
 
 interface WeddingDataFormProps {
   eventId: string;
   eventType: string;
   defaultValues: WeddingDataFormValues;
-  /** Only used to localize `namePrompts` (e.g. "First partner's name") below
-   * -- every other label on this form (Venue name, City, Address, the
-   * validation messages) stays English on purpose, same as the rest of the
-   * dashboard's host-facing chrome. Resolved the same way as every
-   * guest-facing page, via resolveGuestLocale() in the server-component
-   * parent -- there's no separate host-account language preference to read
-   * instead. */
+  /** Used both to localize `namePrompts` (e.g. "First partner's name") below
+   * AND every other label on this form (resolved internally via
+   * getDictionary -- this is "use client" and several of this form's
+   * strings are functions in the dictionary, which the server-component
+   * parent can't pass as a prop across the server/client boundary;
+   * confirmed live: "Functions cannot be passed directly to Client
+   * Components"). Resolved the same way as every guest-facing page, via
+   * resolveGuestLocale() in the server-component parent -- there's no
+   * separate host-account language preference to read instead. */
   locale: Locale;
 }
 
@@ -42,8 +48,10 @@ interface WeddingDataFormProps {
  * the Hero section's own form. */
 export default function WeddingDataForm({ eventId, eventType, defaultValues, locale }: WeddingDataFormProps) {
   const router = useRouter();
+  const t = getDictionary(locale).dashboard.site.weddingData;
   const type = getLocalizedEventType(eventType, locale);
   const isCoupleMode = type.namesMode === "couple";
+  const weddingDataFormSchema = useMemo(() => buildWeddingDataFormSchema(t), [t]);
 
   const {
     register,
@@ -90,7 +98,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
   return (
     <form onSubmit={(e) => e.preventDefault()} className="mt-4 space-y-4 rounded-md border border-gray-200 bg-white p-4" noValidate>
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-900">{type.label} data</p>
+        <p className="text-sm font-medium text-gray-900">{t.cardTitle(type.label)}</p>
         <AutosaveStatus state={state} error={error} />
       </div>
 
@@ -110,9 +118,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
             field -- see OnboardingWizard.tsx's comment on its matching
             preview line for why this exists. */}
         {!isCoupleMode && typeof values.name1 === "string" && values.name1.trim() && (
-          <p className="mt-1 text-sm text-gray-500">
-            Your site will be titled "{type.titleTemplate([values.name1.trim()])}"
-          </p>
+          <p className="mt-1 text-sm text-gray-500">{t.titleWillBe(type.titleTemplate([values.name1.trim()]))}</p>
         )}
       </div>
 
@@ -133,7 +139,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
 
       <div>
         <label htmlFor="wd-eventDate" className="block text-sm font-medium text-gray-700">
-          📅 {type.label} date
+          📅 {t.dateLabel(type.label)}
         </label>
         <input
           id="wd-eventDate"
@@ -147,12 +153,12 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
 
       <div>
         <label htmlFor="wd-venueName" className="block text-sm font-medium text-gray-700">
-          📍 Venue name
+          📍 {t.venueName}
         </label>
         <input
           id="wd-venueName"
           type="text"
-          placeholder="Name of the venue, restaurant, or hall..."
+          placeholder={t.venueNamePlaceholder}
           defaultValue={defaultValues.venueName}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
           {...register("venueName")}
@@ -162,7 +168,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label htmlFor="wd-venueCity" className="block text-sm font-medium text-gray-700">
-            🏙️ City
+            🏙️ {t.city}
           </label>
           <input
             id="wd-venueCity"
@@ -174,7 +180,7 @@ export default function WeddingDataForm({ eventId, eventType, defaultValues, loc
         </div>
         <div>
           <label htmlFor="wd-venueAddress" className="block text-sm font-medium text-gray-700">
-            🗺️ Address
+            🗺️ {t.address}
           </label>
           <input
             id="wd-venueAddress"
