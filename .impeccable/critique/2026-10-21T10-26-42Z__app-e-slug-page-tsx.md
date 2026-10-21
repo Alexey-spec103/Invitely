@@ -98,3 +98,22 @@ The `/preview/*` routes used for live inspection only render Hero — Letter, Ti
 - If RSVP is the one moment every guest must act on, why is it the only section still using one undifferentiated decoration — what would it look like with the same bespoke-per-category treatment Hero already gets?
 - Given invites are opened on phones via WhatsApp/Telegram by the codebase's own admission, should any theme's mobile Hero ever lead with an unbranded photo?
 - Should there be a standing check — automated or just a habit — that flags a theme's demo photo as "doesn't read as a person/couple/wedding scene" before it ships?
+
+## Addendum: Full Journey Live-Verification Pass (2026-10-21)
+
+Closes the [P3] coverage gap above. Ran the real guest journey end-to-end on a published test event (`romantic-rosewater`, `/e/emma-and-oliver`) — envelope reveal through RSVP submission — rather than the Hero-only `/preview` route. Test data deleted after.
+
+**CONFIRMED**
+- **SiteHeader menu dismiss-on-scroll/Escape** (heuristic 3). Tested at page-top and again after scrolling ~15–25 ticks down the page — menu opens and closes correctly both times, no stuck-open state.
+- **RSVP recall** (heuristic 6, "What's Working"). Submitted an RSVP, reloaded the page: form was replaced with "You already said yes – 1 guest." + "Edit your response," never re-shown blank. Matches the source-derived claim exactly.
+- **Editable Blocks jump-list** (dashboard content tool, not in original scope but exercised to seed content). Clicking a field row in the list scrolls the live preview to and focuses that exact field — works as designed.
+- **EnvelopeReveal, Letter, Timeline, Map, Guestbook** all render correctly in the real journey — Map in particular correctly geocoded "221 Baker Street, London" to an accurate pin with a working "Open in Maps" link.
+
+**CONTRADICTED / SOFTENED**
+- **[P2] RSVP's "generic decoration" finding.** Seen live and zoomed in, the RSVP card's corner flourishes are thin line-art tinted to the theme's accent color and visually rhyme with the Hero's wreath motif — they read as deliberately understated, not neglected. The underlying fact (one shared SVG across categories, confirmed in source) still stands, but "the least bespoke-looking part of the experience" overstates the live impression. Recommend downgrading this from P2 to P3/cosmetic-polish.
+
+**NEW FINDING**
+- **[Positive, not a defect] RSVP message doubles as the Guestbook.** The "Message (optional)" field on the RSVP form is the same data that populates the public Guestbook wall — submitting one immediately produced a guestbook entry ("So excited for you both! Can't wait to celebrate." — Priya Raman) with no separate guestbook form to fill out. This is a genuinely good piece of design (one input, two payoffs) that neither the Hero-only critique nor its source reading surfaced, since it only becomes visible by completing the real flow.
+- **Visibility of system status on RSVP submit (heuristic 1, previously "source, not seen live")**: the submit→confirmation transition ("You're on the list! We can't wait to celebrate with you. 🎉") was fast enough that no loading/pending state was visually caught in this pass. Not evidence of a missing affordance — just unresolved; a slower network condition would be needed to confirm one way or the other.
+
+**Updated Overall Impression**: the Hero-only critique's verdict holds and extends cleanly downstream — nothing in the full journey reads as a drop-off in craft after Hero. If anything, the RSVP→Guestbook integration is a positive the original scope-limited pass couldn't have found. The one revision: soften [P2] RSVP decoration from "generic/neglected" to "subtle but intentional."
