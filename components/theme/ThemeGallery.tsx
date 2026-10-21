@@ -192,6 +192,28 @@ function useDragPan(
   const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
+    if (!drag.dragged) {
+      // No pointermove ever crossed the threshold -- can happen when the
+      // browser (or a very fast real flick) never dispatches an
+      // intermediate move event between pointerdown and pointerup, so
+      // onPointerMove's own threshold check above never got a chance to
+      // run. Confirmed live: a synthetic drag landing pointerup far from
+      // pointerdown with zero moves in between fell through to the card's
+      // onClick and silently selected the theme instead of panning it.
+      // Falling back to total displacement here catches that case too.
+      const deltaY = event.clientY - drag.startY;
+      if (Math.abs(deltaY) >= 4) {
+        onDragStart();
+        const wrap = wrapRef.current;
+        if (wrap && typeof window !== "undefined") {
+          const scale = wrap.clientWidth / 375;
+          if (scale > 0) {
+            const deltaVh = (deltaY * 100) / (scale * window.innerHeight);
+            setPan(Math.min(restVh, Math.max(deepVh, drag.startPan + deltaVh)));
+          }
+        }
+      }
+    }
     dragRef.current = null;
     setDragging(false);
   };
@@ -665,6 +687,31 @@ export function ThemeGalleryCard({
   const desktopDrag = useDragPan(desktopWrapRef, DESKTOP_REST_VH[anchor], DEEP_PAN_VH, markDragged);
   const phoneDrag = useDragPan(phoneWrapRef, PHONE_REST_VH[anchor], DEEP_PAN_VH, markDragged);
 
+  // Second, independent guard against the same "drag mis-fires as a click"
+  // problem -- confirmed live: a fast/synthetic drag can deliver pointerdown
+  // and pointerup with a different `pointerId` on each (observed from
+  // automated drag input; plausibly also a real trackpad/stylus in some
+  // browsers), which makes useDragPan's own pointerId-matched handlers
+  // silently no-op on pointerup, so `justDraggedRef` never gets set even
+  // though the pointer travelled well past the drag threshold. This capture-
+  // phase listener records a raw down-position independent of pointerId or
+  // which inner mockup was touched, so the click handler below can compare
+  // against it directly as a fallback -- belt-and-suspenders with
+  // `justDraggedRef`, not a replacement for it (that one still drives the
+  // pan itself).
+  const cardPointerDownRef = useRef<{ x: number; y: number } | null>(null);
+  const onCardPointerDownCapture = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    cardPointerDownRef.current = { x: event.clientX, y: event.clientY };
+  };
+  const wasRealClick = (event: MouseEvent<HTMLButtonElement>) => {
+    const down = cardPointerDownRef.current;
+    cardPointerDownRef.current = null;
+    if (!down) return true;
+    const dx = event.clientX - down.x;
+    const dy = event.clientY - down.y;
+    return Math.sqrt(dx * dx + dy * dy) < 4;
+  };
+
   // A static snapshot, not a live tick: this is a decorative demo timer, not
   // a real countdown, and up to ~24 cards on screen each running their own
   // setInterval(1000ms) re-render (as the real Countdown section's
@@ -725,11 +772,11 @@ export function ThemeGalleryCard({
     <button
       type="button"
       disabled={disabled}
-      onClick={() => {
-        if (justDraggedRef.current) {
-          justDraggedRef.current = false;
-          return;
-        }
+      onPointerDownCapture={onCardPointerDownCapture}
+      onClick={(event) => {
+        const draggedFlag = justDraggedRef.current;
+        justDraggedRef.current = false;
+        if (draggedFlag || !wasRealClick(event)) return;
         if (selected && onCustomize) onCustomize();
         else onSelect(theme.id);
       }}

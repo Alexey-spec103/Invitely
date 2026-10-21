@@ -1,6 +1,21 @@
 .frameOuter {
   container-type: inline-size;
   position: relative;
+  /* Without its own stacking context, the negative z-index BackgroundLayer
+     child below (used for any swatch/gradient/texture fill, not a plain
+     solid color) escapes to the nearest ANCESTOR stacking context instead
+     of staying contained here -- confirmed live: a themed invitation's
+     custom fill color rendered as near-black on the Paper tab's closed
+     preview card (reading as "my background didn't save"), while the same
+     frame data rendered correctly inside the open canvas editor, whose own
+     wrapper happens to get a stacking context for free from its `transform:
+     scale(...)` (any transform other than none always creates one). This
+     renderer has no such transform on frameOuter itself (the scaling lives
+     on .frameInner below), so it needs an explicit stacking context of its
+     own -- `isolation: isolate` is the purpose-built property for exactly
+     this, with no side effects on z-index comparisons the way a bare
+     `z-index: 0` would have. */
+  isolation: isolate;
   overflow: hidden;
   width: 100%;
 }
