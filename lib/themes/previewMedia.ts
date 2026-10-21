@@ -126,7 +126,7 @@ const THEME_PREVIEW_PHOTOS: Record<string, string> = {
   "vintage-mint-parlor": "https://images.unsplash.com/photo-1538645731800-4640c639bba7",
   "vintage-postcard": "https://images.unsplash.com/photo-1520299607509-dcd935f9a839",
   "vintage-powder-blue": "https://images.unsplash.com/photo-1706790608211-4c03fd4f4d33",
-  "vintage-rosewood": "https://images.unsplash.com/photo-1763030861291-b7e65ae261c9",
+  "vintage-rosewood": "https://images.unsplash.com/photo-1788684762230-5a7fe4af9b35",
   "vintage-sepia-lace": "https://images.unsplash.com/photo-1648717008621-ee7e6acfe270",
   "vintage-tobacco-leaf": "https://images.unsplash.com/photo-1532153259564-a5f24f261f51",
 
