@@ -833,7 +833,7 @@ export const uk: Dictionary = {
         season: "Сезон",
         allYear: "Цілий рік",
         favoriteTitle: "Наші улюблені стилі",
-        favoriteSubtext: "Відібрані вручну з кожної категорії - наведіть курсор, щоб побачити перегляд, або оберіть конкретний стиль зліва.",
+        favoriteSubtext: "Відібрані вручну з кожної категорії - торкніться стилю, щоб побачити перегляд, або скористайтеся фільтрами, щоб звузити вибір.",
         resultsCount: (count) => {
           const mod10 = count % 10;
           const mod100 = count % 100;
@@ -841,7 +841,7 @@ export const uk: Dictionary = {
           if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return `${count} стилі`;
           return `${count} стилів`;
         },
-        hoverHint: "Наведіть курсор на стиль, щоб побачити перегляд",
+        hoverHint: "Перегляньте будь-який стиль перед вибором",
         noMatch: "Відповідних стилів не знайдено - спробуйте скинути фільтр або пошук.",
         showMore: (remaining) => `Показати ще (${remaining})`,
         categories: {

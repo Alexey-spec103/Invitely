@@ -1907,9 +1907,9 @@ export const en: Dictionary = {
         season: "Season",
         allYear: "All year",
         favoriteTitle: "Our favorite styles",
-        favoriteSubtext: "Hand-picked across every category - hover one to preview it, or pick a specific style on the left.",
+        favoriteSubtext: "Hand-picked across every category - tap any style to preview it, or use the filters to narrow it down.",
         resultsCount: (count) => `${count} ${count === 1 ? "style" : "styles"}`,
-        hoverHint: "Hover a style to preview it",
+        hoverHint: "Preview any style before choosing",
         noMatch: "No styles match - try clearing a filter or search.",
         showMore: (remaining) => `Show more styles (${remaining} more)`,
         categories: {

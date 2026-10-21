@@ -814,9 +814,9 @@ export const es: Dictionary = {
         season: "Temporada",
         allYear: "Todo el año",
         favoriteTitle: "Nuestros estilos favoritos",
-        favoriteSubtext: "Seleccionados a mano de cada categoría - pasa el cursor sobre uno para previsualizarlo, o elige un estilo específico a la izquierda.",
+        favoriteSubtext: "Seleccionados a mano de cada categoría - toca cualquier estilo para previsualizarlo, o usa los filtros para acotar la búsqueda.",
         resultsCount: (count) => `${count} ${count === 1 ? "estilo" : "estilos"}`,
-        hoverHint: "Pasa el cursor sobre un estilo para previsualizarlo",
+        hoverHint: "Previsualiza cualquier estilo antes de elegir",
         noMatch: "Ningún estilo coincide - prueba a quitar un filtro o la búsqueda.",
         showMore: (remaining) => `Ver más estilos (${remaining} más)`,
         categories: {

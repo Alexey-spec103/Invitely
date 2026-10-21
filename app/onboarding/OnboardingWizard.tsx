@@ -607,7 +607,23 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
       </form>
 
       {!hidesPreviewPanel && (
-        <div className="relative h-[420px] overflow-hidden rounded-xl border border-gray-200 bg-white">
+        // onboarding-wizard-design audit (2026-10-21): on mobile the grid
+        // collapses to one column, and this panel's natural DOM position
+        // (after the form, which has its own sticky bottom-0 footer) put it
+        // below a Next button that's always in view without scrolling --
+        // confirmed live at 390px that a user can type a name and tap Next
+        // having never scrolled far enough to see the live preview update at
+        // all. This is the "names" step specifically, the one place in the
+        // whole flow that shows the fully-composed preview (the step after
+        // this one hides the panel entirely in favor of per-card theme
+        // previews) -- the single moment a separate usability pass already
+        // flagged as the best thing in the product was invisible to most
+        // visitors, since invites are predominantly opened/filled on phones.
+        // `order-first` only matters inside the mobile single-column stack;
+        // `sm:order-none` restores normal (post-form) DOM order the instant
+        // the grid goes two-column, where the panel already sits beside the
+        // form with no scrolling required either way.
+        <div className="order-first sm:order-none relative h-[420px] overflow-hidden rounded-xl border border-gray-200 bg-white">
           <span className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500 shadow-sm">
             {t.previewBadge}
           </span>

@@ -815,9 +815,9 @@ export const fr: Dictionary = {
         season: "Saison",
         allYear: "Toute l'année",
         favoriteTitle: "Nos styles préférés",
-        favoriteSubtext: "Sélectionnés à la main dans chaque catégorie - survolez-en un pour l'aperçu, ou choisissez un style précis à gauche.",
+        favoriteSubtext: "Sélectionnés à la main dans chaque catégorie - touchez un style pour l'aperçu, ou utilisez les filtres pour affiner votre choix.",
         resultsCount: (count) => `${count} ${count === 1 ? "style" : "styles"}`,
-        hoverHint: "Survolez un style pour l'aperçu",
+        hoverHint: "Prévisualisez n'importe quel style avant de choisir",
         noMatch: "Aucun style ne correspond - essayez de retirer un filtre ou la recherche.",
         showMore: (remaining) => `Voir plus de styles (${remaining} de plus)`,
         categories: {

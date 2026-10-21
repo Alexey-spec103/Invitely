@@ -824,7 +824,7 @@ export const pl: Dictionary = {
         season: "Pora roku",
         allYear: "Cały rok",
         favoriteTitle: "Nasze ulubione style",
-        favoriteSubtext: "Wybrane ręcznie z każdej kategorii - najedź na jeden, aby zobaczyć podgląd, albo wybierz konkretny styl po lewej.",
+        favoriteSubtext: "Wybrane ręcznie z każdej kategorii - dotknij stylu, aby zobaczyć podgląd, albo użyj filtrów, aby zawęzić wybór.",
         resultsCount: (count) => {
           const mod10 = count % 10;
           const mod100 = count % 100;
@@ -832,7 +832,7 @@ export const pl: Dictionary = {
           if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return `${count} style`;
           return `${count} stylów`;
         },
-        hoverHint: "Najedź na styl, aby zobaczyć podgląd",
+        hoverHint: "Zobacz podgląd każdego stylu przed wyborem",
         noMatch: "Żaden styl nie pasuje - spróbuj usunąć filtr lub wyszukiwanie.",
         showMore: (remaining) => `Pokaż więcej stylów (jeszcze ${remaining})`,
         categories: {

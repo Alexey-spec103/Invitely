@@ -814,9 +814,9 @@ export const de: Dictionary = {
         season: "Saison",
         allYear: "Ganzjährig",
         favoriteTitle: "Unsere Lieblingsstile",
-        favoriteSubtext: "Handverlesen aus jeder Kategorie - fahre über einen, um ihn in der Vorschau zu sehen, oder wähle links einen bestimmten Stil.",
+        favoriteSubtext: "Handverlesen aus jeder Kategorie - tippe auf einen Stil, um ihn in der Vorschau zu sehen, oder nutze die Filter, um die Auswahl einzugrenzen.",
         resultsCount: (count) => `${count} ${count === 1 ? "Stil" : "Stile"}`,
-        hoverHint: "Fahre über einen Stil, um ihn in der Vorschau zu sehen",
+        hoverHint: "Sieh dir jeden Stil in der Vorschau an, bevor du wählst",
         noMatch: "Keine Stile gefunden - versuche, einen Filter oder die Suche zurückzusetzen.",
         showMore: (remaining) => `Weitere Stile anzeigen (${remaining} mehr)`,
         categories: {
