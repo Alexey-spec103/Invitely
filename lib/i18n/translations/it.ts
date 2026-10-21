@@ -34,6 +34,7 @@ export const it: Dictionary = {
     selectPlaceholder: "Seleziona...",
     sendRsvp: "Invia conferma",
     sending: "Invio in corso...",
+    takingLonger: "Ci sta mettendo più tempo del previsto - attendi un momento, o riprova tra poco.",
     missingFieldsError: "Inserisci il tuo nome e facci sapere se potrai venire.",
     genericError: "Qualcosa è andato storto",
     successAttending: "Sei sulla lista! Non vediamo l'ora di festeggiare con te. \u{1F389}",
@@ -279,7 +280,7 @@ export const it: Dictionary = {
       whatThisAdds: "Cosa aggiunge",
       badgeFree: "Sempre gratis",
       badgePremium: "Rimuove la filigrana",
-      freeCaveat: "Mostra un piccolo badge \"Made with Invimbo\" sul tuo sito pubblicato, e una filigrana sulla carta stampata.",
+      freeCaveat: "Mostra una filigrana \"Invimbo\" ripetuta sul tuo sito pubblicato, e una filigrana sulla carta stampata.",
       oneTime: "Pagamento unico, non un abbonamento",
       exampleCaption: "Un design Invimbo reale - il tuo può essere così.",
       valueAnchor: "Gli inviti stampati e spediti di solito costano di più per ospite. Qui una tariffa unica copre tutta la tua lista invitati, per quanti siano.",
@@ -295,7 +296,7 @@ export const it: Dictionary = {
         {
           question: "È davvero gratis, o c'è un trucco?",
           answer:
-            "Il costruttore stesso è gratuito e senza limiti di tempo - progetta tutto il tuo sito, invita gli ospiti e segui gli RSVP senza costi. L'unico compromesso del piano gratuito è un piccolo badge \"Made with Invimbo\" sul tuo sito live e una filigrana sulla carta stampata, mostrati subito, non dopo che hai già costruito qualcosa.",
+            "Il costruttore stesso è gratuito e senza limiti di tempo - progetta tutto il tuo sito, invita gli ospiti e segui gli RSVP senza costi. L'unico compromesso del piano gratuito è una filigrana \"Invimbo\" ripetuta sul tuo sito live e sulla carta stampata, mostrata subito, non dopo che hai già costruito qualcosa.",
         },
         {
           question: "È un abbonamento?",
@@ -618,6 +619,8 @@ export const it: Dictionary = {
         },
         toggleAriaLabel: (label, turningOn) => `${turningOn ? "Attiva" : "Disattiva"} ${label}`,
         basicBadge: "Basic",
+        emptyBadge: "Vuoto",
+        emptyBadgeHint: "È attivo, ma non c'è ancora nulla - gli ospiti non lo vedranno finché non aggiungi dei contenuti.",
         gatedOnButHidden:
           "Visibile solo a te qui - non comparirà sul tuo sito pubblicato finché non avrai il piano Basic o superiore.",
         gatedPreviewOnly:
@@ -1054,6 +1057,10 @@ export const it: Dictionary = {
         publish: "Pubblica il sito",
         visibleNote: "Il tuo sito è visibile agli ospiti tramite il link",
         hiddenNote: "Gli ospiti non possono vedere il tuo sito finché non lo pubblichi",
+        accountModalTitle: "Crea un account gratuito per pubblicare",
+        accountModalBody:
+          "Per pubblicare serve un account vero, non solo questa sessione del browser - altrimenti cancellare i cookie o cambiare dispositivo potrebbe farti perdere l'accesso al tuo stesso sito live. Creane uno ora e pubblichiamo subito dopo.",
+        confirmEmailToPublish: "Conferma il tuo account via email, poi torna qui e pubblica.",
       },
       newEvent: "Crea un altro evento",
       anonBanner: {

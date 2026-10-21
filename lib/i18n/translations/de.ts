@@ -34,6 +34,7 @@ export const de: Dictionary = {
     selectPlaceholder: "Auswählen...",
     sendRsvp: "Zusage senden",
     sending: "Wird gesendet...",
+    takingLonger: "Das dauert länger als erwartet - einen Moment noch, oder versuche es gleich noch einmal.",
     missingFieldsError: "Bitte gib deinen Namen ein und lass uns wissen, ob du kommen kannst.",
     genericError: "Etwas ist schiefgelaufen",
     successAttending: "Du stehst auf der Liste! Wir können es kaum erwarten, mit dir zu feiern. \u{1F389}",
@@ -279,7 +280,7 @@ export const de: Dictionary = {
       whatThisAdds: "Was das hinzufügt",
       badgeFree: "Immer kostenlos",
       badgePremium: "Entfernt das Wasserzeichen",
-      freeCaveat: "Zeigt ein kleines „Made with Invimbo“-Badge auf deiner veröffentlichten Website, und ein Wasserzeichen auf gedrucktem Papier.",
+      freeCaveat: "Zeigt ein sich wiederholendes „Invimbo“-Wasserzeichen auf deiner veröffentlichten Website, und ein Wasserzeichen auf gedrucktem Papier.",
       oneTime: "Einmalzahlung, kein Abo",
       exampleCaption: "Ein echtes Invimbo-Design - deins kann so aussehen.",
       valueAnchor: "Gedruckte, verschickte Einladungen kosten pro Gast meist mehr. Hier deckt eine einmalige Pauschale deine gesamte Gästeliste ab, egal wie viele Personen das sind.",
@@ -295,7 +296,7 @@ export const de: Dictionary = {
         {
           question: "Ist es wirklich kostenlos, oder gibt es einen Haken?",
           answer:
-            "Der Konstruktor selbst ist kostenlos und ohne Zeitlimit - gestalte deine ganze Seite, lade Gäste ein und verfolge RSVPs ohne Kosten. Der einzige Kompromiss im kostenlosen Plan ist ein kleines \"Made with Invimbo\"-Badge auf deiner Live-Seite und ein Wasserzeichen auf gedrucktem Papier - von Anfang an sichtbar, nicht erst, nachdem du etwas gebaut hast.",
+            "Der Konstruktor selbst ist kostenlos und ohne Zeitlimit - gestalte deine ganze Seite, lade Gäste ein und verfolge RSVPs ohne Kosten. Der einzige Kompromiss im kostenlosen Plan ist ein sich wiederholendes \"Invimbo\"-Wasserzeichen auf deiner Live-Seite und auf gedrucktem Papier - von Anfang an sichtbar, nicht erst, nachdem du etwas gebaut hast.",
         },
         {
           question: "Ist das ein Abo?",
@@ -618,6 +619,8 @@ export const de: Dictionary = {
         },
         toggleAriaLabel: (label, turningOn) => `${label} ${turningOn ? "einschalten" : "ausschalten"}`,
         basicBadge: "Basic",
+        emptyBadge: "Leer",
+        emptyBadgeHint: "Dies ist aktiviert, aber es ist noch nichts drin - Gäste sehen es erst, wenn du Inhalte hinzufügst.",
         gatedOnButHidden:
           "Nur für dich hier sichtbar - auf deiner veröffentlichten Website erscheint es erst ab dem Basic-Plan.",
         gatedPreviewOnly:
@@ -1054,6 +1057,10 @@ export const de: Dictionary = {
         publish: "Website veröffentlichen",
         visibleNote: "Deine Website ist für Gäste über den Link sichtbar",
         hiddenNote: "Gäste können deine Website erst sehen, wenn sie veröffentlicht ist",
+        accountModalTitle: "Erstelle ein kostenloses Konto, um zu veröffentlichen",
+        accountModalBody:
+          "Zum Veröffentlichen brauchst du ein echtes Konto, nicht nur diese Browser-Sitzung - sonst könntest du durch Löschen deiner Cookies oder einen Gerätewechsel den Zugriff auf deine eigene Live-Website verlieren. Erstelle jetzt eins, und wir veröffentlichen direkt danach.",
+        confirmEmailToPublish: "Bestätige dein Konto per E-Mail, dann komm hierher zurück und veröffentliche.",
       },
       newEvent: "Weitere Veranstaltung erstellen",
       anonBanner: {

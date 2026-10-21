@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { togglePublish } from "./[eventId]/actions";
+import PublishAccountModal from "./PublishAccountModal";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
 
@@ -18,20 +19,42 @@ export default function PublishToggle({ eventId, status, locale = "en" }: Publis
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAccountModal, setShowAccountModal] = useState(false);
   const t = getDictionary(locale).dashboard.shell.publish;
 
   const isPublished = status === "published";
 
-  const handleClick = async () => {
+  const attemptPublish = async () => {
     setError(null);
     setIsPending(true);
     const result = await togglePublish(eventId);
     if (result.ok) {
       router.refresh();
+    } else if (result.reason === "anonymous") {
+      // Usability walkthrough 2026-10-21, critical finding #1: this used to
+      // just set `error` to the raw "Create a free account to continue"
+      // string and leave it at that -- an unclickable line of red text next
+      // to the button, with the real "Create account" control sitting in a
+      // banner the host had to go find at the top of the page. Now the
+      // click itself opens the thing that actually gets them unblocked.
+      setShowAccountModal(true);
     } else {
       setError(result.message);
     }
     setIsPending(false);
+  };
+
+  const handleClick = () => {
+    void attemptPublish();
+  };
+
+  // Called once `PublishAccountModal` confirms the session now has a real
+  // account -- re-run the exact publish the host originally clicked for,
+  // instead of closing the modal and leaving them to find the Publish
+  // button and click it again.
+  const handleAccountReady = () => {
+    setShowAccountModal(false);
+    void attemptPublish();
   };
 
   return (
@@ -57,6 +80,18 @@ export default function PublishToggle({ eventId, status, locale = "en" }: Publis
         {isPublished ? t.visibleNote : t.hiddenNote}
       </p>
       {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
+      {showAccountModal && (
+        // Mounted only while open, not always-rendered-with-open=false --
+        // a fresh mount each time means a fresh form/error/pending state
+        // automatically, no reset-on-reopen effect needed (and avoids
+        // react-hooks/set-state-in-effect, which that pattern trips).
+        <PublishAccountModal
+          open={showAccountModal}
+          onClose={() => setShowAccountModal(false)}
+          onAccountReady={handleAccountReady}
+          locale={locale}
+        />
+      )}
     </div>
   );
 }

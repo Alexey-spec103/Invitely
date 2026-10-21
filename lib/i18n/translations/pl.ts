@@ -45,6 +45,7 @@ export const pl: Dictionary = {
     selectPlaceholder: "Wybierz...",
     sendRsvp: "Wyślij potwierdzenie",
     sending: "Wysyłanie...",
+    takingLonger: "To trwa dłużej niż zwykle - poczekaj chwilę albo spróbuj ponownie za moment.",
     missingFieldsError: "Podaj swoje imię i daj nam znać, czy będziesz mógł/mogła przyjść.",
     genericError: "Coś poszło nie tak",
     successAttending: "Jesteś na liście! Nie możemy się doczekać wspólnego świętowania. \u{1F389}",
@@ -289,7 +290,7 @@ export const pl: Dictionary = {
       whatThisAdds: "Co to dodaje",
       badgeFree: "Zawsze za darmo",
       badgePremium: "Usuwa znak wodny",
-      freeCaveat: "Na Twojej stronie na żywo pojawia się mała odznaka „Made with Invimbo”, a na wydrukach - znak wodny.",
+      freeCaveat: "Na Twojej stronie na żywo pojawia się powtarzający się znak wodny „Invimbo”, a na wydrukach - znak wodny.",
       oneTime: "Płatność jednorazowa, nie subskrypcja",
       exampleCaption: "Prawdziwy projekt Invimbo - Twój może wyglądać podobnie.",
       valueAnchor: "Drukowane, wysyłane pocztą zaproszenia zwykle kosztują więcej za gościa. Tu jedna stała opłata obejmuje całą Twoją listę gości, niezależnie od liczby osób.",
@@ -305,7 +306,7 @@ export const pl: Dictionary = {
         {
           question: "Czy to naprawdę darmowe, czy jest haczyk?",
           answer:
-            "Sam konstruktor jest darmowy bez limitu czasu - projektuj całą stronę, zapraszaj gości i śledź RSVP bez opłat. Jedyny kompromis w planie darmowym to mały znaczek \"Made with Invimbo\" na żywej stronie i znak wodny na drukowanym papierze - pokazane od razu, nie po tym, jak coś już zbudujesz.",
+            "Sam konstruktor jest darmowy bez limitu czasu - projektuj całą stronę, zapraszaj gości i śledź RSVP bez opłat. Jedyny kompromis w planie darmowym to powtarzający się znak wodny \"Invimbo\" na żywej stronie i na drukowanym papierze - pokazany od razu, nie po tym, jak coś już zbudujesz.",
         },
         {
           question: "Czy to subskrypcja?",
@@ -628,6 +629,8 @@ export const pl: Dictionary = {
         },
         toggleAriaLabel: (label, turningOn) => `${turningOn ? "Włącz" : "Wyłącz"} ${label}`,
         basicBadge: "Basic",
+        emptyBadge: "Puste",
+        emptyBadgeHint: "To jest włączone, ale nie ma tu jeszcze nic - goście tego nie zobaczą, dopóki nie dodasz treści.",
         gatedOnButHidden:
           "Widoczne tylko dla Ciebie tutaj - nie pojawi się na opublikowanej stronie, dopóki nie przejdziesz na plan Basic lub wyższy.",
         gatedPreviewOnly:
@@ -1070,6 +1073,10 @@ export const pl: Dictionary = {
         publish: "Opublikuj stronę",
         visibleNote: "Twoja strona jest widoczna dla gości pod tym linkiem",
         hiddenNote: "Goście nie zobaczą Twojej strony, dopóki jej nie opublikujesz",
+        accountModalTitle: "Załóż darmowe konto, aby opublikować",
+        accountModalBody:
+          "Publikacja wymaga prawdziwego konta, nie tylko tej sesji przeglądarki - inaczej wyczyszczenie plików cookie albo zmiana urządzenia mogłyby odciąć Cię od dostępu do własnej opublikowanej strony. Załóż je teraz, a opublikujemy od razu potem.",
+        confirmEmailToPublish: "Potwierdź konto przez e-mail, a potem wróć tutaj i opublikuj.",
       },
       newEvent: "Utwórz kolejne wydarzenie",
       anonBanner: {

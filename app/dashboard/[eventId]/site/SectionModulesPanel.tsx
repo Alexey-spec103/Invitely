@@ -9,6 +9,7 @@ import {
   SECTION_LABELS,
   SECTION_ICONS,
   SECTION_ORDER,
+  sectionWillRender,
   type SectionConfig,
   type SectionType,
 } from "@/components/sections/registry";
@@ -60,6 +61,14 @@ const MODULE_GROUP_KEYS: Partial<Record<SectionType, "core" | "funExtras" | "log
 interface SectionModulesPanelProps {
   eventId: string;
   sections: SectionConfig[];
+  /** Per-section content, keyed by `SectionType` (same shape `site_config.
+   * content` parses into) -- used only to flag a module that's ON but has
+   * nothing to show yet (see `isEmptyWhileEnabled` below), via the same
+   * `sectionWillRender` check the public site and the live editor already
+   * use to decide whether to render a section at all. Usability walkthrough
+   * 2026-10-21, major finding: a host had a module toggled on that rendered
+   * nothing on the guest site, with zero indication here of why. */
+  content: Record<string, unknown>;
   /** dashboard-audit.md Block E part 1: whether the event's plan meets
    * Basic. Toggling a gated module ON still works (that's the free "try it"
    * part) -- but now goes through PremiumUpgradeModal first (audit finding:
@@ -104,6 +113,7 @@ export const MODULE_ICONS = SECTION_ICONS;
 export default function SectionModulesPanel({
   eventId,
   sections,
+  content,
   hasBasicAccess,
   envelopeRevealEnabled,
   locale,
@@ -123,6 +133,22 @@ export default function SectionModulesPanel({
   const [enabled, setEnabled] = useState<Record<string, boolean>>(
     Object.fromEntries(ALL_MODULE_TYPES.map((type) => [type, byType.get(type)?.enabled ?? false]))
   );
+
+  // On but `sectionWillRender` says there's currently nothing to show --
+  // informational, not an error: visually distinct from "intentionally
+  // off," which already reads clearly from the toggle itself. Reads the
+  // live `enabled` state (not the server-rendered `sections` prop) so
+  // flipping a toggle updates this immediately, without waiting on a
+  // `router.refresh()`. Usability walkthrough 2026-10-21, major finding: a
+  // host had a module toggled on that silently rendered nothing on the
+  // guest site, with zero indication here of why.
+  const isEmptyWhileEnabled = (type: ModuleType) => {
+    if (!enabled[type]) return false;
+    const section = byType.get(type);
+    const fallback: SectionConfig = { type, variant: "", order: SECTION_ORDER[type], enabled: true };
+    return !sectionWillRender(section ?? fallback, content);
+  };
+
   const [draggingType, setDraggingType] = useState<ModuleType | null>(null);
   const [pendingToggle, setPendingToggle] = useState<ModuleType | null>(null);
   // dashboard-audit.md "fresh eyes" finding #2: the 🔒 Basic badge's real
@@ -273,6 +299,14 @@ export default function SectionModulesPanel({
                     <Lock className="h-2.5 w-2.5" aria-hidden="true" />
                     {t.basicBadge}
                   </button>
+                )}
+                {!isGated && isEmptyWhileEnabled(type) && (
+                  <span
+                    title={t.emptyBadgeHint}
+                    className="rounded-full bg-[color-mix(in_srgb,var(--dash-text-muted)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--dash-text-muted)]"
+                  >
+                    {t.emptyBadge}
+                  </span>
                 )}
               </span>
               <SectionToggleSwitch

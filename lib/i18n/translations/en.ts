@@ -54,6 +54,11 @@ export interface Dictionary {
     selectPlaceholder: string;
     sendRsvp: string;
     sending: string;
+    /** Shown alongside the "Sending..." button once a submission has been
+     * pending unusually long (SimpleForm.tsx's own timeout, not a server
+     * response) -- reassures a guest staring at a stuck-looking spinner that
+     * the attempt is still in flight, not silently broken. */
+    takingLonger: string;
     missingFieldsError: string;
     genericError: string;
     successAttending: string;
@@ -468,6 +473,8 @@ export interface Dictionary {
         };
         toggleAriaLabel: (label: string, turningOn: boolean) => string;
         basicBadge: string;
+        emptyBadge: string;
+        emptyBadgeHint: string;
         gatedOnButHidden: string;
         gatedPreviewOnly: string;
         addSeatGuestsLink: string;
@@ -798,7 +805,16 @@ export interface Dictionary {
       nav: { style: string; site: string; paper: string; guests: string };
       copyLink: { copied: string; copyFull: string; copyShort: string };
       seeWhatGuestsSee: string;
-      publish: { saving: string; unpublish: string; publish: string; visibleNote: string; hiddenNote: string };
+      publish: {
+        saving: string;
+        unpublish: string;
+        publish: string;
+        visibleNote: string;
+        hiddenNote: string;
+        accountModalTitle: string;
+        accountModalBody: string;
+        confirmEmailToPublish: string;
+      };
       newEvent: string;
       anonBanner: {
         saveProgress: string;
@@ -1099,6 +1115,7 @@ export const en: Dictionary = {
     selectPlaceholder: "Select...",
     sendRsvp: "Send RSVP",
     sending: "Sending...",
+    takingLonger: "This is taking longer than expected - hang tight, or try again in a moment.",
     missingFieldsError: "Please fill in your name and let us know if you can make it.",
     genericError: "Something went wrong",
     successAttending: "You're on the list! We can't wait to celebrate with you. \u{1F389}",
@@ -1355,7 +1372,7 @@ export const en: Dictionary = {
       whatThisAdds: "What this adds",
       badgeFree: "Always free",
       badgePremium: "Removes the watermark",
-      freeCaveat: "Shows a small \"Made with Invimbo\" badge on your live site, and a watermark on printed paper.",
+      freeCaveat: "Shows a repeating \"Invimbo\" watermark across your live site, plus a watermark on printed paper.",
       oneTime: "One-time, not a subscription",
       exampleCaption: "A real Invimbo design - yours can look like this.",
       valueAnchor: "Printed, mailed invitations usually cost more than this per guest. One flat fee here covers your whole guest list, however many people you're inviting.",
@@ -1371,7 +1388,7 @@ export const en: Dictionary = {
         {
           question: "Is it really free, or is there a catch?",
           answer:
-            "The constructor itself is free with no time limit - design your whole site, invite guests, and track RSVPs at no cost. The only trade-off on Free is a small \"Made with Invimbo\" badge on your live site and a watermark on printed paper, both shown to you up front, not after you've built something.",
+            "The constructor itself is free with no time limit - design your whole site, invite guests, and track RSVPs at no cost. The only trade-off on Free is a repeating \"Invimbo\" watermark across your live site and on printed paper, both shown to you up front, not after you've built something.",
         },
         {
           question: "Is this a subscription?",
@@ -1695,6 +1712,8 @@ export const en: Dictionary = {
         },
         toggleAriaLabel: (label, turningOn) => `Turn ${label} ${turningOn ? "on" : "off"}`,
         basicBadge: "Basic",
+        emptyBadge: "Empty",
+        emptyBadgeHint: "This is on, but there's nothing in it yet - guests won't see it until you add content.",
         gatedOnButHidden:
           "Visible to you here, but it won't show on your published site until you're on the Basic plan or above.",
         gatedPreviewOnly:
@@ -2131,6 +2150,10 @@ export const en: Dictionary = {
         publish: "Publish site",
         visibleNote: "Your site is visible to guests via the link",
         hiddenNote: "Guests can't see your site until it's published",
+        accountModalTitle: "Create a free account to publish",
+        accountModalBody:
+          "Publishing needs a real account, not just this browser session - otherwise clearing your cookies or switching devices could lock you out of your own live site. Create one now and we'll publish right after.",
+        confirmEmailToPublish: "Check your email to confirm your account, then come back here and publish.",
       },
       newEvent: "Create another event",
       anonBanner: {

@@ -23,7 +23,7 @@ import type { SectionConfig } from "@/components/sections/registry";
 
 export async function togglePublish(
   eventId: string
-): Promise<{ ok: true } | { ok: false; message: string }> {
+): Promise<{ ok: true } | { ok: false; message: string; reason?: "anonymous" }> {
   // Publishing requires a real account, not just any session -- an
   // anonymous trial user can build and preview freely, but guests can only
   // actually see the site once its owner has a real (non-anonymous) account.
@@ -32,11 +32,19 @@ export async function togglePublish(
   // ("Minified React error #441"), which turned this expected, common case
   // (an anonymous host clicking Publish) into raw React internals shown to
   // a real customer instead of "Create a free account to continue".
+  //
+  // `reason: "anonymous"` is a stable, non-localized signal for the caller
+  // to branch on (open the account-creation modal) -- usability walkthrough
+  // 2026-10-21, critical finding #1: the raw `message` string used to be
+  // shown directly to the user as the only feedback, an unclickable ~11px
+  // red line next to the button. It's kept for non-anonymous failure cases
+  // and as a fallback, but the anonymous path now has its own real UI.
   let user;
   try {
     user = await requireRealUser();
   } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Not authenticated" };
+    const message = err instanceof Error ? err.message : "Not authenticated";
+    return { ok: false, message, reason: message === "Create a free account to continue" ? "anonymous" : undefined };
   }
   const supabase = await createClient();
 

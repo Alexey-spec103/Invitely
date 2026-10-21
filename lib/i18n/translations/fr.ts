@@ -34,6 +34,7 @@ export const fr: Dictionary = {
     selectPlaceholder: "Sélectionner...",
     sendRsvp: "Envoyer ma réponse",
     sending: "Envoi en cours...",
+    takingLonger: "Cela prend plus de temps que prévu - patientez un instant, ou réessayez dans un moment.",
     missingFieldsError: "Merci de renseigner votre nom et de nous indiquer si vous pourrez venir.",
     genericError: "Une erreur est survenue",
     successAttending: "Vous êtes sur la liste ! Nous avons hâte de célébrer avec vous. \u{1F389}",
@@ -279,7 +280,7 @@ export const fr: Dictionary = {
       whatThisAdds: "Ce que cela ajoute",
       badgeFree: "Toujours gratuit",
       badgePremium: "Retire le filigrane",
-      freeCaveat: "Affiche un petit badge « Made with Invimbo » sur votre site en ligne, et un filigrane sur le papier imprimé.",
+      freeCaveat: "Affiche un filigrane « Invimbo » répété sur votre site en ligne, et un filigrane sur le papier imprimé.",
       oneTime: "Paiement unique, pas d'abonnement",
       exampleCaption: "Un vrai modèle Invimbo - le vôtre peut y ressembler.",
       valueAnchor: "Les invitations imprimées et envoyées par courrier coûtent généralement plus cher par invité. Ici, un tarif unique couvre toute votre liste d'invités, quel que soit leur nombre.",
@@ -295,7 +296,7 @@ export const fr: Dictionary = {
         {
           question: "Est-ce vraiment gratuit, ou y a-t-il un piège ?",
           answer:
-            "Le constructeur lui-même est gratuit, sans limite de temps - concevez tout votre site, invitez vos invités et suivez les RSVP sans frais. Le seul compromis du plan gratuit est un petit badge \"Made with Invimbo\" sur votre site en direct et un filigrane sur le papier imprimé, affichés dès le départ, pas après coup.",
+            "Le constructeur lui-même est gratuit, sans limite de temps - concevez tout votre site, invitez vos invités et suivez les RSVP sans frais. Le seul compromis du plan gratuit est un filigrane \"Invimbo\" répété sur votre site en direct et sur le papier imprimé, affiché dès le départ, pas après coup.",
         },
         {
           question: "Est-ce un abonnement ?",
@@ -618,6 +619,9 @@ export const fr: Dictionary = {
         },
         toggleAriaLabel: (label, turningOn) => `${turningOn ? "Activer" : "Désactiver"} ${label}`,
         basicBadge: "Basic",
+        emptyBadge: "Vide",
+        emptyBadgeHint:
+          "C'est activé, mais il n'y a encore rien dedans - vos invités ne le verront pas tant que vous n'aurez pas ajouté de contenu.",
         gatedOnButHidden:
           "Visible pour vous ici uniquement - n'apparaîtra sur votre site publié qu'avec le forfait Basic ou supérieur.",
         gatedPreviewOnly:
@@ -1054,6 +1058,10 @@ export const fr: Dictionary = {
         publish: "Publier le site",
         visibleNote: "Votre site est visible par les invités via le lien",
         hiddenNote: "Les invités ne peuvent pas voir votre site tant qu'il n'est pas publié",
+        accountModalTitle: "Créez un compte gratuit pour publier",
+        accountModalBody:
+          "Publier nécessite un vrai compte, pas seulement cette session de navigateur - sinon, effacer vos cookies ou changer d'appareil pourrait vous faire perdre l'accès à votre propre site en ligne. Créez-en un maintenant, nous publierons juste après.",
+        confirmEmailToPublish: "Confirmez votre compte par e-mail, puis revenez ici pour publier.",
       },
       newEvent: "Créer un autre événement",
       anonBanner: {

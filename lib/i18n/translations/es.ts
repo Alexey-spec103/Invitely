@@ -34,6 +34,7 @@ export const es: Dictionary = {
     selectPlaceholder: "Seleccionar...",
     sendRsvp: "Enviar confirmación",
     sending: "Enviando...",
+    takingLonger: "Esto está tardando más de lo esperado - espera un momento, o inténtalo de nuevo en breve.",
     missingFieldsError: "Por favor, indica tu nombre y confírmanos si podrás venir.",
     genericError: "Algo salió mal",
     successAttending: "¡Ya estás en la lista! No podemos esperar a celebrar contigo. \u{1F389}",
@@ -279,7 +280,7 @@ export const es: Dictionary = {
       whatThisAdds: "Lo que añade",
       badgeFree: "Siempre gratis",
       badgePremium: "Elimina la marca de agua",
-      freeCaveat: "Muestra un pequeño distintivo \"Hecho con Invimbo\" en tu sitio en directo, y una marca de agua en el papel impreso.",
+      freeCaveat: "Muestra una marca de agua repetida \"Invimbo\" en tu sitio en directo, y una marca de agua en el papel impreso.",
       oneTime: "Pago único, no es una suscripción",
       exampleCaption: "Un diseño real de Invimbo - el tuyo puede verse así.",
       valueAnchor: "Las invitaciones impresas y enviadas por correo suelen costar más por invitado. Aquí, una tarifa única cubre a toda tu lista de invitados, sean cuantos sean.",
@@ -295,7 +296,7 @@ export const es: Dictionary = {
         {
           question: "¿Es realmente gratis, o hay truco?",
           answer:
-            "El constructor en sí es gratis, sin límite de tiempo: diseña todo tu sitio, invita a tus invitados y haz seguimiento de las confirmaciones sin coste. La única contrapartida en el plan gratuito es una pequeña marca \"Hecho con Invimbo\" en tu sitio en vivo y una marca de agua en el papel impreso, mostradas desde el principio, no después de que hayas construido algo.",
+            "El constructor en sí es gratis, sin límite de tiempo: diseña todo tu sitio, invita a tus invitados y haz seguimiento de las confirmaciones sin coste. La única contrapartida en el plan gratuito es una marca de agua \"Invimbo\" repetida en tu sitio en vivo y en el papel impreso, mostrada desde el principio, no después de que hayas construido algo.",
         },
         {
           question: "¿Es una suscripción?",
@@ -618,6 +619,8 @@ export const es: Dictionary = {
         },
         toggleAriaLabel: (label, turningOn) => `${turningOn ? "Activar" : "Desactivar"} ${label}`,
         basicBadge: "Basic",
+        emptyBadge: "Vacío",
+        emptyBadgeHint: "Esto está activado, pero todavía no tiene nada - los invitados no lo verán hasta que añadas contenido.",
         gatedOnButHidden:
           "Visible solo para ti aquí - no aparecerá en tu sitio publicado hasta que tengas el plan Basic o superior.",
         gatedPreviewOnly:
@@ -1054,6 +1057,10 @@ export const es: Dictionary = {
         publish: "Publicar sitio",
         visibleNote: "Tu sitio es visible para los invitados a través del enlace",
         hiddenNote: "Los invitados no pueden ver tu sitio hasta que lo publiques",
+        accountModalTitle: "Crea una cuenta gratuita para publicar",
+        accountModalBody:
+          "Publicar requiere una cuenta real, no solo esta sesión del navegador - si no, borrar tus cookies o cambiar de dispositivo podría dejarte sin acceso a tu propio sitio en vivo. Crea una ahora y publicamos justo después.",
+        confirmEmailToPublish: "Confirma tu cuenta por correo electrónico, luego vuelve aquí y publica.",
       },
       newEvent: "Crear otro evento",
       anonBanner: {

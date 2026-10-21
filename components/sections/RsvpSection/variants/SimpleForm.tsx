@@ -60,6 +60,24 @@ export default function SimpleForm({
   const nameInputRef = useRef<HTMLInputElement>(null);
   const attendingToggleRef = useRef<HTMLDivElement>(null);
 
+  // Usability finding (2026-10-21 walkthrough): a slow submission (seen on
+  // a dev server mid-compile, plausible on a slow mobile network too) left
+  // the button reading "Sending..." indefinitely with nothing to tell a
+  // real guest their tap was still in flight rather than stuck -- no retry,
+  // no reassurance. This never cancels or races the actual request (which
+  // keeps running and can still succeed on its own), it only changes what
+  // the UI shows while waiting. Cleared whenever `pending` goes false,
+  // win or lose, so it never lingers into the next attempt.
+  const [takingLonger, setTakingLonger] = useState(false);
+  useEffect(() => {
+    if (!pending) {
+      setTakingLonger(false);
+      return;
+    }
+    const timer = setTimeout(() => setTakingLonger(true), 15000);
+    return () => clearTimeout(timer);
+  }, [pending]);
+
   // A guest who arrived via their own personal invite link already has a
   // resolved name -- the common case for that audience is a single tap to
   // confirm or decline, not a multi-field form. A guest on the general
@@ -307,6 +325,11 @@ export default function SimpleForm({
                 {t.oneTapDecline}
               </button>
             </div>
+            {pending && takingLonger && (
+              <p className={styles.takingLonger} role="status">
+                {t.takingLonger}
+              </p>
+            )}
             <button type="button" className={styles.quickMoreDetails} onClick={() => setShowFullForm(true)}>
               {t.oneTapMoreDetails}
             </button>
@@ -494,6 +517,11 @@ export default function SimpleForm({
           <button type="submit" disabled={pending} className={styles.submitButton}>
             {pending ? t.sending : t.sendRsvp}
           </button>
+          {pending && takingLonger && (
+            <p className={styles.takingLonger} role="status">
+              {t.takingLonger}
+            </p>
+          )}
         </form>
         )}
       </div>

@@ -99,11 +99,32 @@
   white-space: nowrap;
 }
 
+/* Absolutely positioned (overlaying the page), not in-flow, on purpose --
+   it used to be a plain flex child of `.header` (position: sticky), so
+   mounting it grew the sticky header's own box height. Confirmed live:
+   scrolled partway down the page, that growth shifted page content below
+   the header, which triggered the browser's scroll-anchoring correction
+   (it adjusts scrollTop to keep your reading position stable) -- a REAL
+   scroll event, caught by SiteHeader.tsx's own "close the menu on scroll"
+   handler, closing the menu in the same tick it opened. Looked exactly
+   like "the hamburger button stopped working" once scrolled, worked fine
+   at the top of the page where there's nothing for scroll-anchoring to
+   compensate for. Overlaying instead of pushing content means opening the
+   menu never changes layout, so it can't self-trigger that handler --
+   genuine user scrolling still closes it exactly as designed. */
 .menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 39;
   display: flex;
   flex-direction: column;
   padding: 0.5rem 1rem 1rem;
   border-top: 1px solid color-mix(in srgb, var(--theme-accent) 20%, transparent);
+  background: color-mix(in srgb, var(--theme-bg) 92%, transparent);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12);
   transform-origin: top;
   animation: menuOpen 220ms ease-out;
 }

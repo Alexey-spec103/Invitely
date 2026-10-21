@@ -542,6 +542,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
       <SectionModulesPanel
         eventId={event.id}
         sections={allSections}
+        content={content}
         hasBasicAccess={hasBasicAccess}
         envelopeRevealEnabled={envelopeRevealEnabled}
         locale={locale}
