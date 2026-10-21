@@ -146,7 +146,14 @@ export default function EnvelopeReveal({
             className={styles.flap}
             aria-hidden="true"
             animate={opening ? { rotateX: 165 } : { rotateX: 0 }}
-            transition={{ duration, ease: "easeIn" }}
+            // motion-audit 2026-10-21: this is the one physical gesture in
+            // the whole reveal -- the flap actually swinging open -- and a
+            // flat `easeIn` reads as the envelope being yanked rather than
+            // opened. A spring (`bounce: 0`, Jakub's production default)
+            // gives the same no-overshoot settle but with real deceleration
+            // weight, which a once-per-browser moment like this one can
+            // afford to spend a little polish on.
+            transition={reduceMotion ? { duration: 0 } : { type: "spring", duration: 0.5, bounce: 0 }}
           />
           <motion.span
             className={styles.seal}

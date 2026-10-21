@@ -440,11 +440,25 @@
    rest), stays permanently visible once favorited (`aria-pressed`) or on the
    already-selected card, and pops in with a scale+fade keyframe extracted
    from their stylesheet (`appearHeart`: opacity 0->1, scale 0->1, 0.3s
-   easeOutCubic) rather than a plain opacity fade. */
+   easeOutCubic) rather than a plain opacity fade.
+
+   motion-audit 2026-10-21: the literal 0->1 scale copied from the reference
+   site reads as "materializing from nothing" (Emil's scale(0) anti-pattern)
+   -- softened the floor to 0.5 so a 34px badge still pops convincingly
+   (going all the way to the checklist's literal 0.9 floor would flatten
+   this specific small, rare, icon-scale flourish into a near-pure fade,
+   losing the "pop" this rule exists to give it -- a deliberate, documented
+   deviation, not a miss). The `animation:` declaration itself now lives
+   only inside the reduced-motion gate below, consistent with every other
+   animation in this codebase (see app/globals.css's own per-rule
+   `@media (prefers-reduced-motion: no-preference)` wrapping) -- this file
+   was the one place that pattern had been missed; opacity/transform stay
+   unconditional outside the gate so the heart still reaches its final
+   visible state instantly under reduced motion, just without the pop. */
 @keyframes favoriteHeartPop {
   from {
     opacity: 0;
-    transform: scale(0);
+    transform: scale(0.5);
   }
   to {
     opacity: 1;
@@ -467,7 +481,7 @@
   color: var(--dash-accent, #ff6b45);
   cursor: pointer;
   opacity: 0;
-  transform: scale(0);
+  transform: scale(0.5);
 }
 
 .card:hover .favoriteHeart,
@@ -476,7 +490,15 @@
 .favoriteHeart[aria-pressed="true"] {
   opacity: 1;
   transform: scale(1);
-  animation: favoriteHeartPop 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover .favoriteHeart,
+  .card:focus-visible .favoriteHeart,
+  .cardSelected .favoriteHeart,
+  .favoriteHeart[aria-pressed="true"] {
+    animation: favoriteHeartPop 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
 }
 
 .favoriteHeart:hover {

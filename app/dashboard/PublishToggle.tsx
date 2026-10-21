@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
 import { togglePublish } from "./[eventId]/actions";
 import PublishAccountModal from "./PublishAccountModal";
 import { getDictionary } from "@/lib/i18n/dictionary";
@@ -80,18 +81,24 @@ export default function PublishToggle({ eventId, status, locale = "en" }: Publis
         {isPublished ? t.visibleNote : t.hiddenNote}
       </p>
       {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
-      {showAccountModal && (
-        // Mounted only while open, not always-rendered-with-open=false --
-        // a fresh mount each time means a fresh form/error/pending state
-        // automatically, no reset-on-reopen effect needed (and avoids
-        // react-hooks/set-state-in-effect, which that pattern trips).
-        <PublishAccountModal
-          open={showAccountModal}
-          onClose={() => setShowAccountModal(false)}
-          onAccountReady={handleAccountReady}
-          locale={locale}
-        />
-      )}
+      {/* motion-audit 2026-10-21: AnimatePresence is what lets the modal's
+          own `exit` animation actually play -- without it, React just
+          unmounts the subtree the instant `showAccountModal` flips false,
+          same snap-away every plain `{cond && <X/>}` gets. */}
+      <AnimatePresence>
+        {showAccountModal && (
+          // Mounted only while open, not always-rendered-with-open=false --
+          // a fresh mount each time means a fresh form/error/pending state
+          // automatically, no reset-on-reopen effect needed (and avoids
+          // react-hooks/set-state-in-effect, which that pattern trips).
+          <PublishAccountModal
+            open={showAccountModal}
+            onClose={() => setShowAccountModal(false)}
+            onAccountReady={handleAccountReady}
+            locale={locale}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

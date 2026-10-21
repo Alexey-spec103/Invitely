@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
+import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
 
 interface PublishAccountModalProps {
   open: boolean;
@@ -32,6 +34,7 @@ interface PublishAccountModalProps {
  * `components/ui/PremiumUpgradeModal.tsx`, this codebase's one other
  * "explain the gate, offer the way through" modal. */
 export default function PublishAccountModal({ open, onClose, onAccountReady, locale }: PublishAccountModalProps) {
+  const reduceMotion = usePrefersReducedMotion();
   const dictionary = getDictionary(locale ?? "en").dashboard;
   const t = dictionary.shell;
   const [email, setEmail] = useState("");
@@ -69,13 +72,31 @@ export default function PublishAccountModal({ open, onClose, onAccountReady, loc
   };
 
   return (
-    <div
+    <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
+      // motion-audit 2026-10-21: this was a plain conditional render with no
+      // enter/exit at all -- the highest-stakes moment in the whole host
+      // funnel (the publish gate) just snapping in/out read as a glitch, not
+      // a considered product moment. Backdrop fade is the full `duration`;
+      // the card gets Jakub's enter recipe (opacity + y + a touch of scale,
+      // `bounce: 0` so it settles rather than overshoots) without blur --
+      // blur on a text-bearing card delays legibility, exactly the trade
+      // this skill's own anti-checklist warns against.
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: reduceMotion ? 0 : 0.2 }}
     >
-      <div className="w-full max-w-sm rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+      <motion.div
+        className="w-full max-w-sm rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+        initial={{ opacity: 0, y: 12, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 6, scale: 0.98 }}
+        transition={reduceMotion ? { duration: 0 } : { type: "spring", duration: 0.4, bounce: 0 }}
+      >
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="text-lg" aria-hidden="true">
@@ -129,7 +150,7 @@ export default function PublishAccountModal({ open, onClose, onAccountReady, loc
             </form>
           </>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

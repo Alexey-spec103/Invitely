@@ -163,12 +163,33 @@
 
 /* Reassurance note shown once a submission has been pending unusually
    long -- deliberately calmer than .error (no red, no alert role in the
-   markup) since nothing has actually failed yet. */
+   markup) since nothing has actually failed yet.
+
+   motion-audit 2026-10-21: this was a plain conditional render with no
+   transition -- a motion gap. The message appearing is itself the signal
+   ("you're not stuck, hang on"), so a quiet fade-in (not the full enter
+   recipe -- this is a one-line reassurance, not a moment) gives that
+   signal a beat to register instead of just snapping into the layout. */
 .takingLonger {
   font-family: var(--theme-font-body);
   font-size: 0.85rem;
   opacity: 0.7;
   margin: 0.5rem 0 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .takingLonger {
+    animation: takingLongerFadeIn 0.3s ease-out both;
+  }
+}
+
+@keyframes takingLongerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.7;
+  }
 }
 
 .submitButton {
