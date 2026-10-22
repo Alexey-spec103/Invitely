@@ -12,7 +12,7 @@ export const fr: Dictionary = {
     shareText: (eventTitle) => (eventTitle ? `Vous êtes invité(e) : ${eventTitle}` : "Vous êtes invité(e) !"),
   },
   unpublishedPreview: {
-    message: "👀 Vous prévisualisez ce site - il n'est pas encore publié, donc les réponses envoyées ici ne sont qu'un test et ne seront pas enregistrées.",
+    message: "👀 Vous prévisualisez ce site - il n'est pas encore publié, donc les réponses ne peuvent pas être envoyées ici tant que vous ne l'avez pas publié.",
   },
   envelopeReveal: {
     tapToOpen: "Toucher pour ouvrir",

@@ -23,7 +23,7 @@ export const pl: Dictionary = {
     shareText: (eventTitle) => (eventTitle ? `Jesteś zaproszony/a: ${eventTitle}` : "Jesteś zaproszony/a!"),
   },
   unpublishedPreview: {
-    message: "👀 Przeglądasz podgląd tej strony - nie jest jeszcze opublikowana, więc potwierdzenia wysłane tutaj są tylko testem i nie zostaną zapisane.",
+    message: "👀 Przeglądasz podgląd tej strony - nie jest jeszcze opublikowana, więc nie można tu wysłać potwierdzeń, dopóki jej nie opublikujesz.",
   },
   envelopeReveal: {
     tapToOpen: "Dotknij, aby otworzyć",

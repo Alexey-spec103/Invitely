@@ -30,7 +30,14 @@ export interface Dictionary {
    * 404 instead), so this isn't guest-facing copy. It exists because a host
    * testing their own RSVP form before publishing got no warning that the
    * submission wouldn't be saved until the error appeared after clicking
-   * submit -- confirmed live via dashboard-audit critique 2026-10-04. */
+   * submit -- confirmed live via dashboard-audit critique 2026-10-04.
+   * impeccable critique (2026-10-22): the original wording here ("just a
+   * test and won't be saved") implied the submission would go through
+   * silently -- it doesn't. submit_rsvp_response hard-rejects with
+   * EVENT_NOT_PUBLISHED (see app/e/[slug]/actions.ts's notPublishedError
+   * handling), so a host testing their own form got the honest warning here
+   * followed immediately by an error that contradicted it. Reworded to
+   * match the real, confirmed-live behavior. */
   unpublishedPreview: {
     message: string;
   };
@@ -1095,7 +1102,7 @@ export const en: Dictionary = {
     shareText: (eventTitle) => (eventTitle ? `You're invited: ${eventTitle}` : "You're invited!"),
   },
   unpublishedPreview: {
-    message: "👀 You're previewing this site - it isn't published yet, so RSVPs submitted here are just a test and won't be saved.",
+    message: "👀 You're previewing this site - it isn't published yet, so RSVPs can't be submitted here until you publish.",
   },
   envelopeReveal: {
     tapToOpen: "Tap to open",

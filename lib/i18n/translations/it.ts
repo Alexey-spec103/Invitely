@@ -12,7 +12,7 @@ export const it: Dictionary = {
     shareText: (eventTitle) => (eventTitle ? `Sei invitato/a: ${eventTitle}` : "Sei invitato/a!"),
   },
   unpublishedPreview: {
-    message: "👀 Stai visualizzando l'anteprima di questo sito - non è ancora pubblicato, quindi le conferme inviate qui sono solo una prova e non verranno salvate.",
+    message: "👀 Stai visualizzando l'anteprima di questo sito - non è ancora pubblicato, quindi qui non è possibile inviare conferme finché non lo pubblichi.",
   },
   envelopeReveal: {
     tapToOpen: "Tocca per aprire",
