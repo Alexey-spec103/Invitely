@@ -45,6 +45,10 @@ const CSP_DIRECTIVES = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  // security-baseline audit (2026-10-22): `X-Powered-By: Next.js` was
+  // leaking on every response -- free fingerprinting for an attacker
+  // picking which framework-specific exploits to try first, no upside.
+  poweredByHeader: false,
   async headers() {
     return [
       {
