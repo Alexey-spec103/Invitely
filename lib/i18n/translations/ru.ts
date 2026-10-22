@@ -23,6 +23,7 @@ function responseWordRu(count: number): string {
 
 export const ru: Dictionary = {
   siteHeader: {
+    skipToContent: "Перейти к содержимому",
     menu: "Меню",
     share: "Поделиться",
     addToCalendar: "Добавить в календарь",

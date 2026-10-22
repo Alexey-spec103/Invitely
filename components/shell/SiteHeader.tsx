@@ -128,12 +128,25 @@ export default function SiteHeader({
 
   return (
     <header className={styles.header}>
+      {/* Accessibility audit (2026-10-22): no way past the header's own
+          controls (menu/language/music/share/calendar) to reach the real
+          page content except tabbing through every one of them -- no skip
+          link existed anywhere on the guest site (WCAG 2.4.1). Visually
+          hidden until focused; targets the <main id="main-content">
+          landmark added the same session. */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[200] focus:rounded-md focus:bg-black focus:px-4 focus:py-2 focus:text-white">
+        {dict.siteHeader.skipToContent}
+      </a>
       <div className={styles.bar}>
         <button
           type="button"
           className={styles.menuButton}
           aria-label={dict.siteHeader.menu}
           aria-expanded={menuOpen}
+          // Accessibility audit (2026-10-22): aria-expanded was wired but
+          // nothing told a screen reader WHICH element it controls -- added
+          // alongside the matching id on the <nav> below.
+          aria-controls="site-header-menu"
           onClick={() => setMenuOpen((open) => !open)}
         >
           <span className={styles.menuIcon} aria-hidden="true">
@@ -204,7 +217,7 @@ export default function SiteHeader({
       </div>
 
       {menuOpen && (
-        <nav className={styles.menu}>
+        <nav id="site-header-menu" className={styles.menu}>
           {sections.map((section) => {
             const Icon = SECTION_ICONS[section.type as SectionType];
             return (

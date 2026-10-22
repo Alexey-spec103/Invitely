@@ -13,6 +13,7 @@ function guestWordPl(count: number): string {
 
 export const pl: Dictionary = {
   siteHeader: {
+    skipToContent: "Przejdź do treści",
     menu: "Menu",
     share: "Udostępnij",
     addToCalendar: "Dodaj do kalendarza",

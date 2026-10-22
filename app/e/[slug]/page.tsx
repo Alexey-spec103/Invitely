@@ -391,7 +391,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
             2.4.1). Canvas mode's own cover (CanvasRenderer, rendered above
             ThemeProvider for unrelated layering reasons) isn't included
             here -- flagged separately, not a low-risk wrap. */}
-        <main>
+        <main id="main-content">
         {sections.map((section, index) => {
           const element = renderSection(section, content, {
             hero: { themeCategory: decorCategory, eyebrow: customEyebrow ?? getLocalizedEventType(event.event_type, locale).heroEyebrow },

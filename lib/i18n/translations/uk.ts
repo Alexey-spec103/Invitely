@@ -23,6 +23,7 @@ function responseWordUk(count: number): string {
 
 export const uk: Dictionary = {
   siteHeader: {
+    skipToContent: "Перейти до вмісту",
     menu: "Меню",
     share: "Поділитися",
     addToCalendar: "Додати в календар",

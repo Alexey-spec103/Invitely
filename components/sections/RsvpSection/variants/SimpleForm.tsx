@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { RsvpSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
@@ -42,6 +43,7 @@ export default function SimpleForm({
 }: RsvpSectionVariantProps) {
   const t = getDictionary(locale).rsvp;
   const { editable } = useEditableField();
+  const reduceMotion = useReducedMotion();
   // Same category -> asset pairing as Letter/CenteredCard and Gift/SimpleList's
   // corner accents (all read from CORNER_PAIR_DECOR), so RSVP's corner
   // flourish reads as the same design system instead of weddingpost's one
@@ -428,61 +430,88 @@ export default function SimpleForm({
             </div>
           </div>
 
-          {attending === true && (
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="rsvp-party-size">
-                {t.numberOfGuests}
-              </label>
-              <input
-                id="rsvp-party-size"
-                type="number"
-                min={1}
-                max={maxPartySize}
-                className={styles.input}
-                value={partySize}
-                onChange={(event) => setPartySize(event.target.value)}
-              />
-              {maxPartySize && <p className={styles.optional}>{t.upToGuestsTotal(maxPartySize)}</p>}
-            </div>
-          )}
-
-          {attending === true && maxPartySize && Number(partySize) > 1 && (
-            <div className={styles.field}>
-              <span className={styles.label}>
-                {t.whoElseIsComing} <span className={styles.optional}>{t.optional}</span>
-              </span>
-              {Array.from({ length: Math.min(Number(partySize), maxPartySize) - 1 }).map((_, index) => (
-                <div key={index}>
-                  {/* Accessibility audit (2026-10-19): placeholder text alone
-                      is not a real accessible name -- it disappears the
-                      moment a guest starts typing and isn't exposed as a
-                      label by every screen reader (WCAG 3.3.2). A visually-
-                      hidden label gives each dynamic field its own real
-                      name (distinct per index: "guest 2", "guest 3", ...)
-                      while the placeholder keeps doing its sighted-user job. */}
-                  <label className="sr-only" htmlFor={`rsvp-attendee-name-${index}`}>
-                    {t.guestNamePlaceholder(index + 2)}
+          {/* impeccable critique (2026-10-22): these two fields used to
+              mount/unmount instantly, shoving Submit down ~35-50px with no
+              transition -- right when a guest's thumb is positioned over
+              where Submit used to be (confirmed as a real mis-tap risk on
+              mobile, not just a cosmetic jump). Animating the height makes
+              the shift visible instead of instant, same reduced-motion
+              guard as every other animation added this session. */}
+          <AnimatePresence initial={false}>
+            {attending === true && (
+              <motion.div
+                key="party-size"
+                initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.25, ease: "easeOut" }}
+                style={{ overflow: "hidden" }}
+              >
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="rsvp-party-size">
+                    {t.numberOfGuests}
                   </label>
                   <input
-                    id={`rsvp-attendee-name-${index}`}
-                    type="text"
-                    autoComplete="off"
-                    placeholder={t.guestNamePlaceholder(index + 2)}
+                    id="rsvp-party-size"
+                    type="number"
+                    min={1}
+                    max={maxPartySize}
                     className={styles.input}
-                    style={{ marginTop: index > 0 ? 8 : 0 }}
-                    value={attendeeNames[index] ?? ""}
-                    onChange={(event) =>
-                      setAttendeeNames((prev) => {
-                        const next = [...prev];
-                        next[index] = event.target.value;
-                        return next;
-                      })
-                    }
+                    value={partySize}
+                    onChange={(event) => setPartySize(event.target.value)}
                   />
+                  {maxPartySize && <p className={styles.optional}>{t.upToGuestsTotal(maxPartySize)}</p>}
                 </div>
-              ))}
-            </div>
-          )}
+              </motion.div>
+            )}
+
+            {attending === true && maxPartySize && Number(partySize) > 1 && (
+              <motion.div
+                key="attendee-names"
+                initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.25, ease: "easeOut" }}
+                style={{ overflow: "hidden" }}
+              >
+                <div className={styles.field}>
+                  <span className={styles.label}>
+                    {t.whoElseIsComing} <span className={styles.optional}>{t.optional}</span>
+                  </span>
+                  {Array.from({ length: Math.min(Number(partySize), maxPartySize) - 1 }).map((_, index) => (
+                    <div key={index}>
+                      {/* Accessibility audit (2026-10-19): placeholder text alone
+                          is not a real accessible name -- it disappears the
+                          moment a guest starts typing and isn't exposed as a
+                          label by every screen reader (WCAG 3.3.2). A visually-
+                          hidden label gives each dynamic field its own real
+                          name (distinct per index: "guest 2", "guest 3", ...)
+                          while the placeholder keeps doing its sighted-user job. */}
+                      <label className="sr-only" htmlFor={`rsvp-attendee-name-${index}`}>
+                        {t.guestNamePlaceholder(index + 2)}
+                      </label>
+                      <input
+                        id={`rsvp-attendee-name-${index}`}
+                        type="text"
+                        autoComplete="off"
+                        placeholder={t.guestNamePlaceholder(index + 2)}
+                        className={styles.input}
+                        style={{ marginTop: index > 0 ? 8 : 0 }}
+                        value={attendeeNames[index] ?? ""}
+                        onChange={(event) =>
+                          setAttendeeNames((prev) => {
+                            const next = [...prev];
+                            next[index] = event.target.value;
+                            return next;
+                          })
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className={styles.field}>
             <label className={styles.label} htmlFor="rsvp-allergies">

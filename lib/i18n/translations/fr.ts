@@ -2,6 +2,7 @@ import type { Dictionary } from "./en";
 
 export const fr: Dictionary = {
   siteHeader: {
+    skipToContent: "Aller au contenu",
     menu: "Menu",
     share: "Partager",
     addToCalendar: "Ajouter au calendrier",

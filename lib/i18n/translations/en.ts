@@ -14,6 +14,15 @@ import type { EventTypeId } from "@/lib/eventTypes";
 
 export interface Dictionary {
   siteHeader: {
+    /** Accessibility audit (2026-10-22): the only way past the header's own
+     * controls (menu/language/music/share/calendar) to reach the actual
+     * page content was tabbing through every one of them -- no skip link
+     * existed anywhere on the guest site (WCAG 2.4.1). Visually hidden
+     * until focused (sr-only / focus:not-sr-only), same pattern as every
+     * other visually-hidden label added in this session's accessibility
+     * pass. Targets the <main id="main-content"> landmark added the same
+     * session. */
+    skipToContent: string;
     menu: string;
     share: string;
     addToCalendar: string;
@@ -1092,6 +1101,7 @@ export interface Dictionary {
 
 export const en: Dictionary = {
   siteHeader: {
+    skipToContent: "Skip to content",
     menu: "Menu",
     share: "Share",
     addToCalendar: "Add to calendar",
