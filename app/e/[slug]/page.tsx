@@ -398,24 +398,30 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           locale={locale}
         />
       )}
-      {isCanvasMode && <CanvasRenderer frames={canvasFrames} />}
-      <ThemeProvider theme={theme}>
-        <SiteHeader
-          sections={navItems}
-          calendarHref={`/e/${slug}/calendar.ics`}
-          musicUrl={musicUrl}
-          eventTitle={event.title}
-          locale={locale}
-          availableLocales={SUPPORTED_LOCALES}
-        />
-        {/* Accessibility audit (2026-10-22): nothing on this page had a
-            `<main>` (or any role="main") landmark -- confirmed live, a
-            screen reader's landmark list showed only the <header>, with
-            no way to jump straight to the actual content (WCAG 1.3.1 /
-            2.4.1). Canvas mode's own cover (CanvasRenderer, rendered above
-            ThemeProvider for unrelated layering reasons) isn't included
-            here -- flagged separately, not a low-risk wrap. */}
-        <main id="main-content">
+      {/* Accessibility audit (2026-10-22): nothing on this page had a
+          `<main>` (or any role="main") landmark -- confirmed live, a
+          screen reader's landmark list showed only the <header>, with no
+          way to jump straight to the actual content (WCAG 1.3.1 / 2.4.1).
+          Wraps CanvasRenderer too (not just ThemeProvider's children) --
+          in canvas mode, the canvas frames ARE the real page content a
+          guest sees first, not chrome, so they belong inside the
+          landmark same as the section list below. CanvasRenderer stays
+          rendered before ThemeProvider for its own unrelated layering
+          reasons (see its own render order below); `<main>` has no
+          default styling that depends on DOM position (confirmed no
+          `main` selector anywhere in app/globals.css), so moving the
+          landmark boundary around it is layout-neutral. */}
+      <main id="main-content">
+        {isCanvasMode && <CanvasRenderer frames={canvasFrames} />}
+        <ThemeProvider theme={theme}>
+          <SiteHeader
+            sections={navItems}
+            calendarHref={`/e/${slug}/calendar.ics`}
+            musicUrl={musicUrl}
+            eventTitle={event.title}
+            locale={locale}
+            availableLocales={SUPPORTED_LOCALES}
+          />
         {sections.map((section, index) => {
           const element = renderSection(section, content, {
             hero: { themeCategory: decorCategory, eyebrow: customEyebrow ?? getLocalizedEventType(event.event_type, locale).heroEyebrow },
@@ -449,14 +455,14 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           return index === 0 && !isCanvasMode ? wrapped : <RevealOnScroll key={section.type}>{wrapped}</RevealOnScroll>;
         })}
         {!isCanvasMode && sections.length > 1 && <ScrollToNextSection />}
-        </main>
-        {!hasBasicAccess && (
-          <>
-            <WatermarkOverlay />
-            <PublicSiteBadge />
-          </>
-        )}
-      </ThemeProvider>
+          {!hasBasicAccess && (
+            <>
+              <WatermarkOverlay />
+              <PublicSiteBadge />
+            </>
+          )}
+        </ThemeProvider>
+      </main>
     </>
   );
 }
