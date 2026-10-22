@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Undo2, Redo2, Monitor, Smartphone, Tablet, type LucideIcon } from "lucide-react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
@@ -1306,27 +1306,11 @@ export default function SiteInlineEditor({
     else travelField.commitStyle(selection.field, null);
   };
 
-  const heroNames = weddingDataDraft.name2 ? [weddingDataDraft.name1, weddingDataDraft.name2] : [weddingDataDraft.name1];
-  const heroVisible = applyHiddenFields({ names: heroNames, photoUrl: heroPhoto }, heroHidden);
   // Sections rendered from named props (not a `{...draft}` spread) read
   // through one of these instead of the raw draft, so a hidden field's
   // value is blanked before it reaches the live component here too --
   // matching what registry.tsx's `applyHiddenFields` already does for the
   // public site, so hiding looks the same in both places.
-  const rsvpVisible = applyHiddenFields(rsvpField.draft, rsvpField.draft.hiddenFields);
-  const countdownVisible = applyHiddenFields(countdownField.draft, countdownField.draft.hiddenFields);
-  const giftVisible = applyHiddenFields(giftField.draft, giftField.draft.hiddenFields);
-  const dressCodeVisible = applyHiddenFields(dressCodeField.draft, dressCodeField.draft.hiddenFields);
-  const guestbookVisible = applyHiddenFields(guestbookField.draft, guestbookField.draft.hiddenFields);
-  const videoVisible = applyHiddenFields(videoField.draft, videoField.draft.hiddenFields);
-  const banquetNavigatorVisible = applyHiddenFields(
-    banquetNavigatorField.draft,
-    banquetNavigatorField.draft.hiddenFields
-  );
-  const guestNotesVisible = applyHiddenFields(guestNotesField.draft, guestNotesField.draft.hiddenFields);
-  const faqVisible = applyHiddenFields(faqField.draft, faqField.draft.hiddenFields);
-  const travelVisible = applyHiddenFields(travelField.draft, travelField.draft.hiddenFields);
-
   // dashboard-audit.md A3: the flat "Editable blocks" tree -- every text/
   // image/auto field across every section, in the same order it renders.
   // Repeatable items (a Timeline event, Map venue, RSVP question, DressCode
@@ -2134,22 +2118,22 @@ export default function SiteInlineEditor({
             onClick={clearSelection}
           >
             <ThemeProvider theme={theme}>
-        <SectionBackground fill={getSectionBackground("hero")}>
-          <div ref={heroRef}>
-            <EditableFieldProvider value={heroContext}>
-              <HeroSection
-                variant={heroVariant}
-                names={heroVisible.names}
-                eventDate={weddingDataDraft.eventDate}
-                photoUrl={heroVisible.photoUrl}
-                styleOverrides={heroOverrides}
-                eyebrow={heroEyebrow || getLocalizedEventType(weddingDataDraft.eventType, previewLocale).heroEyebrow}
-                themeCategory={decorCategory}
-                locale={previewLocale}
-              />
-            </EditableFieldProvider>
-          </div>
-        </SectionBackground>
+        <HeroPreviewBlock
+          fill={getSectionBackground("hero")}
+          sectionRef={heroRef}
+          context={heroContext}
+          variant={heroVariant}
+          name1={weddingDataDraft.name1}
+          name2={weddingDataDraft.name2}
+          eventDate={weddingDataDraft.eventDate}
+          photoUrl={heroPhoto}
+          hiddenFields={heroHidden}
+          styleOverrides={heroOverrides}
+          eyebrow={heroEyebrow}
+          eventType={weddingDataDraft.eventType}
+          themeCategory={decorCategory}
+          locale={previewLocale}
+        />
 
         <SectionHeader
           label={t.heroPhotoLabel}
@@ -2218,24 +2202,19 @@ export default function SiteInlineEditor({
             </>
           }
         />
-        {isSectionOn("letter", letter.enabled) ? (
-          <RevealOnScroll root={scrollAreaRef}>
-            <SectionBackground fill={getSectionBackground("letter")}>
-              <div ref={letterRef}>
-                <EditableFieldProvider value={letterContext}>
-                  <LetterSection
-                    variant={letter.variant}
-                    {...applyHiddenFields(letterField.draft, letterField.draft.hiddenFields)}
-                    locale={previewLocale}
-                    themeCategory={decorCategory}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
-          </RevealOnScroll>
-        ) : (
-          <CollapsedSectionNote label={t.sectionLabels.letter} buildMessage={t.collapsedNote} />
-        )}
+        <LetterPreviewBlock
+          enabled={isSectionOn("letter", letter.enabled)}
+          scrollAreaRef={scrollAreaRef}
+          fill={getSectionBackground("letter")}
+          sectionRef={letterRef}
+          context={letterContext}
+          variant={letter.variant}
+          draft={letterField.draft}
+          locale={previewLocale}
+          themeCategory={decorCategory}
+          collapsedLabel={t.sectionLabels.letter}
+          collapsedBuildMessage={t.collapsedNote}
+        />
               </>
             ),
             timeline: (
@@ -2264,18 +2243,14 @@ export default function SiteInlineEditor({
                 onChange={(events) => timelineField.setDraft((prev) => ({ ...prev, events }))}
               />
             </div>
-            <RevealOnScroll root={scrollAreaRef}>
-              <SectionBackground fill={getSectionBackground("timeline")}>
-                <div ref={timelineRef}>
-                  <EditableFieldProvider value={timelineContext}>
-                    <TimelineSection
-                      variant={timeline.variant}
-                      {...applyHiddenFields(timelineField.draft, timelineField.draft.hiddenFields)}
-                    />
-                  </EditableFieldProvider>
-                </div>
-              </SectionBackground>
-            </RevealOnScroll>
+            <TimelinePreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("timeline")}
+              sectionRef={timelineRef}
+              context={timelineContext}
+              variant={timeline.variant}
+              draft={timelineField.draft}
+            />
           </>
         ) : (
           <CollapsedSectionNote label={t.sectionLabels.timeline} buildMessage={t.collapsedNote} />
@@ -2333,19 +2308,15 @@ export default function SiteInlineEditor({
                 + Add venue
               </button>
             </div>
-            <RevealOnScroll root={scrollAreaRef}>
-              <SectionBackground fill={getSectionBackground("map")}>
-                <div ref={mapRef}>
-                  <EditableFieldProvider value={mapContext}>
-                    <MapSection
-                      variant={map.variant}
-                      {...applyHiddenFields(mapField.draft, mapField.draft.hiddenFields)}
-                      locale={previewLocale}
-                    />
-                  </EditableFieldProvider>
-                </div>
-              </SectionBackground>
-            </RevealOnScroll>
+            <MapPreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("map")}
+              sectionRef={mapRef}
+              context={mapContext}
+              variant={map.variant}
+              draft={mapField.draft}
+              locale={previewLocale}
+            />
           </>
         ) : (
           <CollapsedSectionNote label={t.sectionLabels.map} buildMessage={t.collapsedNote} />
@@ -2386,28 +2357,16 @@ export default function SiteInlineEditor({
                 onChange={(questions) => rsvpField.setDraft((prev) => ({ ...prev, questions }))}
               />
             </div>
-            <RevealOnScroll root={scrollAreaRef}>
-              <SectionBackground fill={getSectionBackground("rsvp")}>
-                <div ref={rsvpRef}>
-                  <EditableFieldProvider value={rsvpContext}>
-                    <RsvpSection
-                      variant="simple-form"
-                      title={rsvpVisible.title}
-                      description={rsvpVisible.description}
-                      styleOverrides={rsvpField.draft.styleOverrides}
-                      questions={rsvpQuestionsForRender(rsvpVisible.questions)}
-                      // The dashboard's own owner never actually RSVPs from inside their
-                      // own editor -- clicking "Send RSVP" here must not write a real
-                      // guest row. Rejecting (rather than a blocking `alert`) surfaces the
-                      // message through SimpleForm's own existing error paragraph for free.
-                      onSubmit={() => Promise.resolve({ ok: false as const, message: t.rsvpPreviewOnly })}
-                      themeCategory={decorCategory}
-                      locale={previewLocale}
-                    />
-                  </EditableFieldProvider>
-                </div>
-              </SectionBackground>
-            </RevealOnScroll>
+            <RsvpPreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("rsvp")}
+              sectionRef={rsvpRef}
+              context={rsvpContext}
+              draft={rsvpField.draft}
+              locale={previewLocale}
+              themeCategory={decorCategory}
+              rsvpPreviewOnlyMessage={t.rsvpPreviewOnly}
+            />
           </>
         ) : (
           <CollapsedSectionNote label={t.sectionLabels.rsvp} buildMessage={t.collapsedNote} />
@@ -2439,22 +2398,17 @@ export default function SiteInlineEditor({
                 <BasicUpgradeNote eventId={eventId} />
               </div>
             )}
-            <RevealOnScroll root={scrollAreaRef}>
-            <SectionBackground fill={getSectionBackground("countdown")}>
-              <div ref={countdownRef}>
-                <EditableFieldProvider value={countdownContext}>
-                  <CountdownSection
-                    variant={countdown.variant}
-                    title={countdownVisible.title}
-                    eventDateTime={`${weddingDataDraft.eventDate}T00:00:00`}
-                    styleOverrides={countdownField.draft.styleOverrides}
-                    locale={previewLocale}
-                    themeCategory={decorCategory}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
-            </RevealOnScroll>
+            <CountdownPreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("countdown")}
+              sectionRef={countdownRef}
+              context={countdownContext}
+              variant={countdown.variant}
+              draft={countdownField.draft}
+              eventDate={weddingDataDraft.eventDate}
+              locale={previewLocale}
+              themeCategory={decorCategory}
+            />
           </>
         ) : (
           <CollapsedSectionNote label={t.sectionLabels.countdown} buildMessage={t.collapsedNote} />
@@ -2489,23 +2443,17 @@ export default function SiteInlineEditor({
             <div className="px-4 pt-3 pb-4" onClick={(event) => event.stopPropagation()}>
               <GiftWishesManager eventId={eventId} preferences={gift.preferences} />
             </div>
-            <RevealOnScroll root={scrollAreaRef}>
-              <SectionBackground fill={getSectionBackground("gift")}>
-                <div ref={giftRef}>
-                  <EditableFieldProvider value={giftContext}>
-                    <GiftSection
-                      variant={gift.variant}
-                      title={giftVisible.title}
-                      description={giftVisible.description}
-                      styleOverrides={giftField.draft.styleOverrides}
-                      preferences={giftPreferencesForRender(gift.preferences)}
-                      locale={previewLocale}
-                      themeCategory={decorCategory}
-                    />
-                  </EditableFieldProvider>
-                </div>
-              </SectionBackground>
-            </RevealOnScroll>
+            <GiftPreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("gift")}
+              sectionRef={giftRef}
+              context={giftContext}
+              variant={gift.variant}
+              draft={giftField.draft}
+              preferences={gift.preferences}
+              locale={previewLocale}
+              themeCategory={decorCategory}
+            />
           </>
         ) : (
           <CollapsedSectionNote label={t.sectionLabels.gift} buildMessage={t.collapsedNote} />
@@ -2543,23 +2491,16 @@ export default function SiteInlineEditor({
                 onChange={(colors) => dressCodeField.setDraft((prev) => ({ ...prev, colors }))}
               />
             </div>
-            <RevealOnScroll root={scrollAreaRef}>
-              <SectionBackground fill={getSectionBackground("dressCode")}>
-                <div ref={dressCodeRef}>
-                  <EditableFieldProvider value={dressCodeContext}>
-                    <DressCodeSection
-                      variant={dressCode.variant}
-                      title={dressCodeVisible.title}
-                      description={dressCodeVisible.description}
-                      colors={dressCodeVisible.colors}
-                      styleOverrides={dressCodeField.draft.styleOverrides}
-                      themeCategory={decorCategory}
-                      locale={previewLocale}
-                    />
-                  </EditableFieldProvider>
-                </div>
-              </SectionBackground>
-            </RevealOnScroll>
+            <DressCodePreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("dressCode")}
+              sectionRef={dressCodeRef}
+              context={dressCodeContext}
+              variant={dressCode.variant}
+              draft={dressCodeField.draft}
+              locale={previewLocale}
+              themeCategory={decorCategory}
+            />
           </>
         ) : (
           <CollapsedSectionNote label={t.sectionLabels.dressCode} buildMessage={t.collapsedNote} />
@@ -2586,21 +2527,16 @@ export default function SiteInlineEditor({
         />
         {isSectionOn("guestbook", guestbook.enabled) ? (
           <>
-            <RevealOnScroll root={scrollAreaRef}>
-              <SectionBackground fill={getSectionBackground("guestbook")}>
-                <div ref={guestbookRef}>
-                  <EditableFieldProvider value={guestbookContext}>
-                    <GuestbookSection
-                      variant={guestbook.variant}
-                      title={guestbookVisible.title}
-                      styleOverrides={guestbookField.draft.styleOverrides}
-                      messages={guestbook.messages}
-                      locale={previewLocale}
-                    />
-                  </EditableFieldProvider>
-                </div>
-              </SectionBackground>
-            </RevealOnScroll>
+            <GuestbookPreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("guestbook")}
+              sectionRef={guestbookRef}
+              context={guestbookContext}
+              variant={guestbook.variant}
+              draft={guestbookField.draft}
+              messages={guestbook.messages}
+              locale={previewLocale}
+            />
             <div className="px-4 pb-6 text-xs text-[var(--dash-text-muted)]" onClick={(event) => event.stopPropagation()}>
               Messages come from guests&apos; RSVP comments. Hide or show individual messages from the Guests tab.
             </div>
@@ -2630,21 +2566,15 @@ export default function SiteInlineEditor({
         />
         {isSectionOn("video", video.enabled) ? (
           <>
-            <RevealOnScroll root={scrollAreaRef}>
-              <SectionBackground fill={getSectionBackground("video")}>
-                <div ref={videoRef}>
-                  <EditableFieldProvider value={videoContext}>
-                    <VideoSection
-                      variant={video.variant}
-                      title={videoVisible.title}
-                      videoUrl={videoVisible.videoUrl}
-                      styleOverrides={videoField.draft.styleOverrides}
-                      locale={previewLocale}
-                    />
-                  </EditableFieldProvider>
-                </div>
-              </SectionBackground>
-            </RevealOnScroll>
+            <VideoPreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("video")}
+              sectionRef={videoRef}
+              context={videoContext}
+              variant={video.variant}
+              draft={videoField.draft}
+              locale={previewLocale}
+            />
             <div className="px-4 pb-6" onClick={(event) => event.stopPropagation()}>
               <VideoUrlManager
                 videoUrl={videoField.draft.videoUrl}
@@ -2675,28 +2605,18 @@ export default function SiteInlineEditor({
             />
           }
         />
-        {isSectionOn("banquetNavigator", banquetNavigator.enabled) ? (
-          <RevealOnScroll root={scrollAreaRef}>
-            <SectionBackground fill={getSectionBackground("banquetNavigator")}>
-              <div ref={banquetNavigatorRef}>
-                <EditableFieldProvider value={banquetNavigatorContext}>
-                  <BanquetNavigatorSection
-                    variant="simple-lookup"
-                    title={banquetNavigatorVisible.title}
-                    description={banquetNavigatorVisible.description}
-                    styleOverrides={banquetNavigatorField.draft.styleOverrides}
-                    onLookup={async () => {
-                      throw new Error(t.lookupPreviewOnly);
-                    }}
-                    locale={previewLocale}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
-          </RevealOnScroll>
-        ) : (
-          <CollapsedSectionNote label={banquetNavigator.seatingLabel} buildMessage={t.collapsedNote} />
-        )}
+        <BanquetNavigatorPreviewBlock
+          enabled={isSectionOn("banquetNavigator", banquetNavigator.enabled)}
+          scrollAreaRef={scrollAreaRef}
+          fill={getSectionBackground("banquetNavigator")}
+          sectionRef={banquetNavigatorRef}
+          context={banquetNavigatorContext}
+          draft={banquetNavigatorField.draft}
+          locale={previewLocale}
+          lookupPreviewOnlyMessage={t.lookupPreviewOnly}
+          collapsedLabel={banquetNavigator.seatingLabel}
+          collapsedBuildMessage={t.collapsedNote}
+        />
               </>
             ),
             guestNotes: (
@@ -2717,25 +2637,17 @@ export default function SiteInlineEditor({
             />
           }
         />
-        {isSectionOn("guestNotes", guestNotes.enabled) ? (
-          <RevealOnScroll root={scrollAreaRef}>
-            <SectionBackground fill={getSectionBackground("guestNotes")}>
-              <div ref={guestNotesRef}>
-                <EditableFieldProvider value={guestNotesContext}>
-                  <GuestNotesSection
-                    variant="simple-note"
-                    title={guestNotesVisible.title}
-                    body={guestNotesVisible.body}
-                    styleOverrides={guestNotesField.draft.styleOverrides}
-                    themeCategory={decorCategory}
-                  />
-                </EditableFieldProvider>
-              </div>
-            </SectionBackground>
-          </RevealOnScroll>
-        ) : (
-          <CollapsedSectionNote label={t.sectionLabels.guestNotes} buildMessage={t.collapsedNote} />
-        )}
+        <GuestNotesPreviewBlock
+          enabled={isSectionOn("guestNotes", guestNotes.enabled)}
+          scrollAreaRef={scrollAreaRef}
+          fill={getSectionBackground("guestNotes")}
+          sectionRef={guestNotesRef}
+          context={guestNotesContext}
+          draft={guestNotesField.draft}
+          themeCategory={decorCategory}
+          collapsedLabel={t.sectionLabels.guestNotes}
+          collapsedBuildMessage={t.collapsedNote}
+        />
               </>
             ),
             faq: (
@@ -2764,21 +2676,14 @@ export default function SiteInlineEditor({
                 onChange={(items) => faqField.setDraft((prev) => ({ ...prev, items }))}
               />
             </div>
-            <RevealOnScroll root={scrollAreaRef}>
-              <SectionBackground fill={getSectionBackground("faq")}>
-                <div ref={faqRef}>
-                  <EditableFieldProvider value={faqContext}>
-                    <FaqSection
-                      variant="simple-list"
-                      title={faqVisible.title}
-                      items={faqVisible.items}
-                      styleOverrides={faqField.draft.styleOverrides}
-                      themeCategory={decorCategory}
-                    />
-                  </EditableFieldProvider>
-                </div>
-              </SectionBackground>
-            </RevealOnScroll>
+            <FaqPreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("faq")}
+              sectionRef={faqRef}
+              context={faqContext}
+              draft={faqField.draft}
+              themeCategory={decorCategory}
+            />
           </>
         ) : (
           <CollapsedSectionNote label={t.sectionLabels.faq} buildMessage={t.collapsedNote} />
@@ -2811,23 +2716,15 @@ export default function SiteInlineEditor({
                 onChange={(items) => travelField.setDraft((prev) => ({ ...prev, items }))}
               />
             </div>
-            <RevealOnScroll root={scrollAreaRef}>
-              <SectionBackground fill={getSectionBackground("travel")}>
-                <div ref={travelRef}>
-                  <EditableFieldProvider value={travelContext}>
-                    <TravelSection
-                      variant="simple-list"
-                      title={travelVisible.title}
-                      description={travelVisible.description}
-                      items={travelVisible.items}
-                      styleOverrides={travelField.draft.styleOverrides}
-                      themeCategory={decorCategory}
-                      locale={previewLocale}
-                    />
-                  </EditableFieldProvider>
-                </div>
-              </SectionBackground>
-            </RevealOnScroll>
+            <TravelPreviewBlock
+              scrollAreaRef={scrollAreaRef}
+              fill={getSectionBackground("travel")}
+              sectionRef={travelRef}
+              context={travelContext}
+              draft={travelField.draft}
+              themeCategory={decorCategory}
+              locale={previewLocale}
+            />
           </>
         ) : (
           <CollapsedSectionNote label={t.sectionLabels.travel} buildMessage={t.collapsedNote} />
@@ -3222,6 +3119,606 @@ function CollapsedSectionNote({ label, buildMessage }: { label: string; buildMes
     </div>
   );
 }
+
+/** Performance audit (2026-10-22): this editor renders all 13 toggleable
+ * sections' live previews inline in one giant function component, with no
+ * memoization anywhere -- a single keystroke in, say, the RSVP question
+ * label re-executed every other section's JSX too (HeroSection,
+ * LetterSection, TimelineSection, MapSection, ...), all re-reconciled on
+ * every commit. Each section already has its own fully isolated draft/
+ * context/ref (see useEditableSection and the per-section `xContext`
+ * useMemo calls above -- `rsvpContext`'s own deps never include
+ * `letterField.draft`, so it already keeps the same object reference
+ * across an unrelated Letter edit), so the only thing missing was a React
+ * .memo boundary to actually let React skip re-rendering a section whose
+ * own props didn't change. One small memoized component per section type
+ * (not a single shared generic wrapper) -- passing a child element as a
+ * prop would itself be a new object reference every parent render,
+ * defeating memo before it even compares anything, so each one has to
+ * construct its own `<XSection>` call internally from primitive/object
+ * props instead of receiving pre-built JSX.
+ *
+ * `scrollAreaRef`/`sectionRef` (refs) and `context` (already memoized by
+ * its own useMemo above) are stable across unrelated-section renders;
+ * `draft`/`fill`/`enabled` only change identity when that section's own
+ * state actually changes -- exactly the shallow-equality check
+ * React.memo needs to skip re-rendering everything else. */
+const LetterPreviewBlock = memo(function LetterPreviewBlock({
+  enabled,
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  variant,
+  draft,
+  locale,
+  themeCategory,
+  collapsedLabel,
+  collapsedBuildMessage,
+}: {
+  enabled: boolean;
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  variant: LetterVariant;
+  draft: LetterDraft;
+  locale: Locale;
+  themeCategory: ReturnType<typeof effectiveDecorCategory>;
+  collapsedLabel: string;
+  collapsedBuildMessage: (label: string) => string;
+}) {
+  if (!enabled) {
+    return <CollapsedSectionNote label={collapsedLabel} buildMessage={collapsedBuildMessage} />;
+  }
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <LetterSection
+              variant={variant}
+              {...applyHiddenFields(draft, draft.hiddenFields)}
+              locale={locale}
+              themeCategory={themeCategory}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const TimelinePreviewBlock = memo(function TimelinePreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  variant,
+  draft,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  variant: TimelineVariant;
+  draft: TimelineDraft;
+}) {
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <TimelineSection variant={variant} {...applyHiddenFields(draft, draft.hiddenFields)} />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const MapPreviewBlock = memo(function MapPreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  variant,
+  draft,
+  locale,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  variant: MapVariant;
+  draft: MapDraft;
+  locale: Locale;
+}) {
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <MapSection variant={variant} {...applyHiddenFields(draft, draft.hiddenFields)} locale={locale} />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const RsvpPreviewBlock = memo(function RsvpPreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  draft,
+  locale,
+  themeCategory,
+  rsvpPreviewOnlyMessage,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  draft: RsvpDraft;
+  locale: Locale;
+  themeCategory: ReturnType<typeof effectiveDecorCategory>;
+  rsvpPreviewOnlyMessage: string;
+}) {
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <RsvpSection
+              variant="simple-form"
+              title={visible.title}
+              description={visible.description}
+              styleOverrides={draft.styleOverrides}
+              questions={rsvpQuestionsForRender(visible.questions)}
+              // The dashboard's own owner never actually RSVPs from inside their
+              // own editor -- clicking "Send RSVP" here must not write a real
+              // guest row. Rejecting (rather than a blocking `alert`) surfaces the
+              // message through SimpleForm's own existing error paragraph for free.
+              onSubmit={() => Promise.resolve({ ok: false as const, message: rsvpPreviewOnlyMessage })}
+              themeCategory={themeCategory}
+              locale={locale}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const CountdownPreviewBlock = memo(function CountdownPreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  variant,
+  draft,
+  eventDate,
+  locale,
+  themeCategory,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  variant: CountdownVariant;
+  draft: CountdownDraft;
+  eventDate: string;
+  locale: Locale;
+  themeCategory: ReturnType<typeof effectiveDecorCategory>;
+}) {
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <CountdownSection
+              variant={variant}
+              title={visible.title}
+              eventDateTime={`${eventDate}T00:00:00`}
+              styleOverrides={draft.styleOverrides}
+              locale={locale}
+              themeCategory={themeCategory}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const GiftPreviewBlock = memo(function GiftPreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  variant,
+  draft,
+  preferences,
+  locale,
+  themeCategory,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  variant: GiftVariant;
+  draft: GiftDraft;
+  preferences: Tables<"gift_preferences">[];
+  locale: Locale;
+  themeCategory: ReturnType<typeof effectiveDecorCategory>;
+}) {
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <GiftSection
+              variant={variant}
+              title={visible.title}
+              description={visible.description}
+              styleOverrides={draft.styleOverrides}
+              preferences={giftPreferencesForRender(preferences)}
+              locale={locale}
+              themeCategory={themeCategory}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const DressCodePreviewBlock = memo(function DressCodePreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  variant,
+  draft,
+  locale,
+  themeCategory,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  variant: DressCodeVariant;
+  draft: DressCodeDraft;
+  locale: Locale;
+  themeCategory: ReturnType<typeof effectiveDecorCategory>;
+}) {
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <DressCodeSection
+              variant={variant}
+              title={visible.title}
+              description={visible.description}
+              colors={visible.colors}
+              styleOverrides={draft.styleOverrides}
+              themeCategory={themeCategory}
+              locale={locale}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const GuestbookPreviewBlock = memo(function GuestbookPreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  variant,
+  draft,
+  messages,
+  locale,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  variant: GuestbookVariant;
+  draft: GuestbookDraft;
+  messages: GuestbookMessageItem[];
+  locale: Locale;
+}) {
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <GuestbookSection
+              variant={variant}
+              title={visible.title}
+              styleOverrides={draft.styleOverrides}
+              messages={messages}
+              locale={locale}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const VideoPreviewBlock = memo(function VideoPreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  variant,
+  draft,
+  locale,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  variant: VideoVariant;
+  draft: VideoDraft;
+  locale: Locale;
+}) {
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <VideoSection
+              variant={variant}
+              title={visible.title}
+              videoUrl={visible.videoUrl}
+              styleOverrides={draft.styleOverrides}
+              locale={locale}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const BanquetNavigatorPreviewBlock = memo(function BanquetNavigatorPreviewBlock({
+  enabled,
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  draft,
+  locale,
+  lookupPreviewOnlyMessage,
+  collapsedLabel,
+  collapsedBuildMessage,
+}: {
+  enabled: boolean;
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  draft: BanquetNavigatorDraft;
+  locale: Locale;
+  lookupPreviewOnlyMessage: string;
+  collapsedLabel: string;
+  collapsedBuildMessage: (label: string) => string;
+}) {
+  if (!enabled) {
+    return <CollapsedSectionNote label={collapsedLabel} buildMessage={collapsedBuildMessage} />;
+  }
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <BanquetNavigatorSection
+              variant="simple-lookup"
+              title={visible.title}
+              description={visible.description}
+              styleOverrides={draft.styleOverrides}
+              onLookup={async () => {
+                throw new Error(lookupPreviewOnlyMessage);
+              }}
+              locale={locale}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const GuestNotesPreviewBlock = memo(function GuestNotesPreviewBlock({
+  enabled,
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  draft,
+  themeCategory,
+  collapsedLabel,
+  collapsedBuildMessage,
+}: {
+  enabled: boolean;
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  draft: GuestNotesDraft;
+  themeCategory: ReturnType<typeof effectiveDecorCategory>;
+  collapsedLabel: string;
+  collapsedBuildMessage: (label: string) => string;
+}) {
+  if (!enabled) {
+    return <CollapsedSectionNote label={collapsedLabel} buildMessage={collapsedBuildMessage} />;
+  }
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <GuestNotesSection
+              variant="simple-note"
+              title={visible.title}
+              body={visible.body}
+              styleOverrides={draft.styleOverrides}
+              themeCategory={themeCategory}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const FaqPreviewBlock = memo(function FaqPreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  draft,
+  themeCategory,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  draft: FaqDraft;
+  themeCategory: ReturnType<typeof effectiveDecorCategory>;
+}) {
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <FaqSection
+              variant="simple-list"
+              title={visible.title}
+              items={visible.items}
+              styleOverrides={draft.styleOverrides}
+              themeCategory={themeCategory}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const TravelPreviewBlock = memo(function TravelPreviewBlock({
+  scrollAreaRef,
+  fill,
+  sectionRef,
+  context,
+  draft,
+  themeCategory,
+  locale,
+}: {
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  draft: TravelDraft;
+  themeCategory: ReturnType<typeof effectiveDecorCategory>;
+  locale: Locale;
+}) {
+  const visible = applyHiddenFields(draft, draft.hiddenFields);
+  return (
+    <RevealOnScroll root={scrollAreaRef}>
+      <SectionBackground fill={fill}>
+        <div ref={sectionRef}>
+          <EditableFieldProvider value={context}>
+            <TravelSection
+              variant="simple-list"
+              title={visible.title}
+              description={visible.description}
+              items={visible.items}
+              styleOverrides={draft.styleOverrides}
+              themeCategory={themeCategory}
+              locale={locale}
+            />
+          </EditableFieldProvider>
+        </div>
+      </SectionBackground>
+    </RevealOnScroll>
+  );
+});
+
+const HeroPreviewBlock = memo(function HeroPreviewBlock({
+  fill,
+  sectionRef,
+  context,
+  variant,
+  name1,
+  name2,
+  eventDate,
+  photoUrl,
+  hiddenFields,
+  styleOverrides,
+  eyebrow,
+  eventType,
+  themeCategory,
+  locale,
+}: {
+  fill: BackgroundFill | undefined;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  context: EditableFieldContextValue;
+  variant: HeroVariant;
+  name1: string;
+  name2: string | undefined;
+  eventDate: string;
+  photoUrl: string;
+  hiddenFields: string[];
+  styleOverrides: StyleOverrides | undefined;
+  eyebrow: string;
+  eventType: string;
+  themeCategory: ReturnType<typeof effectiveDecorCategory>;
+  locale: Locale;
+}) {
+  // Built from primitive string props (not a pre-built array passed down)
+  // so this memo boundary actually holds -- `[name1, name2]` constructed in
+  // the parent on every render would be a new array reference even when
+  // neither name actually changed, defeating React.memo's shallow prop
+  // comparison before it even gets to compare anything else.
+  const names = name2 ? [name1, name2] : [name1];
+  const visible = applyHiddenFields({ names, photoUrl }, hiddenFields);
+  return (
+    <SectionBackground fill={fill}>
+      <div ref={sectionRef}>
+        <EditableFieldProvider value={context}>
+          <HeroSection
+            variant={variant}
+            names={visible.names}
+            eventDate={eventDate}
+            photoUrl={visible.photoUrl}
+            styleOverrides={styleOverrides}
+            eyebrow={eyebrow || getLocalizedEventType(eventType, locale).heroEyebrow}
+            themeCategory={themeCategory}
+            locale={locale}
+          />
+        </EditableFieldProvider>
+      </div>
+    </SectionBackground>
+  );
+});
 
 const BLOCK_TYPE_ICON: Record<BlockRowData["type"], string> = {
   text: "A",
