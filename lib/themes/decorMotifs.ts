@@ -22,6 +22,21 @@ import type { Theme, ThemeCategory } from "./types";
  * for any palette. Adding a category here is how future rollout (Problem 2,
  * step "прогнать по всем темам") extends coverage; no component code needs
  * to change to pick it up.
+ *
+ * Performance audit (2026-10-22): every file this points at under
+ * `/public/patterns/color/` is a Recraft-generated illustration that got
+ * auto-traced into vector form rather than drawn as real flourish paths --
+ * 1300-1500 `<path>` elements each, which is why they were 150KB-880KB on
+ * disk (confirmed live: botanical's own pair alone was ~1.15MB, rendered
+ * eagerly and above-the-fold on every BotanicalFrame Hero, 4 `<img>` tags
+ * deep). Ran `svgo --multipass` (lossless-preset, no path simplification)
+ * on all 25 files in that directory -- safe, reversible (git-tracked),
+ * ~22% smaller overall (10.9MB -> 8.6MB) from stripped precision/whitespace
+ * alone. The path-count bloat itself is untouched by that pass and is the
+ * real remaining cost -- flagged separately as a bigger fix (re-export as
+ * raster WebP/AVIF at corner-decoration size, ~96-128px, not vector at
+ * all), since that needs a visual re-check per asset, not a safe automated
+ * pass.
  */
 
 /** WatercolorBloom (Hero) -- shared by `boho`, `romantic`, and (added once
