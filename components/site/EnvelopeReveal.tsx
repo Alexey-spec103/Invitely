@@ -85,16 +85,27 @@ export default function EnvelopeReveal({
     // a keyboard user landed on <body> with no indication the envelope was
     // even the thing to interact with (confirmed live: the browser's own
     // default first-Tab behavior is inconsistent, body/document-level, not
-    // this element specifically). This doesn't fix the deeper gap (the real
-    // page underneath is still keyboard-reachable while this overlay is up
-    // -- flagged separately, it needs either restructuring the page around
-    // a shared inert/aria-hidden toggle or a precise DOM walk that risks
-    // catching unrelated portaled UI, not a safe drop-in here) but it does
-    // make the one control this component actually owns reachable immediately.
+    // this element specifically). envelopeButtonRef.current?.focus() below
+    // makes the one control this component actually owns reachable
+    // immediately.
+    //
+    // Follow-up (2026-10-22, same day): the deeper gap this comment used
+    // to flag -- the real page underneath staying keyboard/AT-reachable
+    // while this overlay is up -- is now closed too. `<main id="main-
+    // content">` (app/e/[slug]/page.tsx) is a stable, guaranteed-present
+    // sibling target as of this session's accessibility pass, so `inert`
+    // (native HTML, removes a subtree from both tab order and the
+    // accessibility tree -- exactly what a hand-rolled aria-hidden walk
+    // would have to approximate, without needing to enumerate every
+    // portaled/overlay element that might exist outside it) is a safe,
+    // targeted toggle rather than a risky DOM walk.
+    const mainContent = document.getElementById("main-content");
+    mainContent?.setAttribute("inert", "");
     envelopeButtonRef.current?.focus();
     autoOpenRef.current = setTimeout(open, AUTO_OPEN_DELAY_MS);
     return () => {
       document.body.style.overflow = previousOverflow;
+      mainContent?.removeAttribute("inert");
       if (autoOpenRef.current) clearTimeout(autoOpenRef.current);
       if (closeRef.current) clearTimeout(closeRef.current);
     };

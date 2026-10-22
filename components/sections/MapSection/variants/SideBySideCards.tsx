@@ -13,9 +13,16 @@ export default function SideBySideCards({ title, venues, styleOverrides, locale 
   return (
     <section className={styles.section}>
       <div className={styles.stack}>
-        <h2 className={styles.title}>
-          <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
-        </h2>
+        {/* Accessibility audit (2026-10-22): an unconditional heading here
+            ships an empty <h2></h2> to a guest when a host leaves this
+            title blank -- a screen reader announces "heading level 2,
+            blank" (WCAG 2.4.6). Same fix as LetterSection/CenteredCard.tsx
+            and MapSection/EmbedStatic.tsx. */}
+        {(title || editable) && (
+          <h2 className={styles.title}>
+            <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+          </h2>
+        )}
         <div className={styles.grid}>
           {(venues ?? []).map((venue, index) => {
             const src = mapEmbedSrc(venue);

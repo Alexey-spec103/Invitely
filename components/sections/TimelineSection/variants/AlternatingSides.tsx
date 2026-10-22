@@ -12,9 +12,16 @@ export default function AlternatingSides({ title, events, styleOverrides }: Time
   const { editable } = useEditableField();
   return (
     <section className={styles.section}>
-      <h2 className={styles.title}>
-        <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
-      </h2>
+      {/* Accessibility audit (2026-10-22): an unconditional heading here
+          ships an empty <h2></h2> to a guest when a host leaves this title
+          blank -- a screen reader announces "heading level 2, blank"
+          (WCAG 2.4.6). Same fix as LetterSection/CenteredCard.tsx and
+          MapSection/EmbedStatic.tsx. */}
+      {(title || editable) && (
+        <h2 className={styles.title}>
+          <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+        </h2>
+      )}
       <ol className={styles.list}>
         {events.map((event, index) => (
           <li key={index} className={styles.item}>

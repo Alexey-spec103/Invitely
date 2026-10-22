@@ -37,14 +37,22 @@ export default function SplitQuote({
   // gets its own array/StaggerReveal, same array-then-wrap approach as
   // CenteredCard applied per column.
   const textFields = [
-    <h2 key="title" className={styles.title}>
-      <EditableText
-        field="title"
-        value={title}
-        style={styleOverrides?.["title"]}
-        placeholder="Write a title for your letter…"
-      />
-    </h2>,
+    // Accessibility audit (2026-10-22): an unconditional heading here ships
+    // an empty <h2></h2> to a guest when a host leaves this title blank --
+    // a screen reader announces "heading level 2, blank" (WCAG 2.4.6). Same
+    // fix as LetterSection/CenteredCard.tsx and MapSection/EmbedStatic.tsx:
+    // guarded on `editable` so a host can still click in to type a first
+    // title from the dashboard.
+    (title || editable) && (
+      <h2 key="title" className={styles.title}>
+        <EditableText
+          field="title"
+          value={title}
+          style={styleOverrides?.["title"]}
+          placeholder="Write a title for your letter…"
+        />
+      </h2>
+    ),
     <p key="body" className={styles.body}>
       <EditableText
         field="body"

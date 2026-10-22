@@ -299,9 +299,18 @@ export default function SimpleForm({
         <div className={styles.card}>
           <span className={styles.flourishTopLeft} aria-hidden="true" />
           <span className={styles.flourishBottomRight} aria-hidden="true" />
-          <h2 className={styles.title}>
-            <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
-          </h2>
+          {/* Accessibility audit (2026-10-22): title is seeded with a
+              default the moment RSVP is enabled (see registry.tsx's
+              DEFAULT_CONTENT_ON_ENABLE), but a host can still blank it via
+              the "Editable blocks" hide/empty mechanism -- an unconditional
+              heading would then ship an empty <h2></h2> to a guest (WCAG
+              2.4.6). Same fix as LetterSection/CenteredCard.tsx and
+              MapSection/EmbedStatic.tsx. */}
+          {(title || editable) && (
+            <h2 className={styles.title}>
+              <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+            </h2>
+          )}
           <p className={styles.quickGreeting}>
             {priorResponse.attending
               ? t.alreadyRespondedAttending(priorResponse.partySize)
@@ -319,9 +328,18 @@ export default function SimpleForm({
     <section className={styles.section}>
       <div className={styles.card}>
         {flourishes}
-        <h2 className={styles.title}>
-          <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
-        </h2>
+        {/* Accessibility audit (2026-10-22): title is seeded with a
+            default the moment RSVP is enabled (see registry.tsx's
+            DEFAULT_CONTENT_ON_ENABLE), but a host can still blank it via
+            the "Editable blocks" hide/empty mechanism -- an unconditional
+            heading would then ship an empty <h2></h2> to a guest (WCAG
+            2.4.6). Same fix as LetterSection/CenteredCard.tsx and
+            MapSection/EmbedStatic.tsx. */}
+        {(title || editable) && (
+          <h2 className={styles.title}>
+            <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+          </h2>
+        )}
         {(description || editable) && (
           <p className={styles.description}>
             <EditableText field="description" value={description ?? ""} style={styleOverrides?.["description"]} />
