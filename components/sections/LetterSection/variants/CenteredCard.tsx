@@ -65,14 +65,22 @@ export default function CenteredCard({
   // render either flat (dashboard editor, no stagger -- see the `editable`
   // comment below) or wrapped in StaggerReveal (public site).
   const fields = [
-    <h2 key="title" className={styles.title}>
-      <EditableText
-        field="title"
-        value={title}
-        style={styleOverrides?.["title"]}
-        placeholder="Write a title for your letter…"
-      />
-    </h2>,
+    // Accessibility audit (2026-10-22): unconditional <h2> regardless of
+    // content -- an empty title (confirmed live: this product's own
+    // mia-and-leo test event has one) shipped a genuinely empty heading to
+    // every guest, which a screen reader announces as "heading level 2,
+    // blank" navigating by headings (WCAG 2.4.6). Same `(value || editable)`
+    // guard already used below for note/closingLine.
+    (title || editable) && (
+      <h2 key="title" className={styles.title}>
+        <EditableText
+          field="title"
+          value={title}
+          style={styleOverrides?.["title"]}
+          placeholder="Write a title for your letter…"
+        />
+      </h2>
+    ),
     <p key="body" className={styles.body}>
       <EditableText
         field="body"

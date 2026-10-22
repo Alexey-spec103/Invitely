@@ -24,7 +24,12 @@ export default function AutosaveStatus({ state, error }: AutosaveStatusProps) {
   // not a flourish competing for attention while someone is mid-edit.
   const transition = { duration: reduceMotion ? 0 : 0.15, ease: "easeOut" as const };
   return (
-    <div className="flex h-5 items-center text-xs">
+    // Accessibility audit (2026-10-22): this pill's state (saving/saved/error)
+    // was purely visual -- a screen reader host editing the dashboard had no
+    // way to know a save was in flight or had finished/failed (WCAG 4.1.3).
+    // role="status" implies aria-live="polite" so each state change gets
+    // announced without stealing focus.
+    <div className="flex h-5 items-center text-xs" role="status" aria-live="polite" aria-atomic="true">
       <AnimatePresence mode="wait">
         {state === "saving" && (
           <motion.span
@@ -33,7 +38,7 @@ export default function AutosaveStatus({ state, error }: AutosaveStatusProps) {
             animate={{ opacity: 1 }}
             exit={reduceMotion ? undefined : { opacity: 0 }}
             transition={transition}
-            className="flex items-center gap-1.5 text-gray-400"
+            className="flex items-center gap-1.5 text-gray-600"
           >
             <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
             Saving...
@@ -46,7 +51,7 @@ export default function AutosaveStatus({ state, error }: AutosaveStatusProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? undefined : { opacity: 0 }}
             transition={transition}
-            className="flex items-center gap-1.5 text-emerald-600"
+            className="flex items-center gap-1.5 text-emerald-700"
           >
             <Check className="h-3 w-3" aria-hidden="true" />
             Saved

@@ -102,10 +102,13 @@
   opacity: 0.6;
 }
 
+/* Accessibility audit (2026-10-22): same fixed-red-on-dark-themes contrast
+   bug as RsvpSection/SimpleForm's own .error -- see ThemeProvider.tsx's
+   errorColor() comment for the full fix. */
 .error {
   font-family: var(--theme-font-body);
   font-size: 0.85rem;
-  color: #b3402a;
+  color: var(--theme-error, #b3402a);
   margin: 0.75rem 0 0;
 }
 

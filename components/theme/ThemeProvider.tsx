@@ -62,6 +62,29 @@ function accentContrastColor(accentHex: string): string {
   return whiteContrast >= blackContrast ? "#ffffff" : "#1a1a1a";
 }
 
+/** Accessibility audit (2026-10-22): RSVP's and Banquet Navigator's own
+ * validation-error text used a single fixed red (#b3402a) "regardless of
+ * theme" by design (see SimpleForm.module.css's own comment -- it can't be
+ * var(--theme-accent), since some themes' accent already IS a shade of
+ * red/coral, which would defeat the "something's wrong" signal). That fixed
+ * red measured as low as 2.83:1 on this product's own dark/luxury/cosmic
+ * themes (near-black backgrounds) -- nowhere close to the 4.5:1 normal-text
+ * floor. Same fix shape as accentContrastColor above, but choosing between
+ * two reds (one dark enough for light/pastel backgrounds, one light enough
+ * for near-black ones) rather than pure black/white, so an error still
+ * *reads* as red on every theme. Verified by script against all ~90 themes'
+ * own --theme-bg, including the hardest case (a muted dusty-pink bg where
+ * neither candidate alone was enough) -- both candidates below pass >=4.5:1
+ * everywhere once picked this way. */
+function errorColor(bgHex: string): string {
+  const bgLum = relativeLuminance(bgHex);
+  const DARK_RED = "#8C2E1C"; // for light/pastel backgrounds
+  const LIGHT_CORAL = "#FF6B5B"; // for near-black backgrounds
+  const darkRedContrast = contrastRatio(relativeLuminance(DARK_RED), bgLum);
+  const lightCoralContrast = contrastRatio(relativeLuminance(LIGHT_CORAL), bgLum);
+  return lightCoralContrast > darkRedContrast ? LIGHT_CORAL : DARK_RED;
+}
+
 export default function ThemeProvider({ theme, children }: ThemeProviderProps) {
   const texture = BACKGROUND_TEXTURE[theme.category];
   const textureImage =
@@ -69,6 +92,7 @@ export default function ThemeProvider({ theme, children }: ThemeProviderProps) {
   const style = {
     ...theme.vars,
     "--theme-accent-contrast": accentContrastColor(theme.vars["--theme-accent"]),
+    "--theme-error": errorColor(theme.vars["--theme-bg"]),
     ...(textureImage ? { "--theme-texture-image": `url("${textureImage}")` } : {}),
   } as CSSProperties;
   return (

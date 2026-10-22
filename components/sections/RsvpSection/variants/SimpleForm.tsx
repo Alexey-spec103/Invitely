@@ -273,7 +273,12 @@ export default function SimpleForm({
         <div className={styles.card}>
           <span className={styles.flourishTopLeft} aria-hidden="true" />
           <span className={styles.flourishBottomRight} aria-hidden="true" />
-          <p className={styles.successMessage}>
+          {/* Accessibility audit (2026-10-22): this replaces the whole form
+              with no aria-live region anywhere in the swap -- a screen
+              reader guest who just submitted heard nothing confirming it
+              worked (WCAG 4.1.3). role="status" (implicit aria-live=
+              "polite") gets this announced the moment it's inserted. */}
+          <p className={styles.successMessage} role="status">
             {attending ? t.successAttending : t.successDeclining}
           </p>
         </div>
@@ -388,9 +393,19 @@ export default function SimpleForm({
           </div>
 
           <div className={styles.field}>
-            <span className={styles.label}>{t.willYouJoin}</span>
+            <span className={styles.label} id="rsvp-attending-label">{t.willYouJoin}</span>
+            {/* Accessibility audit (2026-10-22): two independent aria-pressed
+                buttons with no group relationship -- a screen reader heard
+                "accepts, toggle button, not pressed" / "declines, toggle
+                button, not pressed" with nothing tying them together as a
+                single either/or choice (WCAG 1.3.1/4.1.2), and nothing
+                associated this group with its own "Will you join us?" label
+                (aria-describedby on a plain, roleless div is unreliable --
+                most ATs only honor it once the element has a real role). */}
             <div
               ref={attendingToggleRef}
+              role="group"
+              aria-labelledby="rsvp-attending-label"
               className={styles.attendingToggle}
               aria-describedby={error ? "rsvp-form-error" : undefined}
             >

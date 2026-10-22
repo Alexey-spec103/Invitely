@@ -13,13 +13,24 @@ export default function EmbedStatic({ title, venues, styleOverrides, locale }: M
   return (
     <section className={styles.section}>
       <div className={styles.stack}>
-        <div className={styles.titleRow}>
-          <span className={styles.titleFlourish} aria-hidden="true" />
-          <h2 className={styles.title}>
-            <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
-          </h2>
-          <span className={`${styles.titleFlourish} ${styles.titleFlourishRight}`} aria-hidden="true" />
-        </div>
+        {/* Accessibility audit (2026-10-22): this used to render an
+            unconditional <h2> regardless of content -- a guest-facing event
+            with no map title typed in (this test event included) shipped a
+            genuinely empty heading to every visitor, which a screen reader
+            announces as "heading level 2, blank" when navigating by
+            headings (WCAG 2.4.6). Same `(value || editable) && ...` guard
+            LetterSection/CenteredCard already uses for its own optional
+            fields -- still renders for a host in the dashboard editor so
+            there's something to click into and type a first title. */}
+        {(title || editable) && (
+          <div className={styles.titleRow}>
+            <span className={styles.titleFlourish} aria-hidden="true" />
+            <h2 className={styles.title}>
+              <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
+            </h2>
+            <span className={`${styles.titleFlourish} ${styles.titleFlourishRight}`} aria-hidden="true" />
+          </div>
+        )}
         {(venues ?? []).map((venue, index) => {
           const src = mapEmbedSrc(venue);
 

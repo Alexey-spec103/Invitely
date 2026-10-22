@@ -3280,9 +3280,14 @@ function EditableBlocksPanel({
       className="rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface)] p-3"
       onClick={(event) => event.stopPropagation()}
     >
+      {/* Accessibility audit (2026-10-22): this disclosure toggle had no
+          aria-expanded -- a screen reader announced "button" with no way to
+          tell whether the list below was open or collapsed (WCAG 4.1.2). */}
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
+        aria-expanded={open}
+        aria-controls="editable-blocks-panel-list"
         className="flex w-full items-center justify-between text-left"
       >
         <span className="flex items-center gap-2 text-sm font-semibold text-[var(--dash-accent)]">
@@ -3296,7 +3301,7 @@ function EditableBlocksPanel({
       {open && (
         <>
           <p className="mt-1.5 text-xs text-[var(--dash-text-muted)]">{t.description}</p>
-          <ul className="mt-3 max-h-80 space-y-1 overflow-y-auto">
+          <ul id="editable-blocks-panel-list" className="mt-3 max-h-80 space-y-1 overflow-y-auto">
           {blocks.map((block) => {
             if (block.type === "sectionHeader") {
               return (

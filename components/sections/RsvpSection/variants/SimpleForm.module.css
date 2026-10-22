@@ -92,17 +92,28 @@
   gap: 0.4rem;
 }
 
+/* Accessibility audit (2026-10-22): computed against every theme's own
+   --theme-text/--theme-bg pair (lib/themes/*.ts, ~90 themes) -- 0.75 dropped
+   several themes (botanical-sage, boho-terracotta, rustic-wheatfield,
+   coastal-driftwood, provence-stone-lavender, rustic-terracotta-pot) below
+   the 4.5:1 floor for normal text (as low as 4.25:1), and this label is a
+   real form-field name, not decoration. 0.85 keeps every theme at >=4.5:1
+   (worst case needed >=0.77) while still reading visibly lighter than
+   --theme-text at full strength. */
 .label {
   font-family: var(--theme-font-body);
   font-size: 0.8rem;
   letter-spacing: 0.04em;
-  opacity: 0.75;
+  opacity: 0.85;
 }
 
+/* Same audit: 0.6 put nearly every theme below 4.5:1 (many down to
+   3.0-4.0:1) -- "(optional)" is still real text content next to a form
+   label, not a decorative flourish. */
 .optional {
   text-transform: none;
   letter-spacing: normal;
-  opacity: 0.6;
+  opacity: 0.85;
 }
 
 .input,
@@ -173,10 +184,14 @@
   border-color: var(--theme-accent);
 }
 
+/* Accessibility audit (2026-10-22): the old fixed #b3402a measured as low
+   as 2.83:1 on this product's own dark/luxury/cosmic themes -- see
+   ThemeProvider.tsx's own errorColor() comment for the full fix. Fallback
+   keeps the original color if this ever renders without ThemeProvider. */
 .error {
   font-family: var(--theme-font-body);
   font-size: 0.85rem;
-  color: #b3402a;
+  color: var(--theme-error, #b3402a);
   margin: 0;
 }
 
@@ -189,10 +204,12 @@
    ("you're not stuck, hang on"), so a quiet fade-in (not the full enter
    recipe -- this is a one-line reassurance, not a moment) gives that
    signal a beat to register instead of just snapping into the layout. */
+/* Accessibility audit (2026-10-22): same opacity-vs-contrast issue as
+   .label/.optional above -- 0.7 measured below 4.5:1 on several themes. */
 .takingLonger {
   font-family: var(--theme-font-body);
   font-size: 0.85rem;
-  opacity: 0.7;
+  opacity: 0.85;
   margin: 0.5rem 0 0;
 }
 
@@ -207,7 +224,11 @@
     opacity: 0;
   }
   to {
-    opacity: 0.7;
+    /* Must match .takingLonger's own resting opacity above (0.85) -- this
+       `to` keyframe wins over that static rule once the animation fills
+       forward, so leaving it at the old 0.7 would have silently un-done
+       the contrast fix the instant the fade-in finished. */
+    opacity: 0.85;
   }
 }
 
@@ -287,6 +308,8 @@
   transition: background-color 0.15s ease;
 }
 
+/* Accessibility audit (2026-10-22): same opacity-vs-contrast issue as
+   .label/.optional/.takingLonger above. */
 .quickMoreDetails {
   display: block;
   width: 100%;
@@ -295,7 +318,7 @@
   font-size: 0.85rem;
   text-decoration: underline;
   text-underline-offset: 2px;
-  opacity: 0.7;
+  opacity: 0.85;
   background: none;
   border: none;
   color: var(--theme-text);

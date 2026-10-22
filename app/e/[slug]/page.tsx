@@ -384,6 +384,14 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           locale={locale}
           availableLocales={SUPPORTED_LOCALES}
         />
+        {/* Accessibility audit (2026-10-22): nothing on this page had a
+            `<main>` (or any role="main") landmark -- confirmed live, a
+            screen reader's landmark list showed only the <header>, with
+            no way to jump straight to the actual content (WCAG 1.3.1 /
+            2.4.1). Canvas mode's own cover (CanvasRenderer, rendered above
+            ThemeProvider for unrelated layering reasons) isn't included
+            here -- flagged separately, not a low-risk wrap. */}
+        <main>
         {sections.map((section, index) => {
           const element = renderSection(section, content, {
             hero: { themeCategory: decorCategory, eyebrow: customEyebrow ?? getLocalizedEventType(event.event_type, locale).heroEyebrow },
@@ -417,6 +425,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
           return index === 0 && !isCanvasMode ? wrapped : <RevealOnScroll key={section.type}>{wrapped}</RevealOnScroll>;
         })}
         {!isCanvasMode && sections.length > 1 && <ScrollToNextSection />}
+        </main>
         {!hasBasicAccess && (
           <>
             <WatermarkOverlay />

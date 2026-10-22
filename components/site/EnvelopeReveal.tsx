@@ -55,6 +55,7 @@ export default function EnvelopeReveal({
   const reduceMotion = useReducedMotion();
   const autoOpenRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const envelopeButtonRef = useRef<HTMLDivElement | null>(null);
 
   // The server always renders "closed" (it has no way to know whether this
   // guest has already seen it) -- this runs before the browser paints so a
@@ -80,6 +81,17 @@ export default function EnvelopeReveal({
     if (!visible) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Accessibility audit (2026-10-22): nothing moved focus here before --
+    // a keyboard user landed on <body> with no indication the envelope was
+    // even the thing to interact with (confirmed live: the browser's own
+    // default first-Tab behavior is inconsistent, body/document-level, not
+    // this element specifically). This doesn't fix the deeper gap (the real
+    // page underneath is still keyboard-reachable while this overlay is up
+    // -- flagged separately, it needs either restructuring the page around
+    // a shared inert/aria-hidden toggle or a precise DOM walk that risks
+    // catching unrelated portaled UI, not a safe drop-in here) but it does
+    // make the one control this component actually owns reachable immediately.
+    envelopeButtonRef.current?.focus();
     autoOpenRef.current = setTimeout(open, AUTO_OPEN_DELAY_MS);
     return () => {
       document.body.style.overflow = previousOverflow;
@@ -126,8 +138,17 @@ export default function EnvelopeReveal({
         style={theme.vars as CSSProperties}
         animate={{ opacity: opening ? 0 : 1 }}
         transition={{ duration, delay: opening ? (reduceMotion ? 0 : 0.4) : 0, ease: "easeOut" }}
+        // Accessibility audit (2026-10-22): no role/aria-modal at all before
+        // -- a screen reader landing here had no way to know this was a
+        // distinct, dismissable layer sitting on top of the real page
+        // (WCAG 4.1.2). aria-modal is a hint, not an enforcement (see the
+        // focus() comment above for the real gap this doesn't close).
+        role="dialog"
+        aria-modal="true"
+        aria-label={dict.envelopeReveal.openInvitation(coupleLabel)}
       >
         <div
+          ref={envelopeButtonRef}
           className={styles.envelope}
           style={{ pointerEvents: opening ? "none" : undefined }}
           role="button"

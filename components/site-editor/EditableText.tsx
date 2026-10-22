@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties, type FocusEvent, type MouseEvent } from "react";
+import { useEffect, useRef, type CSSProperties, type FocusEvent, type KeyboardEvent, type MouseEvent } from "react";
 import { useEditableField } from "./EditableFieldContext";
 import type { TextStyleOverride } from "./EditableFieldContext";
 import editableStyles from "./EditableText.module.css";
@@ -134,6 +134,22 @@ export default function EditableText({ field, value, style, as = "span", classNa
     }
   };
 
+  // Accessibility audit (2026-10-22): idle fields had no tabIndex and no
+  // keyboard handler at all -- only a mouse click could ever enter edit
+  // mode, so a keyboard-only host couldn't edit a single field in this
+  // entire inline editor (WCAG 2.1.1). Once `isSelected`, the element is
+  // already contentEditable (natively focusable/typable, browser-handled),
+  // so this only needs to cover the idle -> selected transition; Enter/Space
+  // must NOT be intercepted once selected, or a guest trying to type a space
+  // or add a newline in their own text would lose that keystroke.
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (isSelected) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      selectField(field);
+    }
+  };
+
   // A variable tag name in JSX forces TS to intersect every possible
   // intrinsic element's ref type, which doesn't typecheck -- one explicit
   // branch per tag (only 4 exist) sidesteps that without an `any` escape.
@@ -150,7 +166,15 @@ export default function EditableText({ field, value, style, as = "span", classNa
     style: cssStyle,
     contentEditable: isSelected,
     suppressContentEditableWarning: true,
+    // tabIndex/aria-roledescription only on the idle state: once selected the
+    // element is natively focusable via contentEditable, and overriding its
+    // role there (or re-adding a redundant tabIndex) isn't needed. Not a
+    // `role="button"` override -- this element can be an <h2>, and swapping
+    // its role would hide that heading from a screen reader navigating the
+    // dashboard preview by headings while idle.
+    ...(isSelected ? {} : { tabIndex: 0, "aria-roledescription": "editable text" }),
     onClick: handleClick,
+    onKeyDown: handleKeyDown,
     onBlur: handleBlur,
     children: isSelected ? undefined : value,
   };
