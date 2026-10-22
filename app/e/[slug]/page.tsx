@@ -141,12 +141,36 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
   // publish gate above (an unpublished event is already invisible to guests
   // regardless of this). `site_password_hash` itself is never read here --
   // its column-level SELECT is revoked at the DB level (see the site-password
-  // migration) -- only the opaque unlock token, which is safe to compare.
+  // migration).
+  //
+  // security-baseline audit (2026-10-22): this used to compare the cookie
+  // directly against `event.site_password_unlock_token`, a plain column --
+  // the old comment here called that "safe to compare," but it was never
+  // actually excluded from the public SELECT grant the way
+  // site_password_hash is (confirmed live: `EVENT_COLUMNS` included it,
+  // and the SELECT grant's exclusion list only ever named
+  // last_digest_sent_at/site_password_hash). Anyone with the anon key
+  // could read any event's unlock token directly over the REST API and
+  // set the matching `site_unlock_<id>` cookie themselves, bypassing the
+  // password gate entirely without ever knowing the real password --
+  // defeating the one feature this column exists for. Fixed the same way
+  // site_password_hash itself is handled: the token now stays server-side
+  // only, compared inside a SECURITY DEFINER RPC
+  // (check_site_unlock_token) that returns a bare boolean, never the
+  // token's value.
   if (event.site_password_enabled) {
     const cookieStore = await cookies();
+    const cookieToken = cookieStore.get(`site_unlock_${event.id}`)?.value;
+    // No cookie at all -- skip the RPC round-trip entirely, same outcome
+    // either way (gated).
     const unlocked =
-      event.site_password_unlock_token != null &&
-      cookieStore.get(`site_unlock_${event.id}`)?.value === event.site_password_unlock_token;
+      cookieToken !== undefined &&
+      (
+        await supabase.rpc("check_site_unlock_token", {
+          p_event_id: event.id,
+          p_token: cookieToken,
+        })
+      ).data === true;
     if (!unlocked) {
       return <SitePasswordGate eventId={event.id} title={event.title} />;
     }

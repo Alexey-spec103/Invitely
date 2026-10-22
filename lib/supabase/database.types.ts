@@ -525,6 +525,13 @@ export type Database = {
         }
         Returns: string | null
       }
+      check_site_unlock_token: {
+        Args: {
+          p_event_id: string
+          p_token: string
+        }
+        Returns: boolean
+      }
       get_guest_email_for_rsvp_confirmation: {
         Args: {
           p_event_id: string

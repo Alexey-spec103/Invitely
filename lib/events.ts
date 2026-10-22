@@ -9,12 +9,16 @@ import type { Json } from "@/lib/supabase/database.types";
 import { QUOTE_SUGGESTIONS } from "@/lib/quoteSuggestions";
 import { getEventType } from "@/lib/eventTypes";
 
-// `site_password_hash` is deliberately excluded: its column-level SELECT is
-// revoked from anon/authenticated at the DB level (see the site-password
-// migration), so a plain `select("*")` against `events` fails outright for
-// every role -- Postgres denies `*` if any column is inaccessible, not just
-// that one column. Nothing here ever needs the raw hash anyway (only
-// `site_password_enabled`, which stays fully selectable).
+// `site_password_hash` and `site_password_unlock_token` are deliberately
+// excluded: both have their column-level SELECT revoked from anon/
+// authenticated at the DB level (see the site-password migration and
+// security-baseline audit 2026-10-22's lockdown of the unlock token), so a
+// plain `select("*")` against `events` fails outright for every role --
+// Postgres denies `*` if any column is inaccessible, not just that one
+// column. Nothing here ever needs either raw secret anyway (only
+// `site_password_enabled`, which stays fully selectable -- the unlock
+// token is now verified via the check_site_unlock_token RPC instead of a
+// direct column read, see app/e/[slug]/page.tsx).
 // A single string literal (not built via `+`, which widens to plain `string`)
 // so supabase-js can still statically infer the resulting row shape from the
 // literal type -- a `string`-typed select falls back to an untyped result.
@@ -28,7 +32,7 @@ import { getEventType } from "@/lib/eventTypes";
 // of widening this shared constant, so a not-yet-applied migration degrades
 // only that one feature rather than the entire dashboard.
 export const EVENT_COLUMNS =
-  "id, owner_id, slug, title, subtitle_names, event_type, event_date, event_time, venue_name, venue_address, venue_city, venue_lat, venue_lng, plan_id, status, default_locale, supported_locales, custom_domain, custom_domain_verification_token, custom_domain_verified_at, site_password_enabled, site_password_unlock_token, created_at, updated_at" as const;
+  "id, owner_id, slug, title, subtitle_names, event_type, event_date, event_time, venue_name, venue_address, venue_city, venue_lat, venue_lng, plan_id, status, default_locale, supported_locales, custom_domain, custom_domain_verification_token, custom_domain_verified_at, site_password_enabled, created_at, updated_at" as const;
 
 const COMBINING_DIACRITICS = /[̀-ͯ]/g;
 
