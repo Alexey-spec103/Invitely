@@ -36,6 +36,8 @@ export const es: Dictionary = {
     sendRsvp: "Enviar confirmación",
     sending: "Enviando...",
     takingLonger: "Esto está tardando más de lo esperado - espera un momento, o inténtalo de nuevo en breve.",
+    missingNameError: "Por favor, indica tu nombre.",
+    missingAttendanceError: "Por favor, confírmanos si podrás venir.",
     missingFieldsError: "Por favor, indica tu nombre y confírmanos si podrás venir.",
     genericError: "Algo salió mal",
     successAttending: "¡Ya estás en la lista! No podemos esperar a celebrar contigo. \u{1F389}",

@@ -217,14 +217,28 @@ export default function SimpleForm({
     event.preventDefault();
 
     if (!guestName.trim() || attending === null) {
-      setError(t.missingFieldsError);
+      const nameMissing = !guestName.trim();
+      const attendanceMissing = attending === null;
+      // impeccable critique (2026-10-22): this used to always read the
+      // combined "your name AND let us know if you can make it" message,
+      // even when only one was actually empty -- confusing on a form
+      // that's otherwise careful about pointing at the exact problem
+      // field. Reuses the same nameMissing/attendanceMissing split the
+      // focus/scroll branch right below already needed.
+      setError(
+        nameMissing && attendanceMissing
+          ? t.missingFieldsError
+          : nameMissing
+            ? t.missingNameError
+            : t.missingAttendanceError
+      );
       // Form-strategy audit (2026-10-19): the error message rendered near
       // the submit button with no cue about WHICH field it referred to --
       // easy to miss on a long form with host-added custom questions
       // between the name field and the error. Moves focus/scroll to
       // whichever is actually the problem, name taking priority since an
       // empty name is caught first either way.
-      if (!guestName.trim()) {
+      if (nameMissing) {
         nameInputRef.current?.focus();
       } else {
         attendingToggleRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });

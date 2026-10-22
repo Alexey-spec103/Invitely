@@ -75,6 +75,15 @@ export interface Dictionary {
      * response) -- reassures a guest staring at a stuck-looking spinner that
      * the attempt is still in flight, not silently broken. */
     takingLonger: string;
+    /** impeccable critique (2026-10-22): missingFieldsError names both
+     * conditions ("your name AND let us know if you can make it") even
+     * when only one is actually empty -- the component already knows
+     * which (see the focus/scroll branch right next to where this is
+     * set), so these two let the copy match instead of always reading
+     * the combined message. missingFieldsError stays as the true-both-
+     * empty case. */
+    missingNameError: string;
+    missingAttendanceError: string;
     missingFieldsError: string;
     genericError: string;
     successAttending: string;
@@ -1135,6 +1144,8 @@ export const en: Dictionary = {
     sendRsvp: "Send RSVP",
     sending: "Sending...",
     takingLonger: "This is taking longer than expected - hang tight, or try again in a moment.",
+    missingNameError: "Please fill in your name.",
+    missingAttendanceError: "Please let us know if you can make it.",
     missingFieldsError: "Please fill in your name and let us know if you can make it.",
     genericError: "Something went wrong",
     successAttending: "You're on the list! We can't wait to celebrate with you. \u{1F389}",

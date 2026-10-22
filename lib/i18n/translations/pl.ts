@@ -47,6 +47,8 @@ export const pl: Dictionary = {
     sendRsvp: "Wyślij potwierdzenie",
     sending: "Wysyłanie...",
     takingLonger: "To trwa dłużej niż zwykle - poczekaj chwilę albo spróbuj ponownie za moment.",
+    missingNameError: "Podaj swoje imię.",
+    missingAttendanceError: "Daj nam znać, czy będziesz mógł/mogła przyjść.",
     missingFieldsError: "Podaj swoje imię i daj nam znać, czy będziesz mógł/mogła przyjść.",
     genericError: "Coś poszło nie tak",
     successAttending: "Jesteś na liście! Nie możemy się doczekać wspólnego świętowania. \u{1F389}",
