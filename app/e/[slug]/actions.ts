@@ -287,6 +287,29 @@ export async function submitRsvp(
 export async function lookupGuestTable(eventId: string, fullName: string): Promise<BanquetTableLookupResult> {
   const supabase = await createClient();
 
+  // Security audit (2026-10-22): unlike submitRsvp/unlockSitePassword, this
+  // RPC had no rate limit -- an anonymous, internet-facing lookup any
+  // script could call directly to enumerate guest names/attendance. Same
+  // IP-header reasoning/fails-open philosophy as unlockSitePassword's own
+  // check: a missing IP header or a rate-limit-check error only skips
+  // logging for this one attempt, never blocks a real guest's own retry.
+  const headerList = await headers();
+  const forwardedFor = headerList.get("x-forwarded-for");
+  const ipAddress = forwardedFor?.split(",")[0]?.trim() || headerList.get("x-real-ip");
+  if (ipAddress) {
+    const { data: withinLimit, error: rateLimitError } = await supabase.rpc(
+      "check_and_log_banquet_lookup_attempt",
+      { p_event_id: eventId, p_ip_address: ipAddress }
+    );
+    if (rateLimitError) {
+      console.error("lookupGuestTable rate-limit check failed", rateLimitError);
+    } else if (withinLimit === false) {
+      throw new Error("Too many attempts -- please try again later");
+    }
+  } else {
+    console.warn("lookupGuestTable: no client IP header present, skipping rate limit for this request");
+  }
+
   const { data, error } = await supabase
     .rpc("lookup_guest_table_by_name", { p_event_id: eventId, p_full_name: fullName })
     .maybeSingle();

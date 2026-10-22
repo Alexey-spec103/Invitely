@@ -579,6 +579,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_and_log_banquet_lookup_attempt: {
+        Args: {
+          p_event_id: string
+          p_ip_address: string
+        }
+        Returns: boolean
+      }
       check_and_log_event_creation: {
         Args: {
           p_ip_address: string
