@@ -34,6 +34,30 @@ import { getEventType } from "@/lib/eventTypes";
 export const EVENT_COLUMNS =
   "id, owner_id, slug, title, subtitle_names, event_type, event_date, event_time, venue_name, venue_address, venue_city, venue_lat, venue_lng, plan_id, status, default_locale, supported_locales, custom_domain, custom_domain_verification_token, custom_domain_verified_at, site_password_enabled, created_at, updated_at" as const;
 
+/** security-baseline audit (2026-10-22), follow-up to Finding C: this
+ * constant's own comment above already said guest-facing code should use
+ * "its own narrow, defensively-coded query" instead of this dashboard-wide
+ * one -- app/e/[slug]/page.tsx's main event fetch and calendar.ics/
+ * route.ts didn't follow that, reusing EVENT_COLUMNS instead. Both are
+ * anon-reachable, and EVENT_COLUMNS includes owner_id, venue_*,
+ * custom_domain_verification_token, created_at, updated_at -- none of
+ * which either file actually reads (confirmed via grep against every
+ * `event.*` reference in both), but all of which were selectable by
+ * *anyone* with the public anon key over the raw REST API regardless of
+ * what the app's own code happened to query, since Postgres column grants
+ * aren't scoped to a specific query shape. Audited every anon-reachable
+ * `events` query in the codebase (app/e/** and the custom-domain routing
+ * middleware in lib/supabase/proxy.ts) to build this list -- it is the
+ * exact union of columns any of them touch, not a guess. The `anon` role's
+ * own SELECT grant is narrowed to match this set (see the matching
+ * migration); `authenticated` keeps its existing wider grant, since the
+ * dashboard (always authenticated, reading its own owner_id=auth.uid()
+ * rows) still needs it and plain GRANT can't distinguish "authenticated
+ * reading their own row" from "authenticated reading someone else's
+ * published row." */
+export const PUBLIC_EVENT_COLUMNS =
+  "id, slug, title, subtitle_names, event_type, event_date, event_time, status, plan_id, custom_domain, custom_domain_verified_at, site_password_enabled" as const;
+
 const COMBINING_DIACRITICS = /[̀-ͯ]/g;
 
 function slugifyName(name: string): string {

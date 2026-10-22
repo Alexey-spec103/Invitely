@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { EVENT_COLUMNS } from "@/lib/events";
+import { PUBLIC_EVENT_COLUMNS } from "@/lib/events";
 import { getTheme, applyColorVariant } from "@/lib/themes";
 import { romanticBlush } from "@/lib/themes/romantic-blush";
 import { parseSections, parseContent, renderSection, sectionWillRender, SECTION_LABELS } from "@/components/sections/registry";
@@ -122,7 +122,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
 
   const { data: event } = await supabase
     .from("events")
-    .select(`${EVENT_COLUMNS}, site_config(*)`)
+    .select(`${PUBLIC_EVENT_COLUMNS}, site_config(*)`)
     .eq("slug", slug)
     .maybeSingle();
 

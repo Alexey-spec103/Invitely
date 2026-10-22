@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { parseSections, parseContent } from "@/components/sections/registry";
-import { EVENT_COLUMNS } from "@/lib/events";
+import { PUBLIC_EVENT_COLUMNS } from "@/lib/events";
 
 function pad(value: number) {
   return String(value).padStart(2, "0");
@@ -30,7 +30,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
 
   const { data: event } = await supabase
     .from("events")
-    .select(`${EVENT_COLUMNS}, site_config(*)`)
+    .select(`${PUBLIC_EVENT_COLUMNS}, site_config(*)`)
     .eq("slug", slug)
     .maybeSingle();
 
