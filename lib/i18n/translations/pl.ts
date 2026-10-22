@@ -631,6 +631,9 @@ export const pl: Dictionary = {
         basicBadge: "Basic",
         emptyBadge: "Puste",
         emptyBadgeHint: "To jest włączone, ale nie ma tu jeszcze nic - goście tego nie zobaczą, dopóki nie dodasz treści.",
+        personalizeBadge: "Dodaj własne słowa",
+        personalizeBadgeHint:
+          "Teraz widać tylko cytat - napisz krótką wiadomość powitalną własnymi słowami, żeby było bardziej osobiście.",
         gatedOnButHidden:
           "Widoczne tylko dla Ciebie tutaj - nie pojawi się na opublikowanej stronie, dopóki nie przejdziesz na plan Basic lub wyższy.",
         gatedPreviewOnly:

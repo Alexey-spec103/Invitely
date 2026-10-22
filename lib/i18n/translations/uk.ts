@@ -640,6 +640,9 @@ export const uk: Dictionary = {
         basicBadge: "Basic",
         emptyBadge: "Порожньо",
         emptyBadgeHint: "Це увімкнено, але тут поки що нічого немає - гості не побачать це, поки ви не додасте вміст.",
+        personalizeBadge: "Додайте свої слова",
+        personalizeBadgeHint:
+          "Зараз тут лише цитата - напишіть коротке привітання власними словами, щоб це звучало особисто.",
         gatedOnButHidden:
           "Видно лише вам тут - на опублікованому сайті не з'явиться, доки не перейдете на тариф Basic або вищий.",
         gatedPreviewOnly:

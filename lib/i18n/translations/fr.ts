@@ -622,6 +622,9 @@ export const fr: Dictionary = {
         emptyBadge: "Vide",
         emptyBadgeHint:
           "C'est activé, mais il n'y a encore rien dedans - vos invités ne le verront pas tant que vous n'aurez pas ajouté de contenu.",
+        personalizeBadge: "Ajoutez vos mots",
+        personalizeBadgeHint:
+          "Pour l'instant, seule une citation s'affiche - écrivez un court mot de bienvenue dans vos propres mots pour que ce soit personnel.",
         gatedOnButHidden:
           "Visible pour vous ici uniquement - n'apparaîtra sur votre site publié qu'avec le forfait Basic ou supérieur.",
         gatedPreviewOnly:

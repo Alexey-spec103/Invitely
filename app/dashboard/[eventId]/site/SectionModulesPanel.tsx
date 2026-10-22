@@ -149,6 +149,22 @@ export default function SectionModulesPanel({
     return !sectionWillRender(section ?? fallback, content);
   };
 
+  // impeccable critique (2026-10-22): Welcome Letter is the one section
+  // built to carry the couple's own voice, but `sectionWillRender` treats a
+  // quote alone (picked from the optional QuoteSuggestionPicker list) as
+  // "has content" -- a host can save with just a suggested quote and never
+  // notice the `body` field (their own welcome message) is still blank.
+  // Distinct from isEmptyWhileEnabled above (that one requires nothing at
+  // all; this one requires a quote present with no personal body), so the
+  // two badges are mutually exclusive by construction.
+  const isQuoteOnlyLetter = (type: ModuleType) => {
+    if (type !== "letter" || !enabled[type]) return false;
+    const data = content.letter;
+    if (!data || typeof data !== "object") return false;
+    const { body, quote } = data as { body?: unknown; quote?: unknown };
+    return Boolean((quote as string)?.trim()) && !(body as string)?.trim();
+  };
+
   const [draggingType, setDraggingType] = useState<ModuleType | null>(null);
   const [pendingToggle, setPendingToggle] = useState<ModuleType | null>(null);
   // dashboard-audit.md "fresh eyes" finding #2: the 🔒 Basic badge's real
@@ -306,6 +322,14 @@ export default function SectionModulesPanel({
                     className="rounded-full bg-[color-mix(in_srgb,var(--dash-text-muted)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--dash-text-muted)]"
                   >
                     {t.emptyBadge}
+                  </span>
+                )}
+                {!isGated && isQuoteOnlyLetter(type) && (
+                  <span
+                    title={t.personalizeBadgeHint}
+                    className="rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--dash-accent)]"
+                  >
+                    {t.personalizeBadge}
                   </span>
                 )}
               </span>

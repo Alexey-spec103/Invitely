@@ -475,6 +475,8 @@ export interface Dictionary {
         basicBadge: string;
         emptyBadge: string;
         emptyBadgeHint: string;
+        personalizeBadge: string;
+        personalizeBadgeHint: string;
         gatedOnButHidden: string;
         gatedPreviewOnly: string;
         addSeatGuestsLink: string;
@@ -1714,6 +1716,9 @@ export const en: Dictionary = {
         basicBadge: "Basic",
         emptyBadge: "Empty",
         emptyBadgeHint: "This is on, but there's nothing in it yet - guests won't see it until you add content.",
+        personalizeBadge: "Add your words",
+        personalizeBadgeHint:
+          "Right now this only shows a quote - write a short welcome message in your own words so it feels personal.",
         gatedOnButHidden:
           "Visible to you here, but it won't show on your published site until you're on the Basic plan or above.",
         gatedPreviewOnly:

@@ -1,10 +1,14 @@
+"use client";
+
 import type { MapSectionVariantProps } from "../types";
 import { mapEmbedSrc } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
+import { useEditableField } from "@/components/site-editor/EditableFieldContext";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./EmbedStatic.module.css";
 
 export default function EmbedStatic({ title, venues, styleOverrides, locale }: MapSectionVariantProps) {
+  const { editable } = useEditableField();
   const t = getDictionary(locale).map;
   return (
     <section className={styles.section}>
@@ -35,20 +39,22 @@ export default function EmbedStatic({ title, venues, styleOverrides, locale }: M
                   style={styleOverrides?.[`venues.${index}.address`]}
                 />
               </p>
-              <div className={styles.mapWrapper}>
-                {src ? (
-                  <iframe
-                    className={styles.map}
-                    src={src}
-                    title={t.mapTitle(venue.name)}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                  />
-                ) : (
-                  <p className={styles.mapPlaceholder}>{t.mapPlaceholder}</p>
-                )}
-              </div>
+              {(src || editable) && (
+                <div className={styles.mapWrapper}>
+                  {src ? (
+                    <iframe
+                      className={styles.map}
+                      src={src}
+                      title={t.mapTitle(venue.name)}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <p className={styles.mapPlaceholder}>{t.mapPlaceholder}</p>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}

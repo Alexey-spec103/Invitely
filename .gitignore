@@ -46,3 +46,8 @@ next-env.d.ts
 # impeccable's platform-specific engine binary -- re-downloaded per
 # machine by `npx impeccable install`, not meant to be committed
 .claude/skills/impeccable/scripts/bin/
+
+# impeccable's live-server runtime state (pid/port/token, per-session
+# annotations) -- ephemeral, recreated each `impeccable live-server` run;
+# only .impeccable/critique/ snapshots are meant to be committed
+.impeccable/live/

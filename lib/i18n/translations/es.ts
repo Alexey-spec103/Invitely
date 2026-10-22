@@ -621,6 +621,9 @@ export const es: Dictionary = {
         basicBadge: "Basic",
         emptyBadge: "Vacío",
         emptyBadgeHint: "Esto está activado, pero todavía no tiene nada - los invitados no lo verán hasta que añadas contenido.",
+        personalizeBadge: "Añade tus palabras",
+        personalizeBadgeHint:
+          "Ahora mismo solo muestra una cita - escribe un breve mensaje de bienvenida con tus propias palabras para que se sienta personal.",
         gatedOnButHidden:
           "Visible solo para ti aquí - no aparecerá en tu sitio publicado hasta que tengas el plan Basic o superior.",
         gatedPreviewOnly:

@@ -17,8 +17,8 @@
   width: 170vw;
   height: 170vh;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(9, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(6, 1fr);
   transform: translate(-50%, -50%) rotate(-24deg);
 }
 
@@ -27,7 +27,7 @@
   align-items: center;
   justify-content: center;
   color: var(--theme-accent);
-  opacity: 0.16;
+  opacity: 0.11;
   font-family: var(--theme-font-body);
   font-size: clamp(0.85rem, 2vw, 1.35rem);
   font-weight: 700;

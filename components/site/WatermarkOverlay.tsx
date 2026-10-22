@@ -1,7 +1,15 @@
 import styles from "./WatermarkOverlay.module.css";
 
-const ROWS = 9;
-const COLS = 6;
+// impeccable critique (2026-10-22): the live detector logged 10 distinct
+// text-occlusion events against the RSVP form alone at the original 9x6
+// density -- legible enough to compete with the couple's own names in Hero
+// and to run directly behind active form fields. Thinned to 6x4 (still a
+// full-bleed grid across the oversized rotated field above, so there's no
+// uncovered gap a screenshot could crop around) and paired with the lower
+// opacity below to read as a watermark again rather than a repeating
+// pattern fighting for attention.
+const ROWS = 6;
+const COLS = 4;
 const TILE_COUNT = ROWS * COLS;
 
 /** Replaces the old single corner badge for Free-tier guest sites --
