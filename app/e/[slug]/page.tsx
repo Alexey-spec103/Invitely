@@ -393,6 +393,7 @@ export default async function Page({ params, searchParams }: PageProps<"/e/[slug
               defaultGuestName: invitedGuest?.full_name,
               maxPartySize,
               existingResponse: existingRsvpResponse,
+              themeCategory: decorCategory,
             },
             countdown: { eventDateTime, themeCategory: decorCategory },
             gift: { preferences: giftItems, themeCategory: decorCategory },

@@ -2405,6 +2405,7 @@ export default function SiteInlineEditor({
                       // guest row. Rejecting (rather than a blocking `alert`) surfaces the
                       // message through SimpleForm's own existing error paragraph for free.
                       onSubmit={() => Promise.resolve({ ok: false as const, message: t.rsvpPreviewOnly })}
+                      themeCategory={decorCategory}
                       locale={previewLocale}
                     />
                   </EditableFieldProvider>

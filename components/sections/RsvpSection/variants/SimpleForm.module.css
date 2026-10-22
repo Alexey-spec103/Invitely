@@ -45,6 +45,25 @@
   transform: rotate(180deg);
 }
 
+/* Category-gated full-color corner accents -- same corner-bleed anchor
+   system as Letter/CenteredCard's identical pair (see decorAnchors.module.css),
+   just sized down: this card is narrower (32rem vs Letter's 38rem) and far
+   denser with stacked form fields, so Letter's own 9/12/15rem would reach
+   too far into the name field and title at mobile. --decor-inward is kept
+   below Letter's 5rem default for the same reason -- verified live across
+   theme categories rather than reused unchanged. */
+.flourishTopLeftColor {
+  composes: cornerBleedTopLeft from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 3rem;
+}
+
+.flourishBottomRightColor {
+  composes: cornerBleedBottomRight from "../../decorAnchors.module.css";
+  --decor-size: 6rem;
+  --decor-inward: 3rem;
+}
+
 .title {
   font-family: var(--theme-font-heading);
   font-weight: 300;
@@ -299,6 +318,11 @@
   .description {
     font-size: 1rem;
   }
+
+  .flourishTopLeftColor,
+  .flourishBottomRightColor {
+    --decor-size: 8rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -308,5 +332,10 @@
 
   .title {
     font-size: 2.4rem;
+  }
+
+  .flourishTopLeftColor,
+  .flourishBottomRightColor {
+    --decor-size: 10rem;
   }
 }

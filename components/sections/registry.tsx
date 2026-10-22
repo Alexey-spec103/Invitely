@@ -290,6 +290,7 @@ export interface RenderSectionContext {
       comment: string | null;
       answers: Record<string, string> | null;
     };
+    themeCategory?: ThemeCategory;
   };
   countdown: { eventDateTime: string; themeCategory?: ThemeCategory };
   gift: { preferences: GiftPreferenceItem[]; themeCategory?: ThemeCategory };
@@ -485,6 +486,7 @@ export function renderSection(
           defaultGuestName={context.rsvp.defaultGuestName}
           maxPartySize={context.rsvp.maxPartySize}
           existingResponse={context.rsvp.existingResponse}
+          themeCategory={context.rsvp.themeCategory}
           locale={locale}
         />
       );

@@ -1,4 +1,5 @@
 import type { TextStyleOverride } from "@/components/site-editor/EditableFieldContext";
+import type { ThemeCategory } from "@/lib/themes/types";
 import type { Locale } from "@/lib/i18n/locales";
 
 export type RsvpVariant = "simple-form";
@@ -53,6 +54,7 @@ export interface RsvpSectionVariantProps {
   };
   onSubmit: (input: RsvpFormInput) => Promise<{ ok: true } | { ok: false; message: string }>;
   styleOverrides?: Record<string, TextStyleOverride>;
+  themeCategory?: ThemeCategory;
   /** Resolves the guest-facing UI chrome locale (labels, buttons, built-in
    * validation/success copy) -- never applied to `title`/`description`/
    * `questions` above, which are the host's own typed content and stay

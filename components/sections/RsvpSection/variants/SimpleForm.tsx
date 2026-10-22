@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import type { RsvpSectionVariantProps } from "../types";
 import EditableText from "@/components/site-editor/EditableText";
 import { useEditableField } from "@/components/site-editor/EditableFieldContext";
+import { CORNER_PAIR_DECOR, CATEGORY_MASK_ACCENT } from "@/lib/themes/decorMotifs";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import styles from "./SimpleForm.module.css";
 
@@ -36,10 +37,32 @@ export default function SimpleForm({
   existingResponse,
   onSubmit,
   styleOverrides,
+  themeCategory,
   locale,
 }: RsvpSectionVariantProps) {
   const t = getDictionary(locale).rsvp;
   const { editable } = useEditableField();
+  // Same category -> asset pairing as Letter/CenteredCard and Gift/SimpleList's
+  // corner accents (all read from CORNER_PAIR_DECOR), so RSVP's corner
+  // flourish reads as the same design system instead of weddingpost's one
+  // generic mark regardless of theme (see decorMotifs.ts's own convention).
+  // Unmatched categories keep the original theme-accent-tinted mask.
+  const flourishAssets = themeCategory ? CORNER_PAIR_DECOR[themeCategory] : undefined;
+  const maskAccent = !flourishAssets && themeCategory ? CATEGORY_MASK_ACCENT[themeCategory] : undefined;
+  const maskAccentStyle = maskAccent
+    ? { maskImage: `url(${maskAccent})`, WebkitMaskImage: `url(${maskAccent})` }
+    : undefined;
+  const flourishes = flourishAssets ? (
+    <>
+      <img className={styles.flourishTopLeftColor} src={flourishAssets[0]} alt="" aria-hidden="true" />
+      <img className={styles.flourishBottomRightColor} src={flourishAssets[1]} alt="" aria-hidden="true" />
+    </>
+  ) : (
+    <>
+      <span className={styles.flourishTopLeft} style={maskAccentStyle} aria-hidden="true" />
+      <span className={styles.flourishBottomRight} style={maskAccentStyle} aria-hidden="true" />
+    </>
+  );
   const [guestName, setGuestName] = useState(defaultGuestName ?? "");
   const [attending, setAttending] = useState<boolean | null>(null);
   const [partySize, setPartySize] = useState("1");
@@ -288,8 +311,7 @@ export default function SimpleForm({
   return (
     <section className={styles.section}>
       <div className={styles.card}>
-        <span className={styles.flourishTopLeft} aria-hidden="true" />
-        <span className={styles.flourishBottomRight} aria-hidden="true" />
+        {flourishes}
         <h2 className={styles.title}>
           <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
         </h2>
