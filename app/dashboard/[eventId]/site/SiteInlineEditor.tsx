@@ -1480,20 +1480,16 @@ export default function SiteInlineEditor({
         scrollToField(letterRef.current, "note");
       },
     },
-    {
-      ...makeRow({
-        field: "rsvpDeadline",
-        label: letterField.draft.rsvpDeadline,
-        placeholder: `${t.sectionLabels.letter} RSVP deadline`,
-        type: "text",
-        hiddenFields: letterField.draft.hiddenFields,
-        commitHidden: letterField.commitHidden,
-      }),
-      onSelect: () => {
-        letterField.setSelectedField("rsvpDeadline");
-        scrollToField(letterRef.current, "rsvpDeadline");
-      },
-    },
+    // No row for `rsvpDeadline` here -- every Letter variant renders it as
+    // derived display text (`rsvpDeadline && isDeadlineUpcoming(...)`, see
+    // CenteredCard.tsx's own comment), never wrapped in EditableText, so it
+    // never gets a `[data-field]` to scroll to. A row that promised
+    // click-to-edit navigation here did nothing on click (confirmed live,
+    // 2026-10-22: scrollTop stayed 0 against a sibling row that correctly
+    // scrolled) -- there is also no other UI anywhere in the dashboard that
+    // sets this field, so it's currently unreachable, not just unlisted
+    // here. Setting an RSVP deadline needs a real date-input control (a
+    // separate, deliberate addition) before this belongs back in the list.
     {
       ...makeRow({
         field: "closingLine",
