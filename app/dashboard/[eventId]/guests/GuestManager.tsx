@@ -1177,7 +1177,7 @@ export default function GuestManager({
               placeholder={t.search.placeholder}
               className="dash-input max-w-sm"
             />
-            <span className="whitespace-nowrap text-xs text-gray-500">
+            <span className="whitespace-nowrap text-xs text-gray-600">
               {t.search.countOf(filteredGuests.length, guests.length)}
             </span>
           </div>
@@ -1192,7 +1192,7 @@ export default function GuestManager({
               >
                 {bulkSending ? t.bulkEmail.sending : t.bulkEmail.sendButton(eligibleForBulkEmail)}
               </button>
-              {bulkResult && <span className="text-xs text-gray-500">{bulkResult}</span>}
+              {bulkResult && <span className="text-xs text-gray-600">{bulkResult}</span>}
             </div>
           )}
           {eligibleForReminder > 0 && (
@@ -1205,7 +1205,7 @@ export default function GuestManager({
               >
                 {reminderSending ? t.bulkReminder.sending : t.bulkReminder.sendButton(eligibleForReminder)}
               </button>
-              {reminderResult && <span className="text-xs text-gray-500">{reminderResult}</span>}
+              {reminderResult && <span className="text-xs text-gray-600">{reminderResult}</span>}
             </div>
           )}
           {selectedIds.size > 0 ? (
@@ -1229,14 +1229,14 @@ export default function GuestManager({
               <button
                 type="button"
                 onClick={() => setSelectedIds(new Set())}
-                className="text-xs font-medium text-gray-500 hover:text-gray-700"
+                className="text-xs font-medium text-gray-600 hover:text-gray-700"
               >
                 {t.selection.clearSelection}
               </button>
             </div>
           ) : (
             filteredGuests.length > 0 && (
-              <label className="flex items-center gap-2 text-xs font-medium text-gray-500">
+              <label className="flex items-center gap-2 text-xs font-medium text-gray-600">
                 <input
                   type="checkbox"
                   checked={allVisibleSelected}
@@ -1267,7 +1267,7 @@ export default function GuestManager({
           </li>
         )}
         {guests.length > 0 && filteredGuests.length === 0 && (
-          <li className="py-4 text-sm text-gray-500">
+          <li className="py-4 text-sm text-gray-600">
             {search ? t.search.noMatchQuery(search) : t.search.noMatchFilter}
           </li>
         )}
@@ -1303,7 +1303,7 @@ export default function GuestManager({
                   />
                   <RsvpStatusBadge status={rsvpStatus} t={t.guestRow} />
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-600">
                   {[guest.group_label, guest.email, guest.phone].filter(Boolean).join(" · ")}
                 </p>
                 </div>

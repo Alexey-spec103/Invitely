@@ -75,12 +75,12 @@ export default function RsvpNotificationToggle({ eventId, enabled, digestEnabled
       <div className="flex items-start justify-between gap-4 p-5">
         <div>
           <p className="text-sm font-semibold text-gray-900">{t.emailMeTitle}</p>
-          <p className="mt-0.5 text-xs text-gray-500">
+          <p className="mt-0.5 text-xs text-gray-600">
             {t.emailMeBody}
           </p>
           {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
         </div>
-        <label className="mt-0.5 flex shrink-0 cursor-pointer items-center gap-2 text-xs text-gray-500">
+        <label className="mt-0.5 flex shrink-0 cursor-pointer items-center gap-2 text-xs text-gray-600">
           <input
             type="checkbox"
             checked={checked}
@@ -93,12 +93,12 @@ export default function RsvpNotificationToggle({ eventId, enabled, digestEnabled
       <div className="flex items-start justify-between gap-4 p-5">
         <div>
           <p className="text-sm font-semibold text-gray-900">{t.dailyTitle}</p>
-          <p className="mt-0.5 text-xs text-gray-500">
+          <p className="mt-0.5 text-xs text-gray-600">
             {t.dailyBody}
           </p>
           {digestError && <p className="mt-1 text-xs text-red-600">{digestError}</p>}
         </div>
-        <label className="mt-0.5 flex shrink-0 cursor-pointer items-center gap-2 text-xs text-gray-500">
+        <label className="mt-0.5 flex shrink-0 cursor-pointer items-center gap-2 text-xs text-gray-600">
           <input
             type="checkbox"
             checked={digestChecked}

@@ -194,9 +194,21 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
         </div>
       )}
 
-      <div className="mt-6">
-        <SupportCard locale={locale} />
-      </div>
+      {/* dashboard critique (2026-10-23), re-run P2: this used to render on
+          every visit regardless of guest-list size -- "A few things worth
+          knowing" plus a support contact is genuinely useful reassurance
+          for a first-time host with nothing in their list yet, but reads as
+          repeated onboarding padding for a returning host checking RSVPs
+          for the twentieth time. Gated on the same `allGuests.length`
+          check the status-count bar above already uses, just inverted --
+          the two are now complementary: a first-timer sees this card, a
+          host who's already added people sees their counts instead, never
+          both, never neither. */}
+      {allGuests.length === 0 && (
+        <div className="mt-6">
+          <SupportCard locale={locale} />
+        </div>
+      )}
 
       {/* Site and Paper each already have their own FirstVisitTour
        * (tourId="site-editor" / "paper-constructor") -- Guests was the one

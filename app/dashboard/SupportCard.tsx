@@ -30,7 +30,7 @@ export default function SupportCard({ locale = "en" }: { locale?: Locale }) {
         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_12%,white)] text-2xl" aria-hidden="true">
           💌
         </span>
-        <p className="text-xs text-gray-500">{t.questionsCaption}</p>
+        <p className="text-xs text-gray-600">{t.questionsCaption}</p>
         <a
           href="mailto:support@invimbo.com"
           className="text-sm font-semibold text-[var(--dash-accent-text)] underline underline-offset-2"

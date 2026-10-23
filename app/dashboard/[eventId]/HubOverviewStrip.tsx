@@ -52,7 +52,7 @@ export default function HubOverviewStrip({
       <div className="flex flex-col rounded-2xl bg-white p-5 text-center shadow-sm">
         <p className="text-sm font-semibold text-gray-900">{isWedding ? t.weddingDetails : t.eventDetails}</p>
         <div className="mt-4 flex-1">
-          <p className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
+          <p className="flex items-center justify-center gap-1.5 text-xs text-gray-600">
             <ListChecks className="h-3.5 w-3.5 shrink-0 text-gray-400" />
             {isWedding ? t.fillWeddingDetails : t.fillEventDetails}
           </p>
@@ -74,7 +74,7 @@ export default function HubOverviewStrip({
         <div className="mt-4 flex-1">
           <p className="text-2xl font-semibold text-gray-900">
             {planName}
-            {planPriceEur > 0 && <span className="text-base font-medium text-gray-500"> · €{planPriceEur}</span>}
+            {planPriceEur > 0 && <span className="text-base font-medium text-gray-600"> · €{planPriceEur}</span>}
           </p>
         </div>
         {/* dashboard-audit.md B20: weddingpost.ru stations real Visa/

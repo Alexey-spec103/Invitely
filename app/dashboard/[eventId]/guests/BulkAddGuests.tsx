@@ -132,7 +132,7 @@ export default function BulkAddGuests({ eventId, existingGuests, locale = "en" }
 
       {open && (
         <div className="mt-3">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-600">
             {t.instructions} <code>Maria Test, Family, maria@example.com</code>
           </p>
 
@@ -158,7 +158,7 @@ export default function BulkAddGuests({ eventId, existingGuests, locale = "en" }
             <button
               type="button"
               onClick={handleDownloadTemplate}
-              className="text-gray-500 underline hover:text-gray-700"
+              className="text-gray-600 underline hover:text-gray-700"
             >
               {t.downloadTemplate}
             </button>
