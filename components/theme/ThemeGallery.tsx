@@ -461,6 +461,7 @@ export default function ThemeGallery({
           value={query}
           onChange={(event) => updateQuery(event.target.value)}
           placeholder={t.searchPlaceholder}
+          aria-label={t.searchPlaceholder}
           className={styles.search}
         />
 

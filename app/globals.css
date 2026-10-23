@@ -31,6 +31,15 @@ html {
      and doesn't meet body-text contrast on white (roughly 2.5:1). Matches
      Tailwind's orange-700, which does. */
   --dash-accent-text: #c2410c;
+  /* dashboard critique (2026-10-23), third re-run: --dash-accent-text on
+     .dash-btn-secondary's own 12%-tint background (not pure white) measured
+     4.14-4.17:1 live across three separate scans -- just under 4.5:1, the
+     tint itself being slightly warmer than white eats the margin the
+     2026-10-14 audit assumed. Darkening the tint's opacity can't close this
+     reliably (even near-zero opacity tops out ~4.45:1); a dedicated, darker
+     variant for this one tinted-background case is the straightforward fix
+     instead, 4.99:1 measured. */
+  --dash-accent-text-tinted: #ad3a0b;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -283,7 +292,7 @@ body {
    above applies: --dash-accent-text instead, ~5.5:1. */
 .dashboard-shell .dash-btn-secondary {
   background: rgba(255, 107, 69, 0.12);
-  color: var(--dash-accent-text);
+  color: var(--dash-accent-text-tinted);
 }
 .dashboard-shell .dash-btn-secondary:hover:not(:disabled) {
   background: rgba(255, 107, 69, 0.2);
