@@ -320,7 +320,6 @@ export default function ThemeGallery({
   // same pattern as the grid's own "Show more styles" below.
   const [styleListExpanded, setStyleListExpanded] = useState(false);
   const { favoriteIds, toggleFavorite } = useFavoriteThemes();
-  const currentYear = new Date().getFullYear();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -465,6 +464,17 @@ export default function ThemeGallery({
           className={styles.search}
         />
 
+        {/* dashboard critique (2026-10-23), re-run P2: this row used to also
+            repeat all 4 season shortcuts (Spring/Winter/Autumn/Summer
+            {year}) between "New" and "Favorites" -- confirmed they called
+            the exact same updateSeason(s) as the SEASON group's own buttons
+            below, just with a slightly different (and more confusing: it
+            ignored a simultaneous Popular/New/Favorites selection) active-
+            state rule. Not a case for a collapse-behind-a-toggle treatment
+            like the style list got -- these were a genuine duplicate
+            control, not a long tail, so removing them drops this row from
+            7 items to 3 without losing any filtering capability the SEASON
+            group doesn't already cover. */}
         <div className={styles.filterGroup}>
           <button
             type="button"
@@ -485,16 +495,6 @@ export default function ThemeGallery({
             <span>{t.new}</span>
             <span className={styles.newBadge}>{t.new.toUpperCase()}</span>
           </button>
-          {seasonEntries.map(([s]) => (
-            <button
-              key={`entry-${s}`}
-              type="button"
-              onClick={() => updateSeason(season === s && entry === null ? "all" : s)}
-              className={entry === null && season === s ? styles.filterActive : styles.filterBtn}
-            >
-              <span>{t.seasonYear(t.seasons[s], currentYear)}</span>
-            </button>
-          ))}
           <button
             type="button"
             onClick={() => selectEntry("favorites")}
