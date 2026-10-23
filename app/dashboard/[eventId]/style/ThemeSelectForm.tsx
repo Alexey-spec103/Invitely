@@ -158,6 +158,7 @@ export default function ThemeSelectForm({
       <DesignSlotsPanel
         eventId={eventId}
         currentThemeId={selected}
+        eventType={eventType}
         slots={slots}
         history={history}
         onActivate={handleSelect}

@@ -13,7 +13,17 @@ import type { ThemeCategory } from "./types";
  * a narrower box shouldn't have one guessed for them, so occasion filtering
  * is a no-op for it (every category shows, same as before this feature). */
 export const OCCASION_CATEGORIES: Partial<Record<EventTypeId, ThemeCategory[]>> = {
-  wedding: ["romantic", "botanical", "luxury", "vintage", "rustic", "boho", "marble", "provence", "peony"],
+  // dashboard critique (2026-10-23), P1: "modern" and "minimal" were missing
+  // here entirely, which made ColorVariantPicker -- gated to exactly those
+  // two categories (see lib/themes/index.ts's colorVariantOptionsFor) --
+  // architecturally unreachable for Wedding, the flagship event type. Not a
+  // stray omission: read a sample of these themes' own source (minimal-
+  // porcelain.ts, modern-charcoal-blush.ts) before adding them here -- soft
+  // muted palettes, wedding-appropriate script signature fonts, one
+  // explicitly commented "suited to a design-forward modern couple" -- this
+  // is a legitimate, already-designed wedding aesthetic, not corporate decor
+  // mislabeled.
+  wedding: ["romantic", "botanical", "luxury", "vintage", "rustic", "boho", "marble", "provence", "peony", "modern", "minimal"],
   anniversary: ["romantic", "luxury", "vintage", "marble", "provence"],
   engagement: ["romantic", "luxury", "botanical", "marble", "peony"],
   birthday: ["modern", "boho", "cosmic", "minimal", "dark"],

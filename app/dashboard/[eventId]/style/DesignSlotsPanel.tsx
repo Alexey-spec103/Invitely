@@ -24,6 +24,12 @@ interface ThemeHistoryRow {
 interface DesignSlotsPanelProps {
   eventId: string;
   currentThemeId: string;
+  /** dashboard critique (2026-10-23), P1: the "Add a design slot" modal's
+   * own <ThemeGallery> below used to omit this, so a host shortlisting a
+   * candidate for e.g. a Wedding saw all 124 themes unfiltered -- including
+   * Corporate/Birthday/Kids'-Party-only categories the main gallery
+   * (ThemeSelectForm.tsx) deliberately hides via this same prop. */
+  eventType: string;
   slots: ThemeSlotRow[];
   history: ThemeHistoryRow[];
   /** Reuses the same activation path the gallery below already uses --
@@ -63,6 +69,7 @@ function relativeTime(iso: string, t: ReturnType<typeof getDictionary>["dashboar
 export default function DesignSlotsPanel({
   eventId,
   currentThemeId,
+  eventType,
   slots,
   history,
   onActivate,
@@ -249,7 +256,13 @@ export default function DesignSlotsPanel({
               </button>
             </div>
             <div className={styles.modalGallery}>
-              <ThemeGallery themes={Object.values(themes)} onSelect={handleAddSlot} locale={locale} />
+              <ThemeGallery
+                themes={Object.values(themes)}
+                selectedId={currentThemeId}
+                onSelect={handleAddSlot}
+                eventType={eventType}
+                locale={locale}
+              />
             </div>
           </div>
         </div>
