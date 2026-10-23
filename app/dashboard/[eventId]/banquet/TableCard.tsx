@@ -165,7 +165,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests, local
               <Users className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
               <div>
                 <p>{t.noGuestsYet}</p>
-                <p className="text-xs text-gray-400">{t.addGuestsHint}</p>
+                <p className="text-xs text-gray-600">{t.addGuestsHint}</p>
               </div>
             </div>
           ) : (

@@ -102,29 +102,40 @@ export default function FunnelNav({ eventId, locale = "en" }: FunnelNavProps) {
               <Link
                 href={step.href}
                 aria-current={isCurrent ? "step" : undefined}
-                className="group flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2 -ml-1 transition hover:bg-[var(--dash-surface-2)]"
+                className="group flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2 -ml-1 transition hover:bg-black/5"
               >
+                {/* dashboard critique (2026-10-23): this whole bar renders on
+                    DashboardShell's own `--dash-light-bg` page background
+                    (confirmed in source -- FunnelNav is a sibling of
+                    {children}, not nested inside Site/Paper's dark
+                    constructor card), not the near-black --dash-surface
+                    these --dash-text/--dash-text-muted tokens are tuned for.
+                    Measured live: the muted label color read as low as
+                    1.04:1 here. globals.css's own .dash-h1 comment already
+                    documents the fix pattern ("dark shell pages need
+                    --dash-text, light pages need gray-900") -- this was the
+                    one place that hadn't applied it yet. */}
                 <span
                   className={
                     isCurrent
-                      ? "flex h-5 w-5 items-center justify-center rounded-full bg-[var(--dash-accent)] text-[11px] font-bold text-[var(--dash-accent-contrast)]"
+                      ? "flex h-5 w-5 items-center justify-center rounded-full bg-[var(--dash-accent-text)] text-[11px] font-bold text-[var(--dash-accent-contrast)]"
                       : isDone
-                        ? "flex h-5 w-5 items-center justify-center rounded-full bg-[var(--dash-accent)]/20 text-[var(--dash-accent)]"
-                        : "flex h-5 w-5 items-center justify-center rounded-full border border-[var(--dash-border)] text-[11px] text-[var(--dash-text-muted)] group-hover:border-[var(--dash-accent)] group-hover:text-[var(--dash-accent)]"
+                        ? "flex h-5 w-5 items-center justify-center rounded-full bg-[var(--dash-accent)]/20 text-[var(--dash-accent-text)]"
+                        : "flex h-5 w-5 items-center justify-center rounded-full border border-[var(--dash-border)] text-[11px] text-[#4b5563] group-hover:border-[var(--dash-accent)] group-hover:text-[var(--dash-accent-text)]"
                   }
                 >
                   {isDone ? <Check className="h-3 w-3" aria-hidden="true" /> : index + 1}
                 </span>
                 <span
                   className={`text-xs font-medium ${
-                    isCurrent ? "text-[var(--dash-text)]" : "text-[var(--dash-text-muted)] group-hover:text-[var(--dash-text)]"
+                    isCurrent ? "text-neutral-900" : "text-[#4b5563] group-hover:text-neutral-900"
                   }`}
                 >
                   {STEP_LABELS[step.id]}
                 </span>
               </Link>
               {index < stepHrefs.length - 1 && (
-                <span className="mx-1 h-px w-4 shrink-0 bg-[var(--dash-border)]" aria-hidden="true" />
+                <span className="mx-1 h-px w-4 shrink-0 bg-[var(--dash-border)]/20" aria-hidden="true" />
               )}
             </div>
           );
@@ -133,7 +144,7 @@ export default function FunnelNav({ eventId, locale = "en" }: FunnelNavProps) {
       <div className="flex items-center justify-between">
       <Link
         href={back.href}
-        className="flex items-center gap-1 text-sm font-medium text-[var(--dash-text-muted)] transition hover:text-[var(--dash-accent)]"
+        className="flex items-center gap-1 text-sm font-medium text-[#4b5563] transition hover:text-[var(--dash-accent-text)]"
       >
         <ChevronLeft className="h-4 w-4 shrink-0" aria-hidden="true" />
         {back.label}
@@ -141,7 +152,7 @@ export default function FunnelNav({ eventId, locale = "en" }: FunnelNavProps) {
       {forward ? (
         <Link
           href={forward.href}
-          className="flex items-center gap-1 text-sm font-semibold text-[var(--dash-accent)] transition hover:text-[var(--dash-accent-hover)]"
+          className="flex items-center gap-1 text-sm font-semibold text-[var(--dash-accent-text)] transition hover:text-[var(--dash-accent)]"
         >
           {forward.label}
           <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />

@@ -249,8 +249,11 @@ function StatusPills({
             onClick={() => onChange(key)}
             className={
               "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition " +
+              // dashboard critique (2026-10-23): white text directly on
+              // --dash-accent measured 2.82:1 -- same fix as elsewhere this
+              // pass, --dash-accent-text instead (5.18:1).
               (isActive
-                ? "bg-[var(--dash-accent)] text-white"
+                ? "bg-[var(--dash-accent-text)] text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200")
             }
           >
@@ -258,7 +261,10 @@ function StatusPills({
             <span
               className={
                 "rounded-full px-1.5 py-0.5 text-[11px] font-semibold " +
-                (isActive ? "bg-white/25 text-white" : "bg-gray-200 text-gray-600")
+                // A white/25 tint on the (now darker) pill lightened the
+                // badge back down to 3.41:1 for its white text -- a black
+                // tint darkens further instead, landing at 6.66:1.
+                (isActive ? "bg-black/15 text-white" : "bg-gray-200 text-gray-600")
               }
             >
               {counts[key]}
@@ -613,7 +619,7 @@ function AttendeeList({
           ("Mom and Dad" on one invite, not two separate rows) -- easy to
           miss without saying so, since it's just a small input tucked under
           each guest. */}
-      <p className="text-xs text-gray-400">{t.addMore}</p>
+      <p className="text-xs text-gray-600">{t.addMore}</p>
       {attendees.length > 0 && (
         <ul className="space-y-1">
           {attendees.map((attendee) => (
@@ -1094,7 +1100,7 @@ export default function GuestManager({
 
         <div>
           <label htmlFor="groupLabel" className="block text-sm font-semibold text-gray-900">
-            {t.form.groupLabel} <span className="font-normal text-gray-400">{t.form.optional}</span>
+            {t.form.groupLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
           </label>
           <input
             id="groupLabel"
@@ -1107,7 +1113,7 @@ export default function GuestManager({
 
         <div>
           <label htmlFor="email" className="block text-sm font-semibold text-gray-900">
-            {t.form.emailLabel} <span className="font-normal text-gray-400">{t.form.optional}</span>
+            {t.form.emailLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
           </label>
           <input
             id="email"
@@ -1121,7 +1127,7 @@ export default function GuestManager({
 
         <div>
           <label htmlFor="phone" className="block text-sm font-semibold text-gray-900">
-            {t.form.phoneLabel} <span className="font-normal text-gray-400">{t.form.optional}</span>
+            {t.form.phoneLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
           </label>
           <input
             id="phone"
@@ -1135,7 +1141,7 @@ export default function GuestManager({
 
         <div>
           <label htmlFor="maxPlusOnes" className="block text-sm font-semibold text-gray-900">
-            {t.form.plusOnesLabel} <span className="font-normal text-gray-400">{t.form.optional}</span>
+            {t.form.plusOnesLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
           </label>
           <input
             id="maxPlusOnes"
@@ -1256,7 +1262,7 @@ export default function GuestManager({
                 🎈
               </span>
               <span className="text-sm font-medium">{t.emptyState.createFirst}</span>
-              <span className="text-xs text-gray-400">{t.emptyState.fillForm}</span>
+              <span className="text-xs text-gray-600">{t.emptyState.fillForm}</span>
             </button>
           </li>
         )}

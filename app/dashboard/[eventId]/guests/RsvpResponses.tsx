@@ -149,7 +149,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions, l
                 📬
               </span>
               <span className="text-sm font-medium">{t.emptyHeading}</span>
-              <span className="text-xs text-gray-400">{t.emptySubtitle}</span>
+              <span className="text-xs text-gray-600">{t.emptySubtitle}</span>
             </div>
           </li>
         )}
@@ -191,7 +191,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions, l
               </ul>
             )}
             {response.submitted_at && (
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-gray-600">
                 {new Date(response.submitted_at).toLocaleString("en-US", {
                   dateStyle: "medium",
                   timeStyle: "short",

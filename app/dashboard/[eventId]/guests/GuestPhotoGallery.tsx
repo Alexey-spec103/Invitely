@@ -72,9 +72,9 @@ export default function GuestPhotoGallery({ eventId, eventSlug, locale = "en" }:
       </div>
 
       {photos === null ? (
-        <p className="mt-4 text-sm text-gray-400">{t.loading}</p>
+        <p className="mt-4 text-sm text-gray-600">{t.loading}</p>
       ) : photos.length === 0 ? (
-        <p className="mt-4 text-sm text-gray-400">{t.empty}</p>
+        <p className="mt-4 text-sm text-gray-600">{t.empty}</p>
       ) : (
         <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
           {photos.map((photo) => (

@@ -1117,7 +1117,7 @@ export default function PaperConstructor({
                   onClick={() => selectMedia(item.id)}
                   className={
                     item.id === activeId
-                      ? "block w-full rounded-md bg-[var(--dash-accent)] px-2.5 py-1.5 text-left text-sm font-medium text-[var(--dash-accent-contrast)]"
+                      ? "block w-full rounded-md bg-[var(--dash-accent-text)] px-2.5 py-1.5 text-left text-sm font-medium text-[var(--dash-accent-contrast)]"
                       : "block w-full rounded-md px-2.5 py-1.5 text-left text-sm text-[var(--dash-text)] hover:bg-[var(--dash-surface-2)]"
                   }
                 >

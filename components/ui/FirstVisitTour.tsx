@@ -221,7 +221,7 @@ export default function FirstVisitTour({ tourId, steps, t = DEFAULT_TOUR_STRINGS
           <button
             type="button"
             onClick={dismiss}
-            className="-m-2 shrink-0 rounded px-2 py-2 text-xs font-medium text-gray-400 hover:text-gray-600"
+            className="-m-2 shrink-0 rounded px-2 py-2 text-xs font-medium text-gray-600 hover:text-gray-800"
             aria-label={t.skip}
           >
             {t.skip}

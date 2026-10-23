@@ -198,7 +198,7 @@ export default function GuestTableAssignments({
                 🍽️
               </span>
               <span className="text-sm font-medium">{t.emptyHeading}</span>
-              <span className="text-xs text-gray-400">{t.emptySubtitle}</span>
+              <span className="text-xs text-gray-600">{t.emptySubtitle}</span>
             </Link>
           </li>
         )}

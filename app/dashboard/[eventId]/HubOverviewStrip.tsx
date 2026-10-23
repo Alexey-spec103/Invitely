@@ -62,7 +62,7 @@ export default function HubOverviewStrip({
               style={{ width: `${weddingDataPercent}%` }}
             />
           </div>
-          <p className="mt-1 text-xs text-gray-400">{t.percentComplete(weddingDataPercent)}</p>
+          <p className="mt-1 text-xs text-gray-600">{t.percentComplete(weddingDataPercent)}</p>
         </div>
         <Link href={`${base}/site#wedding-data-card`} className="dash-btn dash-btn-secondary mt-4 self-center">
           {t.edit}

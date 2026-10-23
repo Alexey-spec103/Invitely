@@ -51,7 +51,7 @@ export default function SupportWidget({ locale = "en" }: SupportWidgetProps) {
           <p className="mt-1.5 text-sm text-gray-600">{t.body}</p>
           <a
             href="mailto:support@invimbo.com"
-            className="mt-3 inline-block text-sm font-semibold text-[var(--dash-accent)] underline underline-offset-2"
+            className="mt-3 inline-block text-sm font-semibold text-[var(--dash-accent-text)] underline underline-offset-2"
           >
             support@invimbo.com
           </a>

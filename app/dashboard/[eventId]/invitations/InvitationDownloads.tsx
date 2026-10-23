@@ -429,7 +429,7 @@ export default function InvitationDownloads({
                   💌
                 </span>
                 <span className="text-sm font-medium">{t.downloads.noGuestsYet}</span>
-                <span className="text-xs text-gray-400">{t.downloads.addGuestsHint}</span>
+                <span className="text-xs text-gray-600">{t.downloads.addGuestsHint}</span>
               </Link>
             </li>
           )}

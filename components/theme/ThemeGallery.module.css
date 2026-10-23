@@ -40,9 +40,13 @@
   color: var(--dash-accent, #ff6b45);
 }
 
+/* dashboard critique (2026-10-23): white text directly on --dash-accent
+   measures 2.82:1, failing WCAG AA -- same bug class already fixed on
+   .dash-btn-primary in globals.css. --dash-accent-text is the documented
+   darker shade tuned to stay readable with white text (5.18:1 here). */
 .occasionChipActive {
-  background: var(--dash-accent, #ff6b45);
-  border-color: var(--dash-accent, #ff6b45);
+  background: var(--dash-accent-text, #c2410c);
+  border-color: var(--dash-accent-text, #c2410c);
   color: white;
   font-weight: 600;
 }
@@ -111,7 +115,10 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #9ca3af;
+  /* dashboard critique (2026-10-23): #9ca3af measured 2.23:1 on this
+     sidebar's light background -- reusing .occasionChip's existing
+     #4b5563 (6.64:1 here) instead of inventing a new gray. */
+  color: #4b5563;
   margin: 0.25rem 0;
 }
 
@@ -143,19 +150,25 @@
   background: #f3f4f6;
 }
 
+/* dashboard critique (2026-10-23): var(--dash-accent) as text on this 12%
+   tint measured 2.49:1 -- --dash-accent-text (already documented in
+   globals.css as the light-background-safe shade) clears AA here at
+   4.57:1 instead. */
 .filterActive {
   background: color-mix(in srgb, var(--dash-accent, #ff6b45) 12%, white);
-  color: var(--dash-accent, #ff6b45);
+  color: var(--dash-accent-text, #c2410c);
   font-weight: 600;
 }
 
 .count {
   font-size: 0.7rem;
-  color: #9ca3af;
+  /* dashboard critique (2026-10-23): same #9ca3af-on-light-bg fix as
+     .filterLabel above (2.23:1 -> 6.64:1). */
+  color: #4b5563;
 }
 
 .filterActive .count {
-  color: var(--dash-accent, #ff6b45);
+  color: var(--dash-accent-text, #c2410c);
 }
 
 .entryLabel {
@@ -170,12 +183,14 @@
   flex-shrink: 0;
 }
 
+/* dashboard critique (2026-10-23): white text directly on --dash-accent
+   measured 2.82:1 -- same fix as .occasionChipActive above. */
 .newBadge {
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: #fff;
-  background: var(--dash-accent, #ff6b45);
+  background: var(--dash-accent-text, #c2410c);
   border-radius: 999px;
   padding: 0.1rem 0.4rem;
 }

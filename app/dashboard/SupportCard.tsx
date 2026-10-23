@@ -33,7 +33,7 @@ export default function SupportCard({ locale = "en" }: { locale?: Locale }) {
         <p className="text-xs text-gray-500">{t.questionsCaption}</p>
         <a
           href="mailto:support@invimbo.com"
-          className="text-sm font-semibold text-[var(--dash-accent)] underline underline-offset-2"
+          className="text-sm font-semibold text-[var(--dash-accent-text)] underline underline-offset-2"
         >
           support@invimbo.com
         </a>
