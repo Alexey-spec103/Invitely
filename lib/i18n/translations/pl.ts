@@ -717,6 +717,7 @@ export const pl: Dictionary = {
           showBlock: "Pokaż element",
           hideBlock: "Ukryj element",
           deleteLabel: "Usuń",
+          deleteConfirm: (label) => `Usunąć „${label}"? Nadal możesz to cofnąć przyciskiem Cofnij powyżej.`,
         },
         rsvpPreviewOnly: "To jest podgląd - goście wysyłają RSVP z Twojej opublikowanej strony, nie stąd.",
         lookupPreviewOnly: "To jest podgląd - goście szukają swojego stolika na Twojej opublikowanej stronie, nie stąd.",

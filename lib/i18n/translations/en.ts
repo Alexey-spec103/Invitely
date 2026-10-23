@@ -587,6 +587,12 @@ export interface Dictionary {
           showBlock: string;
           hideBlock: string;
           deleteLabel: string;
+          /** dashboard critique (2026-10-23), P1: a confirm gate for the
+           * trash icon here and the floating toolbar's own matching one --
+           * both used to delete a Timeline event / Map venue / RSVP
+           * question / DressCode color / FAQ item / Travel place instantly,
+           * with no confirmation and no way to undo it. */
+          deleteConfirm: (label: string) => string;
         };
         rsvpPreviewOnly: string;
         lookupPreviewOnly: string;
@@ -1846,6 +1852,7 @@ export const en: Dictionary = {
           showBlock: "Show block",
           hideBlock: "Hide block",
           deleteLabel: "Delete",
+          deleteConfirm: (label) => `Delete "${label}"? You can still undo this with the Undo button above.`,
         },
         rsvpPreviewOnly: "This is a preview - guests submit RSVPs from your live site, not from here.",
         lookupPreviewOnly: "This is a preview - guests look up their table from your live site, not from here.",

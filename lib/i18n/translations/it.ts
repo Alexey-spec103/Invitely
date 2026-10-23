@@ -707,6 +707,7 @@ export const it: Dictionary = {
           showBlock: "Mostra elemento",
           hideBlock: "Nascondi elemento",
           deleteLabel: "Elimina",
+          deleteConfirm: (label) => `Eliminare "${label}"? È ancora possibile annullare con il pulsante Annulla qui sopra.`,
         },
         rsvpPreviewOnly: "Questa è un'anteprima - gli ospiti inviano il loro RSVP dal tuo sito live, non da qui.",
         lookupPreviewOnly: "Questa è un'anteprima - gli ospiti cercano il proprio tavolo dal tuo sito live, non da qui.",

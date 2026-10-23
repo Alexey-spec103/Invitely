@@ -708,6 +708,7 @@ export const fr: Dictionary = {
           showBlock: "Afficher l'élément",
           hideBlock: "Masquer l'élément",
           deleteLabel: "Supprimer",
+          deleteConfirm: (label) => `Supprimer « ${label} » ? Vous pouvez encore annuler avec le bouton Annuler ci-dessus.`,
         },
         rsvpPreviewOnly: "Ceci est un aperçu - les invités envoient leur RSVP depuis votre site en direct, pas depuis ici.",
         lookupPreviewOnly: "Ceci est un aperçu - les invités recherchent leur table depuis votre site en direct, pas depuis ici.",

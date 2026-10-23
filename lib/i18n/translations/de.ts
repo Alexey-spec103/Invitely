@@ -707,6 +707,7 @@ export const de: Dictionary = {
           showBlock: "Element anzeigen",
           hideBlock: "Element verbergen",
           deleteLabel: "Löschen",
+          deleteConfirm: (label) => `"${label}" löschen? Du kannst das oben mit der Schaltfläche "Rückgängig" noch rückgängig machen.`,
         },
         rsvpPreviewOnly: "Das ist eine Vorschau - Gäste senden ihre RSVP über deine Live-Website, nicht von hier aus.",
         lookupPreviewOnly: "Das ist eine Vorschau - Gäste suchen ihren Tisch über deine Live-Website, nicht von hier aus.",

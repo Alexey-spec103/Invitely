@@ -505,6 +505,23 @@ function useEditableSection<T extends { styleOverrides?: StyleOverrides; hiddenF
     [draft, pushHistory]
   );
 
+  // dashboard critique (2026-10-23), P1: every repeatable-item delete
+  // (Timeline event, Map venue, RSVP question, DressCode color, FAQ item,
+  // Travel place) called the raw `setDraft` above directly instead of going
+  // through commitText/commitStyle/commitHidden -- so a delete never landed
+  // on the undo stack and Ctrl+Z / the visible Undo button couldn't bring a
+  // deleted item back. This is the same push-then-set shape as those three,
+  // just taking a full updater instead of a single field, since deletes
+  // replace a whole array rather than one field's value.
+  const commitDraft = useCallback(
+    (updater: (prev: T) => T) => {
+      const next = updater(draft);
+      pushHistory(next);
+      setDraft(next);
+    },
+    [draft, pushHistory]
+  );
+
   const undo = useCallback(() => {
     if (historyIndexRef.current <= 0) return;
     historyIndexRef.current -= 1;
@@ -531,6 +548,7 @@ function useEditableSection<T extends { styleOverrides?: StyleOverrides; hiddenF
     commitText,
     commitStyle,
     commitHidden,
+    commitDraft,
     undo,
     redo,
     canUndo,
@@ -1306,6 +1324,29 @@ export default function SiteInlineEditor({
     else travelField.commitStyle(selection.field, null);
   };
 
+  // dashboard critique (2026-10-23), P1: every repeatable-item delete below
+  // (Timeline event, Map venue, RSVP question, DressCode color, FAQ item,
+  // Travel place -- both here in the Editable Blocks panel and in the
+  // floating toolbar's own trash icon further down) fired instantly with no
+  // confirmation, the one genuinely irreversible-feeling action in an editor
+  // whose entire pitch is "nothing you type is ever lost." Shared here so
+  // both delete paths show the same message and can't drift.
+  //
+  // The explicit `setLastEditedSection` call below (rather than relying on
+  // the `selection`-driven effect above) matters specifically for the
+  // Editable Blocks panel's own trash icon: that row's onDelete never goes
+  // through `onSelect`, so `selection` never points at this section and the
+  // visible Undo button would stay disabled for a delete it could actually
+  // revert -- confirmed live, the history entry was there but the button
+  // was greyed out. The floating toolbar's delete is already covered by a
+  // real selection (the toolbar can't show without one), so this is a no-op
+  // there, not a conflicting second source of truth.
+  const confirmAndDelete = (run: () => void, label: string, section: SectionKey) => {
+    if (!window.confirm(t.editableBlocks.deleteConfirm(label))) return;
+    run();
+    setLastEditedSection(section);
+  };
+
   // Sections rendered from named props (not a `{...draft}` spread) read
   // through one of these instead of the raw draft, so a hidden field's
   // value is blanked before it reaches the live component here too --
@@ -1524,7 +1565,12 @@ export default function SiteInlineEditor({
           scrollToField(timelineRef.current, `events.${index}.title`);
         },
         onDelete: () =>
-          timelineField.setDraft((prev) => ({ ...prev, events: prev.events.filter((_, i) => i !== index) })),
+          confirmAndDelete(
+            () =>
+              timelineField.commitDraft((prev) => ({ ...prev, events: prev.events.filter((_, i) => i !== index) })),
+            event.title.trim() || `Event ${index + 1}`,
+            "timeline"
+          ),
       },
       ...(["time", "title", "description"] as const).map(
         (subfield): BlockRowData => ({
@@ -1571,10 +1617,15 @@ export default function SiteInlineEditor({
           mapField.setSelectedField(`venues.${index}.name`);
           scrollToField(mapRef.current, `venues.${index}.name`);
         },
-        onDelete: () => {
-          mapDirtyRef.current = true;
-          mapField.setDraft((prev) => ({ ...prev, venues: prev.venues.filter((_, i) => i !== index) }));
-        },
+        onDelete: () =>
+          confirmAndDelete(
+            () => {
+              mapDirtyRef.current = true;
+              mapField.commitDraft((prev) => ({ ...prev, venues: prev.venues.filter((_, i) => i !== index) }));
+            },
+            venue.name.trim() || `Venue ${index + 1}`,
+            "map"
+          ),
       },
       ...(["name", "address"] as const).map(
         (subfield): BlockRowData => ({
@@ -1636,7 +1687,12 @@ export default function SiteInlineEditor({
           scrollToField(rsvpRef.current, `questions.${index}.label`);
         },
         onDelete: () =>
-          rsvpField.setDraft((prev) => ({ ...prev, questions: prev.questions.filter((_, i) => i !== index) })),
+          confirmAndDelete(
+            () =>
+              rsvpField.commitDraft((prev) => ({ ...prev, questions: prev.questions.filter((_, i) => i !== index) })),
+            question.label.trim() || `Question ${index + 1}`,
+            "rsvp"
+          ),
       },
       {
         ...makeRow({
@@ -1746,7 +1802,12 @@ export default function SiteInlineEditor({
           scrollToField(dressCodeRef.current, `colors.${index}.label`);
         },
         onDelete: () =>
-          dressCodeField.setDraft((prev) => ({ ...prev, colors: prev.colors.filter((_, i) => i !== index) })),
+          confirmAndDelete(
+            () =>
+              dressCodeField.commitDraft((prev) => ({ ...prev, colors: prev.colors.filter((_, i) => i !== index) })),
+            color.label?.trim() || `Color ${index + 1}`,
+            "dressCode"
+          ),
       },
       {
         ...makeRow({
@@ -1892,7 +1953,11 @@ export default function SiteInlineEditor({
           scrollToField(faqRef.current, `items.${index}.question`);
         },
         onDelete: () =>
-          faqField.setDraft((prev) => ({ ...prev, items: prev.items.filter((_, i) => i !== index) })),
+          confirmAndDelete(
+            () => faqField.commitDraft((prev) => ({ ...prev, items: prev.items.filter((_, i) => i !== index) })),
+            item.question.trim() || `Question ${index + 1}`,
+            "faq"
+          ),
       },
       ...(["question", "answer"] as const).map(
         (subfield): BlockRowData => ({
@@ -1954,7 +2019,11 @@ export default function SiteInlineEditor({
           scrollToField(travelRef.current, `items.${index}.name`);
         },
         onDelete: () =>
-          travelField.setDraft((prev) => ({ ...prev, items: prev.items.filter((_, i) => i !== index) })),
+          confirmAndDelete(
+            () => travelField.commitDraft((prev) => ({ ...prev, items: prev.items.filter((_, i) => i !== index) })),
+            item.name.trim() || `Place ${index + 1}`,
+            "travel"
+          ),
       },
       ...(["name", "description", "priceText"] as const).map(
         (subfield): BlockRowData => ({
@@ -2770,51 +2839,93 @@ export default function SiteInlineEditor({
             selection.section === "timeline" && /^events\.\d+\./.test(selection.field)
               ? () => {
                   const index = Number(selection.field.split(".")[1]);
-                  timelineField.setDraft((prev) => ({ ...prev, events: prev.events.filter((_, i) => i !== index) }));
-                  clearSelection();
+                  const label = timelineField.draft.events[index]?.title.trim() || `Event ${index + 1}`;
+                  confirmAndDelete(
+                    () => {
+                      timelineField.commitDraft((prev) => ({ ...prev, events: prev.events.filter((_, i) => i !== index) }));
+                      clearSelection();
+                    },
+                    label,
+                    "timeline"
+                  );
                 }
               : selection.section === "map" && /^venues\.\d+\./.test(selection.field)
                 ? () => {
                     const index = Number(selection.field.split(".")[1]);
-                    mapDirtyRef.current = true;
-                    mapField.setDraft((prev) => ({ ...prev, venues: prev.venues.filter((_, i) => i !== index) }));
-                    clearSelection();
+                    const label = mapField.draft.venues[index]?.name.trim() || `Venue ${index + 1}`;
+                    confirmAndDelete(
+                      () => {
+                        mapDirtyRef.current = true;
+                        mapField.commitDraft((prev) => ({ ...prev, venues: prev.venues.filter((_, i) => i !== index) }));
+                        clearSelection();
+                      },
+                      label,
+                      "map"
+                    );
                   }
                 : selection.section === "rsvp" && /^questions\.\d+\./.test(selection.field)
                   ? () => {
                       const index = Number(selection.field.split(".")[1]);
-                      rsvpField.setDraft((prev) => ({
-                        ...prev,
-                        questions: prev.questions.filter((_, i) => i !== index),
-                      }));
-                      clearSelection();
+                      const label = rsvpField.draft.questions[index]?.label.trim() || `Question ${index + 1}`;
+                      confirmAndDelete(
+                        () => {
+                          rsvpField.commitDraft((prev) => ({
+                            ...prev,
+                            questions: prev.questions.filter((_, i) => i !== index),
+                          }));
+                          clearSelection();
+                        },
+                        label,
+                        "rsvp"
+                      );
                     }
                   : selection.section === "dressCode" && /^colors\.\d+\./.test(selection.field)
                     ? () => {
                         const index = Number(selection.field.split(".")[1]);
-                        dressCodeField.setDraft((prev) => ({
-                          ...prev,
-                          colors: prev.colors.filter((_, i) => i !== index),
-                        }));
-                        clearSelection();
+                        const label = dressCodeField.draft.colors[index]?.label?.trim() || `Color ${index + 1}`;
+                        confirmAndDelete(
+                          () => {
+                            dressCodeField.commitDraft((prev) => ({
+                              ...prev,
+                              colors: prev.colors.filter((_, i) => i !== index),
+                            }));
+                            clearSelection();
+                          },
+                          label,
+                          "dressCode"
+                        );
                       }
                     : selection.section === "faq" && /^items\.\d+\./.test(selection.field)
                       ? () => {
                           const index = Number(selection.field.split(".")[1]);
-                          faqField.setDraft((prev) => ({
-                            ...prev,
-                            items: prev.items.filter((_, i) => i !== index),
-                          }));
-                          clearSelection();
+                          const label = faqField.draft.items[index]?.question.trim() || `Question ${index + 1}`;
+                          confirmAndDelete(
+                            () => {
+                              faqField.commitDraft((prev) => ({
+                                ...prev,
+                                items: prev.items.filter((_, i) => i !== index),
+                              }));
+                              clearSelection();
+                            },
+                            label,
+                            "faq"
+                          );
                         }
                       : selection.section === "travel" && /^items\.\d+\./.test(selection.field)
                         ? () => {
                             const index = Number(selection.field.split(".")[1]);
-                            travelField.setDraft((prev) => ({
-                              ...prev,
-                              items: prev.items.filter((_, i) => i !== index),
-                            }));
-                            clearSelection();
+                            const label = travelField.draft.items[index]?.name.trim() || `Place ${index + 1}`;
+                            confirmAndDelete(
+                              () => {
+                                travelField.commitDraft((prev) => ({
+                                  ...prev,
+                                  items: prev.items.filter((_, i) => i !== index),
+                                }));
+                                clearSelection();
+                              },
+                              label,
+                              "travel"
+                            );
                           }
                         : undefined
           }

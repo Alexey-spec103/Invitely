@@ -726,6 +726,7 @@ export const ru: Dictionary = {
           showBlock: "Показать блок",
           hideBlock: "Скрыть блок",
           deleteLabel: "Удалить",
+          deleteConfirm: (label) => `Удалить «${label}»? Это ещё можно отменить кнопкой «Отменить» выше.`,
         },
         rsvpPreviewOnly: "Это превью - гости отправляют RSVP с вашего живого сайта, а не отсюда.",
         lookupPreviewOnly: "Это превью - гости ищут свой стол на вашем живом сайте, а не отсюда.",
