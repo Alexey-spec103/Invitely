@@ -107,7 +107,7 @@ export default function GuestTableAssignments({
   return (
     <div className="mt-12 border-t border-gray-200 pt-8">
       <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.assignHeading}</h2>
-      <p className="mt-1 text-sm text-gray-500">{t.assignSubtitle}</p>
+      <p className="mt-1 text-sm text-gray-600">{t.assignSubtitle}</p>
 
       {tables.some((table) => table.capacity != null && (seatedCountByTable.get(table.id) ?? 0) > table.capacity) && (
         <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
@@ -154,7 +154,7 @@ export default function GuestTableAssignments({
                 {t.attendingOnly}
               </label>
             )}
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-600">
               {t.countOf(filteredGuests.length, guests.length)}
             </span>
           </div>
@@ -192,7 +192,7 @@ export default function GuestTableAssignments({
           <li className="list-none py-4">
             <Link
               href={`/dashboard/${eventId}/guests`}
-              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-500 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-600 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
             >
               <span className="text-2xl" aria-hidden="true">
                 🍽️
@@ -203,7 +203,7 @@ export default function GuestTableAssignments({
           </li>
         )}
         {guests.length > 0 && filteredGuests.length === 0 && (
-          <li className="py-4 text-sm text-gray-500">{t.noMatch}</li>
+          <li className="py-4 text-sm text-gray-600">{t.noMatch}</li>
         )}
         {filteredGuests.map((guest) => {
           const partyAttendees = attendees.filter((attendee) => attendee.guest_id === guest.id);
@@ -232,7 +232,7 @@ export default function GuestTableAssignments({
                 })()}
               </div>
               {partyAttendees.length > 0 && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-600">
                   + {partyAttendees.map((attendee) => attendee.full_name).join(", ")}
                 </p>
               )}

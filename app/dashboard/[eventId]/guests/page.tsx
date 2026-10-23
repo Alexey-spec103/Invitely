@@ -173,7 +173,7 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
   return (
     <div className="max-w-2xl">
       <h1 className="dash-h1 text-gray-900">{t.page.title}</h1>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-gray-600">
         {t.page.subtitle}
       </p>
 
@@ -182,13 +182,13 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
           <span className="text-emerald-700">
             <span className="font-semibold">{attendingCount}</span> {t.page.attending}
           </span>
-          <span className="text-gray-500">
+          <span className="text-gray-600">
             <span className="font-semibold">{notAttendingCount}</span> {t.page.notAttending}
           </span>
           <span className="text-amber-700">
             <span className="font-semibold">{noResponseCount}</span> {t.page.awaitingResponse}
           </span>
-          <span className="text-gray-500">
+          <span className="text-gray-600">
             <span className="font-semibold">{notSentCount}</span> {t.page.notYetContacted}
           </span>
         </div>
@@ -258,7 +258,7 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
           or not "Find My Table" is even turned on. */}
       <div className="mt-10 border-t border-gray-200 pt-8">
         <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.page.seatingHeading}</h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-600">
           {banquetNavigatorEnabled ? t.page.seatingBodyOn : t.page.seatingBodyOff}
         </p>
         <div className="mt-4">

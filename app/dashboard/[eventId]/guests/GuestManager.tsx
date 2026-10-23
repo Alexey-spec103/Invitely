@@ -196,7 +196,7 @@ function ToggleCheckbox({
         <span>
           <span aria-hidden="true">{icon}</span> {label}
         </span>
-        <span className="font-normal text-gray-500">{hint}</span>
+        <span className="font-normal text-gray-600">{hint}</span>
       </span>
     </label>
   );
@@ -1256,7 +1256,7 @@ export default function GuestManager({
             <button
               type="button"
               onClick={() => document.getElementById("fullName")?.focus()}
-              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-500 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-600 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
             >
               <span className="text-2xl" aria-hidden="true">
                 🎈

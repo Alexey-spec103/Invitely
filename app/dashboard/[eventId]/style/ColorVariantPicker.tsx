@@ -49,7 +49,7 @@ export default function ColorVariantPicker({ eventId, theme, currentColorVariant
 
   return (
     <div className="mt-4 flex flex-wrap items-center gap-2 rounded-md border border-gray-200 bg-white p-3">
-      <span className="text-xs font-medium text-gray-500">{t.label}</span>
+      <span className="text-xs font-medium text-gray-600">{t.label}</span>
       <button
         type="button"
         onClick={() => apply(null)}

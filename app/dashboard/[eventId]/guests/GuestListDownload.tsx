@@ -88,7 +88,7 @@ export default function GuestListDownload({ theme, eventTitle, rows, locale = "e
           {t.csvButton}
         </button>
       </div>
-      <p className="mt-1 text-xs text-gray-500">
+      <p className="mt-1 text-xs text-gray-600">
         {t.hint}
       </p>
       {error && (

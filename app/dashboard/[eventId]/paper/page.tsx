@@ -74,7 +74,7 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
   return (
     <div className="max-w-3xl">
       <h1 className="dash-h1 text-gray-900">{t.pageTitle}</h1>
-      <p className="mt-1 text-sm text-gray-500">{t.pageSubtitle}</p>
+      <p className="mt-1 text-sm text-gray-600">{t.pageSubtitle}</p>
 
       {/* Direct feedback: "за 35 евро сразу предупреждать" -- everything on
           this page is the paid/print side of the product, so a host should
@@ -139,7 +139,7 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
           downloads now live right here, after the design itself. */}
       <div className="mt-10">
         <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.downloadHeading}</h2>
-        <p className="mt-1 text-sm text-gray-500">{t.downloadSubtitle}</p>
+        <p className="mt-1 text-sm text-gray-600">{t.downloadSubtitle}</p>
         <InvitationDownloads
           eventId={event.id}
           theme={theme}

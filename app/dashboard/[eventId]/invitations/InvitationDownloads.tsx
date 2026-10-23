@@ -392,7 +392,7 @@ export default function InvitationDownloads({
 
       <div className="mt-8 border-t border-gray-200 pt-6">
         <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.downloads.heading}</h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-600">
           {t.downloads.description}
           {hasCanvasDesign && t.downloads.canvasNote}
         </p>
@@ -423,7 +423,7 @@ export default function InvitationDownloads({
             <li className="list-none py-4">
               <Link
                 href={`/dashboard/${eventId}/guests`}
-                className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-500 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+                className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-600 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
               >
                 <span className="text-2xl" aria-hidden="true">
                   💌
@@ -440,7 +440,7 @@ export default function InvitationDownloads({
                 type="button"
                 onClick={() => generate(guest)}
                 disabled={pendingId !== null}
-                className="text-sm font-medium text-gray-500 hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
+                className="text-sm font-medium text-gray-600 hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {pendingId === guest.id ? t.downloads.generating : t.downloads.downloadPdf}
               </button>

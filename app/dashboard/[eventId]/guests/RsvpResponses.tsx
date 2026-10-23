@@ -101,13 +101,13 @@ export default function RsvpResponses({ eventId, responses, guests, questions, l
   return (
     <div className="mt-12 border-t border-gray-200 pt-8">
       <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.heading}</h2>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-gray-600">
         {t.subtitle}
       </p>
 
       {commentedCount > 1 && (
         <div className="mt-3 flex items-center gap-3 text-xs">
-          <span className="text-gray-500">{t.guestbookWall(commentedCount)}</span>
+          <span className="text-gray-600">{t.guestbookWall(commentedCount)}</span>
           <button
             type="button"
             onClick={() => handleBulkGuestbook(true)}
@@ -144,7 +144,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions, l
       <ul className="mt-6 divide-y divide-gray-200 border-t border-gray-200">
         {responses.length === 0 && (
           <li className="list-none py-4">
-            <div className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-500">
+            <div className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center text-gray-600">
               <span className="text-2xl" aria-hidden="true">
                 📬
               </span>
@@ -154,7 +154,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions, l
           </li>
         )}
         {responses.length > 0 && filteredResponses.length === 0 && (
-          <li className="py-4 text-sm text-gray-500">{t.noMatch(search)}</li>
+          <li className="py-4 text-sm text-gray-600">{t.noMatch(search)}</li>
         )}
         {filteredResponses.map((response) => {
           const answers = formatAnswers(response.meal_preferences, questions);
@@ -172,7 +172,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions, l
                 {response.attending ? t.attending : t.notAttending}
               </span>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-600">
               {[
                 response.attending ? t.guestCountSuffix(response.party_size) : null,
                 response.allergies,
@@ -184,7 +184,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions, l
             {answers.length > 0 && (
               <ul className="mt-1 space-y-0.5">
                 {answers.map(({ label, answer }) => (
-                  <li key={label} className="text-xs text-gray-500">
+                  <li key={label} className="text-xs text-gray-600">
                     <span className="font-medium text-gray-600">{label}:</span> {answer}
                   </li>
                 ))}
@@ -204,7 +204,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions, l
                 type="button"
                 onClick={() => handleToggleGuestbook(response.id, !response.guestbook_hidden)}
                 disabled={pendingId === response.id}
-                className="mt-1 text-xs font-medium text-gray-500 underline hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-1 text-xs font-medium text-gray-600 underline hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {response.guestbook_hidden ? t.hiddenShow : t.visibleHide}
               </button>

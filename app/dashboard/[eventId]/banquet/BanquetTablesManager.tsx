@@ -135,7 +135,7 @@ export default function BanquetTablesManager({
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="flex min-h-[10rem] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-5 text-gray-500 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
+            className="flex min-h-[10rem] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 p-5 text-gray-600 transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
               <Plus className="h-5 w-5" aria-hidden="true" />

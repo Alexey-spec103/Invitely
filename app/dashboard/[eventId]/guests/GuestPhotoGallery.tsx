@@ -54,7 +54,7 @@ export default function GuestPhotoGallery({ eventId, eventSlug, locale = "en" }:
   return (
     <div className="mt-10 border-t border-gray-200 pt-8">
       <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.heading}</h2>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-gray-600">
         {t.subtitle}
       </p>
 
@@ -67,7 +67,7 @@ export default function GuestPhotoGallery({ eventId, eventSlug, locale = "en" }:
         )}
         <div className="text-sm text-gray-600">
           <p className="font-medium text-gray-900">{t.printHint}</p>
-          <p className="mt-1 break-all text-gray-500">{`/e/${eventSlug}/photos`}</p>
+          <p className="mt-1 break-all text-gray-600">{`/e/${eventSlug}/photos`}</p>
         </div>
       </div>
 

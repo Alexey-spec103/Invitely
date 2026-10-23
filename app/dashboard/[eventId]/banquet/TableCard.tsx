@@ -140,7 +140,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests, local
               <p className="text-sm font-semibold text-gray-900">
                 {table.name}
                 {table.capacity != null && (
-                  <span className="ml-2 text-xs font-normal text-gray-500">
+                  <span className="ml-2 text-xs font-normal text-gray-600">
                     {t.seatsCount(seatedCount, table.capacity)}
                   </span>
                 )}
@@ -161,7 +161,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests, local
 
         <div className="mt-3">
           {seatedGuests.length === 0 ? (
-            <div className="flex items-start gap-2 text-sm text-gray-500">
+            <div className="flex items-start gap-2 text-sm text-gray-600">
               <Users className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
               <div>
                 <p>{t.noGuestsYet}</p>
