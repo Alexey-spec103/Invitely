@@ -3876,7 +3876,25 @@ const SOFT_PANEL_VARS = {
   "--dash-surface-2": "#f2e8dc",
   "--dash-border": "#e8d9c5",
   "--dash-text": "#2b241d",
-  "--dash-text-muted": "#786b5c",
+  // dashboard critique (2026-10-23): the original #786b5c read at 4.28:1
+  // against this panel's own --dash-surface-2 (the count badge, every
+  // trash icon) -- just under the 4.5:1 AA floor, confirmed via the same
+  // live contrast scan that found the --dash-accent issue below. Same
+  // darkening treatment, smaller move since the miss was smaller.
+  "--dash-text-muted": "#6e6254",
+  // dashboard critique (2026-10-23): --dash-accent (#ff6b45) is tuned for
+  // the app's normal dark surfaces, where it reads fine -- but every
+  // text-[var(--dash-accent)] element in this panel (the "Editable blocks"
+  // heading, its count badge, every section divider, every shown-state eye
+  // icon) inherited that same orange against this panel's own light cream
+  // background instead, landing at 2.57:1 -- confirmed live via a real
+  // relative-luminance contrast scan, well under the 4.5:1 AA floor for
+  // normal text, and the single largest contributor by far (52 of the
+  // scan's 81 flagged text nodes were this one pair). Same hue, darkened
+  // until it clears AA (5.32:1) with a safety margin rather than landing
+  // right on the 4.5 line -- confirmed to still read as the same brand
+  // orange, not a different color, in a live side-by-side.
+  "--dash-accent": "#c22800",
 } as CSSProperties;
 
 function EditableBlocksPanel({
