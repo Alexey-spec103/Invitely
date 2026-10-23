@@ -107,10 +107,10 @@ export default function FunnelNav({ eventId, locale = "en" }: FunnelNavProps) {
                 <span
                   className={
                     isCurrent
-                      ? "flex h-5 w-5 items-center justify-center rounded-full bg-[var(--dash-accent)] text-[10px] font-bold text-[var(--dash-accent-contrast)]"
+                      ? "flex h-5 w-5 items-center justify-center rounded-full bg-[var(--dash-accent)] text-[11px] font-bold text-[var(--dash-accent-contrast)]"
                       : isDone
                         ? "flex h-5 w-5 items-center justify-center rounded-full bg-[var(--dash-accent)]/20 text-[var(--dash-accent)]"
-                        : "flex h-5 w-5 items-center justify-center rounded-full border border-[var(--dash-border)] text-[10px] text-[var(--dash-text-muted)] group-hover:border-[var(--dash-accent)] group-hover:text-[var(--dash-accent)]"
+                        : "flex h-5 w-5 items-center justify-center rounded-full border border-[var(--dash-border)] text-[11px] text-[var(--dash-text-muted)] group-hover:border-[var(--dash-accent)] group-hover:text-[var(--dash-accent)]"
                   }
                 >
                   {isDone ? <Check className="h-3 w-3" aria-hidden="true" /> : index + 1}

@@ -261,10 +261,10 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                   badge pulls from the event's own theme (--theme-bg/-text/
                   -accent), not available on this plan-selection page. */}
               <div className="relative mt-3 h-28 overflow-hidden rounded-lg border border-amber-200 bg-gradient-to-br from-stone-100 to-stone-200">
-                <span className="absolute left-3 top-2.5 text-[10px] font-semibold uppercase tracking-wide text-stone-400">
+                <span className="absolute left-3 top-2.5 text-[11px] font-semibold uppercase tracking-wide text-stone-400">
                   Guest view
                 </span>
-                <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-white/85 px-2.5 py-1 text-[10px] font-semibold text-stone-700 shadow-sm backdrop-blur-sm">
+                <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-stone-700 shadow-sm backdrop-blur-sm">
                   <span className="text-amber-600">✦</span>
                   Made with Invimbo
                 </span>

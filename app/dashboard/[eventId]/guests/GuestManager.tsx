@@ -257,7 +257,7 @@ function StatusPills({
             {label}
             <span
               className={
-                "rounded-full px-1.5 py-0.5 text-[10px] font-semibold " +
+                "rounded-full px-1.5 py-0.5 text-[11px] font-semibold " +
                 (isActive ? "bg-white/25 text-white" : "bg-gray-200 text-gray-600")
               }
             >
@@ -399,7 +399,7 @@ function InvitationSentBadge({
         </span>
       )}
     </button>
-    {error && <span className="text-[10px] text-red-600">{error}</span>}
+    {error && <span className="text-[11px] text-red-600">{error}</span>}
     </span>
   );
 }

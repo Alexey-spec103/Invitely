@@ -216,14 +216,14 @@ export default function GuestTableAssignments({
                   const status = attendingStatusByGuestId[guest.id];
                   if (status === true) {
                     return (
-                      <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700">
+                      <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700">
                         {tr.attending}
                       </span>
                     );
                   }
                   if (status === false) {
                     return (
-                      <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
+                      <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[11px] font-medium text-gray-600">
                         {tr.notAttending}
                       </span>
                     );

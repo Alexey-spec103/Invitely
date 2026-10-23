@@ -128,7 +128,7 @@ export default function PlanBadge({ planId, eventId, locale = "en" }: PlanBadgeP
             >
               <span className="text-sm font-medium">{tier.name}</span>
               {tier.id === plan.id && (
-                <span className="rounded-full bg-[var(--dash-accent)]/15 px-2 py-0.5 text-[10px] font-medium text-[var(--dash-accent)]">
+                <span className="rounded-full bg-[var(--dash-accent)]/15 px-2 py-0.5 text-[11px] font-medium text-[var(--dash-accent)]">
                   {t.current}
                 </span>
               )}

@@ -279,7 +279,7 @@ export default function SectionModulesPanel({
           {showGroupLabel && (
             <li
               aria-hidden="true"
-              className={`px-3 text-[10px] font-semibold uppercase tracking-wide text-[var(--dash-text-muted)] ${
+              className={`px-3 text-[11px] font-semibold uppercase tracking-wide text-[var(--dash-text-muted)] ${
                 index === 0 ? "pb-1" : "pb-1 pt-3"
               }`}
             >
@@ -310,7 +310,7 @@ export default function SectionModulesPanel({
                     type="button"
                     onClick={() => setExpandedGateInfo((prev) => (prev === type ? null : type))}
                     aria-expanded={expandedGateInfo === type}
-                    className="flex items-center gap-0.5 rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--dash-accent)]"
+                    className="flex items-center gap-0.5 rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_18%,transparent)] px-1.5 py-0.5 text-[11px] font-semibold text-[var(--dash-accent)]"
                   >
                     <Lock className="h-2.5 w-2.5" aria-hidden="true" />
                     {t.basicBadge}
@@ -319,7 +319,7 @@ export default function SectionModulesPanel({
                 {!isGated && isEmptyWhileEnabled(type) && (
                   <span
                     title={t.emptyBadgeHint}
-                    className="rounded-full bg-[color-mix(in_srgb,var(--dash-text-muted)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--dash-text-muted)]"
+                    className="rounded-full bg-[color-mix(in_srgb,var(--dash-text-muted)_18%,transparent)] px-1.5 py-0.5 text-[11px] font-semibold text-[var(--dash-text-muted)]"
                   >
                     {t.emptyBadge}
                   </span>
@@ -327,7 +327,7 @@ export default function SectionModulesPanel({
                 {!isGated && isQuoteOnlyLetter(type) && (
                   <span
                     title={t.personalizeBadgeHint}
-                    className="rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--dash-accent)]"
+                    className="rounded-full bg-[color-mix(in_srgb,var(--dash-accent)_18%,transparent)] px-1.5 py-0.5 text-[11px] font-semibold text-[var(--dash-accent)]"
                   >
                     {t.personalizeBadge}
                   </span>
