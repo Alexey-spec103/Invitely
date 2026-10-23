@@ -704,6 +704,17 @@ export interface Dictionary {
         customizeFurther: string;
         countdown: { weeks: string; days: string; hours: string; minutes: string; seconds: string };
       };
+      /** dashboard critique (2026-10-23), P2: picking a theme from the main
+       * gallery used to commit instantly with zero confirmation or safety
+       * net -- the single highest-stakes click on this whole tab (it defines
+       * the entire event's look), with worse reversibility than deleting a
+       * guest already has. Same toast shell as GuestManager's removal
+       * undo -- switching back to the previous theme is itself just another
+       * selection, so "Undo" here is literally handleSelect(previousId). */
+      switchToast: {
+        switched: (themeName: string) => string;
+        undo: string;
+      };
     };
     paper: {
       pageTitle: string;
@@ -2008,6 +2019,10 @@ export const en: Dictionary = {
         domainCaption: "yourname.com",
         customizeFurther: "Everything can be customized further in the constructor",
         countdown: { weeks: "weeks", days: "days", hours: "hours", minutes: "minutes", seconds: "seconds" },
+      },
+      switchToast: {
+        switched: (themeName) => `Switched to ${themeName}`,
+        undo: "Undo",
       },
     },
     paper: {

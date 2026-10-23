@@ -880,6 +880,10 @@ export const pl: Dictionary = {
         customizeFurther: "Wszystko to można dalej dostosować w kreatorze",
         countdown: { weeks: "tygodnie", days: "dni", hours: "godziny", minutes: "minuty", seconds: "sekundy" },
       },
+      switchToast: {
+        switched: (themeName) => `Przełączono na „${themeName}"`,
+        undo: "Cofnij",
+      },
     },
     paper: {
       pageTitle: "Papeteria",

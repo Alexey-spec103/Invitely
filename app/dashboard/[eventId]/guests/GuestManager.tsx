@@ -1369,7 +1369,7 @@ export default function GuestManager({
           <button
             type="button"
             onClick={handleUndoRemoval}
-            className="font-semibold text-[var(--dash-accent)] hover:underline"
+            className="font-semibold text-[var(--dash-accent-text)] hover:underline"
           >
             {t.removalToast.undo}
           </button>

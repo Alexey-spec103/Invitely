@@ -889,6 +889,10 @@ export const ru: Dictionary = {
         customizeFurther: "Всё это можно дополнительно настроить в конструкторе",
         countdown: { weeks: "недели", days: "дни", hours: "часы", minutes: "минуты", seconds: "секунды" },
       },
+      switchToast: {
+        switched: (themeName) => `Переключено на «${themeName}»`,
+        undo: "Отменить",
+      },
     },
     paper: {
       pageTitle: "Полиграфия",

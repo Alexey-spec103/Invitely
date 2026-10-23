@@ -864,6 +864,10 @@ export const es: Dictionary = {
         customizeFurther: "Todo esto se puede personalizar aún más en el constructor",
         countdown: { weeks: "semanas", days: "días", hours: "horas", minutes: "minutos", seconds: "segundos" },
       },
+      switchToast: {
+        switched: (themeName) => `Cambiado a "${themeName}"`,
+        undo: "Deshacer",
+      },
     },
     paper: {
       pageTitle: "Papelería",
