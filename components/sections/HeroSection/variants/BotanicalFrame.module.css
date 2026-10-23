@@ -15,6 +15,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* impeccable critique (2026-10-23): .names below used a fixed 2.75rem
+     regardless of how narrow this frame itself gets (it has its own
+     max-width, independent of the viewport) -- a long name on a narrow
+     phone had less room to wrap into before risking the corner flourishes
+     below/above it, with no way to respond since the font-size never
+     changed. container-type here lets .names use cqw against THIS frame's
+     own width (not the viewport, which this frame is capped well below
+     on any screen over ~480px) -- same technique this codebase already
+     uses for HandLetteringHero's scaled-preview problem, applied locally
+     instead of for a faraway gallery-card wrapper. */
+  container-type: inline-size;
 }
 
 .flourish {
@@ -123,7 +134,10 @@
 .names {
   font-family: var(--theme-font-script);
   font-weight: 400;
-  font-size: 2.75rem;
+  /* 9cqw matches the original fixed 2.75rem exactly at this frame's own
+     max-width (30rem) -- this is a pure floor-added change, never bigger
+     than before, only smaller once the frame itself narrows past that. */
+  font-size: clamp(1.75rem, 9cqw, 2.75rem);
   line-height: 1.1;
   margin: 0;
 }

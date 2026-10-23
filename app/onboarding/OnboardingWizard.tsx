@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -283,7 +283,20 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
     goToStep(Math.max(0, step - 1), -1);
   };
 
-  const onSubmit = async (values: OnboardingFormValues) => {
+  // impeccable critique (2026-10-23): confirmed live -- a fast double-click
+  // (or double-tap) on "Create my site" could fire `onSubmit` twice before
+  // react-hook-form's `isSubmitting` state actually commits to the DOM and
+  // disables the button, producing two separate draft events from one
+  // intended submission. `disabled={isSubmitting}` below is correct but
+  // relies on a React render landing before the second click arrives; a
+  // ref is synchronous and immune to that race (same reasoning as every
+  // other ref-based guard already in this codebase, e.g. weddingDataDirtyRef
+  // in SiteInlineEditor.tsx).
+  const submittingRef = useRef(false);
+
+  const onSubmit = useCallback(async (values: OnboardingFormValues) => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setFormError(null);
     try {
       const result = await completeOnboarding(values);
@@ -304,8 +317,28 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
       } else {
         setFormError(err instanceof Error ? err.message : t.saveFailed);
       }
+      // Only reset on failure -- a success navigates away via router.push,
+      // and leaving the ref latched there is harmless (the component is
+      // about to unmount) while resetting it would just reopen the same
+      // double-submit window if navigation happens to be slow.
+      submittingRef.current = false;
     }
-  };
+  }, [router, t.rateLimited, t.saveFailed]);
+
+  // react-hooks/refs (2026-10-23): `handleSubmit(onSubmit, ...)` used to be
+  // called directly inline in the <form> JSX below -- a ref read reachable
+  // through a function call during render trips this rule even though the
+  // actual read only ever happens later, inside the event-handler closure
+  // once the form is submitted (same class of false trigger already
+  // documented on SiteInlineEditor's useDragPan hook). Wrapping the call
+  // itself in useCallback moves it out of the render pass -- the inner
+  // function body, where handleSubmit(onSubmit, ...) actually runs, only
+  // executes when this is invoked as the form's real onSubmit handler.
+  const handleFormSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) =>
+      handleSubmit(onSubmit, () => setAttemptedSteps((prev) => new Set(prev).add(step)))(event),
+    [handleSubmit, onSubmit, step]
+  );
 
   // The theme step's own ThemeGalleryCard already renders a live mockup per
   // card, so the side "Preview" panel below is redundant noise for this one
@@ -332,7 +365,7 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
       }
     >
       <form
-        onSubmit={handleSubmit(onSubmit, () => setAttemptedSteps((prev) => new Set(prev).add(step)))}
+        onSubmit={handleFormSubmit}
         className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
         noValidate
       >
