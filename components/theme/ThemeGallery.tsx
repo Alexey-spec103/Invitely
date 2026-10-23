@@ -312,6 +312,13 @@ export default function ThemeGallery({
   );
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  // dashboard critique (2026-10-23), P2: this list was a single flat run of
+  // every category with a theme in the current pool -- 14-16 simultaneously
+  // visible chips even before Wedding gained modern/minimal (20 after),
+  // well past the ~4-item working-memory guideline. Collapsed to the top 4
+  // by count (the list is already sorted that way) plus an expand toggle,
+  // same pattern as the grid's own "Show more styles" below.
+  const [styleListExpanded, setStyleListExpanded] = useState(false);
   const { favoriteIds, toggleFavorite } = useFavoriteThemes();
   const currentYear = new Date().getFullYear();
 
@@ -416,6 +423,22 @@ export default function ThemeGallery({
       .map(([label, count]) => ({ kind: "layout" as const, id: label, label, count })),
   ].sort((a, b) => b.count - a.count);
 
+  const STYLE_LIST_COLLAPSED_COUNT = 4;
+  const collapsedStyleEntries = combinedStyleEntries.slice(0, STYLE_LIST_COLLAPSED_COUNT);
+  // The active filter must stay visible even collapsed -- otherwise picking
+  // a category buried past the fold, then collapsing the list back down,
+  // would make it look like nothing was selected at all.
+  const selectedStyleEntry =
+    style && !collapsedStyleEntries.some((item) => item.kind === style.kind && item.id === style.id)
+      ? combinedStyleEntries.find((item) => item.kind === style.kind && item.id === style.id)
+      : undefined;
+  const visibleStyleEntries = styleListExpanded
+    ? combinedStyleEntries
+    : selectedStyleEntry
+      ? [...collapsedStyleEntries, selectedStyleEntry]
+      : collapsedStyleEntries;
+  const hiddenStyleCount = combinedStyleEntries.length - visibleStyleEntries.length;
+
   return (
     <div className={styles.root}>
     {eventType && (
@@ -505,7 +528,7 @@ export default function ThemeGallery({
             <span>{t.allStyles}</span>
             <span className={styles.count}>{themes.length}</span>
           </button>
-          {combinedStyleEntries.map((item) => {
+          {visibleStyleEntries.map((item) => {
             const Icon = item.kind === "category" ? CATEGORY_STYLE_ICONS[item.id] : LAYOUT_STYLE_ICONS[item.id];
             return (
               <button
@@ -522,6 +545,18 @@ export default function ThemeGallery({
               </button>
             );
           })}
+          {hiddenStyleCount > 0 ? (
+            <button type="button" className={styles.showMoreStyles} onClick={() => setStyleListExpanded(true)}>
+              {t.showMore(hiddenStyleCount)}
+            </button>
+          ) : (
+            styleListExpanded &&
+            combinedStyleEntries.length > STYLE_LIST_COLLAPSED_COUNT && (
+              <button type="button" className={styles.showMoreStyles} onClick={() => setStyleListExpanded(false)}>
+                {t.showFewerStyles}
+              </button>
+            )
+          )}
         </div>
 
         <div className={styles.filterGroup}>

@@ -679,6 +679,12 @@ export interface Dictionary {
         hoverHint: string;
         noMatch: string;
         showMore: (remaining: number) => string;
+        /** dashboard critique (2026-10-23), P2: the sidebar's "OR PICK A
+         * SPECIFIC STYLE" category list collapses to the top 4 by count --
+         * this is its "collapse back down" toggle. showMore above (already
+         * generic -- "Show more styles (N more)") doubles as its "show more"
+         * counterpart, so only the reverse direction needed a new key. */
+        showFewerStyles: string;
         categories: Record<
           "romantic" | "modern" | "botanical" | "boho" | "luxury" | "dark" | "coastal" | "rustic" | "vintage" | "minimal" | "marble" | "cosmic" | "peony" | "provence",
           string
@@ -1983,6 +1989,7 @@ export const en: Dictionary = {
         hoverHint: "Preview any style before choosing",
         noMatch: "No styles match - try clearing a filter or search.",
         showMore: (remaining) => `Show more styles (${remaining} more)`,
+        showFewerStyles: "Show fewer styles",
         categories: {
           romantic: "Romantic",
           modern: "Modern",

@@ -828,6 +828,7 @@ export const fr: Dictionary = {
         hoverHint: "Prévisualisez n'importe quel style avant de choisir",
         noMatch: "Aucun style ne correspond - essayez de retirer un filtre ou la recherche.",
         showMore: (remaining) => `Voir plus de styles (${remaining} de plus)`,
+        showFewerStyles: "Voir moins de styles",
         categories: {
           romantic: "Romantique",
           modern: "Moderne",

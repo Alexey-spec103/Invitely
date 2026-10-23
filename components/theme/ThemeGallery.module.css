@@ -341,6 +341,28 @@
   border-color: #d1d5db;
 }
 
+/* dashboard critique (2026-10-23), P2: the sidebar's own "N more styles"
+   toggle -- a text-only link, not another .filterBtn pill, so it reads as
+   a list control rather than one more peer choice among the categories it
+   sits below. --dash-accent-text (not the raw accent) matches every other
+   light-background accent color fixed this same pass. */
+.showMoreStyles {
+  display: block;
+  width: 100%;
+  padding: 0.35rem 0.6rem;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dash-accent-text, #c2410c);
+  cursor: pointer;
+}
+
+.showMoreStyles:hover {
+  text-decoration: underline;
+}
+
 .card {
   /* flex column, not block (2026-10-17 fix): photo-prominent themes used to
      add an extra caption line ("This style is built around a photo...")

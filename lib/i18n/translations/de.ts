@@ -827,6 +827,7 @@ export const de: Dictionary = {
         hoverHint: "Sieh dir jeden Stil in der Vorschau an, bevor du wählst",
         noMatch: "Keine Stile gefunden - versuche, einen Filter oder die Suche zurückzusetzen.",
         showMore: (remaining) => `Weitere Stile anzeigen (${remaining} mehr)`,
+        showFewerStyles: "Weniger Stile anzeigen",
         categories: {
           romantic: "Romantisch",
           modern: "Modern",

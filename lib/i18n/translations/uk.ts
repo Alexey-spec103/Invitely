@@ -852,6 +852,7 @@ export const uk: Dictionary = {
         hoverHint: "Перегляньте будь-який стиль перед вибором",
         noMatch: "Відповідних стилів не знайдено - спробуйте скинути фільтр або пошук.",
         showMore: (remaining) => `Показати ще (${remaining})`,
+        showFewerStyles: "Показати менше",
         categories: {
           romantic: "Романтика",
           modern: "Модерн",

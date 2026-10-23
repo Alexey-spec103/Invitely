@@ -852,6 +852,7 @@ export const ru: Dictionary = {
         hoverHint: "Посмотрите превью любого стиля перед выбором",
         noMatch: "Подходящих стилей не найдено - попробуйте сбросить фильтр или поиск.",
         showMore: (remaining) => `Показать ещё (${remaining})`,
+        showFewerStyles: "Показать меньше",
         categories: {
           romantic: "Романтика",
           modern: "Модерн",
