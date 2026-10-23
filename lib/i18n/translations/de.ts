@@ -931,6 +931,7 @@ export const de: Dictionary = {
       customizeText: "Text anpassen",
       editText: "Text bearbeiten",
       revertToDefault: "Auf Standard zurücksetzen",
+      revertToDefaultConfirm: "Dein individuelles Design verwerfen und zum Standard zurückkehren? Das kann nicht rückgängig gemacht werden.",
       flipToBack: "↺ Rückseite anzeigen",
       done: "Fertig",
       zoomOut: "Verkleinern",

@@ -753,6 +753,12 @@ export interface Dictionary {
       customizeText: string;
       editText: string;
       revertToDefault: string;
+      /** dashboard critique (2026-10-23), re-run P1: "Revert to default"
+       * discarded a host's whole custom front-invitation design in one
+       * click, no confirm, no undo -- the same stakes class as a destructive
+       * action this codebase already gates elsewhere (CanvasEditor's page
+       * delete, DomainEditForm's domain removal), just missed here. */
+      revertToDefaultConfirm: string;
       flipToBack: string;
       done: string;
       zoomOut: string;
@@ -2093,6 +2099,7 @@ export const en: Dictionary = {
       customizeText: "Customize text",
       editText: "Edit text",
       revertToDefault: "Revert to default",
+      revertToDefaultConfirm: "Discard your custom design and go back to the default? This can't be undone.",
       flipToBack: "↺ Flip to back",
       done: "Done",
       zoomOut: "Zoom out",

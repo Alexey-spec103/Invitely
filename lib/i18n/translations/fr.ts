@@ -932,6 +932,7 @@ export const fr: Dictionary = {
       customizeText: "Personnaliser le texte",
       editText: "Modifier le texte",
       revertToDefault: "Revenir à la version par défaut",
+      revertToDefaultConfirm: "Abandonner votre design personnalisé et revenir à la version par défaut ? Action irréversible.",
       flipToBack: "↺ Voir le verso",
       done: "Terminé",
       zoomOut: "Zoomer en arrière",

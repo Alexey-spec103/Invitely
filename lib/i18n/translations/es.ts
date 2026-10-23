@@ -931,6 +931,7 @@ export const es: Dictionary = {
       customizeText: "Personalizar texto",
       editText: "Editar texto",
       revertToDefault: "Volver al valor predeterminado",
+      revertToDefaultConfirm: "¿Descartar tu diseño personalizado y volver al predeterminado? No se puede deshacer.",
       flipToBack: "↺ Ver el reverso",
       done: "Listo",
       zoomOut: "Alejar",

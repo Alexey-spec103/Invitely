@@ -58,12 +58,18 @@
   white-space: nowrap;
 }
 
+/* dashboard critique (2026-10-23), re-run P1: raw --dash-accent as text on
+   this card's white background measured 2.82:1 -- the exact bug class
+   fixed everywhere else this session via --dash-accent-text, missed here
+   since this is a CSS Module, not one of the Tailwind arbitrary-value
+   classes the earlier grep-based sweep searched. Confirmed independently
+   by both the design review and the detector in the same re-run. */
 .cardBadge {
   font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--dash-accent, #ff6b45);
+  color: var(--dash-accent-text, #c2410c);
 }
 
 .removeBtn {

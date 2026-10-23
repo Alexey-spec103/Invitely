@@ -956,6 +956,7 @@ export const uk: Dictionary = {
       customizeText: "Налаштувати текст",
       editText: "Редагувати текст",
       revertToDefault: "Повернути типовий",
+      revertToDefaultConfirm: "Скасувати свій дизайн і повернутися до типового? Це не можна скасувати.",
       flipToBack: "↺ Показати зворот",
       done: "Готово",
       zoomOut: "Зменшити",

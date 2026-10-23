@@ -947,6 +947,7 @@ export const pl: Dictionary = {
       customizeText: "Dostosuj tekst",
       editText: "Edytuj tekst",
       revertToDefault: "Przywróć domyślne",
+      revertToDefaultConfirm: "Odrzucić własny projekt i wrócić do domyślnego? Tego nie można cofnąć.",
       flipToBack: "↺ Zobacz tył",
       done: "Gotowe",
       zoomOut: "Pomniejsz",

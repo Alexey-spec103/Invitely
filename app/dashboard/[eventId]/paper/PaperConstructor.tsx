@@ -898,18 +898,45 @@ export default function PaperConstructor({
   const undoFrontCanvas = () => setFrontCanvasHistoryIndex((idx) => Math.max(0, idx - 1));
   const redoFrontCanvas = () => setFrontCanvasHistoryIndex((idx) => Math.min(frontCanvasHistory.length - 1, idx + 1));
 
-  const { state: frontCanvasSaveState, error: frontCanvasSaveError } = useAutosave(frontCanvasFrame, async (frame) => {
-    const result = await updateInvitationFrontCanvas({ eventId, frame });
-    if (!result.ok) throw new Error(result.message);
-    router.refresh();
-  });
+  // dashboard critique (2026-10-23), re-run P1 follow-up: confirmed live --
+  // revertFrontCanvas below resets frontCanvasHistory to a fresh seed after
+  // clearing the saved design server-side, and frontCanvasFrame (watched
+  // here) is *derived* from that history (`frontCanvasHistory[index]`
+  // above), so the reset itself looked like a new, unsaved edit to this
+  // hook. 900ms later it autosaved the seed right back as a "custom"
+  // design, silently undoing the revert it had just confirmed -- the
+  // revert button never actually reverted anything, confirm gate or not.
+  // Gating on `hasCustomFront` (false the instant a revert lands, true the
+  // instant a real edit lands -- both set in the same batched update as
+  // the frame change that triggers this effect) closes the race without
+  // changing updateFrontCanvasFrame's own save path at all.
+  const { state: frontCanvasSaveState, error: frontCanvasSaveError } = useAutosave(
+    frontCanvasFrame,
+    async (frame) => {
+      const result = await updateInvitationFrontCanvas({ eventId, frame });
+      if (!result.ok) throw new Error(result.message);
+      router.refresh();
+    },
+    { enabled: hasCustomFront }
+  );
 
   // "Revert to default" -- clears the saved design and goes back to the
   // original static (names/date/venue-from-Site-tab) preview. Re-seeding
   // the history (rather than leaving the last custom frame sitting there)
   // means opening "Customize text" again afterward starts clean, not from
   // whatever was reverted away from.
+  //
+  // dashboard critique (2026-10-23), re-run P1: this used to fire with no
+  // confirmation, discarding a whole custom design in one click -- the
+  // same stakes class as destructive actions this codebase already gates
+  // elsewhere (CanvasEditor's "Delete this page?", DomainEditForm's domain
+  // removal), both via a plain window.confirm() rather than an undo toast,
+  // since those are rare/deliberate actions (unlike guest deletion or
+  // theme browsing, which are frequent and easy to misclick through) --
+  // matching that precedent here instead of building a fourth undo-toast
+  // variant for an action that doesn't fit the pattern it fits.
   const revertFrontCanvas = async () => {
+    if (!window.confirm(t.revertToDefaultConfirm)) return;
     const result = await clearInvitationFrontCanvas(eventId);
     if (!result.ok) return;
     setHasCustomFront(false);

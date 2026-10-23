@@ -956,6 +956,7 @@ export const ru: Dictionary = {
       customizeText: "Настроить текст",
       editText: "Редактировать текст",
       revertToDefault: "Вернуть по умолчанию",
+      revertToDefaultConfirm: "Отменить свой дизайн и вернуться к стандартному? Это нельзя отменить.",
       flipToBack: "↺ Показать оборот",
       done: "Готово",
       zoomOut: "Уменьшить",
