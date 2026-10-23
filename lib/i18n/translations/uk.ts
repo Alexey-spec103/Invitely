@@ -696,7 +696,8 @@ export const uk: Dictionary = {
         previewTablet: "Перегляд у ширину планшета",
         previewLabel: "Перегляд:",
         previewLanguageAria: "Мова перегляду",
-        heroPhotoLabel: "Головне фото",
+        heroPhotoLabel: "Фото стартового екрана",
+        startScreenSectionLabel: "Стартовий екран",
         photoLabel: "📷 Фото",
         noPhotoInLayout:
           "Цей макет не показує фото в головному блоці. Оберіть стиль «Фотозапрошення» в галереї тем, якщо хочете, щоб фото було в центрі уваги.",

@@ -677,7 +677,8 @@ export const es: Dictionary = {
         previewTablet: "Vista previa en ancho de tablet",
         previewLabel: "Vista previa:",
         previewLanguageAria: "Idioma de la vista previa",
-        heroPhotoLabel: "Foto principal",
+        heroPhotoLabel: "Foto de la pantalla de inicio",
+        startScreenSectionLabel: "Pantalla de inicio",
         photoLabel: "📷 Foto",
         noPhotoInLayout:
           'Este diseño no muestra una foto en la sección principal. Elige un estilo "Invitación con foto" en la galería de temas si quieres que tu foto sea protagonista.',

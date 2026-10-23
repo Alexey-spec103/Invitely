@@ -696,7 +696,8 @@ export const ru: Dictionary = {
         previewTablet: "Превью в ширину планшета",
         previewLabel: "Превью:",
         previewLanguageAria: "Язык превью",
-        heroPhotoLabel: "Главное фото",
+        heroPhotoLabel: "Фото стартового экрана",
+        startScreenSectionLabel: "Стартовый экран",
         photoLabel: "📷 Фото",
         noPhotoInLayout:
           "Этот макет не показывает фото в главном блоке. Выберите стиль «Фотоприглашение» в галерее тем, если хотите, чтобы фото было в центре внимания.",

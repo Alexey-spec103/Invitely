@@ -687,7 +687,8 @@ export const pl: Dictionary = {
         previewTablet: "Podgląd w szerokości tabletu",
         previewLabel: "Podgląd:",
         previewLanguageAria: "Język podglądu",
-        heroPhotoLabel: "Zdjęcie główne",
+        heroPhotoLabel: "Zdjęcie ekranu startowego",
+        startScreenSectionLabel: "Ekran startowy",
         photoLabel: "📷 Zdjęcie",
         noPhotoInLayout:
           'Ten układ nie wyświetla zdjęcia w sekcji głównej. Wybierz styl „Zaproszenie ze zdjęciem" w galerii motywów, jeśli chcesz, aby Twoje zdjęcie było na pierwszym planie.',

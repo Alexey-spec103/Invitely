@@ -678,7 +678,8 @@ export const fr: Dictionary = {
         previewTablet: "Aperçu en largeur tablette",
         previewLabel: "Aperçu :",
         previewLanguageAria: "Langue de l'aperçu",
-        heroPhotoLabel: "Photo principale",
+        heroPhotoLabel: "Photo de l'écran d'accueil",
+        startScreenSectionLabel: "Écran d'accueil",
         photoLabel: "📷 Photo",
         noPhotoInLayout:
           "Cette mise en page n'affiche pas de photo dans la section principale. Choisissez un style « Invitation avec photo » dans la galerie de thèmes si vous souhaitez mettre votre photo en avant.",

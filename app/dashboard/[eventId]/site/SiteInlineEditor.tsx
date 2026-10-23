@@ -1336,7 +1336,14 @@ export default function SiteInlineEditor({
     // Hero has no MODULE_ICONS entry (it's always on, no toggle row in the
     // Modules panel either) -- matches that same convention here: a plain
     // label, no icon, rather than inventing one just for this list.
-    sectionHeaderRow("hero", "Hero", undefined),
+    //
+    // impeccable critique (2026-10-23): this divider used to hardcode a
+    // literal, untranslated "Hero" -- a third name for the same section
+    // the Modules card calls "Start screen" and the live canvas's own
+    // SectionHeader calls "Start screen photo" (t.heroPhotoLabel above).
+    // Reusing that same translated string here closes the inconsistency
+    // instead of adding a fourth spelling.
+    sectionHeaderRow("hero", t.startScreenSectionLabel, undefined),
     {
       ...makeRow({
         field: "names.0",

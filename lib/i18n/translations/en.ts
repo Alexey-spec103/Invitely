@@ -541,7 +541,26 @@ export interface Dictionary {
         previewTablet: string;
         previewLabel: string;
         previewLanguageAria: string;
+        /** impeccable critique (2026-10-23): this used to say "Hero photo"
+         * -- the same section the Modules quick-settings card calls "Start
+         * screen" (see startScreen.title above) and the Editable Blocks
+         * panel's own divider used to hardcode as a literal, untranslated
+         * "Hero" (see SiteInlineEditor.tsx's sectionHeaderRow("hero", ...)
+         * call, now fixed to read this same key instead) -- three names
+         * for one concept, confirmed as a real match-system-to-real-world
+         * gap in a first-timer's path ("Edit in preview" from the Start
+         * screen card lands on a section labeled something else
+         * entirely"). All three now say "Start screen". */
         heroPhotoLabel: string;
+        /** Same fix, same reasoning as heroPhotoLabel above -- this is the
+         * Editable Blocks panel's section-divider label for Hero, which
+         * used to hardcode a literal, untranslated "Hero" directly in
+         * SiteInlineEditor.tsx instead of reading any dictionary key at
+         * all. A plain duplicate of startScreen.title's English wording
+         * (not a cross-namespace reference -- that string lives under
+         * dashboard.site directly, this one under dashboard.site.editor)
+         * so every locale says the same thing here as the Modules card. */
+        startScreenSectionLabel: string;
         photoLabel: string;
         noPhotoInLayout: string;
         sectionLabels: {
@@ -1797,7 +1816,8 @@ export const en: Dictionary = {
         previewTablet: "Preview at tablet width",
         previewLabel: "Preview:",
         previewLanguageAria: "Preview language",
-        heroPhotoLabel: "Hero photo",
+        heroPhotoLabel: "Start screen photo",
+        startScreenSectionLabel: "Start screen",
         photoLabel: "📷 Photo",
         noPhotoInLayout:
           'This layout doesn\'t display a photo in the Hero section. Pick a "Photo Invitation" style from the theme gallery if you\'d like your photo front and center.',

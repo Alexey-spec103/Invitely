@@ -677,7 +677,8 @@ export const de: Dictionary = {
         previewTablet: "Vorschau in Tablet-Breite",
         previewLabel: "Vorschau:",
         previewLanguageAria: "Vorschausprache",
-        heroPhotoLabel: "Titelfoto",
+        heroPhotoLabel: "Startbildschirm-Foto",
+        startScreenSectionLabel: "Startbildschirm",
         photoLabel: "📷 Foto",
         noPhotoInLayout:
           'Dieses Layout zeigt kein Foto im Titelbereich. Wähle einen „Foto-Einladung"-Stil aus der Themengalerie, wenn dein Foto im Mittelpunkt stehen soll.',
