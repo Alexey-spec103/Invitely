@@ -421,6 +421,20 @@ export interface Dictionary {
       statusVerified: string;
       statusPending: string;
       tour: { skip: string; back: string; next: string; gotIt: string };
+      /** Reopens a page's FirstVisitTour on demand -- see TourReplayButton.
+       * Shared across every tab that pairs a tour with this button, so it
+       * only needs translating once instead of per tab. */
+      replayTourButton: string;
+      /** Shown next to an inline failure banner (add/remove guest, send
+       * email, generate PDF, etc.) so a failed action can be re-attempted
+       * without re-filling a form or re-finding the original control. */
+      retry: string;
+      /** Shown instead of `retry` once a Retry click has failed with the
+       * same error again -- covers PDF downloads, where the failure is
+       * often a dynamic-import chunk load that got cached as rejected and
+       * won't resolve differently no matter how many more times `retry`
+       * re-invokes the same function; only a fresh page load clears it. */
+      reloadPage: string;
       moduleCard: {
         notSetYet: string;
         couldntSave: string;
@@ -798,6 +812,7 @@ export interface Dictionary {
         undo: string;
         redo: string;
         newTextDefault: string;
+        elementDeletedToast: string;
         addElementModal: {
           heading: string;
           close: string;
@@ -915,6 +930,15 @@ export interface Dictionary {
       supportWidget: { openLabel: string; closeLabel: string; needHand: string; body: string };
     };
     guests: {
+      // dashboard critique (2026-10-24), eighth re-run P1: the page-level
+      // "Guests"/"RSVP" anchor links (page.tsx's nav row) had nothing to
+      // actually land on -- GuestManager.tsx carried no heading of its
+      // own, and the #rsvp wrapper's only heading belongs to
+      // RsvpResponses further down, not the notification-settings block
+      // right at its top. Two standalone headings, not reused copy from
+      // elsewhere, so each anchor's destination is unambiguous on arrival.
+      listHeading: string;
+      rsvpSettingsHeading: string;
       page: {
         title: string;
         subtitle: string;
@@ -925,6 +949,12 @@ export interface Dictionary {
         seatingHeading: string;
         seatingBodyOn: string;
         seatingBodyOff: string;
+        nav: {
+          guests: string;
+          rsvp: string;
+          photos: string;
+          seating: string;
+        };
       };
       tour: {
         step1Title: string;
@@ -965,6 +995,7 @@ export interface Dictionary {
         phoneLabel: string;
         phonePlaceholder: string;
         plusOnesLabel: string;
+        moreDetails: string;
         addGuest: string;
         adding: string;
         duplicateConfirm: (name: string) => string;
@@ -1680,6 +1711,9 @@ export const en: Dictionary = {
       statusVerified: "Verified",
       statusPending: "Pending",
       tour: { skip: "Skip", back: "Back", next: "Next", gotIt: "Got it" },
+      replayTourButton: "How this works",
+      retry: "Retry",
+      reloadPage: "Reload page",
       moduleCard: {
         notSetYet: "Not set yet",
         couldntSave: "Couldn't save",
@@ -2149,6 +2183,7 @@ export const en: Dictionary = {
         undo: "Undo",
         redo: "Redo",
         newTextDefault: "New text",
+        elementDeletedToast: "Element deleted",
         addElementModal: {
           heading: "Add element",
           close: "Close",
@@ -2281,6 +2316,8 @@ export const en: Dictionary = {
       },
     },
     guests: {
+      listHeading: "Guest list",
+      rsvpSettingsHeading: "RSVP notifications",
       page: {
         title: "Guests",
         subtitle: "Keep track of everyone you're inviting.",
@@ -2291,6 +2328,12 @@ export const en: Dictionary = {
         seatingHeading: "Seating",
         seatingBodyOn: `Optional - who sits where. This is what powers the "Find My Table" search on your site.`,
         seatingBodyOff: `Optional - plan who sits where whenever you like. Turn on "Find My Table" in your Site's Modules list to let guests look it up themselves.`,
+        nav: {
+          guests: "Guests",
+          rsvp: "RSVP",
+          photos: "Photos",
+          seating: "Seating",
+        },
       },
       tour: {
         step1Title: "👋 Add your guests",
@@ -2335,6 +2378,7 @@ export const en: Dictionary = {
         phoneLabel: "Phone",
         phonePlaceholder: "For SMS or WhatsApp",
         plusOnesLabel: "Plus-ones allowed",
+        moreDetails: "More details (group, email, phone, plus-ones)",
         addGuest: "Add guest",
         adding: "Adding...",
         duplicateConfirm: (name) => `"${name}" looks like a guest you already added. Add another one anyway?`,

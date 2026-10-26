@@ -12,7 +12,16 @@ interface AutosaveStatusProps {
 
 /** Small status pill that replaces a manual "Save" button -- shows what
  * autosave is doing without demanding a click. Idle renders nothing so a
- * freshly-loaded form doesn't show a stale "Saved". */
+ * freshly-loaded form doesn't show a stale "Saved".
+ *
+ * Every call site renders this on a light card -- Paper's canvas-editor
+ * toolbar included, since that panel itself was repainted light (see
+ * PaperConstructor.tsx's wrapper `style` override). This briefly had a
+ * dark-mode `onDark` variant for when that same toolbar was still dark;
+ * once the panel went light, the variant became dead code that actively
+ * regressed contrast (its lighter shades measured 1.94:1 on the new white
+ * background, live) -- removed along with the prop, rather than left as an
+ * unused branch nothing sets anymore. */
 export default function AutosaveStatus({ state, error }: AutosaveStatusProps) {
   const reduceMotion = usePrefersReducedMotion();
   // motion-audit 2026-10-21: this pill can flip states on nearly every

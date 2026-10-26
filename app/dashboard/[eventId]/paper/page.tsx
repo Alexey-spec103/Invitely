@@ -11,7 +11,7 @@ import { getBanquetCardData } from "@/lib/banquetCards";
 import { getEventType } from "@/lib/eventTypes";
 import PaperConstructor from "./PaperConstructor";
 import HubOverviewStrip from "../HubOverviewStrip";
-import FirstVisitTour from "@/components/ui/FirstVisitTour";
+import TourReplayButton from "@/components/ui/TourReplayButton";
 import PremiumUpgradeNote from "@/components/paper/PremiumUpgradeNote";
 import InvitationDownloads from "../invitations/InvitationDownloads";
 import { getWeddingDataCompleteness } from "@/lib/weddingData";
@@ -72,34 +72,54 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
   const locked = !planMeets(plan.id, "premium");
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="dash-h1 text-gray-900">{t.pageTitle}</h1>
-      <p className="mt-1 text-sm text-gray-600">{t.pageSubtitle}</p>
-
-      {/* Direct feedback: "за 35 евро сразу предупреждать" -- everything on
-          this page is the paid/print side of the product, so a host should
-          know that up front, not discover it three groups deep in the media
-          list. locked-and-per-group notes inside PaperConstructor still do
-          their own job (right next to the specific watermarked preview);
-          this is the immediate, page-level heads-up. */}
-      {locked && (
-        <div className="mt-4">
-          <PremiumUpgradeNote eventId={event.id} locale={locale} />
+    <div>
+      {/* dashboard critique (2026-10-23), fifth re-run P1: this used to be
+          one `max-w-3xl` wrapper around the entire page, PaperConstructor's
+          canvas editor included -- confirmed live, that squeezed the open
+          editor down to a ~130px-wide card with a clipped toolbar. Every
+          *other* section here (header, upgrade note, hub strip, downloads)
+          genuinely reads better narrow, so the cap moved onto each of
+          those individually instead of the page as a whole --
+          PaperConstructor now manages its own width, capped the same way
+          while browsing, unconstrained (same as Site's own Free-canvas
+          editor) while a canvas editor is actually open. */}
+      <div className="max-w-3xl">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="dash-h1 text-gray-900">{t.pageTitle}</h1>
+            <p className="mt-1 text-sm text-gray-600">{t.pageSubtitle}</p>
+          </div>
+          <TourReplayButton
+            tourId="paper-constructor"
+            t={dashboardCommon.tour}
+            steps={t.tourSteps}
+            label={dashboardCommon.replayTourButton}
+          />
         </div>
-      )}
 
-      <FirstVisitTour tourId="paper-constructor" t={dashboardCommon.tour} steps={t.tourSteps} />
+        {/* Direct feedback: "за 35 евро сразу предупреждать" -- everything on
+            this page is the paid/print side of the product, so a host should
+            know that up front, not discover it three groups deep in the media
+            list. locked-and-per-group notes inside PaperConstructor still do
+            their own job (right next to the specific watermarked preview);
+            this is the immediate, page-level heads-up. */}
+        {locked && (
+          <div className="mt-4">
+            <PremiumUpgradeNote eventId={event.id} locale={locale} />
+          </div>
+        )}
 
-      <div className="mt-6">
-        <HubOverviewStrip
-          eventId={event.id}
-          eventType={event.event_type}
-          themeName={theme.name}
-          weddingDataPercent={weddingDataPercent}
-          planName={plan.name}
-          planPriceEur={plan.priceEur}
-          locale={locale}
-        />
+        <div className="mt-6">
+          <HubOverviewStrip
+            eventId={event.id}
+            eventType={event.event_type}
+            themeName={theme.name}
+            weddingDataPercent={weddingDataPercent}
+            planName={plan.name}
+            planPriceEur={plan.priceEur}
+            locale={locale}
+          />
+        </div>
       </div>
 
       <PaperConstructor
@@ -137,7 +157,7 @@ export default async function PaperPage({ params }: PageProps<"/dashboard/[event
           and it meant downloading the thing you'd just designed was a
           second navigation away. Personalized (QR-linked, per-guest)
           downloads now live right here, after the design itself. */}
-      <div className="mt-10">
+      <div className="mt-10 max-w-3xl">
         <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.downloadHeading}</h2>
         <p className="mt-1 text-sm text-gray-600">{t.downloadSubtitle}</p>
         <InvitationDownloads

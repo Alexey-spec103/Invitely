@@ -23,7 +23,10 @@ import type { Locale } from "@/lib/i18n/locales";
 interface ElementToolbarProps {
   element: CanvasElement;
   position: { top: number; left: number };
-  onUpdate: (patch: Partial<CanvasElement>) => void;
+  /** `coalesceKey`, when passed, tells the parent to coalesce rapid same-key
+   * calls into one undo step instead of one per keystroke -- see
+   * CanvasFrameEditorProps' own onUpdateFrame doc for the full reasoning. */
+  onUpdate: (patch: Partial<CanvasElement>, coalesceKey?: string) => void;
   onDuplicate: () => void;
   onDelete: () => void;
   onReorder: (mode: "front" | "back" | "forward" | "backward") => void;
@@ -36,9 +39,9 @@ interface ElementToolbarProps {
 }
 
 const iconButtonClass =
-  "flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--dash-text-muted)] hover:bg-white/10 hover:text-[var(--dash-text)]";
+  "flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--dash-text-muted)] hover:bg-[var(--dash-hover-tint-strong)] hover:text-[var(--dash-text)]";
 const iconButtonActiveClass =
-  "flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]";
+  "flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--dash-accent-text)] text-[var(--dash-accent-contrast)]";
 
 /** Floating per-element popover, anchored above (or below) the selected
  * element on the canvas -- replaces what used to be a permanent, always-
@@ -79,9 +82,10 @@ export default function ElementToolbar({
             <input
               type="number"
               value={element.fontSize}
-              onChange={(event) => onUpdate({ fontSize: Number(event.target.value) || 1 })}
+              onChange={(event) => onUpdate({ fontSize: Number(event.target.value) || 1 }, "fontSize")}
               className="w-14 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-sm text-[var(--dash-text)]"
               title={t.fontSize}
+              aria-label={t.fontSize}
             />
             <input
               type="color"
@@ -89,6 +93,7 @@ export default function ElementToolbar({
               onChange={(event) => onUpdate({ color: event.target.value })}
               className="h-7 w-8 rounded border border-[var(--dash-border)]"
               title={t.color}
+              aria-label={t.color}
             />
             <button
               type="button"
@@ -127,7 +132,7 @@ export default function ElementToolbar({
                 step={0.05}
                 min={0.5}
                 value={element.lineHeight}
-                onChange={(event) => onUpdate({ lineHeight: Number(event.target.value) || 1 })}
+                onChange={(event) => onUpdate({ lineHeight: Number(event.target.value) || 1 }, "lineHeight")}
                 className="w-12 bg-transparent text-xs text-[var(--dash-text)] outline-none"
               />
             </label>
@@ -140,7 +145,7 @@ export default function ElementToolbar({
                 type="number"
                 step={0.5}
                 value={element.letterSpacing}
-                onChange={(event) => onUpdate({ letterSpacing: Number(event.target.value) || 0 })}
+                onChange={(event) => onUpdate({ letterSpacing: Number(event.target.value) || 0 }, "letterSpacing")}
                 className="w-12 bg-transparent text-xs text-[var(--dash-text)] outline-none"
               />
             </label>
@@ -162,7 +167,7 @@ export default function ElementToolbar({
           <input
             type="text"
             value={element.caption ?? ""}
-            onChange={(event) => onUpdate({ caption: event.target.value || undefined })}
+            onChange={(event) => onUpdate({ caption: event.target.value || undefined }, "qrCaption")}
             placeholder={t.qrCaptionPlaceholder}
             className="w-36 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-xs text-[var(--dash-text)] placeholder:text-[var(--dash-text-muted)]"
           />
@@ -181,7 +186,7 @@ export default function ElementToolbar({
             min={0}
             max={3}
             value={element.animationDuration ?? 0}
-            onChange={(event) => onUpdate({ animationDuration: Number(event.target.value) || undefined })}
+            onChange={(event) => onUpdate({ animationDuration: Number(event.target.value) || undefined }, "animationDuration")}
             className="w-10 bg-transparent text-xs text-[var(--dash-text)] outline-none"
           />
           s
@@ -214,7 +219,7 @@ export default function ElementToolbar({
           type="button"
           onClick={onDelete}
           title={t.delete}
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-red-400 hover:bg-red-500/10"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--dash-danger-ink)] hover:bg-red-500/10"
         >
           <Trash2 className="h-4 w-4" aria-hidden="true" />
         </button>

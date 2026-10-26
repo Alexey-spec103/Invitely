@@ -40,6 +40,21 @@ html {
      variant for this one tinted-background case is the straightforward fix
      instead, 4.99:1 measured. */
   --dash-accent-text-tinted: #ad3a0b;
+  /* "The accent color, used as readable text" -- indirection so a handful
+     of canvas-editor spots (headings, hover states) that read --dash-accent
+     directly as a text color can stay correct on BOTH the editor's normal
+     dark surface (this default: the same raw accent already legible there)
+     and Paper's light-panel override below (which redefines this one var
+     to --dash-accent-text instead) -- without a second copy-pasted set of
+     className strings per context. */
+  --dash-accent-ink: var(--dash-accent);
+  /* dashboard critique (2026-10-24), sixth re-run: same indirection, for
+     the canvas editor's one destructive (Delete) icon -- text-red-400 is
+     readable on the editor's normal dark surface (7.03:1) but measured
+     2.89:1, live, once Paper's embedded copy of this same toolbar went
+     light. Default stays the dark-safe shade; Paper's override below
+     swaps in a darker one. */
+  --dash-danger-ink: #f87171;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -154,6 +169,13 @@ body {
   --dash-border: #242728;
   --dash-text: #f4f4f6;
   --dash-text-muted: #9c9c9d;
+  /* Hover tints for the canvas editor's dark rows/tiles (layers list, font
+     list, "add element" tiles) -- a near-invisible white wash reads fine on
+     this near-black surface but needs to flip to a black wash wherever the
+     surface itself flips light (Paper's override below), so these are
+     indirection too, same reasoning as --dash-accent-ink above. */
+  --dash-hover-tint: rgba(255, 255, 255, 0.05);
+  --dash-hover-tint-strong: rgba(255, 255, 255, 0.1);
 
   /* Cabinet-only font pair. Fraunces (a display serif) for headings gives
      the cabinet the same "expressive pairing" every reference competitor

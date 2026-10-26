@@ -512,6 +512,9 @@ export const es: Dictionary = {
       statusVerified: "Verificado",
       statusPending: "Pendiente",
       tour: { skip: "Omitir", back: "Atrás", next: "Siguiente", gotIt: "Entendido" },
+      replayTourButton: "Así funciona",
+      retry: "Reintentar",
+      reloadPage: "Recargar página",
       moduleCard: {
         notSetYet: "Aún sin configurar",
         couldntSave: "No se pudo guardar",
@@ -981,6 +984,7 @@ export const es: Dictionary = {
         undo: "Deshacer",
         redo: "Rehacer",
         newTextDefault: "Nuevo texto",
+        elementDeletedToast: "Elemento eliminado",
         addElementModal: {
           heading: "Añadir elemento",
           close: "Cerrar",
@@ -1113,6 +1117,8 @@ export const es: Dictionary = {
       },
     },
     guests: {
+      listHeading: "Lista de invitados",
+      rsvpSettingsHeading: "Notificaciones de RSVP",
       page: {
         title: "Invitados",
         subtitle: "Lleva el control de todas las personas que invitas.",
@@ -1123,6 +1129,7 @@ export const es: Dictionary = {
         seatingHeading: "Distribución de mesas",
         seatingBodyOn: `Opcional - quién se sienta dónde. Esto es lo que alimenta la búsqueda "Encuentra tu mesa" en tu sitio.`,
         seatingBodyOff: `Opcional - planifica quién se sienta dónde cuando quieras. Activa "Encuentra tu mesa" en los módulos de tu sitio para que los invitados puedan consultarlo ellos mismos.`,
+        nav: { guests: "Invitados", rsvp: "RSVP", photos: "Fotos", seating: "Distribución de mesas" },
       },
       tour: {
         step1Title: "👋 Añade a tus invitados",
@@ -1167,6 +1174,7 @@ export const es: Dictionary = {
         phoneLabel: "Teléfono",
         phonePlaceholder: "Para SMS o WhatsApp",
         plusOnesLabel: "Acompañantes permitidos",
+        moreDetails: "Más detalles (grupo, email, teléfono, acompañantes)",
         addGuest: "Añadir invitado",
         adding: "Añadiendo...",
         duplicateConfirm: (name) => `"${name}" parece un invitado que ya añadiste. ¿Añadir otro de todos modos?`,

@@ -512,6 +512,9 @@ export const fr: Dictionary = {
       statusVerified: "Vérifié",
       statusPending: "En attente",
       tour: { skip: "Ignorer", back: "Retour", next: "Suivant", gotIt: "Compris" },
+      replayTourButton: "Comment ça marche",
+      retry: "Réessayer",
+      reloadPage: "Recharger la page",
       moduleCard: {
         notSetYet: "Pas encore configuré",
         couldntSave: "Échec de l'enregistrement",
@@ -982,6 +985,7 @@ export const fr: Dictionary = {
         undo: "Annuler",
         redo: "Rétablir",
         newTextDefault: "Nouveau texte",
+        elementDeletedToast: "Élément supprimé",
         addElementModal: {
           heading: "Ajouter un élément",
           close: "Fermer",
@@ -1114,6 +1118,8 @@ export const fr: Dictionary = {
       },
     },
     guests: {
+      listHeading: "Liste des invités",
+      rsvpSettingsHeading: "Notifications RSVP",
       page: {
         title: "Invités",
         subtitle: "Gardez une trace de toutes les personnes que vous invitez.",
@@ -1124,6 +1130,7 @@ export const fr: Dictionary = {
         seatingHeading: "Plan de table",
         seatingBodyOn: `Facultatif - qui s'assoit où. C'est ce qui alimente la recherche "Trouver ma table" sur votre site.`,
         seatingBodyOff: `Facultatif - organisez qui s'assoit où quand vous voulez. Activez "Trouver ma table" dans les modules de votre site pour que les invités puissent le consulter eux-mêmes.`,
+        nav: { guests: "Invités", rsvp: "RSVP", photos: "Photos", seating: "Plan de table" },
       },
       tour: {
         step1Title: "👋 Ajoutez vos invités",
@@ -1168,6 +1175,7 @@ export const fr: Dictionary = {
         phoneLabel: "Téléphone",
         phonePlaceholder: "Pour SMS ou WhatsApp",
         plusOnesLabel: "Accompagnants autorisés",
+        moreDetails: "Plus de détails (groupe, e-mail, téléphone, accompagnants)",
         addGuest: "Ajouter un invité",
         adding: "Ajout...",
         duplicateConfirm: (name) => `"${name}" ressemble à un invité déjà ajouté. L'ajouter quand même ?`,

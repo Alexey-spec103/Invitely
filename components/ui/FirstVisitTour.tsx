@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
 
-interface TourStep {
+export interface TourHandle {
+  /** Reopens the tour from step 1, regardless of the "seen it" flag --
+   * what TourReplayButton's persistent button calls. Doesn't touch the
+   * localStorage flag, so dismissing again still behaves exactly as a
+   * first-time dismissal would. */
+  replay: () => void;
+}
+
+export interface TourStep {
   title: string;
   body: string;
   /** CSS selector for the one real control this step is actually about --
@@ -51,13 +59,23 @@ const CARD_GAP = 12;
  * widget to point at) keep the original floating-corner behavior, since
  * forcing an anchor onto those would just point at an arbitrary element
  * instead of the thing the copy is actually about. */
-export default function FirstVisitTour({ tourId, steps, t = DEFAULT_TOUR_STRINGS }: FirstVisitTourProps) {
+const FirstVisitTour = forwardRef<TourHandle, FirstVisitTourProps>(function FirstVisitTour(
+  { tourId, steps, t = DEFAULT_TOUR_STRINGS },
+  ref
+) {
   const storageKey = `invitely:tourSeen:${tourId}`;
   const [step, setStep] = useState(0);
   const [visible, setVisible] = useState(false);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = usePrefersReducedMotion();
+
+  useImperativeHandle(ref, () => ({
+    replay: () => {
+      setStep(0);
+      setVisible(true);
+    },
+  }));
 
   useEffect(() => {
     // impeccable critique P-adjacent: this used to pop in at `0ms -- the
@@ -260,4 +278,6 @@ export default function FirstVisitTour({ tourId, steps, t = DEFAULT_TOUR_STRINGS
       </motion.div>
     </>
   );
-}
+});
+
+export default FirstVisitTour;

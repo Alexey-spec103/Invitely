@@ -88,7 +88,7 @@ export default function LayersPanel({
               key={element.id}
               className={
                 "group flex items-center gap-2 border-b border-[var(--dash-border)] px-3 py-2 text-sm " +
-                (isSelected ? "bg-[var(--dash-accent)]/10" : "hover:bg-white/5")
+                (isSelected ? "bg-[var(--dash-accent)]/10" : "hover:bg-[var(--dash-hover-tint)]")
               }
             >
               <button
@@ -106,7 +106,7 @@ export default function LayersPanel({
                 title={element.desktopOnly ? t.desktopOnlyOn : t.desktopOnlyOff}
                 className={
                   "shrink-0 rounded px-1 text-[10px] font-semibold uppercase transition-opacity " +
-                  (element.desktopOnly ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)] opacity-100" : `text-[var(--dash-text-muted)] hover:text-[var(--dash-text)] ${revealClass}`)
+                  (element.desktopOnly ? "bg-[var(--dash-accent-text)] text-[var(--dash-accent-contrast)] opacity-100" : `text-[var(--dash-text-muted)] hover:text-[var(--dash-text)] ${revealClass}`)
                 }
               >
                 D

@@ -531,6 +531,9 @@ export const uk: Dictionary = {
       statusVerified: "Підтверджено",
       statusPending: "Очікує",
       tour: { skip: "Пропустити", back: "Назад", next: "Далі", gotIt: "Зрозуміло" },
+      replayTourButton: "Як це працює",
+      retry: "Повторити",
+      reloadPage: "Оновити сторінку",
       moduleCard: {
         notSetYet: "Ще не налаштовано",
         couldntSave: "Не вдалося зберегти",
@@ -1008,6 +1011,7 @@ export const uk: Dictionary = {
         undo: "Скасувати",
         redo: "Повторити",
         newTextDefault: "Новий текст",
+        elementDeletedToast: "Елемент видалено",
         addElementModal: {
           heading: "Додати елемент",
           close: "Закрити",
@@ -1140,6 +1144,8 @@ export const uk: Dictionary = {
       },
     },
     guests: {
+      listHeading: "Список гостей",
+      rsvpSettingsHeading: "Сповіщення RSVP",
       page: {
         title: "Гості",
         subtitle: "Слідкуйте за всіма, кого ви запрошуєте.",
@@ -1150,6 +1156,7 @@ export const uk: Dictionary = {
         seatingHeading: "Розсадка",
         seatingBodyOn: `Необов'язково - хто де сидить. Саме це живить пошук «Знайти свій стіл» на вашому сайті.`,
         seatingBodyOff: `Необов'язково - плануйте розсадку будь-коли. Увімкніть «Знайти свій стіл» у модулях сайту, щоб гості могли знайти своє місце самі.`,
+        nav: { guests: "Гості", rsvp: "RSVP", photos: "Фото", seating: "Розсадка" },
       },
       tour: {
         step1Title: "👋 Додайте гостей",
@@ -1194,6 +1201,7 @@ export const uk: Dictionary = {
         phoneLabel: "Телефон",
         phonePlaceholder: "Для SMS або WhatsApp",
         plusOnesLabel: "Дозволено супровід",
+        moreDetails: "Більше деталей (група, email, телефон, супровід)",
         addGuest: "Додати гостя",
         adding: "Додавання...",
         duplicateConfirm: (name) => `«${name}» схожий на вже доданого гостя. Усе одно додати ще одного?`,

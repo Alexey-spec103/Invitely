@@ -63,7 +63,7 @@ export default function SupportWidget({ locale = "en" }: SupportWidgetProps) {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={open ? t.closeLabel : t.openLabel}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)] shadow-lg transition hover:bg-[var(--dash-accent-hover)]"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--dash-accent-text)] text-[var(--dash-accent-contrast)] shadow-lg transition hover:bg-[var(--dash-accent)]"
       >
         {open ? <X className="h-5 w-5" aria-hidden="true" /> : <MessageCircle className="h-5 w-5" aria-hidden="true" />}
       </button>

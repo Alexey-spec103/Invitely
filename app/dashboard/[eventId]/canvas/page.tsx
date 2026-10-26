@@ -70,7 +70,7 @@ export default async function CanvasPage({ params }: PageProps<"/dashboard/[even
           <form action={enableCanvas} className="mt-6">
             <button
               type="submit"
-              className="rounded-md bg-[var(--dash-accent)] px-4 py-2 text-sm font-semibold text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent-hover)]"
+              className="rounded-md bg-[var(--dash-accent-text)] px-4 py-2 text-sm font-semibold text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent)]"
             >
               Switch this site to the canvas editor
             </button>

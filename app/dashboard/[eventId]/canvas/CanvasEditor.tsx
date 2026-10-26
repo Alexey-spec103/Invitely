@@ -165,7 +165,7 @@ export default function CanvasEditor({ eventId, initialFrames, hasBasicAccess }:
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="rounded-md bg-[var(--dash-accent)] px-4 py-1.5 text-sm font-semibold text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-md bg-[var(--dash-accent-text)] px-4 py-1.5 text-sm font-semibold text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               Save
             </button>
@@ -188,7 +188,7 @@ export default function CanvasEditor({ eventId, initialFrames, hasBasicAccess }:
                 key={f.id}
                 className={
                   f.id === activeFrameId
-                    ? "flex items-center gap-1 rounded-md bg-[var(--dash-accent)] pl-3 pr-1.5 py-1 text-sm text-[var(--dash-accent-contrast)]"
+                    ? "flex items-center gap-1 rounded-md bg-[var(--dash-accent-text)] pl-3 pr-1.5 py-1 text-sm text-[var(--dash-accent-contrast)]"
                     : "flex items-center gap-1 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] pl-3 pr-1.5 py-1 text-sm text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)]"
                 }
               >

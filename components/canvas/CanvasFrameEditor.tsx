@@ -21,8 +21,17 @@ export interface CanvasFrameEditorProps {
   /** Applies `updater` to this frame and commits the result -- the host owns
    * what "commit" means (a full multi-page site's undo history, or a single
    * print-card frame's own small one), this component only ever edits the
-   * one frame it was given. */
-  onUpdateFrame: (updater: (frame: CanvasFrame) => CanvasFrame) => void;
+   * one frame it was given.
+   *
+   * `coalesceKey`, when passed, tells the host "if the last call also
+   * carried this same key within the last ~800ms, replace that history
+   * entry instead of pushing a new one" -- for a text/number field being
+   * typed into, where each keystroke calling this separately would
+   * otherwise mean Ctrl+Z only reverts the last keystroke instead of the
+   * whole edit. Omit it (as every drag/resize/rotate/nudge/reorder call
+   * already does) and every call pushes its own entry, unchanged from
+   * before. */
+  onUpdateFrame: (updater: (frame: CanvasFrame) => CanvasFrame, coalesceKey?: string) => void;
   onUndo: () => void;
   canUndo: boolean;
   onRedo: () => void;
@@ -215,9 +224,54 @@ export default function CanvasFrameEditor({
     const cardRect = canvasAreaEl?.getBoundingClientRect() ?? null;
     const cardBottom = cardRect ? cardRect.bottom - containerRect.top + scrollAreaEl.scrollTop : null;
 
-    const top = fitsAbove
+    const rawTop = fitsAbove
       ? spaceAbove - toolbarHeight - gap
       : (cardBottom ?? rect.bottom - containerRect.top + scrollAreaEl.scrollTop) + gap;
+    // dashboard critique (2026-10-23), fifth re-run P1 (continued): the
+    // "below the card" fallback above was written back when this editor was
+    // always scaled down well under its own scroll viewport, so the card's
+    // bottom edge was always close by. Once the embedded width cap was
+    // lifted (Paper's editor now scales close to 1:1, same as Site's),
+    // confirmed live: a card taller than the viewport put that fallback
+    // 1000+px below the current scroll position -- the toolbar rendered,
+    // but nowhere the host could see or reach it. Clamping into the
+    // CURRENT visible scroll window (not just the horizontal clamp below)
+    // guarantees it always lands somewhere on screen, whatever the card's
+    // own height turns out to be.
+    const minTop = scrollAreaEl.scrollTop + gap;
+    const maxTop = scrollAreaEl.scrollTop + scrollAreaEl.clientHeight - toolbarHeight - gap;
+    // dashboard critique (2026-10-24), sixth re-run: the clamp above keeps
+    // the toolbar inside the canvas's OWN scrollable bounds, but when this
+    // editor is embedded mid-page (Paper), the canvas's scroll area can
+    // itself be taller than what's currently visible in the browser window
+    // -- confirmed live, a position still "inside scrollAreaEl" measured
+    // 118px below window.innerHeight at one page-scroll position. A second
+    // clamp, converting content-relative top into what's actually on
+    // screen right now (containerRect.top - scrollTop is where content-y=0
+    // currently sits in viewport coordinates), catches that case the first
+    // clamp can't see.
+    // dashboard critique (2026-10-24), seventh re-run: confirmed by source
+    // analysis -- contentOriginInViewport already subtracts scrollTop once
+    // (it's "what viewport-Y does content-position 0 currently map to");
+    // the two lines below were then adding scrollTop back a SECOND time,
+    // so the clamp only matched reality when scrollAreaEl.scrollTop was 0.
+    // Any time a host had scrolled within a tall card (the normal case),
+    // the inflated bound silently lost to maxTop/minTop above and the
+    // toolbar could clip up to ~2x scrollTop off-screen. No `+ scrollTop`
+    // belongs on either line -- viewport_Y(P) = contentOriginInViewport + P
+    // is already the complete conversion.
+    const contentOriginInViewport = containerRect.top - scrollAreaEl.scrollTop;
+    const viewportMinTop = gap - contentOriginInViewport;
+    const viewportMaxTop = window.innerHeight - toolbarHeight - gap - contentOriginInViewport;
+    const combinedMin = Math.max(minTop, viewportMinTop);
+    const combinedMax = Math.min(maxTop, viewportMaxTop);
+    // If the two constraints can't both be satisfied (toolbar genuinely
+    // taller than the visible slice of the canvas), keep it on screen --
+    // that matters more than staying inside the canvas's own bounds.
+    const top =
+      combinedMin <= combinedMax
+        ? Math.max(combinedMin, Math.min(rawTop, combinedMax))
+        : Math.max(viewportMinTop, Math.min(rawTop, viewportMaxTop));
     // Clamped so the popover always stays fully inside the visible scroll
     // area horizontally -- on a narrow viewport the toolbar can be close to
     // the full container width, so an unclamped left (matching wherever the
@@ -236,11 +290,20 @@ export default function CanvasFrameEditor({
 
   useEffect(() => {
     if (!scrollAreaEl) return;
+    // dashboard critique (2026-10-24), sixth re-run: the viewport-aware
+    // clamp above reads scrollAreaEl's position relative to the browser
+    // window, which moves when the PAGE scrolls (this editor is embedded
+    // mid-page in Paper, not the only thing on screen) -- not just when
+    // the canvas's own internal area scrolls. `{ passive: true }` + the
+    // capture phase so this fires on ANY ancestor's scroll, not only a
+    // bubbling scroll on window itself (page scroll containers vary).
     scrollAreaEl.addEventListener("scroll", recomputeToolbarPos);
     window.addEventListener("resize", recomputeToolbarPos);
+    window.addEventListener("scroll", recomputeToolbarPos, { passive: true, capture: true });
     return () => {
       scrollAreaEl.removeEventListener("scroll", recomputeToolbarPos);
       window.removeEventListener("resize", recomputeToolbarPos);
+      window.removeEventListener("scroll", recomputeToolbarPos, { capture: true });
     };
   }, [scrollAreaEl, recomputeToolbarPos]);
 
@@ -321,11 +384,18 @@ export default function CanvasFrameEditor({
   }, [frame]);
 
   const updateElement = useCallback(
-    (id: string, patch: Partial<CanvasElement>) => {
-      onUpdateFrame((f) => ({
-        ...f,
-        elements: f.elements.map((el) => (el.id === id ? ({ ...el, ...patch } as CanvasElement) : el)),
-      }));
+    (id: string, patch: Partial<CanvasElement>, coalesceKey?: string) => {
+      onUpdateFrame(
+        (f) => ({
+          ...f,
+          elements: f.elements.map((el) => (el.id === id ? ({ ...el, ...patch } as CanvasElement) : el)),
+        }),
+        // Scoped to the element too, not just the field -- switching which
+        // element is selected must never coalesce into a DIFFERENT
+        // element's edit just because both happened to touch "fontSize"
+        // within the same 800ms window.
+        coalesceKey ? `${id}:${coalesceKey}` : undefined
+      );
     },
     [onUpdateFrame]
   );
@@ -426,11 +496,33 @@ export default function CanvasFrameEditor({
     }
   };
 
+  // dashboard critique (2026-10-24), seventh re-run P3: deleting an
+  // element here was already fully reversible (onUpdateFrame feeds the
+  // host's own undo history, same as every other edit -- Ctrl+Z already
+  // worked) but said nothing on screen when it happened, unlike guest and
+  // theme deletion elsewhere in the product, which both show a toast.
+  // Deliberately NOT the delayed-real-mutation pattern those use (guest/
+  // theme removal defer an actual server delete behind the toast's
+  // window) -- there's no server round-trip here, the frame's own undo
+  // stack already has the entry the instant this runs, so the toast is
+  // purely informational: confirm it happened, name the key that reverses
+  // it, auto-dismiss.
+  const deletedToastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showDeletedToast, setShowDeletedToast] = useState(false);
   const deleteSelected = useCallback(() => {
     if (!selectedId) return;
     onUpdateFrame((f) => ({ ...f, elements: f.elements.filter((el) => el.id !== selectedId) }));
     setSelectedId(null);
+    if (deletedToastTimeoutRef.current) clearTimeout(deletedToastTimeoutRef.current);
+    setShowDeletedToast(true);
+    deletedToastTimeoutRef.current = setTimeout(() => setShowDeletedToast(false), 3000);
   }, [selectedId, onUpdateFrame]);
+
+  useEffect(() => {
+    return () => {
+      if (deletedToastTimeoutRef.current) clearTimeout(deletedToastTimeoutRef.current);
+    };
+  }, []);
 
   const duplicateSelected = useCallback(() => {
     if (!selectedElement) return;
@@ -471,6 +563,20 @@ export default function CanvasFrameEditor({
       const target = event.target as HTMLElement;
       const isEditingText = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
       if (isEditingText) return;
+      // Ctrl/Cmd+Z undoes, Ctrl/Cmd+Shift+Z or Ctrl/Cmd+Y redoes -- the
+      // toolbar buttons already call these same onUndo/onRedo props, this
+      // just gives the standard shortcut the same effect.
+      const isUndoKey = (event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === "z";
+      const isRedoKey = (event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === "y";
+      if (isUndoKey || isRedoKey) {
+        event.preventDefault();
+        if ((isUndoKey && event.shiftKey) || isRedoKey) {
+          if (canRedo) onRedo();
+        } else if (canUndo) {
+          onUndo();
+        }
+        return;
+      }
       if ((event.key === "Delete" || event.key === "Backspace") && selectedId) {
         event.preventDefault();
         deleteSelected();
@@ -491,16 +597,49 @@ export default function CanvasFrameEditor({
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [selectedId, selectedElement, deleteSelected, updateElement]);
+  }, [selectedId, selectedElement, deleteSelected, updateElement, canUndo, canRedo, onUndo, onRedo]);
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="relative flex flex-1 flex-col overflow-hidden">
+      {showDeletedToast && (
+        // Fixed to the viewport, like every other toast in this product
+        // (theme-switch, guest removal) -- not absolute within the
+        // scrollable editor area, which would reintroduce the same
+        // scroll-position-dependent visibility problem the floating
+        // element-toolbar just had fixed above.
+        //
+        // dashboard critique (2026-10-24), eighth re-run P2: this used to
+        // be text-only ("...Ctrl+Z to undo") -- fine for a keyboard-first
+        // host, nothing for anyone who doesn't know or can't use the
+        // shortcut (touch/tablet, a panicked non-power-user). A real
+        // button covers both: clicking it undoes the same way Ctrl+Z
+        // does (same onUndo prop), and the still-live keyboard shortcut
+        // keeps working for whoever already reaches for it.
+        <div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex justify-center px-4">
+          <div
+            role="status"
+            className="pointer-events-auto flex items-center gap-3 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3.5 py-1.5 text-xs font-medium text-[var(--dash-text)] shadow-lg"
+          >
+            <span>{t.elementDeletedToast}</span>
+            <button
+              type="button"
+              onClick={() => {
+                onUndo();
+                setShowDeletedToast(false);
+              }}
+              className="font-semibold text-[var(--dash-accent-ink)] hover:underline"
+            >
+              {t.undo}
+            </button>
+          </div>
+        </div>
+      )}
       <div className="flex flex-none flex-wrap items-center gap-2 border-b border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-2">
         <button
           type="button"
           onClick={() => setAddModalOpen(true)}
           disabled={uploadingImage}
-          className="rounded-md bg-[var(--dash-accent)] px-3 py-1.5 text-sm font-medium text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-md bg-[var(--dash-accent-text)] px-3 py-1.5 text-sm font-medium text-[var(--dash-accent-contrast)] hover:bg-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {uploadingImage ? t.uploading : t.addElement}
         </button>
@@ -511,8 +650,8 @@ export default function CanvasFrameEditor({
           type="button"
           onClick={onUndo}
           disabled={!canUndo}
-          title={t.undo}
-          className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
+          title={`${t.undo} (Ctrl+Z)`}
+          className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent-ink)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Undo2 className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -520,8 +659,8 @@ export default function CanvasFrameEditor({
           type="button"
           onClick={onRedo}
           disabled={!canRedo}
-          title={t.redo}
-          className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-40"
+          title={`${t.redo} (Ctrl+Shift+Z)`}
+          className="rounded-md border border-[var(--dash-border)] p-1.5 text-[var(--dash-text-muted)] hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent-ink)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Redo2 className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -570,7 +709,7 @@ export default function CanvasFrameEditor({
               measureRef={setToolbarEl}
               element={selectedElement}
               position={toolbarPos}
-              onUpdate={(patch) => updateElement(selectedElement.id, patch)}
+              onUpdate={(patch, coalesceKey) => updateElement(selectedElement.id, patch, coalesceKey)}
               onDuplicate={duplicateSelected}
               onDelete={deleteSelected}
               onReorder={reorderSelected}
@@ -783,7 +922,7 @@ export default function CanvasFrameEditor({
           onClick={() => setLayersOpen((v) => !v)}
           aria-expanded={layersOpen}
           aria-label={layersOpen ? t.layers.closePanel : t.layers.openPanel}
-          className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)] shadow-lg hover:bg-[var(--dash-accent-hover)] sm:hidden"
+          className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--dash-accent-text)] text-[var(--dash-accent-contrast)] shadow-lg hover:bg-[var(--dash-accent)] sm:hidden"
         >
           {layersOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Layers className="h-5 w-5" aria-hidden="true" />}
         </button>

@@ -570,7 +570,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             </div>
             <a
               href="#wedding-data-card"
-              className="mt-3 inline-block rounded-full bg-[var(--dash-accent)] px-4 py-2 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
+              className="mt-3 inline-block rounded-full bg-[var(--dash-accent-text)] px-4 py-2 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent)]"
             >
               {t.weddingDataReminder.cta(getLocalizedEventType(event.event_type, locale).label)}
             </a>
@@ -615,7 +615,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           <p className="text-xs text-[var(--dash-text-muted)]">{t.startScreen.body}</p>
           <a
             href="#site-editor-preview"
-            className="mt-3 inline-block rounded-full bg-[var(--dash-accent)] px-4 py-2 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
+            className="mt-3 inline-block rounded-full bg-[var(--dash-accent-text)] px-4 py-2 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent)]"
           >
             {t.startScreen.editInPreview}
           </a>
@@ -887,7 +887,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-3 shadow-[0_-8px_24px_rgba(0,0,0,0.12)] sm:px-10">
           <Link
             href={`/dashboard/${event.id}/plan`}
-            className="mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-[var(--dash-accent)] px-4 py-2.5 text-sm font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent-hover)]"
+            className="mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-[var(--dash-accent-text)] px-4 py-2.5 text-sm font-bold text-[var(--dash-accent-contrast)] shadow-[0_6px_16px_rgba(255,107,69,0.35)] transition hover:bg-[var(--dash-accent)]"
           >
             {t.removeBadge(plans.basic.priceEur)}
           </Link>

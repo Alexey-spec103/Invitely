@@ -13,7 +13,7 @@ import { formatAnswers } from "./formatAnswers";
 import BanquetTablesManager from "../banquet/BanquetTablesManager";
 import GuestTableAssignments from "../banquet/GuestTableAssignments";
 import RsvpNotificationToggle from "./RsvpNotificationToggle";
-import FirstVisitTour from "@/components/ui/FirstVisitTour";
+import TourReplayButton from "@/components/ui/TourReplayButton";
 import GuestPhotoGallery from "./GuestPhotoGallery";
 import type { GuestListRow } from "@/components/pdf/GuestListDocument";
 import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
@@ -172,10 +172,52 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
 
   return (
     <div className="max-w-2xl">
-      <h1 className="dash-h1 text-gray-900">{t.page.title}</h1>
-      <p className="mt-1 text-sm text-gray-600">
-        {t.page.subtitle}
-      </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="dash-h1 text-gray-900">{t.page.title}</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            {t.page.subtitle}
+          </p>
+        </div>
+        <TourReplayButton
+          tourId="guests"
+          t={dashboardCommon.tour}
+          steps={[
+            { title: t.tour.step1Title, body: t.tour.step1Body },
+            { title: t.tour.step2Title, body: t.tour.step2Body },
+            { title: t.tour.step3Title, body: t.tour.step3Body },
+          ]}
+          label={dashboardCommon.replayTourButton}
+        />
+      </div>
+
+      {/* dashboard critique (2026-10-24), round two of the Guests pass:
+          this page stacks the add-guest form + list, RSVP settings +
+          responses, the photo gallery, and seating/banquet management on
+          one continuous scroll with no in-page wayfinding -- unlike
+          Paper's own left-nav, which lets a host jump straight to one
+          card type instead of scrolling past everything else. A first-
+          timer scrolled past seating/banquet machinery before reaching
+          the guest list they'd just built. Plain anchor links, not a new
+          client component or scroll-spy state -- `html { scroll-behavior:
+          smooth }` (globals.css) already makes these glide, and each
+          target section below carries its own `scroll-mt-28` so the
+          sticky dashboard header never tucks a jumped-to heading under
+          itself. */}
+      <nav aria-label={t.page.title} className="mt-4 flex flex-wrap gap-2">
+        <a href="#guest-list" className="dash-btn dash-btn-neutral px-3 py-1.5 text-xs">
+          {t.page.nav.guests}
+        </a>
+        <a href="#rsvp" className="dash-btn dash-btn-neutral px-3 py-1.5 text-xs">
+          {t.page.nav.rsvp}
+        </a>
+        <a href="#photos" className="dash-btn dash-btn-neutral px-3 py-1.5 text-xs">
+          {t.page.nav.photos}
+        </a>
+        <a href="#seating" className="dash-btn dash-btn-neutral px-3 py-1.5 text-xs">
+          {t.page.nav.seating}
+        </a>
+      </nav>
 
       {allGuests.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-4 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm">
@@ -210,55 +252,51 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
         </div>
       )}
 
-      {/* Site and Paper each already have their own FirstVisitTour
-       * (tourId="site-editor" / "paper-constructor") -- Guests was the one
-       * dashboard tab with none, confirmed by grepping for FirstVisitTour's
-       * usages before adding this. No targetSelector steps here (unlike
-       * those two): every step below is genuinely about the whole page
-       * (add a guest, send your way, see who's answered), not one findable
-       * widget, so a floating card is the right call per FirstVisitTour's
-       * own stated rule for when to skip anchoring. */}
-      <FirstVisitTour
-        tourId="guests"
-        t={dashboardCommon.tour}
-        steps={[
-          { title: t.tour.step1Title, body: t.tour.step1Body },
-          { title: t.tour.step2Title, body: t.tour.step2Body },
-          { title: t.tour.step3Title, body: t.tour.step3Body },
-        ]}
-      />
+      <div id="guest-list" className="scroll-mt-28">
+        <GuestManager
+          eventId={event.id}
+          eventSlug={event.slug}
+          eventTitle={event.title}
+          guests={allGuests}
+          attendees={attendees ?? []}
+          rsvpStatusByGuestId={Object.fromEntries(
+            Array.from(responseByGuestId.entries()).map(([guestId, response]) => [
+              guestId,
+              response.attending,
+            ])
+          )}
+          locale={locale}
+        />
+      </div>
 
-      <GuestManager
-        eventId={event.id}
-        eventSlug={event.slug}
-        eventTitle={event.title}
-        guests={allGuests}
-        attendees={attendees ?? []}
-        rsvpStatusByGuestId={Object.fromEntries(
-          Array.from(responseByGuestId.entries()).map(([guestId, response]) => [
-            guestId,
-            response.attending,
-          ])
-        )}
-        locale={locale}
-      />
+      <div id="rsvp" className="mt-10 scroll-mt-28">
+        {/* dashboard critique (2026-10-24), eighth re-run P1: the "RSVP"
+            anchor link landed on RsvpNotificationToggle's own first
+            checkbox with no heading above it -- the only "RSVP" heading
+            on the page belongs to RsvpResponses further down, out of
+            view on arrival. */}
+        <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.rsvpSettingsHeading}</h2>
+        <div className="mt-4">
+          <RsvpNotificationToggle
+            eventId={event.id}
+            enabled={rsvpEmailNotifications}
+            digestEnabled={rsvpDigestEmail}
+            locale={locale}
+          />
+        </div>
 
-      <RsvpNotificationToggle
-        eventId={event.id}
-        enabled={rsvpEmailNotifications}
-        digestEnabled={rsvpDigestEmail}
-        locale={locale}
-      />
+        <RsvpResponses
+          eventId={event.id}
+          responses={allResponses}
+          guests={allGuests}
+          questions={rsvpQuestions}
+          locale={locale}
+        />
+      </div>
 
-      <RsvpResponses
-        eventId={event.id}
-        responses={allResponses}
-        guests={allGuests}
-        questions={rsvpQuestions}
-        locale={locale}
-      />
-
-      <GuestPhotoGallery eventId={event.id} eventSlug={event.slug} locale={locale} />
+      <div id="photos" className="scroll-mt-28">
+        <GuestPhotoGallery eventId={event.id} eventSlug={event.slug} locale={locale} />
+      </div>
 
       {/* Direct feedback: this used to live on its own Banquet tab, mixed in
           with the printable-card showcase -- which read as "that whole tab
@@ -268,7 +306,7 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
           connected task. Entirely optional -- nothing here is required for
           the site or RSVP to work, and it stays exactly as useful whether
           or not "Find My Table" is even turned on. */}
-      <div className="mt-10 border-t border-gray-200 pt-8">
+      <div id="seating" className="mt-10 scroll-mt-28 border-t border-gray-200 pt-8">
         <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.page.seatingHeading}</h2>
         <p className="mt-1 text-sm text-gray-600">
           {banquetNavigatorEnabled ? t.page.seatingBodyOn : t.page.seatingBodyOff}

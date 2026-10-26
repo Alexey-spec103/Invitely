@@ -36,7 +36,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9ca3af;
+  /* dashboard critique (2026-10-23): this sits on the swatch's own white
+     fill (see the inline style on that button), not the dark panel below --
+     #9ca3af measured 2.54:1 there, live. #4b5563 clears 4.5:1. */
+  color: #4b5563;
   font-size: 1rem;
 }
 
@@ -67,7 +70,15 @@
 .customLabel {
   pointer-events: none;
   font-size: 1rem;
-  color: #6b7280;
+  /* dashboard critique (2026-10-23), fifth re-run: a literal #9ca3af here
+     (this round's prior fix) measured fine on this component's dark-panel
+     call sites (Site's Free-canvas editor, SectionBackgroundButton) but
+     regressed to 2.54:1 once Paper's LayersPanel call site went light --
+     a literal hex can't track that, so this reads --dash-text-muted
+     instead: #9c9c9d by default (dark panels, unchanged from before), and
+     Paper's own wrapper override swaps it to #4b5563 for exactly the
+     subtree where the panel is now light. */
+  color: var(--dash-text-muted, #9ca3af);
 }
 
 .opacityRow {
@@ -78,7 +89,8 @@
 
 .opacityLabel {
   font-size: 0.75rem;
-  color: #6b7280;
+  /* Same --dash-text-muted fix as .customLabel above. */
+  color: var(--dash-text-muted, #9ca3af);
   flex: none;
 }
 
@@ -93,7 +105,8 @@
 
 .opacityValue {
   font-size: 0.75rem;
-  color: #6b7280;
+  /* Same --dash-text-muted fix as .customLabel above. */
+  color: var(--dash-text-muted, #9ca3af);
   flex: none;
   width: 2.5rem;
   text-align: right;

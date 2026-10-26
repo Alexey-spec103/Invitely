@@ -531,6 +531,9 @@ export const ru: Dictionary = {
       statusVerified: "Подтверждён",
       statusPending: "Ожидает",
       tour: { skip: "Пропустить", back: "Назад", next: "Далее", gotIt: "Понятно" },
+      replayTourButton: "Как это работает",
+      retry: "Повторить",
+      reloadPage: "Обновить страницу",
       moduleCard: {
         notSetYet: "Пока не настроено",
         couldntSave: "Не удалось сохранить",
@@ -1006,6 +1009,7 @@ export const ru: Dictionary = {
         undo: "Отменить",
         redo: "Повторить",
         newTextDefault: "Новый текст",
+        elementDeletedToast: "Элемент удалён",
         addElementModal: {
           heading: "Добавить элемент",
           close: "Закрыть",
@@ -1138,6 +1142,8 @@ export const ru: Dictionary = {
       },
     },
     guests: {
+      listHeading: "Список гостей",
+      rsvpSettingsHeading: "Уведомления RSVP",
       page: {
         title: "Гости",
         subtitle: "Следите за всеми, кого вы приглашаете.",
@@ -1148,6 +1154,7 @@ export const ru: Dictionary = {
         seatingHeading: "Рассадка",
         seatingBodyOn: `Необязательно - кто где сидит. Именно это питает поиск «Найти свой стол» на вашем сайте.`,
         seatingBodyOff: `Необязательно - планируйте рассадку в любое время. Включите «Найти свой стол» в модулях сайта, чтобы гости могли найти своё место сами.`,
+        nav: { guests: "Гости", rsvp: "RSVP", photos: "Фото", seating: "Рассадка" },
       },
       tour: {
         step1Title: "👋 Добавьте гостей",
@@ -1192,6 +1199,7 @@ export const ru: Dictionary = {
         phoneLabel: "Телефон",
         phonePlaceholder: "Для SMS или WhatsApp",
         plusOnesLabel: "Разрешено сопровождающих",
+        moreDetails: "Больше деталей (группа, email, телефон, сопровождающие)",
         addGuest: "Добавить гостя",
         adding: "Добавление...",
         duplicateConfirm: (name) => `«${name}» похож на уже добавленного гостя. Всё равно добавить ещё одного?`,

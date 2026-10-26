@@ -320,6 +320,26 @@ export default function ThemeGallery({
   // same pattern as the grid's own "Show more styles" below.
   const [styleListExpanded, setStyleListExpanded] = useState(false);
   const { favoriteIds, toggleFavorite } = useFavoriteThemes();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // dashboard critique (2026-10-23), fifth re-run P2: browsing/filtering
+  // this gallery was mouse-only -- confirmed live, no key focused the
+  // search input. `/` is the established convention for "jump to search"
+  // (GitHub, Slack, etc.); skipped while the host is already typing
+  // somewhere else so it doesn't steal a literal "/" from a text field.
+  useEffect(() => {
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "/") return;
+      const target = event.target as HTMLElement;
+      const isTyping =
+        target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
+      if (isTyping) return;
+      event.preventDefault();
+      searchInputRef.current?.focus();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -457,6 +477,7 @@ export default function ThemeGallery({
     <div className={styles.layout}>
       <aside className={styles.sidebar}>
         <input
+          ref={searchInputRef}
           type="search"
           value={query}
           onChange={(event) => updateQuery(event.target.value)}
@@ -804,17 +825,57 @@ export function ThemeGalleryCard({
     }
   };
 
+  // dashboard critique (2026-10-23), fifth re-run P1: this card's own
+  // onClick used to commit a live theme switch the instant ANY point on
+  // the card (image, caption, whitespace) was clicked -- confirmed live,
+  // twice, that a click aimed at something else nearby (dismissing an
+  // unrelated popover, an undo link) landed here instead and silently
+  // swapped the active design. The undo toast was damage control after the
+  // fact, not prevention. Same `role="button"` pattern as the favorite
+  // heart above (nested real `<button>`s are invalid HTML) -- only this
+  // control, not the whole card, now commits a switch to a DIFFERENT
+  // theme; clicking elsewhere on an unselected card is a no-op (hover/
+  // focus already previews everything there is to see). The already-
+  // selected card's "Customize" path is unchanged -- it was never
+  // destructive, so it stays on the whole card like before.
+  const handleChooseClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    if (selected && onCustomize) onCustomize();
+    else onSelect(theme.id);
+  };
+  const handleChooseKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      event.stopPropagation();
+      if (selected && onCustomize) onCustomize();
+      else onSelect(theme.id);
+    }
+  };
+
   return (
     <button
       type="button"
       disabled={disabled}
+      // dashboard critique (2026-10-24), sixth re-run P3: with no
+      // aria-label, this button's computed accessible name was every
+      // visible text node inside it concatenated -- domain caption, up to
+      // 4 tag pills, "customize further" caption, the theme name, and the
+      // feature list -- verbose across a grid of up to 124 cards. The
+      // theme name alone is what actually identifies the card; nested
+      // interactive children (favorite heart, "Choose this style") keep
+      // their own distinct accessible names regardless of this.
+      aria-label={theme.name}
       onPointerDownCapture={onCardPointerDownCapture}
       onClick={(event) => {
         const draggedFlag = justDraggedRef.current;
         justDraggedRef.current = false;
         if (draggedFlag || !wasRealClick(event)) return;
+        // Only the already-selected card's own "Customize" path stays on
+        // the whole card -- that's never destructive. Switching to a
+        // DIFFERENT theme now requires the dedicated "Choose this style"
+        // control below (handleChooseClick) instead of any point on the
+        // card; see that handler's own comment for why.
         if (selected && onCustomize) onCustomize();
-        else onSelect(theme.id);
       }}
       onMouseEnter={requestQrPreview}
       onFocus={requestQrPreview}
@@ -846,6 +907,16 @@ export function ThemeGalleryCard({
             ref={desktopWrapRef}
             className={styles.desktopPanel}
             data-dragging={desktopDrag.dragging || undefined}
+            // dashboard critique (2026-10-23): this renders a real
+            // HeroSection/LetterSection/TimelineSection, each with its own
+            // heading -- correct on the real guest-facing site (one per
+            // page), but here it's a live preview thumbnail repeated once
+            // per theme card, 124 times over. Confirmed live: 23 duplicate
+            // <h1>s on this one dashboard page. The card's real accessible
+            // name/content is cardFooter's theme.name paragraph below, not
+            // this decorative mockup -- same treatment this file already
+            // gives qrReveal/hoverReveal/phoneChrome/phoneTimer.
+            aria-hidden="true"
             {...desktopDrag.handlers}
           >
             <div className={styles.desktopScaleWrap}>
@@ -877,8 +948,16 @@ export function ThemeGalleryCard({
           </div>
 
           {(!selected || onCustomize) && (
-            <div className={styles.hoverReveal} aria-hidden="true">
-              <span className={styles.hoverRevealBtn}>{selected ? t.customize : t.chooseStyle}</span>
+            <div className={styles.hoverReveal}>
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={handleChooseClick}
+                onKeyDown={handleChooseKeyDown}
+                className={styles.hoverRevealBtn}
+              >
+                {selected ? t.customize : t.chooseStyle}
+              </span>
             </div>
           )}
 
@@ -892,6 +971,10 @@ export function ThemeGalleryCard({
             ref={phoneWrapRef}
             className={styles.phoneMockup}
             data-dragging={phoneDrag.dragging || undefined}
+            // Same decorative-mockup reasoning as desktopPanel above -- this
+            // is the duplicate phone-width render of the same Hero/Letter/
+            // Timeline preview.
+            aria-hidden="true"
             {...phoneDrag.handlers}
           >
             <span className={styles.phoneNotch} aria-hidden="true" />

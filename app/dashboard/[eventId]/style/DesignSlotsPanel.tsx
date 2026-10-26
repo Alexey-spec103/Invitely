@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { History, Plus, X } from "lucide-react";
 import { themes, getTheme, DEFAULT_THEME_ID } from "@/lib/themes";
@@ -82,6 +82,30 @@ export default function DesignSlotsPanel({
   const [error, setError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const historyRef = useRef<HTMLDivElement>(null);
+
+  // dashboard critique (2026-10-23), fifth re-run P2: this popover had no
+  // outside-click or Escape dismissal -- confirmed live, it stayed open
+  // through an Escape press and a click on an unrelated button, letting it
+  // stack with Style's own "How does this work?" popover at once. Same
+  // pattern as that popover's own HowItWorksButton.tsx.
+  useEffect(() => {
+    if (!historyOpen) return;
+    const handlePointerDown = (event: MouseEvent) => {
+      if (historyRef.current && !historyRef.current.contains(event.target as Node)) {
+        setHistoryOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setHistoryOpen(false);
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [historyOpen]);
 
   let currentTheme;
   try {
@@ -201,7 +225,7 @@ export default function DesignSlotsPanel({
           <Plus className="h-5 w-5" aria-hidden="true" />
         </button>
 
-        <div className={styles.historyWrap}>
+        <div className={styles.historyWrap} ref={historyRef}>
           <button
             type="button"
             className={styles.historyBtn}

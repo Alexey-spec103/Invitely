@@ -108,6 +108,7 @@ export default function BackgroundPicker({ value, onChange, locale }: Background
           disabled={!value}
           onChange={(event) => applyOpacity(Number(event.target.value))}
           className={styles.opacitySlider}
+          aria-label={t.opacity}
         />
         <span className={styles.opacityValue}>{opacity}%</span>
       </div>

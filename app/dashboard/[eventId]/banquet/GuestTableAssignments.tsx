@@ -132,6 +132,7 @@ export default function GuestTableAssignments({
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder={t.searchPlaceholder}
+              aria-label={t.searchPlaceholder}
               className="dash-input max-w-xs"
             />
             <label className="flex items-center gap-1.5 text-xs text-gray-600">
@@ -165,6 +166,7 @@ export default function GuestTableAssignments({
                 value={bulkTableId}
                 onChange={(event) => setBulkTableId(event.target.value)}
                 disabled={bulkAssigning}
+                aria-label={t.chooseTableOption}
                 className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <option value="">{t.chooseTableOption}</option>
@@ -241,6 +243,7 @@ export default function GuestTableAssignments({
               value={guest.table_id ?? ""}
               disabled={pendingId === guest.id}
               onChange={(event) => handleAssign(guest.id, event.target.value)}
+              aria-label={`${t.chooseTableOption} ${guest.full_name}`}
               className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <option value="">{t.unassignedOption}</option>

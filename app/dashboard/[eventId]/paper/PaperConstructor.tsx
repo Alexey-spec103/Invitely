@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -697,6 +697,31 @@ function createThankYouCanvasSeed(args: { theme: Theme; names: string[]; locale:
   };
 }
 
+// dashboard critique (2026-10-24), ninth re-run P1: confirmed live -- typing
+// a new font size (e.g. "72" -> "90") fires ElementToolbar's onChange, and
+// so a fresh history entry, on every keystroke. One Ctrl+Z only reverted
+// the last keystroke ("9", not back to "72"), not the whole typed edit --
+// the opposite of arrow-key nudging, where each press earning its own undo
+// step is correct and was already verified as such. The difference is
+// deliberateness: a key press is one discrete action, a keystroke inside a
+// still-being-typed value isn't yet. Text/number field handlers in
+// ElementToolbar now pass a `coalesceKey` (e.g. "fontSize") through
+// onUpdate/updateElement down to here; drag/resize/rotate/nudge/reorder
+// don't pass one and are completely unaffected -- each of their calls still
+// always pushes its own entry, exactly as before.
+const COALESCE_WINDOW_MS = 800;
+
+function shouldCoalesceEdit(
+  lastEditRef: { current: { key: string; time: number } | null },
+  coalesceKey: string | undefined
+): boolean {
+  const now = Date.now();
+  const last = lastEditRef.current;
+  const shouldCoalesce = !!coalesceKey && !!last && last.key === coalesceKey && now - last.time < COALESCE_WINDOW_MS;
+  lastEditRef.current = coalesceKey ? { key: coalesceKey, time: now } : null;
+  return shouldCoalesce;
+}
+
 /** Shared state/autosave/undo-redo shape for the envelope/program/dress-code
  * canvases -- the front/back canvases (shipped earlier) manage this inline
  * instead since they predate this hook; kept that way rather than risking a
@@ -714,11 +739,16 @@ function useCardCanvas(args: {
   const [history, setHistory] = useState<CanvasFrame[]>([initial ?? createSeed()]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const frame = history[historyIndex];
+  const lastEditRef = useRef<{ key: string; time: number } | null>(null);
 
-  const updateFrame = (updater: (f: CanvasFrame) => CanvasFrame) => {
+  const updateFrame = (updater: (f: CanvasFrame) => CanvasFrame, coalesceKey?: string) => {
     const next = updater(frame);
-    setHistory((prev) => [...prev.slice(0, historyIndex + 1), next]);
-    setHistoryIndex((idx) => idx + 1);
+    if (shouldCoalesceEdit(lastEditRef, coalesceKey)) {
+      setHistory((prev) => [...prev.slice(0, historyIndex), next]);
+    } else {
+      setHistory((prev) => [...prev.slice(0, historyIndex + 1), next]);
+      setHistoryIndex((idx) => idx + 1);
+    }
     setHasCustom(true);
   };
   const undo = () => setHistoryIndex((idx) => Math.max(0, idx - 1));
@@ -855,6 +885,30 @@ export default function PaperConstructor({
 
   const [activeId, setActiveId] = useState<MediaId>("invitation-front");
   const [zoom, setZoom] = useState(1);
+  // Direct feedback (2026-10-24): "конструктор пдф по размеру... надо
+  // сделать больше... по размерам как в конструкторе сайта" -- this
+  // resting preview (not the "Edit text" canvas, which already fills its
+  // column) used to render the card at a flat 320-420px regardless of how
+  // much room the middle grid column actually had, leaving most of a wide
+  // screen as empty --dash-surface-2 padding around a small card. Sized
+  // off the column's own measured width instead, the same ResizeObserver
+  // pattern CanvasFrameEditor already uses for its own canvasScale.
+  const previewWrapRef = useRef<HTMLDivElement | null>(null);
+  const [previewContainerWidth, setPreviewContainerWidth] = useState(320);
+  useEffect(() => {
+    const el = previewWrapRef.current;
+    if (!el) return;
+    const compute = () => setPreviewContainerWidth(el.clientWidth);
+    compute();
+    const observer = new ResizeObserver(compute);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  // p-4 padding (2 * 16px) either side of the card inside previewWrapRef;
+  // capped well above the old 420px ceiling but still a sane print-card
+  // width rather than letting it sprawl edge-to-edge on an ultrawide
+  // monitor.
+  const previewBaseWidth = Math.max(220, Math.min(previewContainerWidth - 32, 820));
 
   // Small undo/redo history for the back canvas, same shape as the site's
   // own CanvasEditor -- just scoped to this one frame instead of a page array.
@@ -863,11 +917,16 @@ export default function PaperConstructor({
   ]);
   const [canvasHistoryIndex, setCanvasHistoryIndex] = useState(0);
   const backCanvasFrame = canvasHistory[canvasHistoryIndex];
+  const backLastEditRef = useRef<{ key: string; time: number } | null>(null);
 
-  const updateBackCanvasFrame = (updater: (f: CanvasFrame) => CanvasFrame) => {
+  const updateBackCanvasFrame = (updater: (f: CanvasFrame) => CanvasFrame, coalesceKey?: string) => {
     const next = updater(backCanvasFrame);
-    setCanvasHistory((prev) => [...prev.slice(0, canvasHistoryIndex + 1), next]);
-    setCanvasHistoryIndex((idx) => idx + 1);
+    if (shouldCoalesceEdit(backLastEditRef, coalesceKey)) {
+      setCanvasHistory((prev) => [...prev.slice(0, canvasHistoryIndex), next]);
+    } else {
+      setCanvasHistory((prev) => [...prev.slice(0, canvasHistoryIndex + 1), next]);
+      setCanvasHistoryIndex((idx) => idx + 1);
+    }
   };
   const undoBackCanvas = () => setCanvasHistoryIndex((idx) => Math.max(0, idx - 1));
   const redoBackCanvas = () => setCanvasHistoryIndex((idx) => Math.min(canvasHistory.length - 1, idx + 1));
@@ -888,11 +947,16 @@ export default function PaperConstructor({
   ]);
   const [frontCanvasHistoryIndex, setFrontCanvasHistoryIndex] = useState(0);
   const frontCanvasFrame = frontCanvasHistory[frontCanvasHistoryIndex];
+  const frontLastEditRef = useRef<{ key: string; time: number } | null>(null);
 
-  const updateFrontCanvasFrame = (updater: (f: CanvasFrame) => CanvasFrame) => {
+  const updateFrontCanvasFrame = (updater: (f: CanvasFrame) => CanvasFrame, coalesceKey?: string) => {
     const next = updater(frontCanvasFrame);
-    setFrontCanvasHistory((prev) => [...prev.slice(0, frontCanvasHistoryIndex + 1), next]);
-    setFrontCanvasHistoryIndex((idx) => idx + 1);
+    if (shouldCoalesceEdit(frontLastEditRef, coalesceKey)) {
+      setFrontCanvasHistory((prev) => [...prev.slice(0, frontCanvasHistoryIndex), next]);
+    } else {
+      setFrontCanvasHistory((prev) => [...prev.slice(0, frontCanvasHistoryIndex + 1), next]);
+      setFrontCanvasHistoryIndex((idx) => idx + 1);
+    }
     setHasCustomFront(true);
   };
   const undoFrontCanvas = () => setFrontCanvasHistoryIndex((idx) => Math.max(0, idx - 1));
@@ -1019,6 +1083,20 @@ export default function PaperConstructor({
 
   const [pendingDownload, setPendingDownload] = useState<"seatingChart" | "placeCards" | "tableNumbers" | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  // `pendingDownload` itself is cleared in each download function's `finally`
+  // block, so by the time the error banner renders it's already null -- this
+  // tracks which one actually failed so the Retry button can re-invoke it.
+  const [lastFailedDownloadId, setLastFailedDownloadId] = useState<"seatingChart" | "placeCards" | "tableNumbers" | null>(null);
+  // These PDFs are generated via a dynamic `import("@react-pdf/renderer")` --
+  // a first failed chunk load (e.g. a brief network blip) can leave that
+  // import's promise cached as rejected by the bundler, so simply re-running
+  // the same download function keeps failing identically no matter how many
+  // times Retry is clicked; only a full page reload clears it. Tracked only
+  // at the two "fresh attempt" entry points (handleDownloadClick's unlocked
+  // path, and the upgrade modal's "Continue with watermark") -- NOT inside
+  // the download functions themselves, so the Retry button below can
+  // increment it without the function's own setup resetting it back to 0.
+  const [downloadRetryCount, setDownloadRetryCount] = useState(0);
   // dashboard-audit.md follow-up: a locked download used to just silently
   // generate a watermarked PDF -- the only "this needs payment" signal was
   // a small caption *below* the button, easy to miss. Now clicking a locked
@@ -1030,6 +1108,7 @@ export default function PaperConstructor({
 
   const downloadSeatingChart = async () => {
     setDownloadError(null);
+    setLastFailedDownloadId(null);
     setPendingDownload("seatingChart");
     try {
       const [{ pdf }, { TableCardDocument }] = await Promise.all([
@@ -1040,6 +1119,7 @@ export default function PaperConstructor({
       saveBlob(blob, "seating-chart.pdf");
     } catch (err) {
       setDownloadError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedDownloadId("seatingChart");
     } finally {
       setPendingDownload(null);
     }
@@ -1047,6 +1127,7 @@ export default function PaperConstructor({
 
   const downloadPlaceCards = async () => {
     setDownloadError(null);
+    setLastFailedDownloadId(null);
     setPendingDownload("placeCards");
     try {
       const [{ pdf }, { PlaceCardDocument }] = await Promise.all([
@@ -1057,6 +1138,7 @@ export default function PaperConstructor({
       saveBlob(blob, "place-cards.pdf");
     } catch (err) {
       setDownloadError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedDownloadId("placeCards");
     } finally {
       setPendingDownload(null);
     }
@@ -1064,6 +1146,7 @@ export default function PaperConstructor({
 
   const downloadTableNumbers = async () => {
     setDownloadError(null);
+    setLastFailedDownloadId(null);
     setPendingDownload("tableNumbers");
     try {
       const [{ pdf }, { TableNumberCardDocument }] = await Promise.all([
@@ -1074,6 +1157,7 @@ export default function PaperConstructor({
       saveBlob(blob, "table-numbers.pdf");
     } catch (err) {
       setDownloadError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedDownloadId("tableNumbers");
     } finally {
       setPendingDownload(null);
     }
@@ -1090,6 +1174,7 @@ export default function PaperConstructor({
       setPendingUpgradePrompt(id);
       return;
     }
+    setDownloadRetryCount(0);
     downloadActions[id]();
   };
 
@@ -1121,14 +1206,60 @@ export default function PaperConstructor({
              было редактировать" (make the paper preview bigger, so it's
              clear and easy to work with). Swapping which column gets 1fr
              (paired with a bigger base render size below) gives the actual
-             preview the room, not the caption next to it. */
+             preview the room, not the caption next to it.
+             `max-w-3xl` (direct feedback, round two, 2026-10-24): this was
+             still capping the WHOLE 3-column grid at 768px total, so even
+             with 1fr on the middle column there was only ~320px left for
+             it once the 160px nav and 260px caption columns were
+             subtracted -- the resting preview stayed small regardless of
+             previewBaseWidth's own ResizeObserver logic below, since that
+             logic can only size the card to whatever room this cap left
+             it. Dropped, matching the active (editing) branch above and
+             Site's own Free-canvas editor, neither of which carry this
+             cap. */
             "mt-6 rounded-[10px] border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 sm:grid sm:grid-cols-[minmax(0,160px)_1fr_minmax(0,260px)] sm:items-start sm:gap-6"
+      }
+      // dashboard critique (2026-10-23), fifth re-run P1: the active branch
+      // above has no width cap of its own (page.tsx no longer wraps this
+      // component in max-w-3xl either, see its own comment) -- confirmed
+      // live, the open editor used to render at ~130px wide with its
+      // floating toolbar clipped. The inactive/browsing branch keeps its
+      // own max-w-3xl so the plain preview+download view, which was never
+      // the problem, looks exactly as before.
+      // dashboard critique (2026-10-23), fourth re-run P1: this whole
+      // constructor -- its own nav/preview chrome, and CanvasFrameEditor
+      // nested inside it once editing starts -- rendered on the dark
+      // --dash-surface ladder, directly beneath the light "Wedding style /
+      // Wedding details / Your plan" cards above, with no transition.
+      // CanvasFrameEditor and its sub-components (LayersPanel,
+      // ElementToolbar, AddElementModal, FontPicker, BackgroundPicker) are
+      // ALSO used by the separate Free-canvas Site editor, which stays dark
+      // and is untouched by this -- these are plain CSS custom properties,
+      // scoped to this subtree by React's normal inheritance, not a prop
+      // threaded through every one of those files. --dash-accent-ink and
+      // --dash-hover-tint(-strong) exist specifically so the handful of
+      // spots that read --dash-accent/white-opacity directly as readable
+      // text/hover color stay correct here too, without a second
+      // className per context in each of those shared files.
+      style={
+        {
+          "--dash-bg": "var(--dash-light-bg)",
+          "--dash-surface": "#ffffff",
+          "--dash-surface-2": "#f3f4f6",
+          "--dash-border": "#e5e7eb",
+          "--dash-text": "#111827",
+          "--dash-text-muted": "#4b5563",
+          "--dash-accent-ink": "var(--dash-accent-text)",
+          "--dash-danger-ink": "#dc2626",
+          "--dash-hover-tint": "rgba(0, 0, 0, 0.05)",
+          "--dash-hover-tint-strong": "rgba(0, 0, 0, 0.08)",
+        } as CSSProperties
       }
     >
       <nav className={isAnyCanvasEditorActive ? "flex-none space-y-4 sm:w-40" : "space-y-4"}>
         {groupedMedia.map(({ group, items }) => (
           <div key={group}>
-            <p className="dash-h2 px-1 text-xs uppercase tracking-wide text-[var(--dash-accent)]">
+            <p className="dash-h2 px-1 text-xs uppercase tracking-wide text-[var(--dash-accent-ink)]">
               {/* "Banquet" is a stable internal group id (see MediaGroup/
                   GROUP_ORDER above) -- the visible label still needs to
                   adapt per event type, same as the "...tab" hint text
@@ -1162,7 +1293,21 @@ export default function PaperConstructor({
             <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.back}</p>
             <AutosaveStatus state={canvasSaveState} error={canvasSaveError} />
           </div>
-          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+          {/* dashboard critique (2026-10-23), fifth re-run P1 (continued):
+              removing the page's width cap revealed a second, latent bug --
+              this wrapper's own `overflow-hidden` never actually bounded
+              CanvasFrameEditor's internal scroll area, because this div
+              wasn't a flex container, so CanvasFrameEditor's `flex-1` (which
+              needs one) had nothing to size against. At the old narrow
+              scale the rendered card happened to fit under 640px anyway, so
+              it went unnoticed; at real width/scale the card's lower half
+              was being hard-clipped with no way to scroll to it. `flex
+              flex-col` here fixes the actual bug; the taller
+              `sm:h-[calc(100vh-12rem)]` on top is the room this bigger,
+              properly-scrolling editor deserves, matching roughly what
+              Site's own full-page Free-canvas editor gets. Same wrapper,
+              repeated identically for all 7 canvas types below. */}
+          <div className="flex h-[640px] flex-col overflow-hidden rounded-md border border-[var(--dash-border)] sm:h-[calc(100vh-12rem)]">
             <CanvasFrameEditor
               frame={backCanvasFrame}
               onUpdateFrame={updateBackCanvasFrame}
@@ -1180,7 +1325,7 @@ export default function PaperConstructor({
             <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.front}</p>
             <AutosaveStatus state={frontCanvasSaveState} error={frontCanvasSaveError} />
           </div>
-          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+          <div className="flex h-[640px] flex-col overflow-hidden rounded-md border border-[var(--dash-border)] sm:h-[calc(100vh-12rem)]">
             <CanvasFrameEditor
               frame={frontCanvasFrame}
               onUpdateFrame={updateFrontCanvasFrame}
@@ -1207,7 +1352,7 @@ export default function PaperConstructor({
             <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.envelope}</p>
             <AutosaveStatus state={envelopeCanvasState.saveState} error={envelopeCanvasState.saveError} />
           </div>
-          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+          <div className="flex h-[640px] flex-col overflow-hidden rounded-md border border-[var(--dash-border)] sm:h-[calc(100vh-12rem)]">
             <CanvasFrameEditor
               frame={envelopeCanvasState.frame}
               onUpdateFrame={envelopeCanvasState.updateFrame}
@@ -1234,7 +1379,7 @@ export default function PaperConstructor({
             <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.program}</p>
             <AutosaveStatus state={programCanvasState.saveState} error={programCanvasState.saveError} />
           </div>
-          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+          <div className="flex h-[640px] flex-col overflow-hidden rounded-md border border-[var(--dash-border)] sm:h-[calc(100vh-12rem)]">
             <CanvasFrameEditor
               frame={programCanvasState.frame}
               onUpdateFrame={programCanvasState.updateFrame}
@@ -1261,7 +1406,7 @@ export default function PaperConstructor({
             <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.dressCode}</p>
             <AutosaveStatus state={dressCodeCanvasState.saveState} error={dressCodeCanvasState.saveError} />
           </div>
-          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+          <div className="flex h-[640px] flex-col overflow-hidden rounded-md border border-[var(--dash-border)] sm:h-[calc(100vh-12rem)]">
             <CanvasFrameEditor
               frame={dressCodeCanvasState.frame}
               onUpdateFrame={dressCodeCanvasState.updateFrame}
@@ -1288,7 +1433,7 @@ export default function PaperConstructor({
             <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.saveTheDate}</p>
             <AutosaveStatus state={saveTheDateCanvasState.saveState} error={saveTheDateCanvasState.saveError} />
           </div>
-          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+          <div className="flex h-[640px] flex-col overflow-hidden rounded-md border border-[var(--dash-border)] sm:h-[calc(100vh-12rem)]">
             <CanvasFrameEditor
               frame={saveTheDateCanvasState.frame}
               onUpdateFrame={saveTheDateCanvasState.updateFrame}
@@ -1315,7 +1460,7 @@ export default function PaperConstructor({
             <p className="text-xs text-[var(--dash-text-muted)]">{t.editorHint.thankYou}</p>
             <AutosaveStatus state={thankYouCanvasState.saveState} error={thankYouCanvasState.saveError} />
           </div>
-          <div className="h-[640px] overflow-hidden rounded-md border border-[var(--dash-border)]">
+          <div className="flex h-[640px] flex-col overflow-hidden rounded-md border border-[var(--dash-border)] sm:h-[calc(100vh-12rem)]">
             <CanvasFrameEditor
               frame={thankYouCanvasState.frame}
               onUpdateFrame={thankYouCanvasState.updateFrame}
@@ -1339,10 +1484,10 @@ export default function PaperConstructor({
       ) : (
         <>
           <div>
-            <div className="flex justify-center overflow-hidden rounded-md bg-[var(--dash-surface-2)] p-4">
+            <div ref={previewWrapRef} className="flex justify-center overflow-hidden rounded-md bg-[var(--dash-surface-2)] p-4">
               <div
-                className="grid w-full max-w-[420px] overflow-hidden rounded-md shadow-md transition-[width] duration-200"
-                style={{ aspectRatio: activeMedia.aspectRatio, width: `${320 * zoom}px` }}
+                className="grid w-full overflow-hidden rounded-md shadow-md transition-[width] duration-200"
+                style={{ aspectRatio: activeMedia.aspectRatio, width: `${previewBaseWidth * zoom}px` }}
               >
                 {activeMedia.id === "invitation-front" &&
                   (hasCustomFront ? (
@@ -1642,7 +1787,30 @@ export default function PaperConstructor({
               </div>
             )}
             {downloadError && (
-              <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{downloadError}</p>
+              <p className="mt-3 flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+                <span>{downloadError}</span>
+                {lastFailedDownloadId &&
+                  (downloadRetryCount >= 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => window.location.reload()}
+                      className="font-semibold underline underline-offset-2 hover:text-red-900"
+                    >
+                      {dictionary.dashboard.common.reloadPage}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDownloadRetryCount((n) => n + 1);
+                        downloadActions[lastFailedDownloadId]();
+                      }}
+                      className="font-semibold underline underline-offset-2 hover:text-red-900"
+                    >
+                      {dictionary.dashboard.common.retry}
+                    </button>
+                  ))}
+              </p>
             )}
           </div>
         </>
@@ -1654,7 +1822,10 @@ export default function PaperConstructor({
         action={pendingUpgradePrompt ? upgradePromptCopy[pendingUpgradePrompt] : ""}
         canContinueAnyway
         onContinueAnyway={() => {
-          if (pendingUpgradePrompt) downloadActions[pendingUpgradePrompt]();
+          if (pendingUpgradePrompt) {
+            setDownloadRetryCount(0);
+            downloadActions[pendingUpgradePrompt]();
+          }
         }}
         locale={locale}
       />

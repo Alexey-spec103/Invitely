@@ -59,7 +59,7 @@ export default function AddElementModal({
     >
       <div className="w-full max-w-md rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="dash-h2 text-base text-[var(--dash-accent)]">{t.heading}</h2>
+          <h2 className="dash-h2 text-base text-[var(--dash-accent-ink)]">{t.heading}</h2>
           <button type="button" onClick={onClose} className="text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]" title={t.close}>
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -71,7 +71,7 @@ export default function AddElementModal({
               onAddText();
               onClose();
             }}
-            className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-white/5"
+            className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-[var(--dash-hover-tint)]"
           >
             <Type className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
             <span className="text-sm font-medium text-[var(--dash-text)]">{t.text.label}</span>
@@ -84,7 +84,7 @@ export default function AddElementModal({
               onAddImage();
               onClose();
             }}
-            className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-[var(--dash-hover-tint)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <ImagePlus className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
             <span className="text-sm font-medium text-[var(--dash-text)]">{t.image.label}</span>
@@ -97,7 +97,7 @@ export default function AddElementModal({
               onAddVideo();
               onClose();
             }}
-            className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-[var(--dash-hover-tint)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Video className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
             <span className="text-sm font-medium text-[var(--dash-text)]">{t.video.label}</span>
@@ -109,7 +109,7 @@ export default function AddElementModal({
               onAddQr();
               onClose();
             }}
-            className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-white/5"
+            className="flex flex-col items-center gap-2 rounded-lg border border-[var(--dash-border)] p-4 text-center hover:border-[var(--dash-accent)] hover:bg-[var(--dash-hover-tint)]"
           >
             <QrCode className="h-6 w-6 text-[var(--dash-text-muted)]" aria-hidden="true" />
             <span className="text-sm font-medium text-[var(--dash-text)]">{t.qr.label}</span>

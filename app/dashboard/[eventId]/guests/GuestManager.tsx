@@ -355,7 +355,7 @@ function InvitationSentBadge({
   guestId: string;
   sent: boolean;
   channels: string[];
-  t: GuestsDict["invitationSent"] & { channelLabels: GuestsDict["channelLabels"] };
+  t: GuestsDict["invitationSent"] & { channelLabels: GuestsDict["channelLabels"]; retry: string };
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -405,7 +405,14 @@ function InvitationSentBadge({
         </span>
       )}
     </button>
-    {error && <span className="text-[11px] text-red-600">{error}</span>}
+    {error && (
+      <span className="text-[11px] text-red-600">
+        {error}{" "}
+        <button type="button" onClick={handleToggle} className="font-semibold underline underline-offset-2 hover:text-red-800">
+          {t.retry}
+        </button>
+      </span>
+    )}
     </span>
   );
 }
@@ -434,7 +441,7 @@ function SendInviteMenu({
   phone: string | null;
   email: string | null;
   eventTitle: string;
-  t: GuestsDict["sendMenu"] & { personalMessage: GuestsDict["shareLink"]["personalMessage"] };
+  t: GuestsDict["sendMenu"] & { personalMessage: GuestsDict["shareLink"]["personalMessage"]; retry: string };
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -549,7 +556,10 @@ function SendInviteMenu({
       )}
       {emailError && (
         <p className="absolute right-0 top-full mt-1 w-48 rounded-md bg-red-50 px-2 py-1 text-[11px] text-red-700 shadow-sm">
-          {emailError}
+          {emailError}{" "}
+          <button type="button" onClick={handleSendEmail} className="font-semibold underline underline-offset-2 hover:text-red-900">
+            {t.retry}
+          </button>
         </p>
       )}
     </div>
@@ -563,7 +573,7 @@ function AttendeeList({
 }: {
   guestId: string;
   attendees: Tables<"guest_attendees">[];
-  t: GuestsDict["attendeeList"];
+  t: GuestsDict["attendeeList"] & { retry: string };
 }) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -575,11 +585,13 @@ function AttendeeList({
   // more than an uncaught rejection in the console. Same red-text
   // convention the parent GuestManager's own formError already uses.
   const [error, setError] = useState<string | null>(null);
+  const [lastFailedAction, setLastFailedAction] = useState<(() => void) | null>(null);
 
   const handleAdd = async () => {
     const trimmed = name.trim();
     if (!trimmed) return;
     setError(null);
+    setLastFailedAction(null);
     setAdding(true);
     try {
       await addGuestAttendee(guestId, trimmed);
@@ -587,6 +599,7 @@ function AttendeeList({
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : t.genericAddError);
+      setLastFailedAction(() => () => void handleAdd());
     } finally {
       setAdding(false);
     }
@@ -600,12 +613,14 @@ function AttendeeList({
       return;
     }
     setError(null);
+    setLastFailedAction(null);
     setRemovingId(attendeeId);
     try {
       await deleteGuestAttendee(attendeeId);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : t.genericRemoveError);
+      setLastFailedAction(() => () => void handleRemove(attendeeId, attendeeName));
     } finally {
       setRemovingId(null);
     }
@@ -649,6 +664,7 @@ function AttendeeList({
             }
           }}
           placeholder={t.placeholder}
+          aria-label={t.placeholder}
           className="w-full max-w-xs rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
         />
         <button
@@ -660,7 +676,16 @@ function AttendeeList({
           {adding ? t.adding : t.add}
         </button>
       </div>
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-1 text-xs text-red-600">
+          {error}{" "}
+          {lastFailedAction && (
+            <button type="button" onClick={lastFailedAction} className="font-semibold underline underline-offset-2 hover:text-red-800">
+              {t.retry}
+            </button>
+          )}
+        </p>
+      )}
     </div>
   );
 }
@@ -674,7 +699,7 @@ function EditGuestForm({
   guest: Tables<"guests">;
   onDone: () => void;
   onCancel: () => void;
-  t: GuestsDict["editForm"] & { formLabels: GuestsDict["form"] };
+  t: GuestsDict["editForm"] & { formLabels: GuestsDict["form"]; retry: string };
 }) {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
@@ -774,8 +799,15 @@ function EditGuestForm({
       </div>
 
       {formError && (
-        <p className="sm:col-span-2 rounded-md bg-red-50 px-3 py-2 text-xs text-red-700">
-          {formError}
+        <p className="sm:col-span-2 flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2 text-xs text-red-700">
+          <span>{formError}</span>
+          <button
+            type="button"
+            onClick={() => void handleSubmit(onSubmit)()}
+            className="font-semibold underline underline-offset-2 hover:text-red-900"
+          >
+            {t.retry}
+          </button>
         </p>
       )}
 
@@ -805,11 +837,31 @@ export default function GuestManager({
   locale = "en",
 }: GuestManagerProps) {
   const t = getDictionary(locale).dashboard.guests;
+  const common = getDictionary(locale).dashboard.common;
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
+  const [lastFailedAction, setLastFailedAction] = useState<(() => void) | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // dashboard critique (2026-10-23), fifth re-run P2: same gap, same fix as
+  // the Style tab's theme-gallery search -- `/` jumps focus to search,
+  // skipped while already typing somewhere else.
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "/") return;
+      const target = event.target as HTMLElement;
+      const isTyping =
+        target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
+      if (isTyping) return;
+      event.preventDefault();
+      searchInputRef.current?.focus();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
   // One-click counterpart to clicking "Send" -> "Email" on every guest row
   // in turn -- sendBulkGuestInvitationEmails already skips anyone with no
   // email on file or already marked sent, so this is always safe to offer
@@ -887,6 +939,7 @@ export default function GuestManager({
 
   const onSubmit = async (values: GuestFormValues) => {
     setFormError(null);
+    setLastFailedAction(null);
     const isDuplicate = guests.some(
       (guest) => normalizeGuestName(guest.full_name) === normalizeGuestName(values.fullName)
     );
@@ -907,6 +960,10 @@ export default function GuestManager({
       addedToastTimeoutRef.current = setTimeout(() => setAddedGuestName(null), UNDO_WINDOW_MS);
     } catch (err) {
       setFormError(err instanceof Error ? err.message : t.form.genericError);
+      // Retrying re-submits the form's current field values via RHF rather
+      // than replaying the stale `values` closure, so an edit made after the
+      // failed attempt is what actually gets retried.
+      setLastFailedAction(() => () => void handleSubmit(onSubmit)());
     }
   };
 
@@ -925,6 +982,7 @@ export default function GuestManager({
       router.refresh();
     } catch (err) {
       setFormError(err instanceof Error ? err.message : t.attendeeList.genericRemoveError);
+      setLastFailedAction(() => () => void commitPendingRemoval(removal));
       // The call failed, so these guests were never actually removed --
       // bring them back into view rather than leaving them stuck hidden.
       setHiddenIds((prev) => {
@@ -941,6 +999,7 @@ export default function GuestManager({
       void commitPendingRemoval(pendingRemoval);
     }
     setFormError(null);
+    setLastFailedAction(null);
     setHiddenIds((prev) => {
       const next = new Set(prev);
       for (const id of ids) next.add(id);
@@ -1060,7 +1119,14 @@ export default function GuestManager({
 
   return (
     <div>
-      <ShareLinkBanner eventSlug={eventSlug} eventTitle={eventTitle} t={t.shareLink} />
+      {/* dashboard critique (2026-10-24), eighth re-run P1: the page-level
+          anchor nav's "Guests" link scrolled here with nothing for the
+          host to actually land on -- this component had no heading of its
+          own anywhere, just the global page H1 far above the fold. */}
+      <h2 className="dash-h2 text-lg text-[var(--dash-accent-text)]">{t.listHeading}</h2>
+      <div className="mt-4">
+        <ShareLinkBanner eventSlug={eventSlug} eventTitle={eventTitle} t={t.shareLink} />
+      </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -1082,7 +1148,11 @@ export default function GuestManager({
           />
         </div>
 
-        <div>
+        {/* Was one cell of the 2-column grid, paired with groupLabel next
+            to it -- now that group/email/phone/plus-ones moved into the
+            disclosure below, full-width reads better than a half-row with
+            an empty cell beside it. */}
+        <div className="sm:col-span-2">
           <label htmlFor="fullName" className="block text-sm font-semibold text-gray-900">
             {t.form.fullNameLabel}
           </label>
@@ -1098,63 +1168,82 @@ export default function GuestManager({
           )}
         </div>
 
-        <div>
-          <label htmlFor="groupLabel" className="block text-sm font-semibold text-gray-900">
-            {t.form.groupLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
-          </label>
-          <input
-            id="groupLabel"
-            type="text"
-            placeholder={t.form.groupPlaceholder}
-            className="dash-input mt-1"
-            {...register("groupLabel")}
-          />
-        </div>
+        {/* dashboard critique (2026-10-24), sixth re-run P2: Name plus 4
+            more fields plus 2 toggles all sat expanded by default for what
+            should be the fastest, most-repeated action on this page --
+            past the ~4-visible-choices guideline. A native <details> keeps
+            every field mounted (and so still registered with
+            react-hook-form) even while collapsed -- no state, no risk of
+            losing a value a host already typed in before expanding this. */}
+        <details className="sm:col-span-2">
+          <summary className="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
+            {t.form.moreDetails}
+          </summary>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="groupLabel" className="block text-sm font-semibold text-gray-900">
+                {t.form.groupLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
+              </label>
+              <input
+                id="groupLabel"
+                type="text"
+                placeholder={t.form.groupPlaceholder}
+                className="dash-input mt-1"
+                {...register("groupLabel")}
+              />
+            </div>
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-gray-900">
-            {t.form.emailLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            placeholder={t.form.emailPlaceholder}
-            className="dash-input mt-1"
-            {...register("email")}
-          />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
-        </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-900">
+                {t.form.emailLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder={t.form.emailPlaceholder}
+                className="dash-input mt-1"
+                {...register("email")}
+              />
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+            </div>
 
-        <div>
-          <label htmlFor="phone" className="block text-sm font-semibold text-gray-900">
-            {t.form.phoneLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
-          </label>
-          <input
-            id="phone"
-            type="tel"
-            placeholder={t.form.phonePlaceholder}
-            className="dash-input mt-1"
-            {...register("phone")}
-          />
-          {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
-        </div>
+            <div>
+              <label htmlFor="phone" className="block text-sm font-semibold text-gray-900">
+                {t.form.phoneLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                placeholder={t.form.phonePlaceholder}
+                className="dash-input mt-1"
+                {...register("phone")}
+              />
+              {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
+            </div>
 
-        <div>
-          <label htmlFor="maxPlusOnes" className="block text-sm font-semibold text-gray-900">
-            {t.form.plusOnesLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
-          </label>
-          <input
-            id="maxPlusOnes"
-            type="number"
-            min={0}
-            className="dash-input mt-1"
-            {...register("maxPlusOnes")}
-          />
-        </div>
+            <div>
+              <label htmlFor="maxPlusOnes" className="block text-sm font-semibold text-gray-900">
+                {t.form.plusOnesLabel} <span className="font-normal text-gray-600">{t.form.optional}</span>
+              </label>
+              <input
+                id="maxPlusOnes"
+                type="number"
+                min={0}
+                className="dash-input mt-1"
+                {...register("maxPlusOnes")}
+              />
+            </div>
+          </div>
+        </details>
 
         {formError && (
-          <p className="sm:col-span-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-            {formError}
+          <p className="sm:col-span-2 flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+            <span>{formError}</span>
+            {lastFailedAction && (
+              <button type="button" onClick={lastFailedAction} className="font-semibold underline underline-offset-2 hover:text-red-900">
+                {common.retry}
+              </button>
+            )}
           </p>
         )}
 
@@ -1171,10 +1260,12 @@ export default function GuestManager({
         <div className="mt-8 flex flex-col gap-3">
           <div className="flex items-center justify-between gap-4">
             <input
+              ref={searchInputRef}
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder={t.search.placeholder}
+              aria-label={t.search.placeholder}
               className="dash-input max-w-sm"
             />
             <span className="whitespace-nowrap text-xs text-gray-600">
@@ -1299,7 +1390,7 @@ export default function GuestManager({
                     guestId={guest.id}
                     sent={guest.invitation_sent_at != null}
                     channels={guest.sent_channels}
-                    t={{ ...t.invitationSent, channelLabels: t.channelLabels }}
+                    t={{ ...t.invitationSent, channelLabels: t.channelLabels, retry: common.retry }}
                   />
                   <RsvpStatusBadge status={rsvpStatus} t={t.guestRow} />
                 </div>
@@ -1321,7 +1412,7 @@ export default function GuestManager({
                         phone={guest.phone}
                         email={guest.email}
                         eventTitle={eventTitle}
-                        t={{ ...t.sendMenu, personalMessage: t.shareLink.personalMessage }}
+                        t={{ ...t.sendMenu, personalMessage: t.shareLink.personalMessage, retry: common.retry }}
                       />
                     </>
                   )}
@@ -1335,7 +1426,7 @@ export default function GuestManager({
                   <button
                     type="button"
                     onClick={() => handleDelete(guest.id, guest.full_name)}
-                    className="text-sm font-medium text-red-600 hover:text-red-700"
+                    className="text-sm font-medium text-red-700 hover:text-red-800"
                   >
                     {t.guestRow.remove}
                   </button>
@@ -1347,13 +1438,13 @@ export default function GuestManager({
                 guest={guest}
                 onDone={() => setEditingId(null)}
                 onCancel={() => setEditingId(null)}
-                t={{ ...t.editForm, formLabels: t.form }}
+                t={{ ...t.editForm, formLabels: t.form, retry: common.retry }}
               />
             )}
             <AttendeeList
               guestId={guest.id}
               attendees={attendees.filter((attendee) => attendee.guest_id === guest.id)}
-              t={t.attendeeList}
+              t={{ ...t.attendeeList, retry: common.retry }}
             />
           </li>
           );

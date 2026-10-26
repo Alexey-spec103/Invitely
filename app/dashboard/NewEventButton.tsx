@@ -49,7 +49,12 @@ export default function NewEventButton({ locale = "en" }: NewEventButtonProps) {
     <button
       type="button"
       onClick={handleClick}
-      className="flex h-9 items-center gap-1.5 rounded-full bg-[var(--dash-accent)] px-4 text-sm font-semibold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
+      // dashboard critique (2026-10-23), fourth re-run P1: white text directly
+      // on --dash-accent measures 2.82:1, below WCAG AA -- the same fix
+      // already applied to DashboardShell/AnonymousAccountBanner/PlanBadge/
+      // PublishToggle (--dash-accent-text resting, brightening to the raw
+      // accent on hover) just hadn't reached this button yet.
+      className="flex h-9 items-center gap-1.5 rounded-full bg-[var(--dash-accent-text)] px-4 text-sm font-semibold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent)]"
     >
       <Plus className="h-[16px] w-[16px] shrink-0" strokeWidth={2.5} />
       <span className="whitespace-nowrap">{t.newEvent}</span>

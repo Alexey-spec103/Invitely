@@ -446,11 +446,24 @@
 }
 
 .card:hover .hoverReveal,
-.card:focus-visible .hoverReveal {
+.card:focus-visible .hoverReveal,
+/* dashboard critique (2026-10-23), fifth re-run P1: :focus-visible only
+   matches the card itself -- Tabbing one step further, onto the
+   hoverRevealBtn span now nested inside this overlay, moves focus off the
+   card and would otherwise hide the very control that just received
+   focus. :focus-within covers the card OR any descendant having focus. */
+.card:focus-within .hoverReveal {
   opacity: 1;
 }
 
 .hoverRevealBtn {
+  /* dashboard critique (2026-10-23), fifth re-run P1: this is now a real
+     control (see ThemeGallery.tsx's handleChooseClick), not decorative
+     text -- .hoverReveal's own `pointer-events: none` (so the rest of that
+     overlay's empty space doesn't block drag-panning the mockup behind it)
+     would otherwise swallow clicks meant for this pill too. */
+  pointer-events: auto;
+  cursor: pointer;
   transform: translateY(6px);
   transition: transform 0.18s ease;
   /* --dash-accent-text, not --dash-accent -- white text on the raw accent
@@ -468,8 +481,16 @@
 }
 
 .card:hover .hoverRevealBtn,
-.card:focus-visible .hoverRevealBtn {
+.card:focus-visible .hoverRevealBtn,
+.card:focus-within .hoverRevealBtn {
   transform: translateY(0);
+}
+
+/* The button's own focus ring -- :focus-visible here (on the span itself,
+   not .card) only needs the plain selector since it's not nested further. */
+.hoverRevealBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 /* dashboard-audit.md B9: confirmed live on weddingpost.ru's own catalog --

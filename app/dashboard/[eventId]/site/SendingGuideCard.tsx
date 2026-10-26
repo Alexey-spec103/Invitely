@@ -81,7 +81,7 @@ export default function SendingGuideCard({
           <button
             type="button"
             onClick={handleCopy}
-            className="flex h-9 items-center gap-1.5 rounded-full bg-[var(--dash-accent)] px-3 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent-hover)]"
+            className="flex h-9 items-center gap-1.5 rounded-full bg-[var(--dash-accent-text)] px-3 text-xs font-bold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent)]"
           >
             {copied ? (
               <>

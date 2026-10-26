@@ -522,6 +522,9 @@ export const pl: Dictionary = {
       statusVerified: "Zweryfikowano",
       statusPending: "Oczekuje",
       tour: { skip: "Pomiń", back: "Wstecz", next: "Dalej", gotIt: "Rozumiem" },
+      replayTourButton: "Jak to działa",
+      retry: "Ponów",
+      reloadPage: "Odśwież stronę",
       moduleCard: {
         notSetYet: "Jeszcze nie skonfigurowano",
         couldntSave: "Nie udało się zapisać",
@@ -997,6 +1000,7 @@ export const pl: Dictionary = {
         undo: "Cofnij",
         redo: "Ponów",
         newTextDefault: "Nowy tekst",
+        elementDeletedToast: "Element usunięty",
         addElementModal: {
           heading: "Dodaj element",
           close: "Zamknij",
@@ -1129,6 +1133,8 @@ export const pl: Dictionary = {
       },
     },
     guests: {
+      listHeading: "Lista gości",
+      rsvpSettingsHeading: "Powiadomienia RSVP",
       page: {
         title: "Goście",
         subtitle: "Śledź wszystkie osoby, które zapraszasz.",
@@ -1139,6 +1145,7 @@ export const pl: Dictionary = {
         seatingHeading: "Rozsadzenie gości",
         seatingBodyOn: `Opcjonalnie - kto gdzie siedzi. To właśnie zasila wyszukiwarkę „Znajdź mój stolik" na Twojej stronie.`,
         seatingBodyOff: `Opcjonalnie - zaplanuj, kto gdzie siedzi, kiedy tylko chcesz. Włącz „Znajdź mój stolik" w modułach swojej strony, aby goście mogli sami to sprawdzić.`,
+        nav: { guests: "Goście", rsvp: "RSVP", photos: "Zdjęcia", seating: "Rozmieszczenie stołów" },
       },
       tour: {
         step1Title: "👋 Dodaj swoich gości",
@@ -1183,6 +1190,7 @@ export const pl: Dictionary = {
         phoneLabel: "Telefon",
         phonePlaceholder: "Do SMS-a lub WhatsAppa",
         plusOnesLabel: "Dozwolone osoby towarzyszące",
+        moreDetails: "Więcej szczegółów (grupa, e-mail, telefon, osoby towarzyszące)",
         addGuest: "Dodaj gościa",
         adding: "Dodawanie...",
         duplicateConfirm: (name) => `„${name}" wygląda jak gość, którego już dodałeś/aś. Mimo to dodać kolejnego?`,

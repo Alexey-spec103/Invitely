@@ -96,14 +96,29 @@ export default function InvitationDownloads({
   locale,
 }: InvitationDownloadsProps) {
   const t = getDictionary(locale).dashboard.paper;
+  const common = getDictionary(locale).dashboard.common;
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
+  const [lastFailedAction, setLastFailedAction] = useState<(() => void) | null>(null);
+  // Each `generate*` function dynamically imports `@react-pdf/renderer` --
+  // a failed chunk load (e.g. a brief network blip) can leave that import's
+  // promise cached as rejected by the bundler, so simply re-running the same
+  // function keeps failing identically no matter how many times Retry is
+  // clicked; only a full page reload clears it. Reset to 0 only at the
+  // "fresh attempt" entry points (via `startFresh` below), not inside the
+  // generate functions themselves, so the Retry button can increment it.
+  const [retryCount, setRetryCount] = useState(0);
+  const startFresh = (fn: () => void) => {
+    setRetryCount(0);
+    fn();
+  };
 
   const hasCanvasDesign = canvasFrames.length > 0;
 
   const generateCanvasInvitation = async () => {
     setError(null);
+    setLastFailedAction(null);
     setPendingId("generic");
     try {
       const [{ pdf }, { CanvasPdfDocument }, { resolveCanvasQrElements }] = await Promise.all([
@@ -121,6 +136,7 @@ export default function InvitationDownloads({
       saveBlob(blob, "invitation.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedAction(() => () => void generateCanvasInvitation());
     } finally {
       setPendingId(null);
     }
@@ -128,6 +144,7 @@ export default function InvitationDownloads({
 
   const generateProgramCard = async () => {
     setError(null);
+    setLastFailedAction(null);
     setPendingId("program");
     try {
       const [{ pdf }, { ProgramCardDocument }] = await Promise.all([
@@ -146,6 +163,7 @@ export default function InvitationDownloads({
       saveBlob(blob, "program-card.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedAction(() => () => void generateProgramCard());
     } finally {
       setPendingId(null);
     }
@@ -153,6 +171,7 @@ export default function InvitationDownloads({
 
   const generateDressCodeCard = async () => {
     setError(null);
+    setLastFailedAction(null);
     setPendingId("dresscode");
     try {
       const [{ pdf }, { DressCodeCardDocument }] = await Promise.all([
@@ -172,6 +191,7 @@ export default function InvitationDownloads({
       saveBlob(blob, "dress-code-card.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedAction(() => () => void generateDressCodeCard());
     } finally {
       setPendingId(null);
     }
@@ -179,6 +199,7 @@ export default function InvitationDownloads({
 
   const generateEnvelope = async () => {
     setError(null);
+    setLastFailedAction(null);
     setPendingId("envelope");
     try {
       const [{ pdf }, { EnvelopeDocument }] = await Promise.all([
@@ -198,6 +219,7 @@ export default function InvitationDownloads({
       saveBlob(blob, "envelope.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedAction(() => () => void generateEnvelope());
     } finally {
       setPendingId(null);
     }
@@ -205,6 +227,7 @@ export default function InvitationDownloads({
 
   const generateSaveTheDateCard = async () => {
     setError(null);
+    setLastFailedAction(null);
     setPendingId("savethedate");
     try {
       const [{ pdf }, { SaveTheDateCardDocument }] = await Promise.all([
@@ -224,6 +247,7 @@ export default function InvitationDownloads({
       saveBlob(blob, "save-the-date.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedAction(() => () => void generateSaveTheDateCard());
     } finally {
       setPendingId(null);
     }
@@ -231,6 +255,7 @@ export default function InvitationDownloads({
 
   const generateThankYouCard = async () => {
     setError(null);
+    setLastFailedAction(null);
     setPendingId("thankyou");
     try {
       const [{ pdf }, { ThankYouCardDocument }] = await Promise.all([
@@ -243,6 +268,7 @@ export default function InvitationDownloads({
       saveBlob(blob, "thank-you.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedAction(() => () => void generateThankYouCard());
     } finally {
       setPendingId(null);
     }
@@ -305,6 +331,7 @@ export default function InvitationDownloads({
   const generate = async (guest?: GuestItem) => {
     const id = guest?.id ?? "generic";
     setError(null);
+    setLastFailedAction(null);
     setPendingId(id);
     try {
       const [pdfModule, documentModule] = await Promise.all([
@@ -316,6 +343,7 @@ export default function InvitationDownloads({
       saveBlob(blob, guest ? `invitation-${guest.fullName}.pdf` : "invitation.pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : t.failedToGeneratePdf);
+      setLastFailedAction(() => () => void generate(guest));
     } finally {
       setPendingId(null);
     }
@@ -324,6 +352,7 @@ export default function InvitationDownloads({
   const generateAll = async () => {
     if (guests.length === 0) return;
     setError(null);
+    setLastFailedAction(null);
     setPendingId("all");
     setBulkProgress({ done: 0, total: guests.length });
     try {
@@ -344,6 +373,7 @@ export default function InvitationDownloads({
       saveBlob(zipBlob, "invitations.zip");
     } catch (err) {
       setError(err instanceof Error ? err.message : t.downloads.failedToGeneratePdfs);
+      setLastFailedAction(() => () => void generateAll());
     } finally {
       setPendingId(null);
       setBulkProgress(null);
@@ -355,7 +385,7 @@ export default function InvitationDownloads({
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={hasCanvasDesign ? generateCanvasInvitation : () => generate()}
+          onClick={() => startFresh(hasCanvasDesign ? generateCanvasInvitation : () => generate())}
           disabled={pendingId !== null}
           className="dash-btn dash-btn-primary"
         >
@@ -365,29 +395,52 @@ export default function InvitationDownloads({
               ? t.downloads.custom
               : t.downloads.generic}
         </button>
-        <button type="button" onClick={generateEnvelope} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
+        <button type="button" onClick={() => startFresh(generateEnvelope)} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
           {pendingId === "envelope" ? t.downloads.generating : t.downloads.envelope}
         </button>
         {timelineEvents.length > 0 && (
-          <button type="button" onClick={generateProgramCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
+          <button type="button" onClick={() => startFresh(generateProgramCard)} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
             {pendingId === "program" ? t.downloads.generating : t.downloads.program}
           </button>
         )}
         {dressCodeColors.length > 0 && (
-          <button type="button" onClick={generateDressCodeCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
+          <button type="button" onClick={() => startFresh(generateDressCodeCard)} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
             {pendingId === "dresscode" ? t.downloads.generating : t.downloads.dressCode}
           </button>
         )}
-        <button type="button" onClick={generateSaveTheDateCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
+        <button type="button" onClick={() => startFresh(generateSaveTheDateCard)} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
           {pendingId === "savethedate" ? t.downloads.generating : t.downloads.saveTheDate}
         </button>
-        <button type="button" onClick={generateThankYouCard} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
+        <button type="button" onClick={() => startFresh(generateThankYouCard)} disabled={pendingId !== null} className="dash-btn dash-btn-neutral">
           {pendingId === "thankyou" ? t.downloads.generating : t.downloads.thankYou}
         </button>
       </div>
 
       {error && (
-        <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p className="mt-3 flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+          <span>{error}</span>
+          {lastFailedAction &&
+            (retryCount >= 1 ? (
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="font-semibold underline underline-offset-2 hover:text-red-900"
+              >
+                {common.reloadPage}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setRetryCount((n) => n + 1);
+                  lastFailedAction();
+                }}
+                className="font-semibold underline underline-offset-2 hover:text-red-900"
+              >
+                {common.retry}
+              </button>
+            ))}
+        </p>
       )}
 
       <div className="mt-8 border-t border-gray-200 pt-6">
@@ -408,7 +461,7 @@ export default function InvitationDownloads({
 
         {guests.length > 0 && (
           <div className="mt-4">
-            <button type="button" onClick={generateAll} disabled={pendingId !== null} className="dash-btn dash-btn-primary">
+            <button type="button" onClick={() => startFresh(generateAll)} disabled={pendingId !== null} className="dash-btn dash-btn-primary">
               {pendingId === "all"
                 ? bulkProgress
                   ? t.downloads.generatingProgress(bulkProgress.done, bulkProgress.total)
@@ -438,7 +491,7 @@ export default function InvitationDownloads({
               <p className="text-sm font-medium text-gray-900">{guest.fullName}</p>
               <button
                 type="button"
-                onClick={() => generate(guest)}
+                onClick={() => startFresh(() => generate(guest))}
                 disabled={pendingId !== null}
                 className="text-sm font-medium text-gray-600 hover:text-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
               >

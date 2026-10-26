@@ -512,6 +512,9 @@ export const de: Dictionary = {
       statusVerified: "Verifiziert",
       statusPending: "Ausstehend",
       tour: { skip: "Überspringen", back: "Zurück", next: "Weiter", gotIt: "Verstanden" },
+      replayTourButton: "So funktioniert's",
+      retry: "Erneut versuchen",
+      reloadPage: "Seite neu laden",
       moduleCard: {
         notSetYet: "Noch nicht eingerichtet",
         couldntSave: "Speichern fehlgeschlagen",
@@ -981,6 +984,7 @@ export const de: Dictionary = {
         undo: "Rückgängig",
         redo: "Wiederholen",
         newTextDefault: "Neuer Text",
+        elementDeletedToast: "Element gelöscht",
         addElementModal: {
           heading: "Element hinzufügen",
           close: "Schließen",
@@ -1113,6 +1117,8 @@ export const de: Dictionary = {
       },
     },
     guests: {
+      listHeading: "Gästeliste",
+      rsvpSettingsHeading: "RSVP-Benachrichtigungen",
       page: {
         title: "Gäste",
         subtitle: "Behalte den Überblick über alle, die du einlädst.",
@@ -1123,6 +1129,7 @@ export const de: Dictionary = {
         seatingHeading: "Sitzplan",
         seatingBodyOn: `Optional - wer wo sitzt. Das ist die Grundlage für die „Tisch finden"-Suche auf deiner Website.`,
         seatingBodyOff: `Optional - plane jederzeit, wer wo sitzt. Aktiviere „Tisch finden" in den Modulen deiner Website, damit Gäste selbst nachschauen können.`,
+        nav: { guests: "Gäste", rsvp: "RSVP", photos: "Fotos", seating: "Sitzordnung" },
       },
       tour: {
         step1Title: "👋 Füge deine Gäste hinzu",
@@ -1167,6 +1174,7 @@ export const de: Dictionary = {
         phoneLabel: "Telefon",
         phonePlaceholder: "Für SMS oder WhatsApp",
         plusOnesLabel: "Erlaubte Begleitpersonen",
+        moreDetails: "Weitere Details (Gruppe, E-Mail, Telefon, Begleitpersonen)",
         addGuest: "Gast hinzufügen",
         adding: "Wird hinzugefügt...",
         duplicateConfirm: (name) => `„${name}" sieht aus wie ein Gast, den du bereits hinzugefügt hast. Trotzdem erneut hinzufügen?`,

@@ -98,8 +98,8 @@ export default function FontPicker({ value, onChange, locale }: FontPickerProps)
                     }}
                     className={
                       font.family === value
-                        ? "block w-full px-3 py-1.5 text-left text-sm bg-[var(--dash-accent)]/15 text-[var(--dash-accent)]"
-                        : "block w-full px-3 py-1.5 text-left text-sm text-[var(--dash-text)] hover:bg-white/5"
+                        ? "block w-full px-3 py-1.5 text-left text-sm bg-[var(--dash-accent)]/15 text-[var(--dash-accent-ink)]"
+                        : "block w-full px-3 py-1.5 text-left text-sm text-[var(--dash-text)] hover:bg-[var(--dash-hover-tint)]"
                     }
                   >
                     {font.family}

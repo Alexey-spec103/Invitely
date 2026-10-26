@@ -60,7 +60,16 @@ export default function AccountForm({ currentEmail }: AccountFormProps) {
           type="email"
           autoComplete="email"
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-          {...register("email")}
+          {...register("email", {
+            // `formError` (server/business-rule errors like "that's already
+            // your current email") was only ever cleared at the top of
+            // onSubmit -- which react-hook-form never calls once client-side
+            // zod validation starts failing first, so a stale formError kept
+            // stacking visibly above a fresh zod error instead of clearing.
+            // Clearing it on every keystroke keeps at most one error on
+            // screen at a time.
+            onChange: () => setFormError(null),
+          })}
         />
         {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
       </div>

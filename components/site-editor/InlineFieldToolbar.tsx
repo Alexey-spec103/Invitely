@@ -23,7 +23,7 @@ interface InlineFieldToolbarProps {
 const iconButtonClass =
   "flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-transparent text-[var(--dash-text)] hover:border-[var(--dash-border)] hover:bg-white/10";
 const iconButtonActiveClass =
-  "flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]";
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--dash-accent-text)] text-[var(--dash-accent-contrast)]";
 
 const ALIGN_OPTIONS = [
   { value: "left", Icon: AlignLeft },

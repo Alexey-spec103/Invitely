@@ -250,7 +250,7 @@ function ByodDomainForm({
 
   return (
     <div className="space-y-4 rounded-md border border-gray-200 bg-gray-50 p-4">
-      <p className="text-sm text-[var(--dash-text-muted)]">
+      <p className="text-sm text-gray-500">
         Point your own domain at this site. You&apos;ll still need to configure DNS with
         whichever host you deploy to - this only verifies ownership and routes matching
         requests once your domain is live.
@@ -258,20 +258,20 @@ function ByodDomainForm({
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3" noValidate>
         <div>
-          <label htmlFor="domain" className="block text-sm font-medium text-[var(--dash-text-muted)]">
+          <label htmlFor="domain" className="block text-sm font-medium text-gray-700">
             Domain
           </label>
           <input
             id="domain"
             type="text"
             placeholder="yoursite.com"
-            className="mt-1 dash-input-dark"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
             {...register("domain")}
           />
-          {errors.domain && <p className="mt-1 text-sm text-red-400">{errors.domain.message}</p>}
+          {errors.domain && <p className="mt-1 text-sm text-red-600">{errors.domain.message}</p>}
         </div>
 
-        {formError && <p className="text-sm text-red-400">{formError}</p>}
+        {formError && <p className="text-sm text-red-600">{formError}</p>}
 
         <button type="submit" disabled={isSubmitting} className="dash-btn dash-btn-primary">
           {isSubmitting ? "Saving..." : "Save & get verification instructions"}

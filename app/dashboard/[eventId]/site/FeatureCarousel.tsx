@@ -101,7 +101,7 @@ export default function FeatureCarousel({ locale = "en" }: FeatureCarouselProps)
             className="relative flex w-60 shrink-0 snap-start flex-col gap-3 rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4"
           >
             {feature.isNew && (
-              <span className="absolute right-3 top-3 rounded-full bg-[var(--dash-accent)] px-2 py-0.5 text-[11px] font-bold tracking-wide text-[var(--dash-accent-contrast)]">
+              <span className="absolute right-3 top-3 rounded-full bg-[var(--dash-accent-text)] px-2 py-0.5 text-[11px] font-bold tracking-wide text-[var(--dash-accent-contrast)]">
                 {t.newBadge}
               </span>
             )}

@@ -2100,7 +2100,7 @@ export default function SiteInlineEditor({
               aria-label={t.previewDesktop}
               className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
                 device === "desktop"
-                  ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]"
+                  ? "bg-[var(--dash-accent-text)] text-[var(--dash-accent-contrast)]"
                   : "text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
               }`}
             >
@@ -2113,7 +2113,7 @@ export default function SiteInlineEditor({
               aria-label={t.previewPhone}
               className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
                 device === "phone"
-                  ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]"
+                  ? "bg-[var(--dash-accent-text)] text-[var(--dash-accent-contrast)]"
                   : "text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
               }`}
             >
@@ -2126,7 +2126,7 @@ export default function SiteInlineEditor({
               aria-label={t.previewTablet}
               className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
                 device === "tablet"
-                  ? "bg-[var(--dash-accent)] text-[var(--dash-accent-contrast)]"
+                  ? "bg-[var(--dash-accent-text)] text-[var(--dash-accent-contrast)]"
                   : "text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
               }`}
             >

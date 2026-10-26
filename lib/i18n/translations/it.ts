@@ -512,6 +512,9 @@ export const it: Dictionary = {
       statusVerified: "Verificato",
       statusPending: "In attesa",
       tour: { skip: "Salta", back: "Indietro", next: "Avanti", gotIt: "Capito" },
+      replayTourButton: "Come funziona",
+      retry: "Riprova",
+      reloadPage: "Ricarica la pagina",
       moduleCard: {
         notSetYet: "Non ancora configurato",
         couldntSave: "Salvataggio non riuscito",
@@ -981,6 +984,7 @@ export const it: Dictionary = {
         undo: "Annulla",
         redo: "Ripristina",
         newTextDefault: "Nuovo testo",
+        elementDeletedToast: "Elemento eliminato",
         addElementModal: {
           heading: "Aggiungi elemento",
           close: "Chiudi",
@@ -1113,6 +1117,8 @@ export const it: Dictionary = {
       },
     },
     guests: {
+      listHeading: "Lista invitati",
+      rsvpSettingsHeading: "Notifiche RSVP",
       page: {
         title: "Invitati",
         subtitle: "Tieni traccia di tutte le persone che inviti.",
@@ -1123,6 +1129,7 @@ export const it: Dictionary = {
         seatingHeading: "Disposizione tavoli",
         seatingBodyOn: `Facoltativo - chi siede dove. È quello che alimenta la ricerca "Trova il mio tavolo" sul tuo sito.`,
         seatingBodyOff: `Facoltativo - pianifica chi siede dove quando vuoi. Attiva "Trova il mio tavolo" nei moduli del tuo sito per far cercare i posti direttamente agli invitati.`,
+        nav: { guests: "Invitati", rsvp: "RSVP", photos: "Foto", seating: "Disposizione tavoli" },
       },
       tour: {
         step1Title: "👋 Aggiungi i tuoi invitati",
@@ -1167,6 +1174,7 @@ export const it: Dictionary = {
         phoneLabel: "Telefono",
         phonePlaceholder: "Per SMS o WhatsApp",
         plusOnesLabel: "Accompagnatori consentiti",
+        moreDetails: "Altri dettagli (gruppo, email, telefono, accompagnatori)",
         addGuest: "Aggiungi invitato",
         adding: "Aggiunta in corso...",
         duplicateConfirm: (name) => `"${name}" sembra un invitato già aggiunto. Aggiungerlo comunque?`,
