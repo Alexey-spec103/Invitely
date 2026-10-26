@@ -880,7 +880,15 @@
   color: var(--theme-text);
   font-size: 0.7rem;
   text-align: center;
-  opacity: 0.55;
+  /* UX audit (2026-10-26): was opacity 0.55 -- measured live at 3.86:1
+     against --theme-bg on at least one theme (romantic-blush), below WCAG
+     AA's 4.5:1 for this size of text. --theme-text itself is tuned to be
+     readable at full opacity (it's the primary body-text color elsewhere
+     in every theme), so raising this toward 1 trades some of the muted/
+     secondary visual weight for contrast headroom across all 124 themes'
+     different color pairs, rather than tuning a flat opacity value against
+     just the one theme this was caught on. */
+  opacity: 0.8;
   padding: 0.5rem 0.6rem 0;
   background-color: var(--theme-bg);
 }

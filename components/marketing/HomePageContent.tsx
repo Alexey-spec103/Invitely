@@ -200,6 +200,7 @@ export async function HomePageContent({ locale }: { locale: Locale }) {
   // discounted, so a strikethrough price would be a fake one.
   const planBadges: Record<string, string> = {
     free: t.pricing.badgeFree,
+    basic: t.pricing.badgeBasic,
     premium: t.pricing.badgePremium,
   };
 

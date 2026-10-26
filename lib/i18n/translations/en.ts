@@ -280,6 +280,7 @@ export interface Dictionary {
       whatYouGet: string;
       whatThisAdds: string;
       badgeFree: string;
+      badgeBasic: string;
       badgePremium: string;
       /** Disclosed directly on the Free card -- Free really does publish a
        * live, working site (not a preview-only tier), so the honest fix is
@@ -1370,7 +1371,13 @@ export const en: Dictionary = {
     },
     statBar: { themes: "designer themes", fonts: "fonts in the constructor", modules: "site modules", oneLink: "link for everything" },
     platformFan: {
-      heading: "A wedding platform, not just an invitation",
+      // UX audit (2026-10-26): was "A wedding platform, not just an
+      // invitation" -- directly contradicted the eventTypes section
+      // immediately above it ("Every celebration gets its own site", 12
+      // event types shown), found live in a clarity critique. Generalized
+      // while keeping the "not just an invitation" structure that made the
+      // line work in the first place.
+      heading: "A full event platform, not just an invitation",
       subtext: "From your invitation website and guest messaging to a fully styled banquet - seating cards included.",
     },
     eventTypes: {
@@ -1506,6 +1513,12 @@ export const en: Dictionary = {
       whatYouGet: "What you get",
       whatThisAdds: "What this adds",
       badgeFree: "Always free",
+      // UX audit (2026-10-26): Basic had no badge at all, unlike Free and
+      // Premium -- a skimmer reading only badges got a clear reason to pick
+      // either of those and none for Basic. Custom domain is the one Basic
+      // feature Free lacks and Premium doesn't repeat as its own headline
+      // (Premium's badge is about the paper watermark specifically).
+      badgeBasic: "Your own domain",
       badgePremium: "Removes the watermark",
       freeCaveat: "Shows a repeating \"Invimbo\" watermark across your live site, plus a watermark on printed paper.",
       oneTime: "One-time, not a subscription",

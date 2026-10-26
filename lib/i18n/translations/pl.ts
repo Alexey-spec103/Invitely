@@ -158,7 +158,7 @@ export const pl: Dictionary = {
     },
     statBar: { themes: "motywów od projektantów", fonts: "czcionek w kreatorze", modules: "modułów strony", oneLink: "link do wszystkiego" },
     platformFan: {
-      heading: "Platforma ślubna, nie tylko zaproszenie",
+      heading: "Pełna platforma na Twoją uroczystość, nie tylko zaproszenie",
       subtext: "Od strony z zaproszeniem i komunikacji z gośćmi po w pełni zaprojektowane wesele - z kartami na stół włącznie.",
     },
     eventTypes: {
@@ -294,6 +294,7 @@ export const pl: Dictionary = {
       whatYouGet: "Co otrzymujesz",
       whatThisAdds: "Co to dodaje",
       badgeFree: "Zawsze za darmo",
+      badgeBasic: "Twoja własna domena",
       badgePremium: "Usuwa znak wodny",
       freeCaveat: "Na Twojej stronie na żywo pojawia się powtarzający się znak wodny „Invimbo”, a na wydrukach - znak wodny.",
       oneTime: "Płatność jednorazowa, nie subskrypcja",

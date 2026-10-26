@@ -148,7 +148,7 @@ export const es: Dictionary = {
     },
     statBar: { themes: "temas de diseñador", fonts: "fuentes en el constructor", modules: "módulos del sitio", oneLink: "enlace para todo" },
     platformFan: {
-      heading: "Una plataforma de boda, no solo una invitación",
+      heading: "Una plataforma completa para tu celebración, no solo una invitación",
       subtext: "Desde el sitio de invitación y la comunicación con tus invitados hasta un banquete totalmente diseñado - tarjetas de mesa incluidas.",
     },
     eventTypes: {
@@ -284,6 +284,7 @@ export const es: Dictionary = {
       whatYouGet: "Lo que obtienes",
       whatThisAdds: "Lo que añade",
       badgeFree: "Siempre gratis",
+      badgeBasic: "Tu propio dominio",
       badgePremium: "Elimina la marca de agua",
       freeCaveat: "Muestra una marca de agua repetida \"Invimbo\" en tu sitio en directo, y una marca de agua en el papel impreso.",
       oneTime: "Pago único, no es una suscripción",

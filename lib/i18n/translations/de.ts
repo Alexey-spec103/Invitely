@@ -148,7 +148,7 @@ export const de: Dictionary = {
     },
     statBar: { themes: "Designer-Themes", fonts: "Schriftarten im Baukasten", modules: "Website-Module", oneLink: "Link für alles" },
     platformFan: {
-      heading: "Eine Hochzeitsplattform, nicht nur eine Einladung",
+      heading: "Eine vollständige Plattform für deine Feier, nicht nur eine Einladung",
       subtext: "Von der Einladungs-Website und Gästekommunikation bis zum durchgestylten Bankett - Sitzkarten inklusive.",
     },
     eventTypes: {
@@ -284,6 +284,7 @@ export const de: Dictionary = {
       whatYouGet: "Was du bekommst",
       whatThisAdds: "Was das hinzufügt",
       badgeFree: "Immer kostenlos",
+      badgeBasic: "Deine eigene Domain",
       badgePremium: "Entfernt das Wasserzeichen",
       freeCaveat: "Zeigt ein sich wiederholendes „Invimbo“-Wasserzeichen auf deiner veröffentlichten Website, und ein Wasserzeichen auf gedrucktem Papier.",
       oneTime: "Einmalzahlung, kein Abo",

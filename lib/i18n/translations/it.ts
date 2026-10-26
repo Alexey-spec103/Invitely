@@ -148,7 +148,7 @@ export const it: Dictionary = {
     },
     statBar: { themes: "temi di design", fonts: "font nel costruttore", modules: "moduli del sito", oneLink: "link per tutto" },
     platformFan: {
-      heading: "Una piattaforma per il matrimonio, non solo un invito",
+      heading: "Una piattaforma completa per ogni evento, non solo un invito",
       subtext: "Dal sito di invito alla comunicazione con gli invitati, fino a un banchetto completamente curato - segnaposto inclusi.",
     },
     eventTypes: {
@@ -284,6 +284,7 @@ export const it: Dictionary = {
       whatYouGet: "Cosa ottieni",
       whatThisAdds: "Cosa aggiunge",
       badgeFree: "Sempre gratis",
+      badgeBasic: "Il tuo dominio personalizzato",
       badgePremium: "Rimuove la filigrana",
       freeCaveat: "Mostra una filigrana \"Invimbo\" ripetuta sul tuo sito pubblicato, e una filigrana sulla carta stampata.",
       oneTime: "Pagamento unico, non un abbonamento",
