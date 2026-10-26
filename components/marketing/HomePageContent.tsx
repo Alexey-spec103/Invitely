@@ -124,9 +124,21 @@ const planHighlights: Record<string, string[]> = Object.fromEntries(
  * way, just a different already-resolved `locale`. */
 export async function HomePageContent({ locale }: { locale: Locale }) {
   const supabase = await createClient();
+  // Performance audit (2026-10-26): `getUser()` revalidates the session
+  // against Supabase's Auth server on every call -- correct for anything
+  // that actually gates access, but this page only ever reads `user` to
+  // pick which CTA label/href to show. `getSession()` reads the (signed)
+  // JWT straight from the cookie, no network round-trip -- it's the thing
+  // that was blocking first byte on every anonymous visit to this public,
+  // SEO-critical page (measured live: ~1.2s TTFB on localhost with zero
+  // network latency, entirely this call). Worst case on a stale/tampered
+  // cookie is a logged-out visitor seeing "Go to dashboard" -- clicking it
+  // hits the dashboard's own real `requireRealUser()` gate and bounces to
+  // login, same as today. Zero security exposure for a cosmetic label.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   // 2026-10-16 performance audit: filtered here, before crossing the
   // Server->Client prop boundary -- see LandingThemeShowcase's own note on

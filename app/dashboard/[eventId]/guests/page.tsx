@@ -38,58 +38,52 @@ export default async function GuestsPage({ params }: PageProps<"/dashboard/[even
 
   const supabase = await createClient();
 
-  // Direct feedback: this column (20260930130000_rsvp_email_notifications_
-  // toggle.sql) may not exist yet in a database where that migration hasn't
-  // been applied by hand -- fetched in its own narrow query (never folded
-  // into lib/events.ts's shared EVENT_COLUMNS, see that file's own comment)
-  // so a not-yet-applied migration only reverts this one toggle to its
-  // default (notifications on) instead of breaking every page that loads
-  // this event.
-  // rsvp_digest_email/last_digest_sent_at (20261007130000_rsvp_digest_email.sql)
-  // have the same not-yet-applied-migration concern as rsvp_email_notifications
-  // above, so they ride the same narrow query and the same safe-default
-  // fallback (off, matching the column's own default).
-  const { data: notificationSettings } = await supabase
-    .from("events")
-    .select("rsvp_email_notifications, rsvp_digest_email")
-    .eq("id", event.id)
-    .maybeSingle();
+  // Performance audit (2026-10-26): these five reads are all independent --
+  // none depends on another's result, they only share `event.id` -- but ran
+  // strictly sequentially, five round trips before the page could render.
+  // Only `guest_attendees` below genuinely depends on another query's result
+  // (`guests`' own ids), so it's the one call that has to wait.
+  //
+  // Direct feedback: `rsvp_email_notifications`/`rsvp_digest_email`
+  // (20260930130000_rsvp_email_notifications_toggle.sql,
+  // 20261007130000_rsvp_digest_email.sql) may not exist yet in a database
+  // where those migrations haven't been applied by hand -- fetched in their
+  // own narrow query (never folded into lib/events.ts's shared
+  // EVENT_COLUMNS, see that file's own comment) so a not-yet-applied
+  // migration only reverts these two toggles to their defaults (notifications
+  // on, digest off) instead of breaking every page that loads this event.
+  const [notificationSettingsResult, guestsResult, rsvpResponsesResult, siteConfigResult, banquetTablesResult] =
+    await Promise.all([
+      supabase.from("events").select("rsvp_email_notifications, rsvp_digest_email").eq("id", event.id).maybeSingle(),
+      supabase.from("guests").select("*").eq("event_id", event.id).order("created_at"),
+      supabase.from("rsvp_responses").select("*").eq("event_id", event.id).order("submitted_at", { ascending: false }),
+      supabase
+        .from("site_config")
+        .select("theme_id, color_variant_id, content, sections")
+        .eq("event_id", event.id)
+        .maybeSingle(),
+      supabase.from("banquet_tables").select("*").eq("event_id", event.id).order("created_at"),
+    ]);
+  const notificationSettings = notificationSettingsResult.data;
   const rsvpEmailNotifications = notificationSettings?.rsvp_email_notifications ?? true;
   const rsvpDigestEmail = notificationSettings?.rsvp_digest_email ?? false;
 
-  const { data: guests } = await supabase
-    .from("guests")
-    .select("*")
-    .eq("event_id", event.id)
-    .order("created_at");
-
+  const guests = guestsResult.data;
   const guestIds = (guests ?? []).map((guest) => guest.id);
   const { data: attendees } =
     guestIds.length > 0
       ? await supabase.from("guest_attendees").select("*").in("guest_id", guestIds).order("created_at")
       : { data: [] as never[] };
 
-  const { data: rsvpResponses } = await supabase
-    .from("rsvp_responses")
-    .select("*")
-    .eq("event_id", event.id)
-    .order("submitted_at", { ascending: false });
+  const rsvpResponses = rsvpResponsesResult.data;
 
-  const { data: siteConfig } = await supabase
-    .from("site_config")
-    .select("theme_id, color_variant_id, content, sections")
-    .eq("event_id", event.id)
-    .maybeSingle();
+  const siteConfig = siteConfigResult.data;
   const content = siteConfig ? parseContent(siteConfig.content) : {};
   const banquetNavigatorEnabled =
     (siteConfig ? parseSections(siteConfig.sections) : []).find((section) => section.type === "banquetNavigator")
       ?.enabled ?? false;
 
-  const { data: banquetTables } = await supabase
-    .from("banquet_tables")
-    .select("*")
-    .eq("event_id", event.id)
-    .order("created_at");
+  const banquetTables = banquetTablesResult.data;
   const tableNameById = new Map((banquetTables ?? []).map((table) => [table.id, table.name]));
   const rsvpContent =
     typeof content.rsvp === "object" && content.rsvp !== null

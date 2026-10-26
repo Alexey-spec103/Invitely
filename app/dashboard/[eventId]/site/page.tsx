@@ -83,28 +83,37 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
     redirect("/dashboard");
   }
 
-  const locale = await resolveGuestLocale();
+  const supabase = await createClient();
+  // Performance audit (2026-10-26): these five independent reads -- none
+  // depends on another's result, all they share is `event.id`/`supabase`,
+  // already resolved above -- ran strictly sequentially (5 round trips
+  // before the page could render a single byte), the same "serial TTFB
+  // queries" class of bug the 2026-10-16 Core Web Vitals pass already fixed
+  // elsewhere in this codebase, just not here. `giftPreferences` and
+  // `guestbookRows` keep their original query text unchanged below; only
+  // *when* they fire moved, from deep in the middle of this function (after
+  // a few hundred lines of unrelated sync parsing) to right here, alongside
+  // the others.
+  const [locale, siteConfigResult, notificationSettingsResult, giftPreferencesResult, guestbookRowsResult] =
+    await Promise.all([
+      resolveGuestLocale(),
+      supabase.from("site_config").select("*").eq("event_id", event.id).maybeSingle(),
+      // Same not-yet-applied-migration guard as app/dashboard/[eventId]/guests/
+      // page.tsx's own identical query -- rsvp_email_notifications isn't in
+      // lib/events.ts's shared EVENT_COLUMNS for that reason, only needed
+      // here for the post-payment success card's one line of copy below.
+      supabase.from("events").select("rsvp_email_notifications").eq("id", event.id).maybeSingle(),
+      supabase.from("gift_preferences").select("*").eq("event_id", event.id).order("order_index"),
+      supabase.rpc("get_guestbook_messages", { p_event_id: event.id }),
+    ]);
   const dictionary = getDictionary(locale);
   const t = dictionary.dashboard.site;
   const dashboardCommon = dictionary.dashboard.common;
-
-  const supabase = await createClient();
-  const { data: siteConfig } = await supabase
-    .from("site_config")
-    .select("*")
-    .eq("event_id", event.id)
-    .maybeSingle();
-
-  // Same not-yet-applied-migration guard as app/dashboard/[eventId]/guests/
-  // page.tsx's own identical query -- rsvp_email_notifications isn't in
-  // lib/events.ts's shared EVENT_COLUMNS for that reason, only needed here
-  // for the post-payment success card's one line of copy below.
-  const { data: notificationSettings } = await supabase
-    .from("events")
-    .select("rsvp_email_notifications")
-    .eq("id", event.id)
-    .maybeSingle();
+  const { data: siteConfig } = siteConfigResult;
+  const { data: notificationSettings } = notificationSettingsResult;
   const rsvpEmailNotifications = notificationSettings?.rsvp_email_notifications ?? true;
+  const { data: giftPreferences } = giftPreferencesResult;
+  const { data: guestbookRows } = guestbookRowsResult;
 
   const heroSection = siteConfig
     ? parseSections(siteConfig.sections).find((section) => section.type === "hero")
@@ -310,11 +319,6 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
     styleOverrides: extractStyleOverrides(giftContent),
     hiddenFields: extractHiddenFields(giftContent),
   };
-  const { data: giftPreferences } = await supabase
-    .from("gift_preferences")
-    .select("*")
-    .eq("event_id", event.id)
-    .order("order_index");
 
   const dressCodeSection = siteConfig
     ? parseSections(siteConfig.sections).find((section) => section.type === "dressCode")
@@ -366,7 +370,6 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
     styleOverrides: extractStyleOverrides(guestbookContent),
     hiddenFields: extractHiddenFields(guestbookContent),
   };
-  const { data: guestbookRows } = await supabase.rpc("get_guestbook_messages", { p_event_id: event.id });
   const guestbookMessages = (guestbookRows ?? []).map((row) => ({
     guestName: row.guest_name,
     comment: row.comment,
