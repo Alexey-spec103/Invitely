@@ -49,6 +49,13 @@ const nextConfig: NextConfig = {
   // leaking on every response -- free fingerprinting for an attacker
   // picking which framework-specific exploits to try first, no upside.
   poweredByHeader: false,
+  // Next.js security-upgrade agent (2026-10-26): opts this app into
+  // Next.js's own security-advisory nudges on future `next build`/`next dev`
+  // runs, so the next published vulnerability surfaces the same guided
+  // upgrade flow instead of the opaque SecurityFatalError build gate.
+  experimental: {
+    agentUpgrade: "security",
+  },
   async headers() {
     return [
       {
