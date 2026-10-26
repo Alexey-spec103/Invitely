@@ -396,7 +396,16 @@ export default function SimpleForm({
             </button>
           </div>
         ) : (
-        <form className={styles.form} onSubmit={handleSubmit}>
+        /* UX audit (2026-10-26): the party-size input's `min={1}` native
+           HTML constraint was triggering the browser's own unstyled
+           validation tooltip on submit -- a jarringly different visual
+           language from this form's custom red-text error messages, one
+           field apart. The JS submit handler already clamps party size
+           safely (Math.max(1, ...)) regardless of what's typed, so native
+           validation was only ever getting in the way of the custom
+           handling that was already correct; `noValidate` makes the
+           custom error UI the single source of truth for every field. */
+        <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }} aria-hidden="true">
             <label htmlFor="rsvp-website">Website</label>
             <input
@@ -442,6 +451,7 @@ export default function SimpleForm({
               aria-labelledby="rsvp-attending-label"
               className={styles.attendingToggle}
               aria-describedby={error ? "rsvp-form-error" : undefined}
+              aria-invalid={error != null && attending === null ? true : undefined}
             >
               <button
                 type="button"

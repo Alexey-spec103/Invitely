@@ -23,6 +23,7 @@ export default function FontPicker({ value, onChange, locale }: FontPickerProps)
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -33,6 +34,20 @@ export default function FontPicker({ value, onChange, locale }: FontPickerProps)
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  // Accessibility audit: unlike AddElementModal (its own Escape-to-close
+  // sibling), this dropdown previously had no keyboard way to dismiss it
+  // without picking a font -- only an outside mousedown closed it.
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      triggerRef.current?.focus();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
   // Load stylesheets for whatever's currently visible in the list so the
@@ -63,9 +78,12 @@ export default function FontPicker({ value, onChange, locale }: FontPickerProps)
   return (
     <div ref={rootRef} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         style={{ fontFamily: value }}
+        aria-haspopup="listbox"
+        aria-expanded={open}
         className="min-w-[10rem] rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-left text-sm text-[var(--dash-text)]"
       >
         {value}

@@ -435,6 +435,12 @@ export interface Dictionary {
        * won't resolve differently no matter how many more times `retry`
        * re-invokes the same function; only a fresh page load clears it. */
       reloadPage: string;
+      /** Visually hidden until focused -- the dashboard shell's header (logo,
+       * event switcher, 4+ action buttons) and left nav sit before any page
+       * content in document order on every single dashboard page, so a
+       * keyboard user re-tabs through all of it on every navigation without
+       * this. */
+      skipToContent: string;
       moduleCard: {
         notSetYet: string;
         couldntSave: string;
@@ -1714,6 +1720,7 @@ export const en: Dictionary = {
       replayTourButton: "How this works",
       retry: "Retry",
       reloadPage: "Reload page",
+      skipToContent: "Skip to content",
       moduleCard: {
         notSetYet: "Not set yet",
         couldntSave: "Couldn't save",

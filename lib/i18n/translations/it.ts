@@ -515,6 +515,7 @@ export const it: Dictionary = {
       replayTourButton: "Come funziona",
       retry: "Riprova",
       reloadPage: "Ricarica la pagina",
+      skipToContent: "Vai al contenuto",
       moduleCard: {
         notSetYet: "Non ancora configurato",
         couldntSave: "Salvataggio non riuscito",

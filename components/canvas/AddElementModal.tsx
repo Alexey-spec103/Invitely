@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ImagePlus, QrCode, Type, Video, X } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
@@ -39,13 +39,40 @@ export default function AddElementModal({
   locale,
 }: AddElementModalProps) {
   const t = getDictionary(locale ?? "en").dashboard.paper.canvas.addElementModal;
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Accessibility audit: Escape already closed this, but it had no dialog
+  // role/aria-modal/aria-labelledby, no focus moved in on open, and no Tab
+  // trap -- a keyboard user could tab straight through into the canvas
+  // behind it. Mirrors the focus-trap pattern already shipped (and
+  // confirmed correct by that same audit) on Plan's anonymous-upgrade
+  // modal in PlanSelectForm.tsx.
   useEffect(() => {
     if (!open) return;
-    const handler = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+    closeButtonRef.current?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !modalRef.current) return;
+      const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+        'button:not(:disabled), [href], [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
   if (!open) return null;
@@ -57,10 +84,22 @@ export default function AddElementModal({
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-md rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-element-modal-title"
+        className="w-full max-w-md rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+      >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="dash-h2 text-base text-[var(--dash-accent-ink)]">{t.heading}</h2>
-          <button type="button" onClick={onClose} className="text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]" title={t.close}>
+          <h2 id="add-element-modal-title" className="dash-h2 text-base text-[var(--dash-accent-ink)]">{t.heading}</h2>
+          <button
+            ref={closeButtonRef}
+            type="button"
+            onClick={onClose}
+            className="text-[var(--dash-text-muted)] hover:text-[var(--dash-text)]"
+            title={t.close}
+          >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>

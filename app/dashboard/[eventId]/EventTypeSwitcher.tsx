@@ -174,7 +174,7 @@ export default function EventTypeSwitcher({ eventId, currentEventType, name1, na
                     type="text"
                     value={newName1}
                     onChange={(event) => setNewName1(event.target.value)}
-                    className="mt-1 w-full rounded-md border border-[var(--dash-border)] bg-[var(--dash-bg)] px-3 py-2 text-sm text-[var(--dash-text)] shadow-sm focus:border-[var(--dash-accent)] focus:outline-none"
+                    className="mt-1 w-full rounded-md border border-[var(--dash-border)] bg-[var(--dash-bg)] px-3 py-2 text-sm text-[var(--dash-text)] shadow-sm focus:border-[var(--dash-accent)]"
                   />
                   {/* This exact field is where the compounding-title bug
                       was first caught live -- carrying over a prior type's
@@ -201,7 +201,7 @@ export default function EventTypeSwitcher({ eventId, currentEventType, name1, na
                       type="text"
                       value={newName2}
                       onChange={(event) => setNewName2(event.target.value)}
-                      className="mt-1 w-full rounded-md border border-[var(--dash-border)] bg-[var(--dash-bg)] px-3 py-2 text-sm text-[var(--dash-text)] shadow-sm focus:border-[var(--dash-accent)] focus:outline-none"
+                      className="mt-1 w-full rounded-md border border-[var(--dash-border)] bg-[var(--dash-bg)] px-3 py-2 text-sm text-[var(--dash-text)] shadow-sm focus:border-[var(--dash-accent)]"
                     />
                   </div>
                 )}

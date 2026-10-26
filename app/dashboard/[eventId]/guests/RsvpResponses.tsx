@@ -137,6 +137,7 @@ export default function RsvpResponses({ eventId, responses, guests, questions, l
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder={t.searchPlaceholder}
+          aria-label={t.searchPlaceholder}
           className="dash-input mt-4 max-w-xs"
         />
       )}

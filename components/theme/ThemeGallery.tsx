@@ -865,6 +865,7 @@ export function ThemeGalleryCard({
       // interactive children (favorite heart, "Choose this style") keep
       // their own distinct accessible names regardless of this.
       aria-label={theme.name}
+      aria-pressed={selected}
       onPointerDownCapture={onCardPointerDownCapture}
       onClick={(event) => {
         const draggedFlag = justDraggedRef.current;

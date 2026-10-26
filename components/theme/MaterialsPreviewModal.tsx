@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import type { Theme } from "@/lib/themes";
 import { formatPreviewDate } from "@/lib/themes/previewMedia";
@@ -39,6 +39,40 @@ export default function MaterialsPreviewModal({
 }: MaterialsPreviewModalProps) {
   const t = getDictionary(locale ?? "en").dashboard.style.materialsPreview;
   const [tab, setTab] = useState<"invitations" | "banquet">("invitations");
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Accessibility audit: this modal had no dialog role/aria-modal/
+  // aria-labelledby, no Escape-to-close, and no focus management at all --
+  // the only exits were a mouse click on the overlay or tabbing to the "x"
+  // button. Mirrors the same trap pattern as AddElementModal/PlanSelectForm's
+  // anonymous-upgrade modal.
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !modalRef.current) return;
+      const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+        'button:not(:disabled), [href], [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   const names = name2 ? `${name1} & ${name2}` : name1;
   const initials = `${name1.charAt(0)}${(name2 ?? "").charAt(0)}`.toUpperCase();
   const dateLabel = eventDate
@@ -51,13 +85,20 @@ export default function MaterialsPreviewModal({
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(event) => event.stopPropagation()}>
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="materials-preview-modal-title"
+        className={styles.modal}
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className={styles.header}>
           <div>
             <p className={styles.eyebrow}>{t.eyebrow}</p>
-            <h2 className={styles.title}>{theme.name}</h2>
+            <h2 id="materials-preview-modal-title" className={styles.title}>{theme.name}</h2>
           </div>
-          <button type="button" onClick={onClose} className={styles.closeBtn} aria-label={t.close}>
+          <button ref={closeButtonRef} type="button" onClick={onClose} className={styles.closeBtn} aria-label={t.close}>
             ×
           </button>
         </div>

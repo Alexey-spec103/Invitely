@@ -161,6 +161,18 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
+  border-radius: 0.3rem;
+}
+
+/* UX audit (2026-10-26): the "please fill in your name and let us know if
+   you can make it" error only ever marked the name field visually -- a
+   guest who'd already typed their name saw no cue that this
+   accept/decline group was the actual blocker. Same red-outline treatment
+   as .input[aria-invalid="true"] above, padded out around both buttons
+   rather than on a single bordered element. */
+.attendingToggle[aria-invalid="true"] {
+  outline: 2px solid #dc2626;
+  outline-offset: 0.35rem;
 }
 
 .toggleButton,

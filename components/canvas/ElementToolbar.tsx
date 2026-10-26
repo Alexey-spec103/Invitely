@@ -133,6 +133,7 @@ export default function ElementToolbar({
                 min={0.5}
                 value={element.lineHeight}
                 onChange={(event) => onUpdate({ lineHeight: Number(event.target.value) || 1 }, "lineHeight")}
+                aria-label={t.lineHeight}
                 className="w-12 bg-transparent text-xs text-[var(--dash-text)] outline-none"
               />
             </label>
@@ -146,6 +147,7 @@ export default function ElementToolbar({
                 step={0.5}
                 value={element.letterSpacing}
                 onChange={(event) => onUpdate({ letterSpacing: Number(event.target.value) || 0 }, "letterSpacing")}
+                aria-label={t.letterSpacing}
                 className="w-12 bg-transparent text-xs text-[var(--dash-text)] outline-none"
               />
             </label>
@@ -160,6 +162,7 @@ export default function ElementToolbar({
             onChange={(event) => onUpdate({ source: event.target.value as "inviteLink" | "siteLink" })}
             className="rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-xs text-[var(--dash-text)]"
             title={t.qrLinksTo}
+            aria-label={t.qrLinksTo}
           >
             <option value="siteLink">{t.qrSiteLink}</option>
             <option value="inviteLink">{t.qrGuestLink}</option>
@@ -169,6 +172,7 @@ export default function ElementToolbar({
             value={element.caption ?? ""}
             onChange={(event) => onUpdate({ caption: event.target.value || undefined }, "qrCaption")}
             placeholder={t.qrCaptionPlaceholder}
+            aria-label={t.qrCaptionPlaceholder}
             className="w-36 rounded-md border border-[var(--dash-border)] bg-[var(--dash-surface-2)] px-2 py-1.5 text-xs text-[var(--dash-text)] placeholder:text-[var(--dash-text-muted)]"
           />
         </div>
@@ -187,6 +191,7 @@ export default function ElementToolbar({
             max={3}
             value={element.animationDuration ?? 0}
             onChange={(event) => onUpdate({ animationDuration: Number(event.target.value) || undefined }, "animationDuration")}
+            aria-label={t.animationDuration}
             className="w-10 bg-transparent text-xs text-[var(--dash-text)] outline-none"
           />
           s

@@ -105,6 +105,7 @@ export default function TableCard({ table, seatedGuests, unassignedGuests, local
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 autoFocus
+                aria-label={t.tableNameLabel}
                 className="dash-input max-w-[10rem]"
               />
               <input

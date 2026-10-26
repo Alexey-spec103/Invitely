@@ -593,11 +593,21 @@ export default function CanvasFrameEditor({
           x: selectedElement.x + direction[0] * step,
           y: selectedElement.y + direction[1] * step,
         });
+        return;
+      }
+      // Accessibility audit: entering text-edit mode previously had no
+      // keyboard path at all -- `editingId` was only ever set from
+      // onDoubleClick below. A keyboard-only host could select a text
+      // element (via the Layers panel) and nudge/delete/restyle it, but
+      // never type new words into it.
+      if (event.key === "Enter" && selectedId && selectedElement?.type === "text" && editingId !== selectedId) {
+        event.preventDefault();
+        setEditingId(selectedId);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [selectedId, selectedElement, deleteSelected, updateElement, canUndo, canRedo, onUndo, onRedo]);
+  }, [selectedId, selectedElement, editingId, deleteSelected, updateElement, canUndo, canRedo, onUndo, onRedo]);
 
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden">

@@ -490,6 +490,21 @@ body {
   outline-offset: 2px;
 }
 
+/* Accessibility audit: the dashboard/product shell had no focus-visible rule
+   of its own -- elements either fell back to the browser's native ring
+   (measured live at ~1.5:1 against both white and dark cabinet surfaces,
+   well under the 3:1 minimum for a non-text UI indicator) or explicitly
+   suppressed it (EventSwitcher's `focus:outline-none`, .dash-input's
+   underline-only focus style at 2.82:1). --dash-accent-text is already the
+   higher-contrast variant used for body text/icons on light surfaces
+   (5.57:1 on white, per the existing accent-button contrast fixes) and
+   measures well above 3:1 on the dark constructor surfaces too -- one ring
+   color that works on every cabinet page without a light/dark branch. */
+.dashboard-shell *:focus-visible {
+  outline: 2px solid var(--dash-accent-text);
+  outline-offset: 2px;
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

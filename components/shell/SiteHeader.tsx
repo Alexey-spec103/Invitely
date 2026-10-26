@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Share2 } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
 import LanguageSwitcher from "@/components/site/LanguageSwitcher";
@@ -154,6 +155,35 @@ export default function SiteHeader({
           </span>
         </button>
 
+        {/* UX audit (2026-10-26): this used to render after .actions
+            (language/music/share/calendar), so opening the menu and
+            pressing Tab skipped past all four of those before ever
+            reaching the just-opened menu's own links -- reachable, not a
+            trap, but a confusing focus-order surprise right after the
+            action that opened it. `.menu` is `position: absolute`
+            (confirmed in SiteHeader.module.css), so moving it here only
+            changes tab order, not where it visually renders. */}
+        {menuOpen && (
+          <nav id="site-header-menu" className={styles.menu}>
+            {sections.map((section) => {
+              const Icon = SECTION_ICONS[section.type as SectionType];
+              return (
+                <a
+                  key={section.type}
+                  href={`#section-${section.type}`}
+                  className={styles.menuLink}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <span className={styles.menuLinkIcon} aria-hidden="true">
+                    {Icon ? <Icon size={16} strokeWidth={2} /> : null}
+                  </span>
+                  {section.label}
+                </a>
+              );
+            })}
+          </nav>
+        )}
+
         <div className={styles.actions}>
           <LanguageSwitcher
             currentLocale={locale}
@@ -178,7 +208,16 @@ export default function SiteHeader({
               aria-label={dict.siteHeader.share}
               aria-expanded={shareOpen}
             >
-              ⤴
+              {/* UX audit (2026-10-26): this was a bare Unicode arrow
+                  character (U+2934) -- the exact same "renders differently
+                  per OS / inherits whatever font is active" problem this
+                  file's own top comment already called out for emoji, just
+                  missed for a plain symbol. Confirmed live: rendered as an
+                  unrecognizable glyph against this page's cursive/script
+                  fonts. A real Lucide icon, matching every other icon in
+                  this header/the SECTION_ICONS map, renders identically
+                  everywhere. */}
+              <Share2 className={styles.shareIcon} aria-hidden="true" />
             </button>
             {shareOpen && (
               <div className={styles.sharePanel}>
@@ -215,27 +254,6 @@ export default function SiteHeader({
           </a>
         </div>
       </div>
-
-      {menuOpen && (
-        <nav id="site-header-menu" className={styles.menu}>
-          {sections.map((section) => {
-            const Icon = SECTION_ICONS[section.type as SectionType];
-            return (
-              <a
-                key={section.type}
-                href={`#section-${section.type}`}
-                className={styles.menuLink}
-                onClick={() => setMenuOpen(false)}
-              >
-                <span className={styles.menuLinkIcon} aria-hidden="true">
-                  {Icon ? <Icon size={16} strokeWidth={2} /> : null}
-                </span>
-                {section.label}
-              </a>
-            );
-          })}
-        </nav>
-      )}
 
       {musicUrl && <audio ref={audioRef} src={musicUrl} loop />}
     </header>

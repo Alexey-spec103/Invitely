@@ -534,6 +534,7 @@ export const ru: Dictionary = {
       replayTourButton: "Как это работает",
       retry: "Повторить",
       reloadPage: "Обновить страницу",
+      skipToContent: "Перейти к содержимому",
       moduleCard: {
         notSetYet: "Пока не настроено",
         couldntSave: "Не удалось сохранить",

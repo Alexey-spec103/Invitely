@@ -70,6 +70,7 @@ export default function InlineFieldToolbar({
           value={override?.fontSize ?? ""}
           placeholder="Auto"
           onChange={(event) => onUpdate({ fontSize: event.target.value ? Number(event.target.value) : undefined })}
+          aria-label="Font size (px)"
           className="w-12 bg-transparent py-1.5 text-sm text-[var(--dash-text)] outline-none"
         />
         <span aria-hidden="true" className="text-xs text-[var(--dash-text-muted)]">
@@ -82,6 +83,7 @@ export default function InlineFieldToolbar({
         onChange={(event) => onUpdate({ color: event.target.value })}
         className="h-7 w-8 rounded border border-[var(--dash-border)]"
         title="Color"
+        aria-label="Color"
       />
       <button
         type="button"

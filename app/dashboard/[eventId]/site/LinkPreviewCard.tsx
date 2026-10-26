@@ -69,7 +69,7 @@ export default function LinkPreviewCard({
           <div className="aspect-[1.91/1] w-full bg-black/10">
             {previewImage ? (
               // eslint-disable-next-line @next/next/no-img-element -- small dashboard mockup, not a public-site asset
-              <img src={previewImage} alt="" className="h-full w-full object-cover" />
+              <img src={previewImage} alt="Your link preview image" className="h-full w-full object-cover" />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-xs text-[var(--dash-text-muted)]">
                 No photo yet

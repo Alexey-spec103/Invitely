@@ -86,6 +86,7 @@ export default function RsvpNotificationToggle({ eventId, enabled, digestEnabled
             checked={checked}
             disabled={pending}
             onChange={(event) => handleChange(event.target.checked)}
+            aria-label={t.emailMeTitle}
             className="h-4 w-4 rounded border-gray-300"
           />
         </label>
@@ -104,6 +105,7 @@ export default function RsvpNotificationToggle({ eventId, enabled, digestEnabled
             checked={digestChecked}
             disabled={digestPending}
             onChange={(event) => handleDigestChange(event.target.checked)}
+            aria-label={t.dailyTitle}
             className="h-4 w-4 rounded border-gray-300"
           />
         </label>

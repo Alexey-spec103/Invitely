@@ -380,7 +380,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             finds an endpoint to report to, same "safe to leave in" shape
             as the Sentry configs above. */}
         <Analytics />
-        {CLARITY_PROJECT_ID && (
+        {/* Performance investigation (2026-10-26): unlike Vercel Analytics
+            above, this project id is a manually-set NEXT_PUBLIC_* value
+            that's also present in .env.local -- Clarity was recording every
+            local `next dev` session (including Turbopack's own unminified,
+            HMR-instrumented, automated-browser-testing traffic) into the
+            exact same project as real production visitors. Confirmed live:
+            Clarity's "Top pages" report showed both `localhost` dev URLs
+            and `www.invimbo.com` URLs mixed in the same dataset. Dev-mode
+            is inherently much slower than a production build, so this was
+            very likely inflating the aggregate INP/performance numbers far
+            past what real visitors experience -- gated to production only. */}
+        {CLARITY_PROJECT_ID && process.env.NODE_ENV === "production" && (
           <Script id="clarity-analytics" strategy="afterInteractive">
             {`(function(c,l,a,r,i,t,y){
                 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};

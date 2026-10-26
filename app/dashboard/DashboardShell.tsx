@@ -170,6 +170,17 @@ export default function DashboardShell({
 
   return (
     <div className="dashboard-shell min-h-screen bg-[var(--dash-light-bg)] text-neutral-900">
+      {/* Accessibility audit: every dashboard page's header (logo, event
+          switcher, 4+ action buttons) and left nav sit before page content
+          in document order -- without this, a keyboard user re-tabs through
+          all of it on every single navigation. Visually hidden until
+          focused, matching the standard "skip link" pattern. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-[var(--dash-accent-text)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+      >
+        {getDictionary(locale).dashboard.common.skipToContent}
+      </a>
       {/* Direct feedback: "Get your link" (PlanBadge, on Free) needs to stay
           reachable the whole time a host is scrolled deep into a long
           constructor page, not just at the very top -- sticky, not just
@@ -230,7 +241,7 @@ export default function DashboardShell({
 
       <div className="flex flex-col sm:flex-row">
         <DashboardNav eventId={navEventId} locale={locale} />
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-10 sm:py-10">
+        <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 px-4 py-6 sm:px-10 sm:py-10">
           {children}
           <FunnelNav eventId={navEventId} locale={locale} />
         </main>
