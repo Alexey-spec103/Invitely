@@ -90,10 +90,12 @@ export default function SignupForm() {
             type="email"
             autoComplete="email"
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+            aria-invalid={errors.email ? true : undefined}
+            aria-describedby={errors.email ? "email-error" : undefined}
             {...register("email")}
           />
           {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            <p id="email-error" role="alert" className="mt-1 text-sm text-red-600">{errors.email.message}</p>
           )}
         </div>
 
@@ -106,10 +108,12 @@ export default function SignupForm() {
             type="password"
             autoComplete="new-password"
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+            aria-invalid={errors.password ? true : undefined}
+            aria-describedby={errors.password ? "password-error" : undefined}
             {...register("password")}
           />
           {errors.password && (
-            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            <p id="password-error" role="alert" className="mt-1 text-sm text-red-600">{errors.password.message}</p>
           )}
         </div>
 
@@ -122,21 +126,28 @@ export default function SignupForm() {
             type="password"
             autoComplete="new-password"
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+            aria-invalid={errors.confirmPassword ? true : undefined}
+            aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+            <p id="confirmPassword-error" role="alert" className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
           )}
         </div>
 
         {formError && (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
+          <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
         )}
 
+        {/* UX audit (2026-10-26): no custom focus-visible style here --
+            fell back to the browser's default outline, measured live at
+            1.55:1 contrast against the white page, well under the 3:1
+            WCAG minimum for a focus indicator. gray-900 (this button's own
+            background) gives strong contrast against white either way. */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? "Signing up..." : "Sign up"}
         </button>

@@ -23,6 +23,10 @@ export default function MinimalList({ title, venues, styleOverrides, locale }: M
             <EditableText field="title" value={title} style={styleOverrides?.["title"]} />
           </h2>
         )}
+        {/* UX audit (2026-10-26): same gap as MapSection/EmbedStatic.tsx --
+            a host who enables Location before adding any venue previously
+            shipped guests a visually empty section. */}
+        {(venues ?? []).length === 0 && !editable && <p className={styles.venueAddress}>{t.noVenuesYet}</p>}
         {(venues ?? []).map((venue, index) => {
           const src = mapEmbedSrc(venue);
 

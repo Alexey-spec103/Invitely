@@ -111,7 +111,16 @@ export default function PlatformFanSection({ locale }: { locale: Locale }) {
           <div className={styles.phoneBezel}>
             <span className={styles.phoneNotch} aria-hidden="true" />
             <div className={styles.phoneScreen}>
-              <div className={styles.phoneScaleWrap} style={{ "--section-min-height": "812px" } as React.CSSProperties}>
+              {/* UX audit (2026-10-26): decorative phone mockup rendering a
+                  real HeroSection (own real <h1>) -- same aria-hidden
+                  treatment as HeroPhoneShowcase.tsx/ThemeGallery.tsx's own
+                  repeated Hero previews; this one broke the marketing
+                  homepage's heading hierarchy the same way. */}
+              <div
+                className={styles.phoneScaleWrap}
+                style={{ "--section-min-height": "812px" } as React.CSSProperties}
+                aria-hidden="true"
+              >
                 <div className={styles.phoneScaleInner}>
                   <ThemeProvider theme={theme}>
                     <HeroSection

@@ -151,7 +151,21 @@ export default function HeroPhoneShowcase({ locale }: { locale: Locale }) {
                 <span className={styles.urlDot} aria-hidden="true" />
                 <span className={styles.urlText}>yourname.com</span>
               </div>
-              <div className={styles.screenScaleWrap} style={{ "--section-min-height": "812px" } as React.CSSProperties}>
+              {/* UX audit (2026-10-26): this renders a real HeroSection/
+                  LetterSection/TimelineSection, each with its own real
+                  heading -- correct on an actual guest site, but here it's
+                  a decorative, auto-cycling phone mockup. Confirmed live:
+                  shipped an extra, un-announced <h1> on the marketing
+                  homepage, breaking its heading hierarchy (h1 -> h3 with
+                  no h2). Same aria-hidden treatment ThemeGallery.tsx
+                  already gives its own repeated Hero/Letter/Timeline
+                  preview mockups -- this mockup's real accessible content
+                  is the topCaption/bottomCaption text around it. */}
+              <div
+                className={styles.screenScaleWrap}
+                style={{ "--section-min-height": "812px" } as React.CSSProperties}
+                aria-hidden="true"
+              >
                 {SHOWCASE_FRAMES.map(({ themeId, section, variant, frameClass }) => {
                   const theme = getTheme(themeId);
                   const targetDate = previewTargetDateFor(theme.id, theme.season);

@@ -102,6 +102,7 @@ export const pl: Dictionary = {
   map: {
     mapTitle: (venueName) => `Mapa: ${venueName}`,
     mapPlaceholder: "Dodaj adres, aby zobaczyć podgląd mapy",
+    noVenuesYet: "Szczegóły miejsca pojawią się wkrótce.",
   },
   guestPhotos: {
     heading: "Dodaj swoje zdjęcia",
@@ -202,7 +203,7 @@ export const pl: Dictionary = {
         {
           title: "Wybierz swój styl",
           bullets: [
-            "Wybierz spośród 100 motywów od projektantów lub zacznij od pustej kartki",
+            "Wybierz spośród dziesiątek motywów od projektantów lub zacznij od pustej kartki",
             "Każdy motyw jest już w pełni dopasowany kolorystycznie, gotowy do użycia",
             "Zmieniaj styl w dowolnym momencie - twoja treść zostaje zachowana",
           ],
@@ -264,6 +265,7 @@ export const pl: Dictionary = {
       heading: "Wybierz swój styl",
       subtext:
         "Ten sam motyw przenosi się na twoją stronę, zaproszenia papierowe i karty bankietowe - albo pomiń to całkowicie i projektuj od zera w kreatorze.",
+      seeMoreStyles: (count) => `Zobacz ${count}+ więcej stylów →`,
     },
     whatsIncluded: {
       heading: "Co jest w zestawie",

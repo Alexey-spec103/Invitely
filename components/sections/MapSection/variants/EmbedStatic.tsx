@@ -31,6 +31,12 @@ export default function EmbedStatic({ title, venues, styleOverrides, locale }: M
             <span className={`${styles.titleFlourish} ${styles.titleFlourishRight}`} aria-hidden="true" />
           </div>
         )}
+        {/* UX audit (2026-10-26): a host who enables Location before adding
+            any venue previously shipped guests a visually empty section --
+            no map, no address, no message, indistinguishable from a bug.
+            The editable dashboard view already prompts the host to add a
+            venue elsewhere, so this fallback only needs to cover guests. */}
+        {(venues ?? []).length === 0 && !editable && <p className={styles.venueAddress}>{t.noVenuesYet}</p>}
         {(venues ?? []).map((venue, index) => {
           const src = mapEmbedSrc(venue);
 

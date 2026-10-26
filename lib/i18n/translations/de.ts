@@ -91,6 +91,7 @@ export const de: Dictionary = {
   map: {
     mapTitle: (venueName) => `Karte: ${venueName}`,
     mapPlaceholder: "Adresse hinzufügen, um die Karte anzuzeigen",
+    noVenuesYet: "Veranstaltungsort folgt in Kürze.",
   },
   guestPhotos: {
     heading: "Füge deine Fotos hinzu",
@@ -192,7 +193,7 @@ export const de: Dictionary = {
         {
           title: "Wähle deinen Stil",
           bullets: [
-            "Wähle aus 100 Designer-Themes oder starte mit einer leeren Fläche",
+            "Wähle aus Dutzenden Designer-Themes oder starte mit einer leeren Fläche",
             "Jedes Theme ist bereits vollständig farblich abgestimmt, sofort einsatzbereit",
             "Wechsle jederzeit den Stil - dein Inhalt bleibt erhalten",
           ],
@@ -254,6 +255,7 @@ export const de: Dictionary = {
       heading: "Wähle deinen Stil",
       subtext:
         "Das gleiche Theme zieht sich durch deine Website, Papiereinladungen und Bankett-Karten - oder überspringe es ganz und gestalte von Grund auf im Baukasten.",
+      seeMoreStyles: (count) => `${count}+ weitere Stile ansehen →`,
     },
     whatsIncluded: {
       heading: "Das ist alles enthalten",

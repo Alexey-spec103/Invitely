@@ -279,7 +279,15 @@ export async function HomePageContent({ locale }: { locale: Locale }) {
         </header>
       </div>
 
-      <section id="main-content" className="relative isolate overflow-hidden bg-gradient-to-b from-orange-50 via-orange-50 to-white">
+      {/* UX audit (2026-10-26): every section from the hero through the
+          final CTA sat directly under the page root with no <main>
+          landmark anywhere -- confirmed live, a real gap for screen-reader
+          users jumping by landmark. `id="main-content"` (the skip-link
+          target) stays on the hero section just inside this wrapper,
+          `tabIndex={-1}` lets the skip link actually move programmatic
+          focus there instead of only scrolling. */}
+      <main>
+      <section id="main-content" tabIndex={-1} className="relative isolate overflow-hidden bg-gradient-to-b from-orange-50 via-orange-50 to-white">
         {/* Round 5: replaces round 4's side-by-side phone+video card
             entirely -- direct feedback: "что если видео как-то сделать на
             заднем фоне полностью вообще? чтобы это было мило, не мешало
@@ -454,7 +462,7 @@ export async function HomePageContent({ locale }: { locale: Locale }) {
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-stone-600">{t.themesSection.subtext}</p>
           <div className="mt-16">
-            <LandingThemeShowcase themes={showcaseThemes} />
+            <LandingThemeShowcase themes={showcaseThemes} remainingCount={themeCount - showcaseThemes.length} locale={locale} />
           </div>
         </div>
       </section>
@@ -644,8 +652,17 @@ export async function HomePageContent({ locale }: { locale: Locale }) {
               video card applies here too: needs to read as a real,
               phone/tablet-scale showcase item, not a small accent. */}
           <div className="mx-auto w-52 shrink-0 -rotate-3 overflow-hidden rounded-2xl shadow-[0_24px_50px_-20px_rgba(60,40,20,0.35)] ring-4 ring-white sm:w-72">
+            {/* UX audit (2026-10-26): this instance had no `poster` -- fine
+                for LCP (it's ~11,400px down the page, not above the fold),
+                but for a prefers-reduced-motion visitor (who never calls
+                .play()) or anyone whose autoplay gets blocked, `preload=
+                "metadata"` alone doesn't reliably paint a visible first
+                frame. Without a poster this card could render as a blank
+                rectangle right next to the page's final CTA -- the last
+                thing a hesitant visitor sees before deciding. */}
             <AmbientVideoGlow
               src="/marketing/hero-video/details-garden-vertical.mp4"
+              poster="/marketing/hero-video/details-garden-vertical-poster.jpg"
               className="aspect-[9/16] w-full object-cover saturate-[1.1]"
             />
           </div>
@@ -664,6 +681,8 @@ export async function HomePageContent({ locale }: { locale: Locale }) {
           and legal-doc links the audit's own "what to do" asks for. bg-stone-900
           reuses the one dark accent already used elsewhere (error/not-found
           pages) instead of introducing a new color. */}
+      </main>
+
       <footer className="bg-stone-900 py-16 text-stone-300">
         <div className="mx-auto max-w-5xl px-6">
           <div className="grid gap-10 sm:grid-cols-3">

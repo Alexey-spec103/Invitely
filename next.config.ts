@@ -7,7 +7,15 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 // actual call site to tell a real browser-loaded resource apart from a
 // server-side fetch (irrelevant to CSP) or a plain <a href> (also
 // irrelevant -- CSP doesn't restrict ordinary navigation):
-//   - script-src: Microsoft Clarity's analytics tag (app/layout.tsx)
+//   - script-src: Microsoft Clarity's analytics tag (app/layout.tsx) and
+//     Vercel Web Analytics' <Analytics /> component (same file) -- the
+//     latter was a real gap in this "actual inventory" (not a guess):
+//     confirmed live via the CSP report-only endpoint firing repeatedly on
+//     every homepage load because va.vercel-scripts.com/v1/script.debug.js
+//     wasn't allowlisted. Report-only mode means this was silent so far,
+//     but would break Analytics outright the moment this policy is ever
+//     flipped to enforcing. Its own beacon (`/_vercel/insights/view`) is
+//     same-origin (Next proxies it), so no separate connect-src entry.
 //   - frame-src: Google Maps embed (MapSection), YouTube/Vimeo embeds
 //     (VideoSection) -- the only three iframe sources in the app
 //   - img-src: Unsplash (theme preview photos), *.supabase.co (guest/host-
@@ -27,7 +35,7 @@ const CSP_DIRECTIVES = [
   // remove the need for this, but that's a real application change of its
   // own -- a separate, deliberate upgrade, not bundled into establishing
   // this first baseline.
-  "script-src 'self' 'unsafe-inline' https://www.clarity.ms",
+  "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://va.vercel-scripts.com",
   // 'unsafe-inline': this codebase uses React inline `style={{...}}`
   // extensively (CSS custom properties like --stagger-i driving animation
   // delays, among many other spots) -- those compile to real inline

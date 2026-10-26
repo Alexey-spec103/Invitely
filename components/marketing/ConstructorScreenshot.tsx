@@ -46,11 +46,21 @@ export default function ConstructorScreenshot() {
     </ThemeProvider>
   );
 
+  // UX audit (2026-10-26): both scale-wraps below render a real HeroSection
+  // (own real <h1>) as a decorative laptop/phone mockup pair -- two extra,
+  // un-announced <h1>s on the marketing homepage from this one component
+  // alone. Same aria-hidden treatment as every other decorative Hero
+  // mockup in this codebase (ThemeGallery.tsx, HeroPhoneShowcase.tsx,
+  // PlatformFanSection.tsx).
   return (
     <div className={styles.wrap}>
       <div className={styles.laptop}>
         <div className={styles.laptopScreen}>
-          <div className={styles.laptopScaleWrap} style={{ "--section-min-height": "812px" } as React.CSSProperties}>
+          <div
+            className={styles.laptopScaleWrap}
+            style={{ "--section-min-height": "812px" } as React.CSSProperties}
+            aria-hidden="true"
+          >
             <div className={styles.laptopScaleInner}>{heroContent}</div>
           </div>
         </div>
@@ -61,7 +71,11 @@ export default function ConstructorScreenshot() {
         <div className={styles.phoneBezel}>
           <span className={styles.phoneNotch} aria-hidden="true" />
           <div className={styles.phoneScreen}>
-            <div className={styles.phoneScaleWrap} style={{ "--section-min-height": "812px" } as React.CSSProperties}>
+            <div
+              className={styles.phoneScaleWrap}
+              style={{ "--section-min-height": "812px" } as React.CSSProperties}
+              aria-hidden="true"
+            >
               <div className={styles.phoneScaleInner}>{heroContent}</div>
             </div>
           </div>

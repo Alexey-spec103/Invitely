@@ -171,6 +171,13 @@ export interface Dictionary {
      * empty/placeholder query to Google's embed API resolves to a globe-wide
      * zoomed-out view, not a 404 -- see mapEmbedSrc's own comment). */
     mapPlaceholder: string;
+    /** UX audit (2026-10-26): a host who enables Location before adding any
+     * venue previously shipped guests a completely empty section -- no map,
+     * no address, no message, visually indistinguishable from a bug. Shown
+     * only in guest (non-editable) view when the venues list is empty; the
+     * editable dashboard view already has its own "add a venue" affordance
+     * so doesn't need this. */
+    noVenuesYet: string;
   };
   /** The guest-facing shared photo album at /e/[slug]/photos -- no login, a
    * guest scans the host's QR code and adds their own event photos. */
@@ -249,7 +256,18 @@ export interface Dictionary {
       website: { title: string; subtext: string; bullets: string[] };
       paper: { title: string; subtext: string; bullets: string[] };
     };
-    themesSection: { heading: string; subtext: string };
+    themesSection: {
+      heading: string;
+      subtext: string;
+      /** UX audit (2026-10-26): was a hardcoded "100+" on the showcase's
+       * final tile overlay, stale against the real, dynamic theme count
+       * (124 and growing) shown correctly two screens earlier in the hero
+       * checklist/stat bar -- a visitor who notices both numbers reads it
+       * as sloppy. `count` is the REMAINING theme count not already shown
+       * in the showcase (total minus the showcase tiles), not the total
+       * itself. */
+      seeMoreStyles: (count: number) => string;
+    };
     whatsIncluded: {
       heading: string;
       subtext: string;
@@ -1284,6 +1302,7 @@ export const en: Dictionary = {
   map: {
     mapTitle: (venueName) => `Map: ${venueName}`,
     mapPlaceholder: "Add an address to preview the map",
+    noVenuesYet: "Venue details coming soon.",
   },
   guestPhotos: {
     heading: "Add your photos",
@@ -1396,7 +1415,7 @@ export const en: Dictionary = {
         {
           title: "Choose your style",
           bullets: [
-            "Pick from 100 designer themes, or start from a blank canvas",
+            "Pick from dozens of designer themes, or start from a blank canvas",
             "Every theme comes fully color-coordinated, ready to use",
             "Switch styles any time - your content carries over",
           ],
@@ -1458,6 +1477,7 @@ export const en: Dictionary = {
       heading: "Choose your style",
       subtext:
         "The same theme carries through your site, paper invitations, and banquet cards - or skip it entirely and design from scratch in the constructor.",
+      seeMoreStyles: (count) => `See ${count}+ more styles →`,
     },
     whatsIncluded: {
       heading: "What's included",

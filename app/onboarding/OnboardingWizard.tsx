@@ -535,7 +535,20 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                   className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                   aria-invalid={attemptedSteps.has(step) && errors.eventDate ? true : undefined}
                   aria-describedby={attemptedSteps.has(step) && errors.eventDate ? "eventDate-error" : undefined}
-                  {...register("eventDate")}
+                  {...register("eventDate", {
+                    // UX audit (2026-10-26): confirmed live, reproduced 3x --
+                    // a valid date typed in after the "Enter a date" error
+                    // showed never cleared it, even though the field's own
+                    // watched value (and the live preview) updated
+                    // correctly. name1/name2 (plain text inputs) clear
+                    // their own errors fine via RHF's default
+                    // reValidateMode -- a native `type="date"` input's
+                    // onChange/value-commit timing is the one thing that
+                    // differs here. Forcing an explicit re-validation on
+                    // every change sidesteps whatever that native quirk is,
+                    // rather than depending on it.
+                    onChange: () => trigger("eventDate"),
+                  })}
                 />
                 {attemptedSteps.has(step) && errors.eventDate && (
                   <p id="eventDate-error" role="alert" className="mt-1 text-sm text-red-600">{errors.eventDate.message}</p>

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ThemeGalleryCard } from "@/components/theme/ThemeGallery";
 import type { Theme } from "@/lib/themes";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 import styles from "./LandingThemeShowcase.module.css";
 
 interface LandingThemeShowcaseProps {
@@ -23,6 +25,18 @@ interface LandingThemeShowcaseProps {
    * "SHOWCASE_THEME_IDS.map is not a function" at runtime despite
    * type-checking cleanly). */
   themes: Theme[];
+  /** Total theme count minus however many are already shown in this
+   * showcase -- UX audit (2026-10-26): the "see more styles" overlay used
+   * to hardcode "100+", stale against the real count and never passed
+   * through `seeMoreStyles`. */
+  remainingCount: number;
+  /** UX audit (2026-10-26): this component never received `locale` at all,
+   * so `ThemeGalleryCard` silently fell back to English on every one of the
+   * 7 non-English homepage locales (confirmed live: "Add to calendar",
+   * "DAYS/HOURS/MINUTES" etc. stayed English on /de, /fr while every other
+   * section translated correctly) -- the one untranslated seam on an
+   * otherwise fully localized page. */
+  locale: Locale;
 }
 
 /** The public landing page's "Choose your style" teaser: 6 cards, no
@@ -30,8 +44,9 @@ interface LandingThemeShowcaseProps {
  * showcase too, the full filterable catalog only lives behind sign-up.
  * Reuses `ThemeGalleryCard` as-is (same phone mockup, same marketing
  * chrome) so this can never visually drift from the real gallery. */
-export default function LandingThemeShowcase({ themes: showcaseThemes }: LandingThemeShowcaseProps) {
+export default function LandingThemeShowcase({ themes: showcaseThemes, remainingCount, locale }: LandingThemeShowcaseProps) {
   const router = useRouter();
+  const t = getDictionary(locale).landing.themesSection;
 
   return (
     <div className={styles.grid}>
@@ -43,10 +58,11 @@ export default function LandingThemeShowcase({ themes: showcaseThemes }: Landing
               theme={theme}
               selected={false}
               onSelect={(themeId) => router.push(`/onboarding?theme=${themeId}`)}
+              locale={locale}
             />
             {isLast && (
-              <Link href="/onboarding" className={styles.moreOverlay} aria-label="See 100+ more styles">
-                <span className={styles.moreOverlayBtn}>See 100+ more styles →</span>
+              <Link href="/onboarding" className={styles.moreOverlay} aria-label={t.seeMoreStyles(remainingCount)}>
+                <span className={styles.moreOverlayBtn}>{t.seeMoreStyles(remainingCount)}</span>
               </Link>
             )}
           </div>
