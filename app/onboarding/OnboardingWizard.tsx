@@ -473,7 +473,20 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                   className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                   aria-invalid={attemptedSteps.has(step) && errors.name1 ? true : undefined}
                   aria-describedby={attemptedSteps.has(step) && errors.name1 ? "name1-error" : undefined}
-                  {...register("name1")}
+                  {...register("name1", {
+                    // UX audit (2026-10-26), found by a live clarity critique:
+                    // this field had the exact same stale-error bug as
+                    // eventDate below, just never actually verified -- the
+                    // comment on eventDate's own fix asserted "name1/name2
+                    // clear their own errors fine via RHF's default
+                    // reValidateMode," but that was never tested live.
+                    // Reproduced 100%: typing a valid name after "Enter a
+                    // name" showed never cleared the message, even though the
+                    // live preview and the field's own value updated
+                    // correctly. Same fix as eventDate: force an explicit
+                    // re-validation on every change.
+                    onChange: () => trigger("name1"),
+                  })}
                 />
                 {attemptedSteps.has(step) && errors.name1 && (
                   <p id="name1-error" role="alert" className="mt-1 text-sm text-red-600">
@@ -509,7 +522,11 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                       className="mt-4 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                       aria-invalid={attemptedSteps.has(step) && errors.name2 ? true : undefined}
                       aria-describedby={attemptedSteps.has(step) && errors.name2 ? "name2-error" : undefined}
-                      {...register("name2")}
+                      {...register("name2", {
+                        // UX audit (2026-10-26) -- same stale-error bug and
+                        // same fix as name1 above; see that field's comment.
+                        onChange: () => trigger("name2"),
+                      })}
                     />
                     {attemptedSteps.has(step) && errors.name2 && (
                       <p id="name2-error" role="alert" className="mt-1 text-sm text-red-600">
@@ -540,13 +557,19 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
                     // a valid date typed in after the "Enter a date" error
                     // showed never cleared it, even though the field's own
                     // watched value (and the live preview) updated
-                    // correctly. name1/name2 (plain text inputs) clear
-                    // their own errors fine via RHF's default
-                    // reValidateMode -- a native `type="date"` input's
-                    // onChange/value-commit timing is the one thing that
-                    // differs here. Forcing an explicit re-validation on
-                    // every change sidesteps whatever that native quirk is,
-                    // rather than depending on it.
+                    // correctly. Originally assumed name1/name2 didn't share
+                    // this (plain text inputs "should" clear fine under RHF's
+                    // default reValidateMode) -- that assumption was never
+                    // actually tested and turned out to be wrong: a later
+                    // live clarity critique reproduced the identical stale-
+                    // error behavior on both name fields too (see their own
+                    // onChange handlers above). Whatever the real mechanism
+                    // is (zodResolver validates the whole schema per trigger()
+                    // call rather than per-field, per this file's own note
+                    // above -- RHF's automatic reValidateMode path may simply
+                    // not fire reliably against that), forcing an explicit
+                    // re-validation on every change sidesteps it rather than
+                    // depending on it, on every field in this step.
                     onChange: () => trigger("eventDate"),
                   })}
                 />
