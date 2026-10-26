@@ -636,6 +636,25 @@ export default function OnboardingWizard({ locale }: { locale: Locale }) {
             {t.back}
           </button>
 
+          {/* UX audit (2026-10-26): the real step counter (above, aria-live)
+              scrolls out of view on step 1's 12-option grid and step 3's
+              124-theme gallery -- a user who's scrolled has no way to tell
+              how far they are, which matters most right before the final
+              "Create my site" tap (that button only reads as a commitment if
+              you know it's the last step). This sticky-footer dot row is
+              purely decorative (aria-hidden) -- the accessible step
+              announcement stays the aria-live text above. */}
+          <div className="flex items-center gap-1.5" aria-hidden="true">
+            {STEPS.map((key, i) => (
+              <span
+                key={key}
+                className={
+                  "h-1.5 w-1.5 rounded-full transition " + (i === step ? "w-4 bg-rose-600" : "bg-gray-300")
+                }
+              />
+            ))}
+          </div>
+
           {/* Explicit, distinct `key`s on these two branches -- without them,
               React reconciles both as "the same motion.button in this JSX
               slot" and mutates the existing DOM node's `type` attribute in

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Palette, PenLine, Share2 } from "lucide-react";
+import { Palette, PenLine, Share2, Check } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
 import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
@@ -16,7 +16,16 @@ const STEP_ICONS = [Palette, PenLine, Share2];
  * visitors landing on the style gallery for the first time -- three quick
  * steps instead of a recorded screencast (no video hosting/autoplay-policy
  * risk, same reassurance). Collapsible so it doesn't eat space for anyone
- * who already gets it. */
+ * who already gets it.
+ *
+ * UX audit (2026-10-26): this only ever renders at `stepKey === "themeId"`
+ * (step 3, OnboardingWizard.tsx's one call site) -- step 2 ("Add your
+ * details": names/date/photo) is already behind the user by the time they
+ * see this. Presenting it as a future step read as a small "wait, didn't I
+ * already do that?" doubt right before the final choice (found live in a
+ * clarity critique). The step-2 card is hardcoded to its own done state
+ * below rather than threaded through as a prop, since there's only this one
+ * render site and it's always true here. */
 export default function HowItWorksClip({ locale }: { locale: Locale }) {
   const [open, setOpen] = useState(true);
   const t = getDictionary(locale).onboarding.howItWorks;
@@ -45,17 +54,21 @@ export default function HowItWorksClip({ locale }: { locale: Locale }) {
           className="mt-2 grid grid-cols-3 gap-2"
         >
           {t.steps.map(({ title, text }, i) => {
-            const Icon = STEP_ICONS[i];
+            const isDone = i === 1;
+            const Icon = isDone ? Check : STEP_ICONS[i];
             return (
             <motion.div
               key={title}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: reduceMotion ? 0 : i * 0.08, duration: reduceMotion ? 0 : undefined }}
-              className="rounded-md bg-white p-2 text-center shadow-sm"
+              className={"rounded-md p-2 text-center shadow-sm " + (isDone ? "bg-rose-50" : "bg-white")}
             >
-              <Icon className="mx-auto h-4 w-4 text-rose-500" aria-hidden="true" />
-              <p className="mt-1 text-[11px] font-semibold text-gray-900">{title}</p>
+              <Icon className={"mx-auto h-4 w-4 " + (isDone ? "text-rose-600" : "text-rose-500")} aria-hidden="true" />
+              <p className="mt-1 text-[11px] font-semibold text-gray-900">
+                {title}
+                {isDone && <span className="text-rose-500"> ✓</span>}
+              </p>
               <p className="mt-0.5 text-[10px] leading-tight text-gray-500">{text}</p>
             </motion.div>
             );

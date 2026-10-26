@@ -83,6 +83,7 @@ export default function PhotoDropzone({
           type="file"
           accept="image/*"
           className="hidden"
+          aria-label={label}
           onChange={(e) => void handleFile(e.target.files?.[0])}
         />
 

@@ -886,7 +886,16 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           plan-independent "Copy your link" button -- read as payment being
           required for a link at all, when Free publishing was never gated
           on it. "Remove the badge" names the thing Basic actually changes. */}
-      {!hasBasicAccess && (
+      {/* UX audit (2026-10-26): hidden specifically on isFirstVisit -- a live
+          clarity critique found this bar, PLUS the header's own
+          always-visible PlanBadge upsell, PLUS a "Fill in your wedding
+          details" warning, PLUS the first-visit tour coachmark, all
+          rendering at once on the one screen meant to be the payoff moment
+          ("here's your finished site") right after onboarding. The header
+          badge alone still carries the upsell on this first view; this
+          second, full-weight, screen-pinned copy of the same ask comes back
+          on every later visit once isFirstVisit is false. */}
+      {!hasBasicAccess && !isFirstVisit && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-3 shadow-[0_-8px_24px_rgba(0,0,0,0.12)] sm:px-10">
           <Link
             href={`/dashboard/${event.id}/plan`}
