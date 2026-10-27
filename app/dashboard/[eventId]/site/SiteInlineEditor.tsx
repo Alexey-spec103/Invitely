@@ -1373,6 +1373,39 @@ export default function SiteInlineEditor({
     .slice()
     .sort((a, b) => (sectionOrderByType.get(a) ?? SECTION_ORDER[a]) - (sectionOrderByType.get(b) ?? SECTION_ORDER[b]));
 
+  // UX audit (2026-10-26): clarity critique's single biggest finding on this
+  // page -- a host had no way to see what's actually on their site, or jump
+  // back to a specific section for a repeat edit, without scrolling the
+  // whole live preview from the top every time. Reuses the existing
+  // `sectionRefs` map above (scrollToField/the selection-scroll effect have
+  // used it for per-field jumps since the Editable Blocks panel shipped) --
+  // this just exposes section-level jumps from a small, always-visible nav
+  // instead of only field-level ones from a separate sidebar panel. Real
+  // <button>s, so this is also a confirmed keyboard-reachable path into each
+  // section, not just a mouse one.
+  const sectionEnabledByType: Partial<Record<SectionType, boolean>> = {
+    hero: true,
+    letter: letter.enabled,
+    timeline: timeline.enabled,
+    map: map.enabled,
+    rsvp: rsvp.enabled,
+    countdown: countdown.enabled,
+    gift: gift.enabled,
+    dressCode: dressCode.enabled,
+    guestbook: guestbook.enabled,
+    video: video.enabled,
+    banquetNavigator: banquetNavigator.enabled,
+    guestNotes: guestNotes.enabled,
+    faq: faq.enabled,
+    travel: travel.enabled,
+  };
+  const outlineSectionTypes: SectionType[] = (["hero", ...orderedSectionTypes] as SectionType[]).filter(
+    (type) => sectionEnabledByType[type]
+  );
+  const scrollToSection = (type: SectionType) => {
+    sectionRefs[type]?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const heroBlockRows: BlockRowData[] = [
     // Hero has no MODULE_ICONS entry (it's always on, no toggle row in the
     // Modules panel either) -- matches that same convention here: a plain
@@ -2150,6 +2183,32 @@ export default function SiteInlineEditor({
           </div>
         </div>
       </div>
+
+      {/* UX audit (2026-10-26): see the sectionRefs/outlineSectionTypes
+          comment above -- a compact, low-weight pill row rather than another
+          set of filled buttons, since the clarity critique's other finding
+          on this same page was too many same-weight controls competing for
+          attention before a host reaches real content. Horizontally
+          scrollable (not wrapped) so it stays a single slim row even with
+          every section enabled, rather than growing into its own block. */}
+      {outlineSectionTypes.length > 1 && (
+        <div
+          className="mx-auto flex w-full items-center gap-1 overflow-x-auto pb-0.5"
+          style={{ maxWidth: deviceMaxWidth }}
+          aria-label={t.jumpToSectionAria}
+        >
+          {outlineSectionTypes.map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => scrollToSection(type)}
+              className="shrink-0 whitespace-nowrap rounded-full border border-[var(--dash-border)] px-2.5 py-1 text-[11px] font-medium text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent-text)]"
+            >
+              {type === "hero" ? t.startScreenSectionLabel : t.sectionLabels[type as SectionKey]}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* dashboard-audit.md A2's device frame, moved here from page.tsx so
           it can sit right under the tree above instead of the tree living

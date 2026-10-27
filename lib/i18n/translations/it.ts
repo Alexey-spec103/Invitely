@@ -704,6 +704,7 @@ export const it: Dictionary = {
           faq: "FAQ",
           travel: "Viaggio e alloggio",
         },
+        jumpToSectionAria: "Vai alla sezione",
         collapsedNote: (label) => `${label} è disattivato, quindi gli ospiti non lo vedranno - nulla di ciò che hai scritto va perso. Riattiva l'interruttore qui sopra per ripristinarlo.`,
         editableBlocks: {
           heading: "Elementi modificabili",

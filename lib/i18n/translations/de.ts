@@ -704,6 +704,7 @@ export const de: Dictionary = {
           faq: "FAQ",
           travel: "Anreise & Unterkunft",
         },
+        jumpToSectionAria: "Zu Abschnitt springen",
         collapsedNote: (label) => `${label} ist ausgeschaltet, Gäste sehen es also nicht - nichts, was du geschrieben hast, geht verloren. Schalte oben den Schalter um, um es zurückzuholen.`,
         editableBlocks: {
           heading: "Bearbeitbare Elemente",

@@ -705,6 +705,7 @@ export const fr: Dictionary = {
           faq: "FAQ",
           travel: "Transport & hébergement",
         },
+        jumpToSectionAria: "Aller à la section",
         collapsedNote: (label) => `${label} est désactivé, les invités ne le verront donc pas - rien de ce que vous avez écrit n'est perdu. Réactivez l'interrupteur ci-dessus pour le restaurer.`,
         editableBlocks: {
           heading: "Éléments modifiables",

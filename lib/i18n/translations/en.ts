@@ -617,6 +617,7 @@ export interface Dictionary {
           faq: string;
           travel: string;
         };
+        jumpToSectionAria: string;
         collapsedNote: (label: string) => string;
         editableBlocks: {
           heading: string;
@@ -1939,6 +1940,11 @@ export const en: Dictionary = {
           faq: "FAQ",
           travel: "Travel & Stay",
         },
+        // UX audit (2026-10-26): label for the new section-jump nav row
+        // (SiteInlineEditor.tsx) -- a clarity critique found no way to see
+        // what's on the site, or jump back to one section, without
+        // scrolling the whole live preview from the top every time.
+        jumpToSectionAria: "Jump to section",
         collapsedNote: (label) => `${label} is off, so guests won't see it - nothing you've written here is lost. Flip the switch above to bring it back.`,
         editableBlocks: {
           heading: "Editable blocks",

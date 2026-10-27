@@ -714,6 +714,7 @@ export const pl: Dictionary = {
           faq: "FAQ",
           travel: "Podróż i nocleg",
         },
+        jumpToSectionAria: "Przejdź do sekcji",
         collapsedNote: (label) => `${label} jest wyłączone, więc goście tego nie zobaczą - nic, co napisałeś, nie zostało utracone. Przełącz suwak powyżej, aby to przywrócić.`,
         editableBlocks: {
           heading: "Edytowalne elementy",
