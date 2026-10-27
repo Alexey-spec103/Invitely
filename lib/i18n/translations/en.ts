@@ -1244,6 +1244,47 @@ export interface Dictionary {
         questionsCaption: string;
       };
     };
+    /** Launch-readiness pass (2026-10-27): PlanSelectForm.tsx -- the actual
+     * payment screen, where a host clicks "Get your link - EUR19" and goes
+     * to Stripe checkout -- was 100% hardcoded English until now, discovered
+     * during a pricing-locale-consistency sweep. Reuses
+     * landing.pricing.oneTime/planFeatures, dashboard.shell.publish.publish,
+     * and dashboard.shell.anonBanner.email/passwordPlaceholder rather than
+     * duplicating those strings a second time. */
+    plan: {
+      heading: string;
+      subtitle: string;
+      designFreeBadge: string;
+      checkoutSuccess: string;
+      checkoutCancelled: string;
+      alreadyOnPlan: (planName: string) => string;
+      alreadyOnPlanBodyBefore: string;
+      alreadyOnPlanBodyAfter: string;
+      finishedResultSuffix: string;
+      getYourLink: (priceEur: number) => string;
+      redirecting: string;
+      processedByStripe: string;
+      orPublishFreeInstead: (badgeName: string) => string;
+      freeWarningHeading: string;
+      guestViewLabel: string;
+      madeWithInvimboBadge: string;
+      badgePermanentWarning: string;
+      freeModulesLockedBullet: string;
+      publishFreeInstead: string;
+      printingHeading: string;
+      premiumDescription: (priceEur: number) => string;
+      youreOnPremium: string;
+      upgradeButton: (priceEur: number) => string;
+      checkEmailTitle: string;
+      checkEmailBodyBefore: string;
+      checkEmailBodyAfter: string;
+      gotIt: string;
+      oneLastStepTitle: string;
+      oneLastStepBody: string;
+      createAccountButton: string;
+      creatingAccount: string;
+      notNow: string;
+    };
   };
 }
 
@@ -2695,6 +2736,41 @@ export const en: Dictionary = {
         bulletContact: "Found a bug, or just have a question? Reach out - a real person reads every message.",
         questionsCaption: "Questions? We're here.",
       },
+    },
+    plan: {
+      heading: "Get your link",
+      subtitle: "Your site is designed - this is the last step before it's really yours.",
+      designFreeBadge: "Designing your site is free, always - you only pay if you want this exact link live.",
+      checkoutSuccess: "Payment received - your plan will update in a moment.",
+      checkoutCancelled: "Checkout cancelled - nothing was charged.",
+      alreadyOnPlan: (planName) => `You're on ${planName} - your link is ready.`,
+      alreadyOnPlanBodyBefore: "No badge, no locked modules. Hit ",
+      alreadyOnPlanBodyAfter: " at the top of any page, or claim a custom address from the Site tab.",
+      finishedResultSuffix: "- the finished result",
+      getYourLink: (priceEur) => `Get your link - €${priceEur}`,
+      redirecting: "Redirecting…",
+      processedByStripe: "Processed securely by Stripe",
+      orPublishFreeInstead: (badgeName) => `Or publish free instead, with a "${badgeName}" badge`,
+      freeWarningHeading: "This is what guests will actually see on Free",
+      guestViewLabel: "Guest view",
+      madeWithInvimboBadge: "Made with Invimbo",
+      badgePermanentWarning: "That badge sits on every page, for every guest, permanently - it isn't removable on Free.",
+      freeModulesLockedBullet: "Countdown, gift wishes & dress-code modules locked",
+      publishFreeInstead: "Publish free instead",
+      printingHeading: "Printing invitations or table cards?",
+      premiumDescription: (priceEur) => `(€${priceEur}) removes the watermark from your paper set - doesn't change the link itself.`,
+      youreOnPremium: "You're on Premium",
+      upgradeButton: (priceEur) => `Upgrade - €${priceEur}`,
+      checkEmailTitle: "Check your email",
+      checkEmailBodyBefore: "Confirm your address, then come back and click ",
+      checkEmailBodyAfter: " again - everything you've designed is already saved.",
+      gotIt: "Got it",
+      oneLastStepTitle: "One last step - save your work",
+      oneLastStepBody:
+        "You designed this without an account. Create a free one now so your purchase (and everything you've made) is tied to you, not a browser session that can disappear.",
+      createAccountButton: "Create account & continue to payment",
+      creatingAccount: "Creating account…",
+      notNow: "Not now",
     },
   },
 };

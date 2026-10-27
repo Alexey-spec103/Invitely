@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { plans, DEFAULT_PLAN_ID } from "@/lib/plans";
 import { updatePlan, createCheckoutSession } from "./actions";
 import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
+import type { Locale } from "@/lib/i18n/locales";
+import { getDictionary } from "@/lib/i18n/dictionary";
 
 // Exact string createCheckoutSession/updatePlan throw via requireRealUser()
 // (lib/session.ts) for an anonymous-trial session -- matched here so the
@@ -14,9 +16,21 @@ const ANONYMOUS_ERROR = "Create a free account to continue";
 interface PlanSelectFormProps {
   eventId: string;
   currentPlanId: string;
+  /** Resolved internally via getDictionary(locale), same convention as
+   * EventTypeSwitcher.tsx -- this is "use client" and can't receive the
+   * dictionary's own function-valued entries (getYourLink, upgradeButton,
+   * etc.) as props across the server/client boundary. */
+  locale: Locale;
 }
 
-export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFormProps) {
+export default function PlanSelectForm({ eventId, currentPlanId, locale }: PlanSelectFormProps) {
+  const dict = getDictionary(locale);
+  const t = dict.dashboard.plan;
+  const oneTimeNote = dict.landing.pricing.oneTime;
+  const planFeatures = dict.landing.pricing.planFeatures;
+  const publishSiteLabel = dict.dashboard.shell.publish.publish;
+  const emailPlaceholder = dict.dashboard.shell.anonBanner.emailPlaceholder;
+  const passwordPlaceholder = dict.dashboard.shell.anonBanner.passwordPlaceholder;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selected, setSelected] = useState(currentPlanId);
@@ -168,10 +182,8 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
 
   return (
     <div>
-      <h1 className="dash-h1 text-gray-900">Get your link</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        Your site is designed - this is the last step before it&rsquo;s really yours.
-      </p>
+      <h1 className="dash-h1 text-gray-900">{t.heading}</h1>
+      <p className="mt-1 text-sm text-gray-500">{t.subtitle}</p>
       {/* Competitor research (weddingpost.ru): "the constructor itself is
           always free" works best as its own standalone reassurance line
           stated before any price, not left implicit in the surrounding
@@ -179,18 +191,14 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
           have to infer that design itself was never what they're paying
           for. */}
       <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-800">
-        ✓ Designing your site is free, always - you only pay if you want this exact link live.
+        ✓ {t.designFreeBadge}
       </p>
 
       {checkoutStatus === "success" && (
-        <p className="mt-4 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Payment received - your plan will update in a moment.
-        </p>
+        <p className="mt-4 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{t.checkoutSuccess}</p>
       )}
       {checkoutStatus === "cancelled" && (
-        <p className="mt-4 rounded-md bg-gray-50 px-3 py-2 text-sm text-gray-600">
-          Checkout cancelled - nothing was charged.
-        </p>
+        <p className="mt-4 rounded-md bg-gray-50 px-3 py-2 text-sm text-gray-600">{t.checkoutCancelled}</p>
       )}
 
       {/* Direct feedback: this used to be one of three equal-weight cards,
@@ -203,20 +211,23 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
       {isBasicOrHigher ? (
         <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
           <p className="text-sm font-semibold text-emerald-900">
-            ✓ You&rsquo;re on {selected === "premium" ? "Premium" : "Basic"} - your link is ready.
+            ✓ {t.alreadyOnPlan(selected === "premium" ? premium.name : basic.name)}
           </p>
           <p className="mt-1 text-sm text-emerald-800">
-            No badge, no locked modules. Hit <span className="font-semibold">Publish site</span> at the top of any
-            page, or claim a custom address from the Site tab.
+            {t.alreadyOnPlanBodyBefore}
+            <span className="font-semibold">{publishSiteLabel}</span>
+            {t.alreadyOnPlanBodyAfter}
           </p>
         </div>
       ) : (
         <div className="mt-5 rounded-2xl border-2 border-[var(--dash-accent)] bg-white p-6 shadow-sm">
-          <p className="text-sm font-semibold text-[var(--dash-accent-text)]">{basic.name} - the finished result</p>
+          <p className="text-sm font-semibold text-[var(--dash-accent-text)]">
+            {basic.name} {t.finishedResultSuffix}
+          </p>
           <p className="mt-1 text-3xl font-bold text-gray-900">€{basic.priceEur}</p>
-          <p className="text-xs text-gray-500">one-time, not a subscription</p>
+          <p className="text-xs text-gray-500">{oneTimeNote}</p>
           <ul className="mt-4 space-y-1.5 text-sm text-gray-700">
-            {basic.features.map((feature) => (
+            {planFeatures.basic.map((feature) => (
               <li key={feature} className="flex items-start gap-2">
                 {/* Contrast audit (2026-10-14): --dash-accent on white is
                     2.82:1, under the 3:1 UI-icon threshold -- --dash-accent-text
@@ -232,10 +243,10 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
             onClick={() => handleSelect(basic.id)}
             className="dash-btn dash-btn-primary mt-5 w-full text-base"
           >
-            {isPending ? "Redirecting…" : `Get your link - €${basic.priceEur}`}
+            {isPending ? t.redirecting : t.getYourLink(basic.priceEur)}
           </button>
           <span className="mt-3 inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] font-medium text-gray-600">
-            🔒 Processed securely by Stripe
+            🔒 {t.processedByStripe}
           </span>
 
           {/* Free stays fully real (publishing was never gated on payment)
@@ -246,11 +257,11 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
               onClick={() => setShowFree(true)}
               className="mt-4 block text-xs font-medium text-gray-400 underline decoration-dotted hover:text-gray-600"
             >
-              Or publish free instead, with a &ldquo;Made with Invimbo&rdquo; badge
+              {t.orPublishFreeInstead(t.madeWithInvimboBadge)}
             </button>
           ) : (
             <div className="mt-4 rounded-xl border-2 border-amber-300 bg-amber-50 p-4">
-              <p className="text-sm font-bold text-amber-900">⚠️ This is what guests will actually see on Free</p>
+              <p className="text-sm font-bold text-amber-900">⚠️ {t.freeWarningHeading}</p>
 
               {/* Direct feedback: a plain bullet-point list ("shows a
                   badge") undersold what that actually looks like -- a host
@@ -262,22 +273,20 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                   -accent), not available on this plan-selection page. */}
               <div className="relative mt-3 h-28 overflow-hidden rounded-lg border border-amber-200 bg-gradient-to-br from-stone-100 to-stone-200">
                 <span className="absolute left-3 top-2.5 text-[11px] font-semibold uppercase tracking-wide text-stone-400">
-                  Guest view
+                  {t.guestViewLabel}
                 </span>
                 <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-stone-700 shadow-sm backdrop-blur-sm">
                   <span className="text-amber-600">✦</span>
-                  Made with Invimbo
+                  {t.madeWithInvimboBadge}
                 </span>
               </div>
-              <p className="mt-2 text-xs font-medium text-amber-800">
-                That badge sits on every page, for every guest, permanently - it isn&rsquo;t removable on Free.
-              </p>
+              <p className="mt-2 text-xs font-medium text-amber-800">{t.badgePermanentWarning}</p>
 
               <ul className="mt-3 space-y-1 text-xs text-amber-800">
-                {free.features.map((feature) => (
+                {planFeatures.free.map((feature) => (
                   <li key={feature}>{feature}</li>
                 ))}
-                <li>Countdown, gift wishes &amp; dress-code modules locked</li>
+                <li>{t.freeModulesLockedBullet}</li>
               </ul>
               <button
                 type="button"
@@ -285,7 +294,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                 onClick={() => handleSelect(free.id)}
                 className="dash-btn dash-btn-secondary mt-3 w-full text-sm"
               >
-                Publish free instead
+                {t.publishFreeInstead}
               </button>
             </div>
           )}
@@ -298,10 +307,9 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
           host into thinking it was a bigger/better version of the same
           thing. Shown separately, framed around paper specifically. */}
       <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-5">
-        <p className="text-sm font-semibold text-gray-900">Printing invitations or table cards?</p>
+        <p className="text-sm font-semibold text-gray-900">{t.printingHeading}</p>
         <p className="mt-1 text-sm text-gray-500">
-          {premium.name} (€{premium.priceEur}) removes the watermark from your paper set - doesn&rsquo;t change the
-          link itself.
+          {premium.name} {t.premiumDescription(premium.priceEur)}
         </p>
         <button
           type="button"
@@ -309,7 +317,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
           onClick={() => handleSelect(premium.id)}
           className="dash-btn dash-btn-secondary mt-3 text-sm"
         >
-          {selected === "premium" ? "You're on Premium" : `Upgrade - €${premium.priceEur}`}
+          {selected === "premium" ? t.youreOnPremium : t.upgradeButton(premium.priceEur)}
         </button>
       </div>
 
@@ -331,33 +339,32 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
           >
             {accountPendingConfirmation ? (
               <>
-                <p id="plan-account-modal-title" className="text-lg font-bold text-gray-900">📬 Check your email</p>
+                <p id="plan-account-modal-title" className="text-lg font-bold text-gray-900">📬 {t.checkEmailTitle}</p>
                 <p className="mt-2 text-sm text-gray-600">
-                  Confirm your address, then come back and click{" "}
-                  <span className="font-semibold">Get your link - €{plans[pendingPlanId]?.priceEur}</span> again -
-                  everything you&rsquo;ve designed is already saved.
+                  {t.checkEmailBodyBefore}
+                  <span className="font-semibold">
+                    {pendingPlanId ? t.getYourLink(plans[pendingPlanId]?.priceEur ?? 0) : ""}
+                  </span>
+                  {t.checkEmailBodyAfter}
                 </p>
                 <button
                   type="button"
                   onClick={closeAccountModal}
                   className="dash-btn dash-btn-primary mt-4 w-full"
                 >
-                  Got it
+                  {t.gotIt}
                 </button>
               </>
             ) : (
               <>
-                <p id="plan-account-modal-title" className="text-lg font-bold text-gray-900">One last step - save your work</p>
-                <p className="mt-1.5 text-sm text-gray-600">
-                  You designed this without an account. Create a free one now so your purchase (and everything
-                  you&rsquo;ve made) is tied to you, not a browser session that can disappear.
-                </p>
+                <p id="plan-account-modal-title" className="text-lg font-bold text-gray-900">{t.oneLastStepTitle}</p>
+                <p className="mt-1.5 text-sm text-gray-600">{t.oneLastStepBody}</p>
                 <form onSubmit={handleAccountSubmit} className="mt-4 space-y-3">
                   <input
                     type="email"
                     value={accountEmail}
                     onChange={(event) => setAccountEmail(event.target.value)}
-                    placeholder="Email"
+                    placeholder={emailPlaceholder}
                     required
                     autoFocus
                     autoComplete="email"
@@ -367,7 +374,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                     type="password"
                     value={accountPassword}
                     onChange={(event) => setAccountPassword(event.target.value)}
-                    placeholder="Password (min 6 characters)"
+                    placeholder={passwordPlaceholder}
                     required
                     minLength={6}
                     autoComplete="new-password"
@@ -379,7 +386,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                     disabled={accountSubmitting}
                     className="dash-btn dash-btn-primary w-full text-base disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {accountSubmitting ? "Creating account…" : "Create account & continue to payment"}
+                    {accountSubmitting ? t.creatingAccount : t.createAccountButton}
                   </button>
                   <button
                     type="button"
@@ -387,7 +394,7 @@ export default function PlanSelectForm({ eventId, currentPlanId }: PlanSelectFor
                     disabled={accountSubmitting}
                     className="w-full text-center text-sm font-medium text-gray-500 hover:text-gray-700"
                   >
-                    Not now
+                    {t.notNow}
                   </button>
                 </form>
               </>
