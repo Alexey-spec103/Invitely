@@ -104,12 +104,28 @@ const MODULE_ICONS = [
 // a safety net if a tier's features are ever reduced to nothing but that
 // line again -- an empty "WHAT THIS ADDS" list reads as broken, not
 // "nothing new."
-const planHighlights: Record<string, string[]> = Object.fromEntries(
-  Object.values(plans).map((plan) => {
-    const added = plan.features.filter((feature) => !feature.startsWith("Everything in"));
-    return [plan.id, added.length > 0 ? added : plan.features];
-  })
-);
+//
+// Launch-readiness pass (2026-10-27): this used to render `plan.features`
+// directly -- plain English on every locale, including the 7 non-English
+// /[locale] URLs. `localizedFeatures` is the dictionary's own translated
+// array, index-correlated with `plan.features` by construction (see
+// `pricing.planFeatures`'s own type comment) -- so the "drop the leading
+// 'Everything in ...' line" filter still runs against the English array
+// (matching translated text against an English prefix wouldn't work in any
+// other language), and the *index* it keeps is what selects from the
+// translated array.
+function buildPlanHighlights(localizedFeatures: Record<string, readonly string[]>): Record<string, readonly string[]> {
+  return Object.fromEntries(
+    Object.values(plans).map((plan) => {
+      const keepIndices = plan.features
+        .map((feature, index) => (feature.startsWith("Everything in") ? -1 : index))
+        .filter((index) => index !== -1);
+      const translated = localizedFeatures[plan.id] ?? plan.features;
+      const added = keepIndices.map((index) => translated[index] ?? plan.features[index]);
+      return [plan.id, added.length > 0 ? added : translated];
+    })
+  );
+}
 
 /** SEO fix (2026-10-19): the actual homepage body -- moved here, out of
  * app/page.tsx, because Next.js/Turbopack doesn't reliably expose a named
@@ -148,6 +164,7 @@ export async function HomePageContent({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale);
   const languageLabel = dict.languageSwitcher.label;
   const t = dict.landing;
+  const planHighlights = buildPlanHighlights(t.pricing.planFeatures);
 
   const ctaHref = user ? "/dashboard" : "/onboarding";
   // One primary-button style everywhere (see globals.css's shared

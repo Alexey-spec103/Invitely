@@ -303,6 +303,21 @@ export interface Dictionary {
       oneTime: string;
       exampleCaption: string;
       valueAnchor: string;
+      /** Launch-readiness pass (2026-10-27): HomePageContent.tsx used to
+       * render lib/plans.ts's own `features` strings directly -- plain
+       * English, on every locale including the 7 non-English /[locale]
+       * URLs this same session added. Same order/length as each plan's
+       * `features` array (including the leading "Everything in ..." line,
+       * even though the component usually filters it out) so the two stay
+       * index-correlated -- the filter itself still runs against the
+       * English array to decide WHICH index to drop, since matching
+       * `startsWith("Everything in")` against translated text wouldn't
+       * work in any other language. */
+      planFeatures: {
+        free: [string, string, string];
+        basic: [string, string, string, string];
+        premium: [string, string, string];
+      };
     };
     /** The marketing page's own "What's included" grid sells hosts an FAQ
      * module for THEIR guests -- this section is the same idea turned on the
@@ -1554,6 +1569,20 @@ export const en: Dictionary = {
       oneTime: "One-time, not a subscription",
       exampleCaption: "A real Invimbo design - yours can look like this.",
       valueAnchor: "Printed, mailed invitations usually cost more than this per guest. One flat fee here covers your whole guest list, however many people you're inviting.",
+      planFeatures: {
+        free: ["Event website with a designer theme", "Guest list", "RSVP tracking"],
+        basic: [
+          "Everything in Free",
+          "Custom domain",
+          "Countdown, gift wishes & dress-code modules",
+          "No \"Made with Invimbo\" site badge",
+        ],
+        premium: [
+          "Everything in Basic",
+          "No paper watermark on personalized invitations",
+          "No paper watermark on banquet & table cards",
+        ],
+      },
     },
     faq: {
       heading: "Questions before you start",

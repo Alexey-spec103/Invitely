@@ -79,10 +79,20 @@ export async function claimInvimboSubdomain(input: ClaimInvimboSubdomainInput): 
     throw new Error("Not authenticated");
   }
 
+  // Pre-launch security pass (2026-10-27): same missing owner_id check as
+  // checkDomainVerification below -- RLS's own update policy is correctly
+  // owner-scoped (confirmed: "Owners can update their own events" requires
+  // owner_id = auth.uid() on both USING and WITH CHECK, so the writes later
+  // in this function can't actually land on someone else's row even
+  // without this filter), but this SELECT alone could still read another
+  // host's plan_id/title/default_locale if their event is published (the
+  // public-read policy allows that by design, for the guest site). No
+  // reason this read shouldn't already be scoped the same way the write is.
   const { data: event, error: eventError } = await supabase
     .from("events")
     .select("plan_id, title, default_locale")
     .eq("id", input.eventId)
+    .eq("owner_id", user.id)
     .single();
 
   if (eventError || !event) {
@@ -224,10 +234,20 @@ export async function checkDomainVerification(input: CheckDomainVerificationInpu
     throw new Error("Not authenticated");
   }
 
+  // Pre-launch security pass (2026-10-27): this query had no owner_id
+  // check at all, relying entirely on RLS -- harmless for a draft event
+  // (RLS has no policy letting anyone but the owner read a draft row), but
+  // for a PUBLISHED event the "public can read published events" policy
+  // lets it through for ANY authenticated caller, not just this event's
+  // owner. The real damage is bounded (the DNS TXT lookup below is the
+  // actual gate -- knowing another host's token doesn't let you fake
+  // control of their domain), but there's no reason this action should
+  // ever run against an event the caller doesn't own in the first place.
   const { data: event, error } = await supabase
     .from("events")
     .select("custom_domain, custom_domain_verification_token, plan_id")
     .eq("id", input.eventId)
+    .eq("owner_id", user.id)
     .single();
 
   if (error) {

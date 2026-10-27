@@ -292,6 +292,20 @@ export const es: Dictionary = {
       oneTime: "Pago único, no es una suscripción",
       exampleCaption: "Un diseño real de Invimbo - el tuyo puede verse así.",
       valueAnchor: "Las invitaciones impresas y enviadas por correo suelen costar más por invitado. Aquí, una tarifa única cubre a toda tu lista de invitados, sean cuantos sean.",
+      planFeatures: {
+        free: ["Sitio web del evento con un tema de diseñador", "Lista de invitados", "Seguimiento de RSVP"],
+        basic: [
+          "Todo lo de Gratis",
+          "Dominio propio",
+          "Módulos de cuenta regresiva, lista de regalos y código de vestimenta",
+          "Sin el distintivo \"Made with Invimbo\" en el sitio",
+        ],
+        premium: [
+          "Todo lo de Basic",
+          "Sin marca de agua en las invitaciones personalizadas",
+          "Sin marca de agua en las tarjetas de banquete y mesa",
+        ],
+      },
     },
     faq: {
       heading: "Preguntas antes de empezar",

@@ -302,6 +302,20 @@ export const pl: Dictionary = {
       oneTime: "Płatność jednorazowa, nie subskrypcja",
       exampleCaption: "Prawdziwy projekt Invimbo - Twój może wyglądać podobnie.",
       valueAnchor: "Drukowane, wysyłane pocztą zaproszenia zwykle kosztują więcej za gościa. Tu jedna stała opłata obejmuje całą Twoją listę gości, niezależnie od liczby osób.",
+      planFeatures: {
+        free: ["Strona wydarzenia z motywem projektanta", "Lista gości", "Śledzenie potwierdzeń RSVP"],
+        basic: [
+          "Wszystko z Za darmo",
+          "Własna domena",
+          "Moduły odliczania, listy prezentów i dress code",
+          "Brak odznaki „Made with Invimbo” na stronie",
+        ],
+        premium: [
+          "Wszystko z Basic",
+          "Brak znaku wodnego na spersonalizowanych zaproszeniach",
+          "Brak znaku wodnego na kartach bankietowych i stolikowych",
+        ],
+      },
     },
     faq: {
       heading: "Pytania przed startem",

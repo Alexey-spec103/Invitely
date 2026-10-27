@@ -292,6 +292,20 @@ export const de: Dictionary = {
       oneTime: "Einmalzahlung, kein Abo",
       exampleCaption: "Ein echtes Invimbo-Design - deins kann so aussehen.",
       valueAnchor: "Gedruckte, verschickte Einladungen kosten pro Gast meist mehr. Hier deckt eine einmalige Pauschale deine gesamte Gästeliste ab, egal wie viele Personen das sind.",
+      planFeatures: {
+        free: ["Event-Website mit Designer-Design", "Gästeliste", "RSVP-Verfolgung"],
+        basic: [
+          "Alles aus Kostenlos",
+          "Eigene Domain",
+          "Countdown, Geschenkwünsche & Dresscode-Module",
+          "Kein \"Made with Invimbo\"-Badge auf der Website",
+        ],
+        premium: [
+          "Alles aus Basic",
+          "Kein Wasserzeichen auf personalisierten Einladungen",
+          "Kein Wasserzeichen auf Bankett- und Tischkarten",
+        ],
+      },
     },
     faq: {
       heading: "Fragen vor dem Start",

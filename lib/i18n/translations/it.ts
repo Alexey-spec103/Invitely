@@ -292,6 +292,20 @@ export const it: Dictionary = {
       oneTime: "Pagamento unico, non un abbonamento",
       exampleCaption: "Un design Invimbo reale - il tuo può essere così.",
       valueAnchor: "Gli inviti stampati e spediti di solito costano di più per ospite. Qui una tariffa unica copre tutta la tua lista invitati, per quanti siano.",
+      planFeatures: {
+        free: ["Sito web dell'evento con un tema di design", "Lista ospiti", "Tracciamento RSVP"],
+        basic: [
+          "Tutto quello di Gratis",
+          "Dominio personalizzato",
+          "Moduli countdown, lista regali e dress code",
+          "Nessun badge \"Made with Invimbo\" sul sito",
+        ],
+        premium: [
+          "Tutto quello di Basic",
+          "Nessuna filigrana sugli inviti personalizzati",
+          "Nessuna filigrana sulle card di banchetto e tavolo",
+        ],
+      },
     },
     faq: {
       heading: "Domande prima di iniziare",

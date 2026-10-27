@@ -292,6 +292,20 @@ export const fr: Dictionary = {
       oneTime: "Paiement unique, pas d'abonnement",
       exampleCaption: "Un vrai modèle Invimbo - le vôtre peut y ressembler.",
       valueAnchor: "Les invitations imprimées et envoyées par courrier coûtent généralement plus cher par invité. Ici, un tarif unique couvre toute votre liste d'invités, quel que soit leur nombre.",
+      planFeatures: {
+        free: ["Site d'événement avec un thème de designer", "Liste d'invités", "Suivi des réponses RSVP"],
+        basic: [
+          "Tout ce qui est dans Gratuit",
+          "Domaine personnalisé",
+          "Modules compte à rebours, liste de cadeaux et code vestimentaire",
+          "Pas de badge \"Made with Invimbo\" sur le site",
+        ],
+        premium: [
+          "Tout ce qui est dans Basic",
+          "Pas de filigrane sur les invitations personnalisées",
+          "Pas de filigrane sur les cartes de banquet et de table",
+        ],
+      },
     },
     faq: {
       heading: "Questions avant de commencer",
