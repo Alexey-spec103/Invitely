@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
+import HCaptchaWidget from "@/components/HCaptchaWidget";
 
 const signupSchema = z
   .object({
@@ -27,6 +28,7 @@ export default function SignupForm() {
   const searchParams = useSearchParams();
   const themeId = searchParams.get("theme");
   const [formError, setFormError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const {
     register,
@@ -63,6 +65,7 @@ export default function SignupForm() {
     const { error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
+      options: captchaToken ? { captchaToken } : undefined,
     });
 
     if (error) {
@@ -134,6 +137,8 @@ export default function SignupForm() {
             <p id="confirmPassword-error" role="alert" className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
           )}
         </div>
+
+        <HCaptchaWidget onVerify={setCaptchaToken} />
 
         {formError && (
           <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>

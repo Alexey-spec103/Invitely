@@ -228,15 +228,21 @@ token_verifications = 30
 # Number of Web3 logins that can be made in a 5 minute interval per IP address.
 web3 = 30
 
-# Pre-launch security pass (2026-10-27): left disabled -- enabling this
-# needs a human to sign up for a provider account (hCaptcha or Cloudflare
-# Turnstile, both free) and wire the resulting sitekey/secret into
-# LoginForm.tsx and SignupForm.tsx. Worth doing before launch: it's the
-# one defense here that still works against an attacker who rotates IPs
-# to dodge the sign_in_sign_ups limit above.
-# Configure one of the supported captcha providers: `hcaptcha`, `turnstile`.
-# [auth.captcha]
-# enabled = true
+# Pre-launch security pass (2026-10-27): enabled. The one defense here
+# that still works against an attacker who rotates IPs to dodge the
+# sign_in_sign_ups limit above. LoginForm.tsx/SignupForm.tsx now render
+# HCaptchaWidget and pass its token as options.captchaToken on
+# signInWithPassword/signUp -- GoTrue verifies that token server-side
+# using `secret` below, which it resolves from the HCAPTCHA_SECRET env
+# var (never written into this file directly). This file alone doesn't
+# apply to the live project -- `supabase config push` needs
+# SUPABASE_DB_PASSWORD, not available here -- so the same provider/secret
+# must also be set directly in Supabase Dashboard -> Authentication ->
+# Bot and Abuse Protection until that becomes possible.
+[auth.captcha]
+enabled = true
+provider = "hcaptcha"
+secret = "env(HCAPTCHA_SECRET)"
 # provider = "hcaptcha"
 # secret = ""
 

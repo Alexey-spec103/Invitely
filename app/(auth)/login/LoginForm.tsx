@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
+import HCaptchaWidget from "@/components/HCaptchaWidget";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email"),
@@ -21,6 +22,7 @@ export default function LoginForm() {
   const justRegistered = searchParams.get("registered") === "1";
   const themeId = searchParams.get("theme");
   const [formError, setFormError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const {
     register,
@@ -36,6 +38,7 @@ export default function LoginForm() {
     const { error } = await supabase.auth.signInWithPassword({
       email: values.email,
       password: values.password,
+      options: captchaToken ? { captchaToken } : undefined,
     });
 
     if (error) {
@@ -101,6 +104,8 @@ export default function LoginForm() {
             <p id="password-error" role="alert" className="mt-1 text-sm text-red-600">{errors.password.message}</p>
           )}
         </div>
+
+        <HCaptchaWidget onVerify={setCaptchaToken} />
 
         {formError && (
           <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
