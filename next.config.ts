@@ -35,16 +35,25 @@ const CSP_DIRECTIVES = [
   // remove the need for this, but that's a real application change of its
   // own -- a separate, deliberate upgrade, not bundled into establishing
   // this first baseline.
-  "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://va.vercel-scripts.com",
+  // Pre-launch pass (2026-10-27): hCaptcha (LoginForm/SignupForm, via
+  // HCaptchaWidget) added this session without updating this policy -- only
+  // caught now because this header is Report-Only (see below), so nothing
+  // actually broke, but it would have the moment this becomes enforcing.
+  // https://*.hcaptcha.com covers js.hcaptcha.com (the widget script) and
+  // newassets.hcaptcha.com (assets the widget loads internally).
+  "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://va.vercel-scripts.com https://*.hcaptcha.com",
   // 'unsafe-inline': this codebase uses React inline `style={{...}}`
   // extensively (CSS custom properties like --stagger-i driving animation
   // delays, among many other spots) -- those compile to real inline
   // `style="..."` attributes, which style-src must allow without nonces.
-  "style-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline' https://*.hcaptcha.com",
   "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io https://*.ingest.us.sentry.io",
-  "frame-src https://www.google.com https://www.youtube.com https://player.vimeo.com",
+  // https://*.ingest.de.sentry.io: this project's Sentry org is on the EU
+  // data-residency region, not the default us/sentry.io ingest hosts
+  // already listed here.
+  "connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io https://*.hcaptcha.com",
+  "frame-src https://www.google.com https://www.youtube.com https://player.vimeo.com https://*.hcaptcha.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
