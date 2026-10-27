@@ -458,6 +458,69 @@ export interface Dictionary {
    * small chrome shared by components reused across tabs (FirstVisitTour,
    * ModuleCard) so a later phase can reuse it instead of re-adding the same
    * four words under a different key. */
+  /** Pre-launch i18n pass (2026-10-27): the whole auth flow (login, signup,
+   * forgot/reset password -- all 4 pages under app/(auth)/) was 100%
+   * hardcoded English, the same gap PlanSelectForm.tsx had before this
+   * session's own fix. Each sub-key below matches one page 1:1. Reuses
+   * dashboard.shell.anonBanner's existing agreeTerms-prefixed and
+   * genericError keys where the exact same concept already has a
+   * translated string (the
+   * ToS/Privacy checkbox text, and "Failed to create account") rather than
+   * duplicating them here. */
+  auth: {
+    login: {
+      heading: string;
+      subtitle: string;
+      justRegisteredMessage: string;
+      emailLabel: string;
+      passwordLabel: string;
+      forgotPassword: string;
+      emailInvalid: string;
+      passwordRequired: string;
+      submitButton: string;
+      submitButtonPending: string;
+      noAccount: string;
+      signUpLink: string;
+    };
+    signup: {
+      heading: string;
+      subtitle: string;
+      emailLabel: string;
+      passwordLabel: string;
+      confirmPasswordLabel: string;
+      emailInvalid: string;
+      passwordMin: string;
+      confirmPasswordRequired: string;
+      passwordsDontMatch: string;
+      submitButton: string;
+      submitButtonPending: string;
+      alreadyHaveAccount: string;
+      logInLink: string;
+    };
+    forgotPassword: {
+      heading: string;
+      subtitle: string;
+      sentMessage: string;
+      emailLabel: string;
+      emailInvalid: string;
+      submitButton: string;
+      submitButtonPending: string;
+      backToLogin: string;
+    };
+    resetPassword: {
+      heading: string;
+      linkInvalidMessage: string;
+      requestNewLink: string;
+      checkingLink: string;
+      newPasswordLabel: string;
+      confirmNewPasswordLabel: string;
+      passwordMin: string;
+      confirmPasswordRequired: string;
+      passwordsDontMatch: string;
+      submitButton: string;
+      submitButtonPending: string;
+    };
+  };
   /** Shown site-wide (marketing + dashboard + guest sites), not nested under
    * `landing`/`dashboard` -- a single consent decision covers every surface,
    * so its copy shouldn't live under just one of them. Gates Microsoft
@@ -1864,6 +1927,60 @@ export const en: Dictionary = {
       includedNote:
         "<p>This address is included with your plan for as long as it's active - nothing to renew, no extra domain purchase, no expiry date to track.</p>",
       questionsNote: "<p>Questions? Just reply to this email or reach us at support@invimbo.com.</p>",
+    },
+  },
+  auth: {
+    login: {
+      heading: "Login",
+      subtitle: "Log in to your account to continue.",
+      justRegisteredMessage: "Check your email to confirm your registration, then log in.",
+      emailLabel: "Email",
+      passwordLabel: "Password",
+      forgotPassword: "Forgot password?",
+      emailInvalid: "Enter a valid email",
+      passwordRequired: "Enter your password",
+      submitButton: "Log in",
+      submitButtonPending: "Logging in...",
+      noAccount: "Don't have an account?",
+      signUpLink: "Sign up",
+    },
+    signup: {
+      heading: "Sign up",
+      subtitle: "Create an account to continue.",
+      emailLabel: "Email",
+      passwordLabel: "Password",
+      confirmPasswordLabel: "Confirm password",
+      emailInvalid: "Enter a valid email",
+      passwordMin: "At least 6 characters",
+      confirmPasswordRequired: "Confirm your password",
+      passwordsDontMatch: "Passwords don't match",
+      submitButton: "Sign up",
+      submitButtonPending: "Signing up...",
+      alreadyHaveAccount: "Already have an account?",
+      logInLink: "Log in",
+    },
+    forgotPassword: {
+      heading: "Reset your password",
+      subtitle: "Enter your email and we'll send you a link to reset your password.",
+      sentMessage: "Check your email for a link to reset your password.",
+      emailLabel: "Email",
+      emailInvalid: "Enter a valid email",
+      submitButton: "Send reset link",
+      submitButtonPending: "Sending...",
+      backToLogin: "Back to login",
+    },
+    resetPassword: {
+      heading: "Set a new password",
+      linkInvalidMessage: "This reset link is invalid or has expired. Request a new one below.",
+      requestNewLink: "Request a new link",
+      checkingLink: "Checking your reset link...",
+      newPasswordLabel: "New password",
+      confirmNewPasswordLabel: "Confirm new password",
+      passwordMin: "At least 6 characters",
+      confirmPasswordRequired: "Confirm your password",
+      passwordsDontMatch: "Passwords don't match",
+      submitButton: "Set new password",
+      submitButtonPending: "Saving...",
     },
   },
   cookieConsent: {

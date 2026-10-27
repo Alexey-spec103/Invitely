@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,27 +10,43 @@ import { createClient } from "@/lib/supabase/client";
 import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
 import HCaptchaWidget from "@/components/HCaptchaWidget";
 import TermsCheckbox from "@/components/TermsCheckbox";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
-const signupSchema = z
-  .object({
-    email: z.email("Enter a valid email"),
-    password: z.string().min(6, "At least 6 characters"),
-    confirmPassword: z.string().min(1, "Confirm your password"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+interface SignupFormProps {
+  locale: Locale;
+}
 
-type SignupFormValues = z.infer<typeof signupSchema>;
-
-export default function SignupForm() {
+export default function SignupForm({ locale }: SignupFormProps) {
+  const dict = getDictionary(locale);
+  const t = dict.auth.signup;
+  // Reused, not duplicated -- the exact same ToS/Privacy-checkbox copy and
+  // "Failed to create account" fallback already exist here from this
+  // session's own earlier pass (see AnonymousAccountBanner.tsx/
+  // PublishAccountModal.tsx for the same reuse).
+  const anonBanner = dict.dashboard.shell.anonBanner;
   const router = useRouter();
   const searchParams = useSearchParams();
   const themeId = searchParams.get("theme");
   const [formError, setFormError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  const signupSchema = useMemo(
+    () =>
+      z
+        .object({
+          email: z.email(t.emailInvalid),
+          password: z.string().min(6, t.passwordMin),
+          confirmPassword: z.string().min(1, t.confirmPasswordRequired),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+          message: t.passwordsDontMatch,
+          path: ["confirmPassword"],
+        }),
+    [t]
+  );
+  type SignupFormValues = z.infer<typeof signupSchema>;
 
   const {
     register,
@@ -56,7 +72,7 @@ export default function SignupForm() {
       try {
         await upgradeAnonymousAccount(values.email, values.password);
       } catch (err) {
-        setFormError(err instanceof Error ? err.message : "Failed to create account");
+        setFormError(err instanceof Error ? err.message : anonBanner.genericError);
         return;
       }
       router.push("/dashboard");
@@ -80,15 +96,13 @@ export default function SignupForm() {
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-      <h1 className="text-xl font-semibold text-gray-900">Sign up</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        Create an account to continue.
-      </p>
+      <h1 className="text-xl font-semibold text-gray-900">{t.heading}</h1>
+      <p className="mt-1 text-sm text-gray-500">{t.subtitle}</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
+            {t.emailLabel}
           </label>
           <input
             id="email"
@@ -106,7 +120,7 @@ export default function SignupForm() {
 
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
+            {t.passwordLabel}
           </label>
           <input
             id="password"
@@ -124,7 +138,7 @@ export default function SignupForm() {
 
         <div>
           <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-            Confirm password
+            {t.confirmPasswordLabel}
           </label>
           <input
             id="confirmPassword"
@@ -143,11 +157,11 @@ export default function SignupForm() {
         <TermsCheckbox
           checked={agreedToTerms}
           onChange={setAgreedToTerms}
-          beforeText="I agree to the "
-          termsText="Terms of Service"
-          middleText=" and "
-          privacyText="Privacy Policy"
-          afterText="."
+          beforeText={anonBanner.agreeTermsBefore}
+          termsText={anonBanner.termsOfServiceLink}
+          middleText={anonBanner.agreeTermsMiddle}
+          privacyText={anonBanner.privacyPolicyLink}
+          afterText={anonBanner.agreeTermsAfter}
           className="text-gray-600"
         />
 
@@ -167,17 +181,17 @@ export default function SignupForm() {
           disabled={isSubmitting || !agreedToTerms}
           className="w-full rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? "Signing up..." : "Sign up"}
+          {isSubmitting ? t.submitButtonPending : t.submitButton}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-gray-500">
-        Already have an account?{" "}
+        {t.alreadyHaveAccount}{" "}
         <Link
           href={themeId ? `/login?theme=${themeId}` : "/login"}
           className="font-medium text-gray-900 underline underline-offset-2"
         >
-          Log in
+          {t.logInLink}
         </Link>
       </p>
     </div>

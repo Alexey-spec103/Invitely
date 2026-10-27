@@ -1,10 +1,12 @@
 import { Suspense } from "react";
+import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
 import LoginForm from "./LoginForm";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const locale = await resolveGuestLocale();
   return (
     <Suspense fallback={null}>
-      <LoginForm />
+      <LoginForm locale={locale} />
     </Suspense>
   );
 }
