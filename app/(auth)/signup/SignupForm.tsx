@@ -9,6 +9,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
 import HCaptchaWidget from "@/components/HCaptchaWidget";
+import TermsCheckbox from "@/components/TermsCheckbox";
 
 const signupSchema = z
   .object({
@@ -29,6 +30,7 @@ export default function SignupForm() {
   const themeId = searchParams.get("theme");
   const [formError, setFormError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const {
     register,
@@ -138,6 +140,17 @@ export default function SignupForm() {
           )}
         </div>
 
+        <TermsCheckbox
+          checked={agreedToTerms}
+          onChange={setAgreedToTerms}
+          beforeText="I agree to the "
+          termsText="Terms of Service"
+          middleText=" and "
+          privacyText="Privacy Policy"
+          afterText="."
+          className="text-gray-600"
+        />
+
         <HCaptchaWidget onVerify={setCaptchaToken} />
 
         {formError && (
@@ -151,7 +164,7 @@ export default function SignupForm() {
             background) gives strong contrast against white either way. */}
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !agreedToTerms}
           className="w-full rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? "Signing up..." : "Sign up"}

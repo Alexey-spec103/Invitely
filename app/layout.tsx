@@ -23,8 +23,8 @@ import {
   Outfit,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import Script from "next/script";
 import { resolveGuestLocale } from "@/lib/i18n/resolveLocale";
+import CookieConsent from "@/components/CookieConsent";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -378,28 +378,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         {/* No-op when not deployed on Vercel -- the script simply never
             finds an endpoint to report to, same "safe to leave in" shape
-            as the Sentry configs above. */}
+            as the Sentry configs above. Genuinely cookieless (Vercel's own
+            docs) -- unlike Clarity below, this was never the thing needing
+            cookie consent, so it stays unconditional. */}
         <Analytics />
-        {/* Performance investigation (2026-10-26): unlike Vercel Analytics
-            above, this project id is a manually-set NEXT_PUBLIC_* value
-            that's also present in .env.local -- Clarity was recording every
-            local `next dev` session (including Turbopack's own unminified,
-            HMR-instrumented, automated-browser-testing traffic) into the
-            exact same project as real production visitors. Confirmed live:
-            Clarity's "Top pages" report showed both `localhost` dev URLs
-            and `www.invimbo.com` URLs mixed in the same dataset. Dev-mode
-            is inherently much slower than a production build, so this was
-            very likely inflating the aggregate INP/performance numbers far
-            past what real visitors experience -- gated to production only. */}
-        {CLARITY_PROJECT_ID && process.env.NODE_ENV === "production" && (
-          <Script id="clarity-analytics" strategy="afterInteractive">
-            {`(function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "${CLARITY_PROJECT_ID}");`}
-          </Script>
-        )}
+        {/* Pre-launch legal pass (2026-10-27): Clarity itself (project id,
+            dev-vs-production gating -- see CLARITY_PROJECT_ID's own comment
+            above for why dev traffic is excluded) now lives inside
+            CookieConsent, only actually injected once a visitor accepts --
+            it sets real tracking cookies and records sessions, which this
+            app's own Privacy Policy promises visitors don't happen without
+            their say-so. */}
+        <CookieConsent locale={locale} clarityProjectId={CLARITY_PROJECT_ID} />
       </body>
     </html>
   );

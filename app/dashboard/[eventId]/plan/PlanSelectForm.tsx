@@ -7,6 +7,7 @@ import { updatePlan, createCheckoutSession } from "./actions";
 import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
 import type { Locale } from "@/lib/i18n/locales";
 import { getDictionary } from "@/lib/i18n/dictionary";
+import TermsCheckbox from "@/components/TermsCheckbox";
 
 // Exact string createCheckoutSession/updatePlan throw via requireRealUser()
 // (lib/session.ts) for an anonymous-trial session -- matched here so the
@@ -61,6 +62,7 @@ export default function PlanSelectForm({ eventId, currentPlanId, locale }: PlanS
   const [accountError, setAccountError] = useState<string | null>(null);
   const [accountSubmitting, setAccountSubmitting] = useState(false);
   const [accountPendingConfirmation, setAccountPendingConfirmation] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const accountModalRef = useRef<HTMLDivElement>(null);
 
   // Accessibility fix (2026-10-15): this blocking modal had no role="dialog"/
@@ -173,6 +175,7 @@ export default function PlanSelectForm({ eventId, currentPlanId, locale }: PlanS
     setAccountPassword("");
     setAccountError(null);
     setAccountPendingConfirmation(false);
+    setAgreedToTerms(false);
   };
 
   const basic = plans.basic;
@@ -380,10 +383,21 @@ export default function PlanSelectForm({ eventId, currentPlanId, locale }: PlanS
                     autoComplete="new-password"
                     className="dash-input w-full"
                   />
+                  <TermsCheckbox
+                    checked={agreedToTerms}
+                    onChange={setAgreedToTerms}
+                    beforeText={dict.dashboard.shell.anonBanner.agreeTermsBefore}
+                    termsText={dict.dashboard.shell.anonBanner.termsOfServiceLink}
+                    middleText={dict.dashboard.shell.anonBanner.agreeTermsMiddle}
+                    privacyText={dict.dashboard.shell.anonBanner.privacyPolicyLink}
+                    afterText={dict.dashboard.shell.anonBanner.agreeTermsAfter}
+                    id="plan-modal-agree-terms"
+                    className="text-gray-600"
+                  />
                   {accountError && <p className="text-sm text-red-600">{accountError}</p>}
                   <button
                     type="submit"
-                    disabled={accountSubmitting}
+                    disabled={accountSubmitting || !agreedToTerms}
                     className="dash-btn dash-btn-primary w-full text-base disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {accountSubmitting ? t.creatingAccount : t.createAccountButton}

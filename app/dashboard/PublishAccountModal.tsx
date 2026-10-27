@@ -7,6 +7,7 @@ import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
 import { usePrefersReducedMotion } from "@/components/usePrefersReducedMotion";
+import TermsCheckbox from "@/components/TermsCheckbox";
 
 interface PublishAccountModalProps {
   open: boolean;
@@ -42,6 +43,7 @@ export default function PublishAccountModal({ open, onClose, onAccountReady, loc
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingConfirmation, setPendingConfirmation] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
@@ -139,10 +141,21 @@ export default function PublishAccountModal({ open, onClose, onAccountReady, loc
                 autoComplete="new-password"
                 className="dash-input"
               />
+              <TermsCheckbox
+                checked={agreedToTerms}
+                onChange={setAgreedToTerms}
+                beforeText={t.anonBanner.agreeTermsBefore}
+                termsText={t.anonBanner.termsOfServiceLink}
+                middleText={t.anonBanner.agreeTermsMiddle}
+                privacyText={t.anonBanner.privacyPolicyLink}
+                afterText={t.anonBanner.agreeTermsAfter}
+                id="publish-modal-agree-terms"
+                className="text-[var(--dash-text-muted)]"
+              />
               {error && <p className="text-sm text-red-500">{error}</p>}
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !agreedToTerms}
                 className="dash-btn dash-btn-primary mt-2 w-full justify-center disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting ? t.anonBanner.creating : t.anonBanner.createAccount}

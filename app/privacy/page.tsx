@@ -108,7 +108,13 @@ export default function PrivacyPage() {
             <h2 className="text-base font-semibold text-stone-900">5. Cookies</h2>
             <p className="mt-2">
               We use essential cookies to keep you signed in and to remember your site&apos;s
-              draft state. We don&apos;t use third-party advertising or tracking cookies.
+              draft state - these can&apos;t be turned off, since the product doesn&apos;t work
+              without them. With your consent (asked on your first visit), we also use Microsoft
+              Clarity, an analytics tool that records how visitors use the site so we can find and
+              fix confusing parts - it sets its own cookies and only loads after you accept.
+              Declining doesn&apos;t limit anything else the product does. We also use Vercel
+              Analytics, which doesn&apos;t use cookies at all. We don&apos;t use advertising
+              cookies, and we don&apos;t sell any data collected through analytics.
             </p>
           </section>
 

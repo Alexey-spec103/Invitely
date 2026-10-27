@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
+import TermsCheckbox from "@/components/TermsCheckbox";
 
 const DISMISS_KEY = "invitely:anon-banner-dismissed";
 
@@ -37,6 +38,7 @@ export default function AnonymousAccountBanner({ isAnonymous, locale = "en" }: A
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingConfirmation, setPendingConfirmation] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   if (!isAnonymous || dismissed) {
     return null;
@@ -128,9 +130,20 @@ export default function AnonymousAccountBanner({ isAnonymous, locale = "en" }: A
             autoComplete="new-password"
             className="dash-input min-w-0 flex-1 basis-48"
           />
+          <TermsCheckbox
+            checked={agreedToTerms}
+            onChange={setAgreedToTerms}
+            beforeText={t.agreeTermsBefore}
+            termsText={t.termsOfServiceLink}
+            middleText={t.agreeTermsMiddle}
+            privacyText={t.privacyPolicyLink}
+            afterText={t.agreeTermsAfter}
+            id="anon-banner-agree-terms"
+            className="w-full text-gray-600"
+          />
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !agreedToTerms}
             className="rounded-full bg-[var(--dash-accent-text)] px-4 py-1.5 text-sm font-semibold text-[var(--dash-accent-contrast)] transition hover:bg-[var(--dash-accent)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? t.creating : t.createAccount}

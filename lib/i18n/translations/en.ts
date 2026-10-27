@@ -458,6 +458,18 @@ export interface Dictionary {
    * small chrome shared by components reused across tabs (FirstVisitTour,
    * ModuleCard) so a later phase can reuse it instead of re-adding the same
    * four words under a different key. */
+  /** Shown site-wide (marketing + dashboard + guest sites), not nested under
+   * `landing`/`dashboard` -- a single consent decision covers every surface,
+   * so its copy shouldn't live under just one of them. Gates Microsoft
+   * Clarity specifically (session recording + cookies) -- Vercel Analytics
+   * stays unconditional since it's genuinely cookieless (Vercel's own docs),
+   * so it was never the thing needing consent in the first place. */
+  cookieConsent: {
+    message: string;
+    acceptButton: string;
+    declineButton: string;
+    privacyLinkText: string;
+  };
   dashboard: {
     common: {
       statusOn: string;
@@ -976,6 +988,17 @@ export interface Dictionary {
         passwordPlaceholder: string;
         pendingConfirmation: string;
         genericError: string;
+        /** Pre-launch legal pass (2026-10-27): split around the two embedded
+         * links (Terms, Privacy) the same way this file already splits
+         * alreadyOnPlanBodyBefore/After around one -- composes to "I agree
+         * to the [Terms of Service] and [Privacy Policy]." regardless of
+         * how a given locale reorders the two link labels around the
+         * connecting words. */
+        agreeTermsBefore: string;
+        termsOfServiceLink: string;
+        agreeTermsMiddle: string;
+        privacyPolicyLink: string;
+        agreeTermsAfter: string;
       };
       planBadge: {
         removeBadgeShort: (priceEur: number) => string;
@@ -1843,6 +1866,13 @@ export const en: Dictionary = {
       questionsNote: "<p>Questions? Just reply to this email or reach us at support@invimbo.com.</p>",
     },
   },
+  cookieConsent: {
+    message:
+      "We use essential cookies to run this site, plus optional analytics (session recordings) to see what's confusing and fix it. Analytics only load if you say yes.",
+    acceptButton: "Accept analytics",
+    declineButton: "Essential only",
+    privacyLinkText: "Privacy Policy",
+  },
   dashboard: {
     common: {
       statusOn: "On",
@@ -2438,6 +2468,11 @@ export const en: Dictionary = {
         pendingConfirmation:
           "📬 Check your email to confirm - everything you've made is already saved, keep working while you wait.",
         genericError: "Failed to create account",
+        agreeTermsBefore: "I agree to the ",
+        termsOfServiceLink: "Terms of Service",
+        agreeTermsMiddle: " and ",
+        privacyPolicyLink: "Privacy Policy",
+        agreeTermsAfter: ".",
       },
       planBadge: {
         removeBadgeShort: (priceEur) => `Remove badge - €${priceEur}`,

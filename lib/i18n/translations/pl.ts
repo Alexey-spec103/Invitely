@@ -534,6 +534,13 @@ export const pl: Dictionary = {
       questionsNote: "<p>Masz pytania? Po prostu odpowiedz na tego e-maila lub napisz do nas na support@invimbo.com.</p>",
     },
   },
+  cookieConsent: {
+    message:
+      "Używamy niezbędnych plików cookie do działania tej strony oraz opcjonalnej analityki (nagrania sesji), żeby zobaczyć, co jest niejasne, i to poprawić. Analityka ładuje się tylko wtedy, gdy się zgodzisz.",
+    acceptButton: "Akceptuję analitykę",
+    declineButton: "Tylko niezbędne",
+    privacyLinkText: "Polityka prywatności",
+  },
   dashboard: {
     common: {
       statusOn: "Włączone",
@@ -1131,6 +1138,11 @@ export const pl: Dictionary = {
         pendingConfirmation:
           "📬 Potwierdź swój e-mail - wszystko, co już zrobiłeś/aś, jest zapisane, możesz spokojnie pracować dalej w międzyczasie.",
         genericError: "Nie udało się utworzyć konta",
+        agreeTermsBefore: "Akceptuję ",
+        termsOfServiceLink: "Regulamin",
+        agreeTermsMiddle: " i ",
+        privacyPolicyLink: "Politykę prywatności",
+        agreeTermsAfter: ".",
       },
       planBadge: {
         removeBadgeShort: (priceEur) => `Usuń plakietkę - ${priceEur} €`,

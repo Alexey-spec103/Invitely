@@ -543,6 +543,13 @@ export const ru: Dictionary = {
       questionsNote: "<p>Вопросы? Просто ответьте на это письмо или напишите нам на support@invimbo.com.</p>",
     },
   },
+  cookieConsent: {
+    message:
+      "Мы используем необходимые куки для работы сайта, а также опциональную аналитику (записи сессий), чтобы видеть, что сбивает с толку, и это исправлять. Аналитика загружается только с вашего согласия.",
+    acceptButton: "Принять аналитику",
+    declineButton: "Только необходимые",
+    privacyLinkText: "Политика конфиденциальности",
+  },
   dashboard: {
     common: {
       statusOn: "Включено",
@@ -1140,6 +1147,11 @@ export const ru: Dictionary = {
         pendingConfirmation:
           "📬 Подтвердите почту - всё, что вы уже сделали, уже сохранено, можно продолжать работу, пока ждёте письма.",
         genericError: "Не удалось создать аккаунт",
+        agreeTermsBefore: "Я согласен с ",
+        termsOfServiceLink: "Условиями использования",
+        agreeTermsMiddle: " и ",
+        privacyPolicyLink: "Политикой конфиденциальности",
+        agreeTermsAfter: ".",
       },
       planBadge: {
         removeBadgeShort: (priceEur) => `Убрать плашку - ${priceEur} €`,
