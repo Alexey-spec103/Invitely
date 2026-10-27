@@ -188,7 +188,7 @@ export const es: Dictionary = {
     },
     howItWorksSection: {
       heading: "Cómo funciona el constructor",
-      subtext: "Todo lo de abajo ocurre en vivo, directamente en tu navegador - sin descargas, nada que aprender.",
+      subtext: "Ya viste lo que puedes personalizar - aquí tienes exactamente cómo se arma, paso a paso, directamente en tu navegador.",
       steps: [
         {
           title: "Elige tu estilo",
@@ -260,6 +260,8 @@ export const es: Dictionary = {
     whatsIncluded: {
       heading: "Qué incluye",
       subtext: "Cada sitio viene con estos bloques - combínalos para contar tu historia.",
+      guestFacingLabel: "Lo que ven tus invitados",
+      hostToolsLabel: "Lo que obtienes como anfitrión",
       modules: [
         { title: "Constructor de arrastrar y soltar", description: "Mueve cualquier texto o foto, elige cualquier fuente o color, y deshaz/rehaz sobre la marcha." },
         { title: "Introducción principal", description: "Vuestros nombres, la fecha del evento y una foto - varios diseños para elegir." },
@@ -565,6 +567,8 @@ export const es: Dictionary = {
     site: {
       pageTitle: "Sitio",
       freeCanvas: "🎨 Lienzo libre",
+      freeCanvasAria: "Diseña desde un lienzo en blanco en un editor libre independiente",
+      siteSettingsLabel: "Configuración del sitio",
       checkoutPending: {
         title: "⏳ Confirmando tu pago…",
         body: "Stripe está terminando - esta página se desbloqueará automáticamente en unos segundos. Si no lo hace, actualiza la página o contacta a soporte si se te cobró y esto sigue sin actualizarse.",

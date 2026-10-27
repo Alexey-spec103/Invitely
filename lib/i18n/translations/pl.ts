@@ -198,7 +198,7 @@ export const pl: Dictionary = {
     },
     howItWorksSection: {
       heading: "Jak działa kreator",
-      subtext: "Wszystko poniżej dzieje się na żywo, prosto w twojej przeglądarce - bez pobierania, bez uczenia się czegokolwiek.",
+      subtext: "Widziałeś już, co możesz dostosować - oto dokładnie, jak to się składa, krok po kroku, prosto w przeglądarce.",
       steps: [
         {
           title: "Wybierz swój styl",
@@ -270,6 +270,8 @@ export const pl: Dictionary = {
     whatsIncluded: {
       heading: "Co jest w zestawie",
       subtext: "Każda strona zawiera te elementy - łącz je, by opowiedzieć swoją historię.",
+      guestFacingLabel: "Co widzą Twoi goście",
+      hostToolsLabel: "Co otrzymujesz jako organizator",
       modules: [
         { title: "Kreator przeciągnij i upuść", description: "Przesuwaj dowolny tekst lub zdjęcie, wybierz czcionkę lub kolor, i cofaj/przywracaj zmiany na bieżąco." },
         { title: "Sekcja główna", description: "Wasze imiona, data wydarzenia i zdjęcie - kilka układów do wyboru." },
@@ -575,6 +577,8 @@ export const pl: Dictionary = {
     site: {
       pageTitle: "Strona",
       freeCanvas: "🎨 Wolne płótno",
+      freeCanvasAria: "Projektuj na pustym płótnie w osobnym, swobodnym edytorze",
+      siteSettingsLabel: "Ustawienia strony",
       checkoutPending: {
         title: "⏳ Potwierdzanie płatności…",
         body: "Stripe kończy przetwarzanie - ta strona odblokuje się automatycznie za kilka sekund. Jeśli tak się nie stanie, odśwież stronę lub skontaktuj się z pomocą techniczną, jeśli Twoja karta została obciążona, a strona wciąż się nie aktualizuje.",

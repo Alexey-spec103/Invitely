@@ -188,7 +188,7 @@ export const fr: Dictionary = {
     },
     howItWorksSection: {
       heading: "Comment fonctionne le constructeur",
-      subtext: "Tout ce qui suit se passe en direct, dans votre navigateur - aucun téléchargement, rien à apprendre.",
+      subtext: "Vous avez vu ce que vous pouvez personnaliser - voici exactement comment tout s'assemble, étape par étape, directement dans votre navigateur.",
       steps: [
         {
           title: "Choisissez votre style",
@@ -260,6 +260,8 @@ export const fr: Dictionary = {
     whatsIncluded: {
       heading: "Ce qui est inclus",
       subtext: "Chaque site est livré avec ces blocs - combinez-les pour raconter votre histoire.",
+      guestFacingLabel: "Ce que voient vos invités",
+      hostToolsLabel: "Ce que vous obtenez en tant qu'hôte",
       modules: [
         { title: "Constructeur glisser-déposer", description: "Déplacez n'importe quel texte ou photo, choisissez une police ou une couleur, et annulez/rétablissez à volonté." },
         { title: "Introduction Hero", description: "Vos noms, la date de l'événement et une photo - plusieurs mises en page au choix." },
@@ -565,6 +567,8 @@ export const fr: Dictionary = {
     site: {
       pageTitle: "Site",
       freeCanvas: "🎨 Page libre",
+      freeCanvasAria: "Créez librement sur une page vierge dans un éditeur séparé",
+      siteSettingsLabel: "Paramètres du site",
       checkoutPending: {
         title: "⏳ Confirmation du paiement…",
         body: "Stripe termine le traitement - cette page se débloquera automatiquement dans quelques secondes. Si ce n'est pas le cas, actualisez la page ou contactez le support si votre carte a été débitée et que rien ne change.",

@@ -693,6 +693,19 @@ export interface ThemeGalleryCardProps {
   /** Optional, defaulting to English -- same convention as `ThemeGallery`
    * itself (see that prop's own comment). */
   locale?: Locale;
+  /** UX audit (2026-10-26): clarity critique -- every showcased theme on the
+   * marketing homepage used the default `previewNamesFor` couple-name demo
+   * data, so all 9 landing-page cards (and the eyebrow's hardcoded "We're
+   * getting married" fallback) read as weddings regardless of the theme's
+   * own category, directly undermining the page's own "12 event types"
+   * claim two sections earlier. Only `LandingThemeShowcase` passes these
+   * (for a handful of its 9 cards) -- omitted everywhere else (the real
+   * dashboard catalog, onboarding), which keeps showing each theme's normal
+   * couple demo, unchanged. Both must be provided together or not at all:
+   * a name override with no matching eyebrow override would still fall
+   * back to "We're getting married" under a birthday/corporate name. */
+  nameOverride?: [string, string];
+  eyebrowOverride?: string;
 }
 
 /** Exported so `LandingThemeShowcase` (the trimmed, no-filters 6-card
@@ -708,6 +721,8 @@ export function ThemeGalleryCard({
   isFavorite,
   onToggleFavorite,
   locale,
+  nameOverride,
+  eyebrowOverride,
 }: ThemeGalleryCardProps) {
   const resolvedLocale = locale ?? "en";
   const t = getDictionary(resolvedLocale).dashboard.style.card;
@@ -718,7 +733,7 @@ export function ThemeGalleryCard({
     { time: "5:00 PM", title: t.timelineCocktail },
     { time: "6:30 PM", title: t.timelineReception },
   ];
-  const [name1, name2] = previewNamesFor(theme.id);
+  const [name1, name2] = nameOverride ?? previewNamesFor(theme.id);
   const photoUrl = `${previewPhotoFor(theme.id, theme.category)}?w=500&q=70&fit=crop&auto=format`;
   const targetDate = useMemo(() => previewTargetDateFor(theme.id, theme.season), [theme.id, theme.season]);
   const dateLabel = formatPreviewDate(targetDate);
@@ -932,6 +947,7 @@ export function ThemeGalleryCard({
                   eventDate={dateLabel}
                   photoUrl={photoUrl}
                   themeCategory={effectiveDecorCategory(theme)}
+                  eyebrow={eyebrowOverride}
                 />
                 {/* Matches .phoneScaleInner below -- same reasoning: without
                     real sections here, dragging this panel would just pan
@@ -995,6 +1011,7 @@ export function ThemeGalleryCard({
                   eventDate={dateLabel}
                   photoUrl={photoUrl}
                   themeCategory={effectiveDecorCategory(theme)}
+                  eyebrow={eyebrowOverride}
                 />
                 {/* Two more real sections below Hero -- drag-panning this
                     mockup (see useDragPan above) reveals Letter's decor +

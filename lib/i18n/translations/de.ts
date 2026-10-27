@@ -188,7 +188,7 @@ export const de: Dictionary = {
     },
     howItWorksSection: {
       heading: "So funktioniert der Baukasten",
-      subtext: "Alles unten passiert live, direkt in deinem Browser - kein Download, nichts zu lernen.",
+      subtext: "Du hast gesehen, was du anpassen kannst - hier siehst du genau, wie es Schritt für Schritt zusammenkommt, direkt in deinem Browser.",
       steps: [
         {
           title: "Wähle deinen Stil",
@@ -260,6 +260,8 @@ export const de: Dictionary = {
     whatsIncluded: {
       heading: "Das ist alles enthalten",
       subtext: "Jede Website kommt mit diesen Bausteinen - kombiniere sie, um deine Geschichte zu erzählen.",
+      guestFacingLabel: "Was deine Gäste sehen",
+      hostToolsLabel: "Was du als Gastgeber bekommst",
       modules: [
         { title: "Drag-and-Drop-Baukasten", description: "Verschiebe jeden Text oder jedes Foto, wähle Schrift oder Farbe, und mach alles rückgängig." },
         { title: "Hero-Intro", description: "Eure Namen, das Datum und ein Foto - mehrere Layouts zur Auswahl." },
@@ -565,6 +567,8 @@ export const de: Dictionary = {
     site: {
       pageTitle: "Website",
       freeCanvas: "🎨 Freie Leinwand",
+      freeCanvasAria: "Gestalte frei auf einer leeren Leinwand in einem separaten Editor",
+      siteSettingsLabel: "Website-Einstellungen",
       checkoutPending: {
         title: "⏳ Zahlung wird bestätigt…",
         body: "Stripe ist gleich fertig - diese Seite entsperrt sich in ein paar Sekunden automatisch. Falls nicht, lade die Seite neu oder kontaktiere den Support, falls deine Karte belastet wurde, sich aber nichts aktualisiert.",

@@ -601,6 +601,18 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
           />
         </ModuleCard>
 
+        {/* UX audit (2026-10-26): clarity critique -- the boundary between
+            "these cards are site-wide settings" and "everything else is
+            content you edit by clicking it directly in the live preview"
+            was only ever taught once, via the skippable first-visit
+            coachmark; nothing in the persistent UI marked it afterward. A
+            small label here, not a full section wrapper -- doesn't change
+            any card's own layout or behavior, just names what this whole
+            group of cards is, once, where it starts. */}
+        <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-[var(--dash-text-muted)]">
+          {t.siteSettingsLabel}
+        </p>
+
         {/* dashboard-audit.md B14: weddingpost.ru's own "quick settings" row
             of three cards -- Start screen / Music / Link preview -- each
             with a preview thumbnail, a Configured/Not set badge, and an
@@ -803,8 +815,17 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             name2={event.subtitle_names?.[1]}
             locale={locale}
           />
+          {/* UX audit (2026-10-26): clarity critique flagged this as an
+              unlabeled mode switch next to the Wedding/event-type pill, with
+              no indication of what it does or whether it's reversible. It's
+              actually just a plain navigation link to a separate blank-
+              canvas editor (/canvas) -- not an in-place mode toggle on this
+              page's own content at all, so nothing here is destroyed or
+              switched by clicking it; `title` gives a real explainer on
+              hover/focus for the one thing that was genuinely missing. */}
           <Link
             href={`/dashboard/${event.id}/canvas`}
+            title={t.freeCanvasAria}
             className="rounded-full border border-[var(--dash-border)] px-3.5 py-1.5 text-xs font-medium text-[var(--dash-text-muted)] transition hover:border-[var(--dash-accent)] hover:text-[var(--dash-accent)]"
           >
             {t.freeCanvas}

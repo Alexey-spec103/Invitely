@@ -6,6 +6,7 @@ import { ThemeGalleryCard } from "@/components/theme/ThemeGallery";
 import type { Theme } from "@/lib/themes";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
+import { SHOWCASE_THEME_IDS } from "./landingThemeShowcaseIds";
 import styles from "./LandingThemeShowcase.module.css";
 
 interface LandingThemeShowcaseProps {
@@ -39,6 +40,25 @@ interface LandingThemeShowcaseProps {
   locale: Locale;
 }
 
+/** UX audit (2026-10-26): clarity critique -- every one of these 9 showcase
+ * cards used each theme's default couple demo data, so this "proof" section
+ * was 9/9 weddings, directly undermining the EventTypesSection two scrolls
+ * above claiming 12 event types. Doesn't touch the theme catalog's data
+ * model (themes have no event-type field at all) -- just overrides the
+ * *displayed* demo content for 3 of the 9 cards, reusing the same
+ * eventTypes.ts heroEyebrow copy (already localized per dictionary) real
+ * onboarding uses for these event types. Picked birthday/corporate/
+ * graduation specifically -- the three that read as most different from a
+ * wedding at a glance, not three more couple-shaped events (anniversary/
+ * engagement) that would still look like a wedding card regardless of label. */
+const SHOWCASE_CONTENT_OVERRIDES: Partial<
+  Record<(typeof SHOWCASE_THEME_IDS)[number], { names: [string, string]; eventType: "birthday" | "corporate" | "graduation" }>
+> = {
+  "cosmic-plum-gold": { names: ["Maya", ""], eventType: "birthday" },
+  "marble-noir-rust": { names: ["Horizon Summit 2027", ""], eventType: "corporate" },
+  "provence-coral-sage": { names: ["Emma", ""], eventType: "graduation" },
+};
+
 /** The public landing page's "Choose your style" teaser: 6 cards, no
  * filters, no search -- weddingpost.ru's own homepage gallery is a bare
  * showcase too, the full filterable catalog only lives behind sign-up.
@@ -46,12 +66,14 @@ interface LandingThemeShowcaseProps {
  * chrome) so this can never visually drift from the real gallery. */
 export default function LandingThemeShowcase({ themes: showcaseThemes, remainingCount, locale }: LandingThemeShowcaseProps) {
   const router = useRouter();
-  const t = getDictionary(locale).landing.themesSection;
+  const dict = getDictionary(locale);
+  const t = dict.landing.themesSection;
 
   return (
     <div className={styles.grid}>
       {showcaseThemes.map((theme, index) => {
         const isLast = index === showcaseThemes.length - 1;
+        const override = SHOWCASE_CONTENT_OVERRIDES[theme.id as (typeof SHOWCASE_THEME_IDS)[number]];
         return (
           <div key={theme.id} className={styles.tile}>
             <ThemeGalleryCard
@@ -59,6 +81,8 @@ export default function LandingThemeShowcase({ themes: showcaseThemes, remaining
               selected={false}
               onSelect={(themeId) => router.push(`/onboarding?theme=${themeId}`)}
               locale={locale}
+              nameOverride={override?.names}
+              eyebrowOverride={override ? dict.eventTypes[override.eventType].heroEyebrow : undefined}
             />
             {isLast && (
               <Link href="/onboarding" className={styles.moreOverlay} aria-label={t.seeMoreStyles(remainingCount)}>

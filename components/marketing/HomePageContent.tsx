@@ -186,11 +186,23 @@ export async function HomePageContent({ locale }: { locale: Locale }) {
     description: feature.description,
   }));
 
+  // UX audit (2026-10-26): clarity critique flagged this as a flat 14-item
+  // grid, over the "≤4 items per group" chunking guideline -- split into
+  // two groups by what a visitor actually needs to know ("is this for my
+  // guests, or for me as the host"). Fixed index set, not reordering
+  // t.whatsIncluded.modules itself (confirmed identical order across every
+  // locale) -- indices 0/9/10/11 are the host-facing tools (constructor,
+  // paper, banquet seating, custom domain); every other module is content a
+  // guest actually sees on the site.
+  const HOST_TOOL_MODULE_INDICES = new Set([0, 9, 10, 11]);
   const modules = t.whatsIncluded.modules.map((module, index) => ({
     icon: MODULE_ICONS[index],
     title: module.title,
     description: module.description,
+    isHostTool: HOST_TOOL_MODULE_INDICES.has(index),
   }));
+  const guestFacingModules = modules.filter((m) => !m.isHostTool);
+  const hostToolModules = modules.filter((m) => m.isHostTool);
 
   // Factual, not promotional -- the free tier really is unlimited to use, and
   // Premium's one real differentiator is removing the watermark from
@@ -490,9 +502,35 @@ export async function HomePageContent({ locale }: { locale: Locale }) {
               on mobile read as a long, monotonous scroll -- 2 columns from the
               smallest breakpoint up (matching EventTypesSection's own grid)
               roughly halves that without cramping the icon+title+description
-              layout, which fits comfortably at half width. */}
-          <div className="mt-16 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
-            {modules.map(({ icon: Icon, title, description }, i) => (
+              layout, which fits comfortably at half width.
+
+              UX audit (2026-10-26): was one flat 14-card grid with no
+              landmarks to re-orient against mid-scroll -- split into two
+              labeled groups (see guestFacingModules/hostToolModules above)
+              so a skimmer always knows which half they're in. */}
+          <h3 className="mt-16 text-sm font-semibold uppercase tracking-wide text-stone-500">
+            {t.whatsIncluded.guestFacingLabel}
+          </h3>
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
+            {guestFacingModules.map(({ icon: Icon, title, description }, i) => (
+              <div
+                key={title}
+                className="landing-reveal-item rounded-xl border border-stone-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md sm:p-6"
+                style={{ "--stagger-i": i % 6 } as CSSProperties}
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-50 text-[var(--dash-accent-text)] sm:h-10 sm:w-10">
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
+                </span>
+                <h3 className="mt-3 text-sm font-semibold text-stone-900 sm:mt-4 sm:text-base">{title}</h3>
+                <p className="mt-1.5 text-xs text-stone-600 sm:mt-2 sm:text-sm">{description}</p>
+              </div>
+            ))}
+          </div>
+          <h3 className="mt-12 text-sm font-semibold uppercase tracking-wide text-stone-500">
+            {t.whatsIncluded.hostToolsLabel}
+          </h3>
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
+            {hostToolModules.map(({ icon: Icon, title, description }, i) => (
               <div
                 key={title}
                 className="landing-reveal-item rounded-xl border border-stone-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md sm:p-6"

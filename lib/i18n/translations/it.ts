@@ -188,7 +188,7 @@ export const it: Dictionary = {
     },
     howItWorksSection: {
       heading: "Come funziona il costruttore",
-      subtext: "Tutto quello che segue avviene dal vivo, direttamente nel browser - nessun download, niente da imparare.",
+      subtext: "Hai visto cosa puoi personalizzare - ecco esattamente come si costruisce, passo dopo passo, direttamente nel browser.",
       steps: [
         {
           title: "Scegli il tuo stile",
@@ -260,6 +260,8 @@ export const it: Dictionary = {
     whatsIncluded: {
       heading: "Cosa include",
       subtext: "Ogni sito include questi elementi - combinali per raccontare la vostra storia.",
+      guestFacingLabel: "Cosa vedono i tuoi invitati",
+      hostToolsLabel: "Cosa ottieni come host",
       modules: [
         { title: "Costruttore drag-and-drop", description: "Sposta qualsiasi testo o foto, scegli font o colore, e annulla/ripristina in ogni momento." },
         { title: "Intro Hero", description: "I vostri nomi, la data dell'evento e una foto - diversi layout tra cui scegliere." },
@@ -565,6 +567,8 @@ export const it: Dictionary = {
     site: {
       pageTitle: "Sito",
       freeCanvas: "🎨 Tela libera",
+      freeCanvasAria: "Progetta da una tela vuota in un editor separato e libero",
+      siteSettingsLabel: "Impostazioni del sito",
       checkoutPending: {
         title: "⏳ Conferma del pagamento in corso…",
         body: "Stripe sta completando l'operazione - questa pagina si sbloccherà automaticamente tra pochi secondi. Se non succede, aggiorna la pagina o contatta l'assistenza se la carta è stata addebitata ma questa pagina non si aggiorna.",

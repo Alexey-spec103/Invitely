@@ -271,6 +271,16 @@ export interface Dictionary {
     whatsIncluded: {
       heading: string;
       subtext: string;
+      // UX audit (2026-10-26): clarity critique flagged this as a flat
+      // 14-item grid with no subheadings, over the skill's "≤4 items per
+      // group" chunking guideline -- these two group labels split it by
+      // what a visitor actually needs to understand ("is this for my
+      // guests, or for me as the host"), not an arbitrary bucket. Module
+      // order stays fixed and identical across every locale (confirmed) --
+      // the two groups are rendered by a fixed index split in
+      // HomePageContent.tsx, not by reordering this array.
+      guestFacingLabel: string;
+      hostToolsLabel: string;
       modules: { title: string; description: string }[];
     };
     pricing: {
@@ -506,6 +516,15 @@ export interface Dictionary {
     site: {
       pageTitle: string;
       freeCanvas: string;
+      freeCanvasAria: string;
+      // UX audit (2026-10-26): clarity critique -- the boundary between
+      // "these 6 cards are site-wide settings" and "everything else is
+      // content you edit by clicking it in the live preview" was only ever
+      // taught once, via the skippable first-visit coachmark. A host who
+      // skips the tour, or just comes back later, had no persistent cue.
+      // This small label renders once, right above the settings-card
+      // column (page.tsx), not per-card.
+      siteSettingsLabel: string;
       checkoutPending: { title: string; body: string };
       weddingDataReminder: { wedding: string; generic: string; cta: (typeLabel: string) => string };
       startScreen: { title: string; body: string; editInPreview: string };
@@ -1418,7 +1437,15 @@ export const en: Dictionary = {
     },
     howItWorksSection: {
       heading: "How the constructor works",
-      subtext: "Everything below happens live, right in your browser - no downloads, nothing to learn.",
+      // UX audit (2026-10-26): clarity critique found this section reads as
+      // repeating the "Every theme is complete, out of the box" capability
+      // grid right above it -- same builder sold twice in a row. That grid
+      // answers "what can I customize"; this one is the literal step-by-
+      // step flow, with real screenshots of the actual editor per step
+      // (STEP_META in HowItWorksSection.tsx), not a repeat. Rewrote the
+      // opener to say so explicitly instead of leaving a skimmer to infer
+      // it from two differently-shaped sections in a row.
+      subtext: "You've seen what you can customize - here's exactly how it comes together, step by step, right in your browser.",
       steps: [
         {
           title: "Choose your style",
@@ -1490,6 +1517,8 @@ export const en: Dictionary = {
     whatsIncluded: {
       heading: "What's included",
       subtext: "Every site comes with these building blocks - mix and match to tell your story.",
+      guestFacingLabel: "What your guests see",
+      hostToolsLabel: "What you get as the host",
       modules: [
         { title: "Drag-and-drop constructor", description: "Move any text or photo, pick any font or color, and undo/redo as you go." },
         { title: "Hero intro", description: "Your names, event date, and photo - several layouts to choose from." },
@@ -1801,6 +1830,8 @@ export const en: Dictionary = {
     site: {
       pageTitle: "Site",
       freeCanvas: "🎨 Free canvas",
+      freeCanvasAria: "Design from a blank canvas in a separate, freeform editor",
+      siteSettingsLabel: "Site settings",
       checkoutPending: {
         title: "⏳ Confirming your payment…",
         body: "Stripe is finishing up - this page will unlock automatically in a few seconds. If it doesn't, refresh, or contact support if your card was charged and this still doesn't update.",
