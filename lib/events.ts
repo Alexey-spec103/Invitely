@@ -31,8 +31,16 @@ import { getEventType } from "@/lib/eventTypes";
 // query (see guests/page.tsx's own rsvp_email_notifications read) instead
 // of widening this shared constant, so a not-yet-applied migration degrades
 // only that one feature rather than the entire dashboard.
+// Pre-launch security pass (2026-10-27): custom_domain_verification_token
+// dropped from this list -- it was already dead weight here (this
+// comment's own audit below confirms no caller of getEvent/listEvents/
+// getEventById ever reads it off the returned row), and keeping it would
+// have broken all three once `authenticated`'s own SELECT grant on
+// `events` was narrowed to exclude it (20261027130000 -- the one
+// legitimate authenticated reader, checkDomainVerification, now goes
+// through a SECURITY DEFINER RPC instead of a direct column read).
 export const EVENT_COLUMNS =
-  "id, owner_id, slug, title, subtitle_names, event_type, event_date, event_time, venue_name, venue_address, venue_city, venue_lat, venue_lng, plan_id, status, default_locale, supported_locales, custom_domain, custom_domain_verification_token, custom_domain_verified_at, site_password_enabled, created_at, updated_at" as const;
+  "id, owner_id, slug, title, subtitle_names, event_type, event_date, event_time, venue_name, venue_address, venue_city, venue_lat, venue_lng, plan_id, status, default_locale, supported_locales, custom_domain, custom_domain_verified_at, site_password_enabled, created_at, updated_at" as const;
 
 /** security-baseline audit (2026-10-22), follow-up to Finding C: this
  * constant's own comment above already said guest-facing code should use

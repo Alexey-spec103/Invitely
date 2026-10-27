@@ -239,13 +239,15 @@ export async function checkDomainVerification(input: CheckDomainVerificationInpu
   // (RLS has no policy letting anyone but the owner read a draft row), but
   // for a PUBLISHED event the "public can read published events" policy
   // lets it through for ANY authenticated caller, not just this event's
-  // owner. The real damage is bounded (the DNS TXT lookup below is the
-  // actual gate -- knowing another host's token doesn't let you fake
-  // control of their domain), but there's no reason this action should
-  // ever run against an event the caller doesn't own in the first place.
+  // owner. Fixed by adding the owner_id filter here; custom_domain_
+  // verification_token itself is no longer selectable via this plain
+  // query at all now (authenticated's own column grant excludes it as of
+  // 20261027130000) -- fetched below through a SECURITY DEFINER RPC that
+  // checks ownership internally instead, same pattern as
+  // check_site_unlock_token.
   const { data: event, error } = await supabase
     .from("events")
-    .select("custom_domain, custom_domain_verification_token, plan_id")
+    .select("custom_domain, plan_id")
     .eq("id", input.eventId)
     .eq("owner_id", user.id)
     .single();
@@ -254,7 +256,20 @@ export async function checkDomainVerification(input: CheckDomainVerificationInpu
     throw new Error(error.message);
   }
 
-  if (!event.custom_domain || !event.custom_domain_verification_token) {
+  if (!event.custom_domain) {
+    throw new Error("Set a domain first.");
+  }
+
+  const { data: verificationToken, error: tokenError } = await supabase.rpc(
+    "get_own_domain_verification_token",
+    { p_event_id: input.eventId }
+  );
+
+  if (tokenError) {
+    throw new Error(tokenError.message);
+  }
+
+  if (!verificationToken) {
     throw new Error("Set a domain first.");
   }
 
@@ -272,7 +287,7 @@ export async function checkDomainVerification(input: CheckDomainVerificationInpu
     throw new Error("No TXT record found yet. DNS changes can take a few minutes to propagate.");
   }
 
-  const matches = records.some((chunks) => chunks.join("") === event.custom_domain_verification_token);
+  const matches = records.some((chunks) => chunks.join("") === verificationToken);
 
   if (!matches) {
     throw new Error("TXT record found, but the value doesn't match. Double-check what you pasted.");

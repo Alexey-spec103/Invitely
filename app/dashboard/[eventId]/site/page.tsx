@@ -94,23 +94,38 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
   // *when* they fire moved, from deep in the middle of this function (after
   // a few hundred lines of unrelated sync parsing) to right here, alongside
   // the others.
-  const [locale, siteConfigResult, notificationSettingsResult, giftPreferencesResult, guestbookRowsResult] =
-    await Promise.all([
-      resolveGuestLocale(),
-      supabase.from("site_config").select("*").eq("event_id", event.id).maybeSingle(),
-      // Same not-yet-applied-migration guard as app/dashboard/[eventId]/guests/
-      // page.tsx's own identical query -- rsvp_email_notifications isn't in
-      // lib/events.ts's shared EVENT_COLUMNS for that reason, only needed
-      // here for the post-payment success card's one line of copy below.
-      supabase.from("events").select("rsvp_email_notifications").eq("id", event.id).maybeSingle(),
-      supabase.from("gift_preferences").select("*").eq("event_id", event.id).order("order_index"),
-      supabase.rpc("get_guestbook_messages", { p_event_id: event.id }),
-    ]);
+  const [
+    locale,
+    siteConfigResult,
+    notificationSettingsResult,
+    giftPreferencesResult,
+    guestbookRowsResult,
+    verificationTokenResult,
+  ] = await Promise.all([
+    resolveGuestLocale(),
+    supabase.from("site_config").select("*").eq("event_id", event.id).maybeSingle(),
+    // Same not-yet-applied-migration guard as app/dashboard/[eventId]/guests/
+    // page.tsx's own identical query -- rsvp_email_notifications isn't in
+    // lib/events.ts's shared EVENT_COLUMNS for that reason, only needed
+    // here for the post-payment success card's one line of copy below.
+    supabase.from("events").select("rsvp_email_notifications").eq("id", event.id).maybeSingle(),
+    supabase.from("gift_preferences").select("*").eq("event_id", event.id).order("order_index"),
+    supabase.rpc("get_guestbook_messages", { p_event_id: event.id }),
+    // Pre-launch security pass (2026-10-27): custom_domain_verification_token
+    // dropped out of EVENT_COLUMNS entirely (authenticated's own column
+    // grant on events no longer includes it, see 20261027130000) -- the host
+    // still needs to see their own token here (it's what DomainEditForm
+    // tells them to paste into their DNS), fetched through the same
+    // SECURITY DEFINER RPC domain-actions.ts's checkDomainVerification now
+    // uses, which checks owner_id = auth.uid() internally.
+    supabase.rpc("get_own_domain_verification_token", { p_event_id: event.id }),
+  ]);
   const dictionary = getDictionary(locale);
   const t = dictionary.dashboard.site;
   const dashboardCommon = dictionary.dashboard.common;
   const { data: siteConfig } = siteConfigResult;
   const { data: notificationSettings } = notificationSettingsResult;
+  const { data: verificationToken } = verificationTokenResult;
   const rsvpEmailNotifications = notificationSettings?.rsvp_email_notifications ?? true;
   const { data: giftPreferences } = giftPreferencesResult;
   const { data: guestbookRows } = guestbookRowsResult;
@@ -681,7 +696,7 @@ export default async function SitePage({ params, searchParams }: PageProps<"/das
             appDomain={process.env.NEXT_PUBLIC_APP_DOMAIN ?? "invimbo.com"}
             defaultValues={{
               customDomain: event.custom_domain ?? "",
-              verificationToken: event.custom_domain_verification_token,
+              verificationToken: verificationToken ?? null,
               verifiedAt: event.custom_domain_verified_at,
             }}
           />

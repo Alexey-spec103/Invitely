@@ -532,6 +532,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      get_own_domain_verification_token: {
+        Args: {
+          p_event_id: string
+        }
+        Returns: string | null
+      }
       get_guest_email_for_rsvp_confirmation: {
         Args: {
           p_event_id: string
