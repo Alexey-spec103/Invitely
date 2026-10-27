@@ -178,8 +178,13 @@ enable_signup = true
 enable_anonymous_sign_ins = false
 # Allow/disallow testing manual linking of accounts
 enable_manual_linking = false
-# Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
-minimum_password_length = 6
+# Pre-launch security pass (2026-10-27): was 6, the config's own min --
+# weak enough to make the sign_in_sign_ups rate limit below (30 attempts/5
+# min/IP, Supabase's own default) matter a lot less, since a 6-char
+# password is crackable well within that budget. 8 is the NIST SP 800-63B
+# floor and doesn't invalidate any existing user's password (this only
+# gates new signups/password changes going forward).
+minimum_password_length = 8
 # Passwords that do not meet the following requirements will be rejected as weak. Supported values
 # are: `letters_digits`, `lower_upper_letters_digits`, `lower_upper_letters_digits_symbols`
 password_requirements = ""
@@ -203,13 +208,32 @@ sms_sent = 30
 anonymous_users = 30
 # Number of sessions that can be refreshed in a 5 minute interval per IP address.
 token_refresh = 150
-# Number of sign up and sign-in requests that can be made in a 5 minute interval per IP address (excludes anonymous users).
-sign_in_sign_ups = 30
+# Pre-launch security pass (2026-10-27): was the config's own default of
+# 30. This app's own login form (LoginForm.tsx) calls
+# supabase.auth.signInWithPassword directly from the browser -- there is
+# no app-layer code in that path at all, so this GoTrue setting is the
+# *only* brute-force defense a login attempt ever passes through. 30/5min
+# (360/hour) per IP is generous enough that a scripted guesser targeting
+# one known host email could run thousands of guesses/day before ever
+# tripping it. 10/5min (120/hour) still comfortably covers a real user
+# mistyping their password a few times, while cutting a sustained
+# single-IP guesser's throughput by 3x. Doesn't address a guesser who
+# rotates IPs -- that needs CAPTCHA (see auth.captcha below, commented
+# out pending a human decision to sign up for hCaptcha/Turnstile) or
+# Supabase's own leaked-password-protection (dashboard-only setting, not
+# expressible in this file).
+sign_in_sign_ups = 10
 # Number of OTP / Magic link verifications that can be made in a 5 minute interval per IP address.
 token_verifications = 30
 # Number of Web3 logins that can be made in a 5 minute interval per IP address.
 web3 = 30
 
+# Pre-launch security pass (2026-10-27): left disabled -- enabling this
+# needs a human to sign up for a provider account (hCaptcha or Cloudflare
+# Turnstile, both free) and wire the resulting sitekey/secret into
+# LoginForm.tsx and SignupForm.tsx. Worth doing before launch: it's the
+# one defense here that still works against an attacker who rotates IPs
+# to dodge the sign_in_sign_ups limit above.
 # Configure one of the supported captcha providers: `hcaptcha`, `turnstile`.
 # [auth.captcha]
 # enabled = true

@@ -5,11 +5,11 @@ import Link from "next/link";
 // original pilot omitted (eligibility, IP/trademarks, warranty disclaimer,
 // liability limitation, termination, indemnification). Section 4 now
 // reflects that Stripe payments are actually live (one-time per event, not
-// a subscription). Two things this deliberately does NOT fill in: `4`'s
-// refund policy, and `10. Governing
-// law` -- which country/state's law and which courts apply is a business
-// decision (where the operating entity is incorporated) that only the
-// company can make, not something to invent. A real privacy/ToS lawyer in
+// a subscription). Section 4's refund policy and section 10's governing
+// law were originally left as unfilled placeholders (a business decision
+// only the operator could make), then filled in 2026-10-12 per the
+// operator's own stated decisions (see that commit's message) -- still
+// not a substitute for real legal review. A real privacy/ToS lawyer in
 // that jurisdiction must still review this before the product takes real
 // payments or handles real guests' data.
 // Technical SEO audit (2026-10-17): same gap as app/privacy/page.tsx's own
