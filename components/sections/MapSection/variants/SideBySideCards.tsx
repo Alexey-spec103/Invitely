@@ -34,13 +34,15 @@ export default function SideBySideCards({ title, venues, styleOverrides, locale 
             return (
               <div key={`${venue.name}-${index}`} className={styles.card}>
                 <span className={styles.cardMark} aria-hidden="true" />
-                <p className={styles.venueName}>
+                {/* Mobile confirmation pass (2026-10-27): h3, not p --
+                    same reasoning as EmbedStatic's own venueName. */}
+                <h3 className={styles.venueName}>
                   <EditableText
                     field={`venues.${index}.name`}
                     value={venue.name}
                     style={styleOverrides?.[`venues.${index}.name`]}
                   />
-                </p>
+                </h3>
                 <p className={styles.venueAddress}>
                   <EditableText
                     field={`venues.${index}.address`}

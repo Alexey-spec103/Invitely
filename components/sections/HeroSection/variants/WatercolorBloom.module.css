@@ -167,6 +167,11 @@
   text-shadow: 0 0 0.5rem var(--theme-bg), 0 0 0.5rem var(--theme-bg);
 }
 
+/* Mobile confirmation pass (2026-10-27): only .names had the blob/sprig
+   text-shadow safety net above -- at narrow widths the ring decor's dark
+   illustrated artwork sits close enough behind .date too (confirmed live,
+   390px viewport) to make its last character hard to read. Same fix,
+   same reasoning. */
 .date {
   font-family: var(--theme-font-body);
   font-size: 0.85rem;
@@ -174,6 +179,7 @@
   text-transform: uppercase;
   opacity: 0.92;
   margin: 0;
+  text-shadow: 0 0 0.5rem var(--theme-bg), 0 0 0.5rem var(--theme-bg);
 }
 
 @media (min-width: 640px) {

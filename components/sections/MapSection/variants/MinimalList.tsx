@@ -35,13 +35,15 @@ export default function MinimalList({ title, venues, styleOverrides, locale }: M
               <div className={styles.text}>
                 <div className={styles.venueRow}>
                   <span className={styles.venueMark} aria-hidden="true" />
-                  <p className={styles.venueName}>
+                  {/* Mobile confirmation pass (2026-10-27): h3, not p --
+                      same reasoning as EmbedStatic's own venueName. */}
+                  <h3 className={styles.venueName}>
                     <EditableText
                       field={`venues.${index}.name`}
                       value={venue.name}
                       style={styleOverrides?.[`venues.${index}.name`]}
                     />
-                  </p>
+                  </h3>
                 </div>
                 <p className={styles.venueAddress}>
                   <EditableText

@@ -42,13 +42,18 @@ export default function EmbedStatic({ title, venues, styleOverrides, locale }: M
 
           return (
             <div key={index} className={styles.card}>
-              <p className={styles.venueName}>
+              {/* Mobile confirmation pass (2026-10-27): was a <p> -- with no
+                  own heading, a venue's name read as plain body text to a
+                  screen reader navigating by headings, even though it's
+                  visually the start of each card. h3 nests correctly under
+                  this section's own h2 title above. */}
+              <h3 className={styles.venueName}>
                 <EditableText
                   field={`venues.${index}.name`}
                   value={venue.name}
                   style={styleOverrides?.[`venues.${index}.name`]}
                 />
-              </p>
+              </h3>
               <p className={styles.venueAddress}>
                 <EditableText
                   field={`venues.${index}.address`}
