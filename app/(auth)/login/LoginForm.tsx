@@ -23,6 +23,15 @@ export default function LoginForm({ locale }: LoginFormProps) {
   const themeId = searchParams.get("theme");
   const [formError, setFormError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  // Bug fix (2026-10-30): a real signup/login on mobile got stuck on
+  // Supabase's raw "captcha protection: request disallowed" error with no
+  // way forward -- this form used to let the user hit Submit with no
+  // token at all (e.g. hCaptcha's script silently blocked by an ad/
+  // content blocker) and only found out from that opaque server error.
+  // `captchaRequired` is false in local dev (no site key configured, see
+  // HCaptchaWidget's own comment), so this never blocks testing there.
+  const captchaRequired = Boolean(process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY);
+  const [captchaLoadFailed, setCaptchaLoadFailed] = useState(false);
 
   // Pre-launch i18n pass (2026-10-27): built from the dictionary, not a
   // module-level constant -- zod's own validation messages need to be in
@@ -50,6 +59,10 @@ export default function LoginForm({ locale }: LoginFormProps) {
 
   const onSubmit = async (values: LoginFormValues) => {
     setFormError(null);
+    if (captchaRequired && !captchaToken) {
+      setFormError(captchaLoadFailed ? t.captchaBlockedMessage : t.captchaIncompleteMessage);
+      return;
+    }
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email: values.email,
@@ -122,7 +135,11 @@ export default function LoginForm({ locale }: LoginFormProps) {
           )}
         </div>
 
-        <HCaptchaWidget onVerify={setCaptchaToken} />
+        <HCaptchaWidget
+          onVerify={setCaptchaToken}
+          onLoadFailed={() => setCaptchaLoadFailed(true)}
+          loadFailedMessage={t.captchaBlockedMessage}
+        />
 
         {formError && (
           <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>

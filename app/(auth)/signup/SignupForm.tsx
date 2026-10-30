@@ -31,6 +31,16 @@ export default function SignupForm({ locale }: SignupFormProps) {
   const [formError, setFormError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  // Bug fix (2026-10-30): this is the exact bug reported live -- a real
+  // signup on mobile hit Supabase's raw "captcha protection: request
+  // disallowed" error with no explanation, because this form only ever
+  // gated Submit on agreedToTerms, never on actually holding a captcha
+  // token (hCaptcha's script had likely been silently blocked by an ad/
+  // content blocker on that visitor's mobile browser). `captchaRequired`
+  // is false in local dev (no site key configured), so this never blocks
+  // testing there.
+  const captchaRequired = Boolean(process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY);
+  const [captchaLoadFailed, setCaptchaLoadFailed] = useState(false);
 
   const signupSchema = useMemo(
     () =>
@@ -58,6 +68,10 @@ export default function SignupForm({ locale }: SignupFormProps) {
 
   const onSubmit = async (values: SignupFormValues) => {
     setFormError(null);
+    if (captchaRequired && !captchaToken) {
+      setFormError(captchaLoadFailed ? t.captchaBlockedMessage : t.captchaIncompleteMessage);
+      return;
+    }
     const supabase = createClient();
 
     // Reaching /signup directly while an anonymous trial session is active
@@ -165,7 +179,11 @@ export default function SignupForm({ locale }: SignupFormProps) {
           className="text-gray-600"
         />
 
-        <HCaptchaWidget onVerify={setCaptchaToken} />
+        <HCaptchaWidget
+          onVerify={setCaptchaToken}
+          onLoadFailed={() => setCaptchaLoadFailed(true)}
+          loadFailedMessage={t.captchaBlockedMessage}
+        />
 
         {formError && (
           <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>

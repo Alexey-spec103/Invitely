@@ -557,6 +557,9 @@ export const uk: Dictionary = {
       submitButtonPending: "Вхід…",
       noAccount: "Немає акаунта?",
       signUpLink: "Зареєструватися",
+      captchaBlockedMessage:
+        "Перевірку безпеки не вдалося завантажити. Якщо у вас увімкнено блокувальник реклами чи контенту — вимкніть його або спробуйте інший браузер, потім перезавантажте сторінку.",
+      captchaIncompleteMessage: "Пройдіть перевірку безпеки вище.",
     },
     signup: {
       heading: "Реєстрація",
@@ -572,6 +575,9 @@ export const uk: Dictionary = {
       submitButtonPending: "Реєстрація…",
       alreadyHaveAccount: "Вже є акаунт?",
       logInLink: "Увійти",
+      captchaBlockedMessage:
+        "Перевірку безпеки не вдалося завантажити. Якщо у вас увімкнено блокувальник реклами чи контенту — вимкніть його або спробуйте інший браузер, потім перезавантажте сторінку.",
+      captchaIncompleteMessage: "Пройдіть перевірку безпеки вище.",
     },
     forgotPassword: {
       heading: "Відновлення пароля",

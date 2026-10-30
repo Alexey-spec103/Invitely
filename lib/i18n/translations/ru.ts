@@ -557,6 +557,9 @@ export const ru: Dictionary = {
       submitButtonPending: "Вход…",
       noAccount: "Нет аккаунта?",
       signUpLink: "Зарегистрироваться",
+      captchaBlockedMessage:
+        "Проверка безопасности не загрузилась. Если у вас включён блокировщик рекламы или контента — отключите его или попробуйте другой браузер, затем перезагрузите страницу.",
+      captchaIncompleteMessage: "Пройдите проверку безопасности выше.",
     },
     signup: {
       heading: "Регистрация",
@@ -572,6 +575,9 @@ export const ru: Dictionary = {
       submitButtonPending: "Регистрация…",
       alreadyHaveAccount: "Уже есть аккаунт?",
       logInLink: "Войти",
+      captchaBlockedMessage:
+        "Проверка безопасности не загрузилась. Если у вас включён блокировщик рекламы или контента — отключите его или попробуйте другой браузер, затем перезагрузите страницу.",
+      captchaIncompleteMessage: "Пройдите проверку безопасности выше.",
     },
     forgotPassword: {
       heading: "Восстановление пароля",

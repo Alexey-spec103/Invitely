@@ -481,6 +481,18 @@ export interface Dictionary {
       submitButtonPending: string;
       noAccount: string;
       signUpLink: string;
+      /** Bug fix (2026-10-30): shown if hCaptcha's own script never
+       * finishes loading (almost always an ad/content blocker on the
+       * visitor's device, not this page) -- see HCaptchaWidget's own
+       * comment for the real incident this closes. */
+      captchaBlockedMessage: string;
+      /** Shown when the widget is present and loaded fine but Submit was
+       * pressed before it was actually completed -- distinct from
+       * captchaBlockedMessage, which is specifically for the widget never
+       * loading at all (ad/content blocker). Conflating the two would
+       * tell a user who simply hasn't clicked the checkbox yet to go
+       * disable an ad blocker they don't have. */
+      captchaIncompleteMessage: string;
     };
     signup: {
       heading: string;
@@ -496,6 +508,8 @@ export interface Dictionary {
       submitButtonPending: string;
       alreadyHaveAccount: string;
       logInLink: string;
+      captchaBlockedMessage: string;
+      captchaIncompleteMessage: string;
     };
     forgotPassword: {
       heading: string;
@@ -1943,6 +1957,9 @@ export const en: Dictionary = {
       submitButtonPending: "Logging in...",
       noAccount: "Don't have an account?",
       signUpLink: "Sign up",
+      captchaBlockedMessage:
+        "Security check didn't load. If you're using an ad or content blocker, try disabling it or switching browsers, then reload this page.",
+      captchaIncompleteMessage: "Please complete the security check above.",
     },
     signup: {
       heading: "Sign up",
@@ -1958,6 +1975,9 @@ export const en: Dictionary = {
       submitButtonPending: "Signing up...",
       alreadyHaveAccount: "Already have an account?",
       logInLink: "Log in",
+      captchaBlockedMessage:
+        "Security check didn't load. If you're using an ad or content blocker, try disabling it or switching browsers, then reload this page.",
+      captchaIncompleteMessage: "Please complete the security check above.",
     },
     forgotPassword: {
       heading: "Reset your password",

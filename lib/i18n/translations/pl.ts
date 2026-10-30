@@ -548,6 +548,9 @@ export const pl: Dictionary = {
       submitButtonPending: "Logowanie…",
       noAccount: "Nie masz konta?",
       signUpLink: "Zarejestruj się",
+      captchaBlockedMessage:
+        "Nie udało się załadować weryfikacji bezpieczeństwa. Jeśli używasz blokady reklam lub treści, wyłącz ją lub zmień przeglądarkę, a następnie odśwież stronę.",
+      captchaIncompleteMessage: "Dokończ weryfikację bezpieczeństwa powyżej.",
     },
     signup: {
       heading: "Rejestracja",
@@ -563,6 +566,9 @@ export const pl: Dictionary = {
       submitButtonPending: "Rejestrowanie…",
       alreadyHaveAccount: "Masz już konto?",
       logInLink: "Zaloguj się",
+      captchaBlockedMessage:
+        "Nie udało się załadować weryfikacji bezpieczeństwa. Jeśli używasz blokady reklam lub treści, wyłącz ją lub zmień przeglądarkę, a następnie odśwież stronę.",
+      captchaIncompleteMessage: "Dokończ weryfikację bezpieczeństwa powyżej.",
     },
     forgotPassword: {
       heading: "Zresetuj hasło",
