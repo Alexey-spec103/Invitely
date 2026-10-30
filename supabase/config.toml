@@ -228,23 +228,25 @@ token_verifications = 30
 # Number of Web3 logins that can be made in a 5 minute interval per IP address.
 web3 = 30
 
-# Pre-launch security pass (2026-10-27): enabled. The one defense here
-# that still works against an attacker who rotates IPs to dodge the
-# sign_in_sign_ups limit above. LoginForm.tsx/SignupForm.tsx now render
-# HCaptchaWidget and pass its token as options.captchaToken on
-# signInWithPassword/signUp -- GoTrue verifies that token server-side
-# using `secret` below, which it resolves from the HCAPTCHA_SECRET env
-# var (never written into this file directly). This file alone doesn't
-# apply to the live project -- `supabase config push` needs
-# SUPABASE_DB_PASSWORD, not available here -- so the same provider/secret
-# must also be set directly in Supabase Dashboard -> Authentication ->
-# Bot and Abuse Protection until that becomes possible.
+# Pre-launch security pass (2026-10-27): enabled, then reverted
+# (2026-10-30) per explicit operator decision after a real signup on
+# mobile got stuck on GoTrue's own "captcha protection: request
+# disallowed" error with no way forward -- most likely an ad/content
+# blocker silently stripping hCaptcha's script on that visitor's mobile
+# browser (confirmed live the widget itself renders and works fine at a
+# real 390px width, so this wasn't a layout bug). Operator chose ease of
+# signup over this specific defense layer -- sign_in_sign_ups above (the
+# per-IP rate limit) is what's left guarding login/signup now. The
+# HCaptchaWidget component and its wiring in LoginForm.tsx/SignupForm.tsx
+# were removed in the same pass; this file alone doesn't apply to the
+# live project either way (`supabase config push` needs
+# SUPABASE_DB_PASSWORD, not available here) -- the matching toggle was
+# turned off directly in Supabase Dashboard -> Authentication -> Bot and
+# Abuse Protection.
 [auth.captcha]
-enabled = true
-provider = "hcaptcha"
-secret = "env(HCAPTCHA_SECRET)"
+enabled = false
 # provider = "hcaptcha"
-# secret = ""
+# secret = "env(HCAPTCHA_SECRET)"
 
 [auth.email]
 # Allow/disallow new user signups via email to your project.

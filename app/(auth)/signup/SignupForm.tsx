@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import { upgradeAnonymousAccount } from "@/lib/authUpgrade";
-import HCaptchaWidget from "@/components/HCaptchaWidget";
 import TermsCheckbox from "@/components/TermsCheckbox";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import type { Locale } from "@/lib/i18n/locales";
@@ -29,18 +28,7 @@ export default function SignupForm({ locale }: SignupFormProps) {
   const searchParams = useSearchParams();
   const themeId = searchParams.get("theme");
   const [formError, setFormError] = useState<string | null>(null);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  // Bug fix (2026-10-30): this is the exact bug reported live -- a real
-  // signup on mobile hit Supabase's raw "captcha protection: request
-  // disallowed" error with no explanation, because this form only ever
-  // gated Submit on agreedToTerms, never on actually holding a captcha
-  // token (hCaptcha's script had likely been silently blocked by an ad/
-  // content blocker on that visitor's mobile browser). `captchaRequired`
-  // is false in local dev (no site key configured), so this never blocks
-  // testing there.
-  const captchaRequired = Boolean(process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY);
-  const [captchaLoadFailed, setCaptchaLoadFailed] = useState(false);
 
   const signupSchema = useMemo(
     () =>
@@ -68,10 +56,6 @@ export default function SignupForm({ locale }: SignupFormProps) {
 
   const onSubmit = async (values: SignupFormValues) => {
     setFormError(null);
-    if (captchaRequired && !captchaToken) {
-      setFormError(captchaLoadFailed ? t.captchaBlockedMessage : t.captchaIncompleteMessage);
-      return;
-    }
     const supabase = createClient();
 
     // Reaching /signup directly while an anonymous trial session is active
@@ -97,7 +81,6 @@ export default function SignupForm({ locale }: SignupFormProps) {
     const { error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
-      options: captchaToken ? { captchaToken } : undefined,
     });
 
     if (error) {
@@ -177,12 +160,6 @@ export default function SignupForm({ locale }: SignupFormProps) {
           privacyText={anonBanner.privacyPolicyLink}
           afterText={anonBanner.agreeTermsAfter}
           className="text-gray-600"
-        />
-
-        <HCaptchaWidget
-          onVerify={setCaptchaToken}
-          onLoadFailed={() => setCaptchaLoadFailed(true)}
-          loadFailedMessage={t.captchaBlockedMessage}
         />
 
         {formError && (
